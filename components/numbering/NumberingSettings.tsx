@@ -1,0 +1,338 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import {
+  MODULE_LABELS,
+  type NumberingRuleView,
+  type ResetPolicy,
+} from "@/lib/numbering/types";
+import { appToast } from "@/lib/toast";
+import { cn } from "@/lib/utils";
+
+export default function NumberingSettings() {
+  const [rules, setRules] = useState<NumberingRuleView[]>([]);
+  const [companyCode, setCompanyCode] = useState("CO");
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [selected, setSelected] = useState<string>("sales");
+  const [preview, setPreview] = useState("");
+
+  useEffect(() => {
+    const id = window.setTimeout(() => {
+      void fetch("/api/numbering", { cache: "no-store" })
+        .then((r) => r.json())
+        .then((j) => {
+          if (j.success) {
+            setRules(j.data.rules || []);
+            setCompanyCode(j.data.companyCode || "CO");
+            const first = j.data.rules?.[0]?.moduleKey || "sales";
+            setSelected(first);
+          }
+        })
+        .catch(() => appToast.error("Could not load numbering settings"))
+        .finally(() => setLoading(false));
+    }, 0);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  const current = rules.find((r) => r.moduleKey === selected);
+
+  useEffect(() => {
+    if (!current) return;
+    const id = window.setTimeout(() => {
+      void fetch("/api/numbering/preview", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          moduleKey: current.moduleKey,
+          format: current.format,
+          prefix: current.prefix,
+          suffix: current.suffix,
+          moduleCode: current.moduleCode,
+          padLength: current.padLength,
+          fiscalYearStartMonth: current.fiscalYearStartMonth,
+          companyCode,
+          sequence: current.nextValue || current.startFrom,
+        }),
+      })
+        .then((r) => r.json())
+        .then((j) => {
+          if (j.success) setPreview(j.data.preview);
+        })
+        .catch(() => undefined);
+    }, 200);
+    return () => window.clearTimeout(id);
+  }, [current, companyCode]);
+
+  function patch(partial: Partial<NumberingRuleView>) {
+    setRules((prev) =>
+      prev.map((r) =>
+        r.moduleKey === selected ? { ...r, ...partial } : r
+      )
+    );
+  }
+
+  async function save(resetNow = false) {
+    setSaving(true);
+    try {
+      const res = await fetch("/api/numbering", {
+        method: "PUT",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({
+          companyCode,
+          rules: rules.map((r) => ({
+            ...r,
+            resetNow: resetNow && r.moduleKey === selected,
+          })),
+        }),
+      });
+      const json = await res.json();
+      if (!json.success) {
+        appToast.error(json.message || "Save failed");
+        return;
+      }
+      setRules(json.data.rules || rules);
+      appToast.success(
+        resetNow ? "Counter reset & settings saved" : "Numbering settings saved"
+      );
+    } catch {
+      appToast.error("Save failed");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (loading) {
+    return (
+      <p className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
+        Loading numbering settings…
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-5">
+      <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-black text-foreground sm:text-3xl">
+            Smart Auto Numbering
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Configurable, collision-free document numbers for every module
+          </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void save(false)}
+            className="rounded-2xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35 disabled:opacity-50"
+          >
+            {saving ? "Saving…" : "Save settings"}
+          </button>
+          <button
+            type="button"
+            disabled={saving}
+            onClick={() => void save(true)}
+            className="rounded-2xl border border-border px-5 py-2.5 text-sm font-bold focus-visible:ring-[3px] focus-visible:ring-ring/35"
+          >
+            Reset period counter
+          </button>
+        </div>
+      </header>
+
+      <label className="block max-w-xs text-sm font-bold">
+        Company code
+        <input
+          value={companyCode}
+          onChange={(e) => setCompanyCode(e.target.value.toUpperCase())}
+          className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-mono text-sm focus-visible:ring-[3px] focus-visible:ring-ring/35"
+          aria-label="Company code for numbering"
+          maxLength={16}
+        />
+      </label>
+
+      <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
+        <nav
+          className="rek-card max-h-[70vh] overflow-auto p-2"
+          aria-label="Numbering modules"
+        >
+          {rules.map((r) => (
+            <button
+              key={r.moduleKey}
+              type="button"
+              onClick={() => setSelected(r.moduleKey)}
+              className={cn(
+                "flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-start text-sm font-bold focus-visible:ring-[3px] focus-visible:ring-ring/35",
+                selected === r.moduleKey
+                  ? "bg-primary text-primary-foreground"
+                  : "hover:bg-muted"
+              )}
+            >
+              <span>{MODULE_LABELS[r.moduleKey] || r.moduleKey}</span>
+              <span
+                className={cn(
+                  "text-[10px] uppercase",
+                  selected === r.moduleKey
+                    ? "text-primary-foreground/80"
+                    : "text-muted-foreground"
+                )}
+              >
+                {r.enabled ? "ON" : "OFF"}
+              </span>
+            </button>
+          ))}
+        </nav>
+
+        {current && (
+          <section
+            className="rek-card space-y-4 p-5"
+            aria-label={`${MODULE_LABELS[current.moduleKey]} settings`}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-xl font-black">
+                {MODULE_LABELS[current.moduleKey] || current.moduleKey}
+              </h2>
+              <label className="inline-flex items-center gap-2 text-sm font-bold">
+                <input
+                  type="checkbox"
+                  checked={current.enabled}
+                  onChange={(e) => patch({ enabled: e.target.checked })}
+                />
+                Enable auto numbering
+              </label>
+            </div>
+
+            <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 px-4 py-3">
+              <p className="text-xs font-bold uppercase text-muted-foreground">
+                Preview
+              </p>
+              <p className="mt-1 font-mono text-lg font-black tracking-wide">
+                {preview || current.preview || "—"}
+              </p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Next sequence: {current.nextValue ?? current.startFrom}
+              </p>
+            </div>
+
+            <label className="block text-sm font-bold">
+              Format
+              <input
+                value={current.format}
+                onChange={(e) => patch({ format: e.target.value })}
+                className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-mono text-sm focus-visible:ring-[3px] focus-visible:ring-ring/35"
+                spellCheck={false}
+              />
+              <span className="mt-1 block text-xs font-normal text-muted-foreground">
+                Tokens: {"{PREFIX} {SUFFIX} {YYYY} {MM} {DD} {FY} {COMPANY} {WAREHOUSE} {MODULE} {SEQ} {SEQ:6}"}
+              </span>
+            </label>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <Field
+                label="Prefix"
+                value={current.prefix}
+                onChange={(v) => patch({ prefix: v })}
+              />
+              <Field
+                label="Suffix"
+                value={current.suffix}
+                onChange={(v) => patch({ suffix: v })}
+              />
+              <Field
+                label="Module code"
+                value={current.moduleCode}
+                onChange={(v) => patch({ moduleCode: v })}
+              />
+              <label className="block text-sm font-bold">
+                Pad length
+                <input
+                  type="number"
+                  min={1}
+                  max={12}
+                  value={current.padLength}
+                  onChange={(e) =>
+                    patch({ padLength: Number(e.target.value) || 6 })
+                  }
+                  className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:ring-[3px] focus-visible:ring-ring/35"
+                />
+              </label>
+              <label className="block text-sm font-bold">
+                Starting number
+                <input
+                  type="number"
+                  min={1}
+                  value={current.startFrom}
+                  onChange={(e) =>
+                    patch({ startFrom: Number(e.target.value) || 1 })
+                  }
+                  className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:ring-[3px] focus-visible:ring-ring/35"
+                />
+              </label>
+              <label className="block text-sm font-bold">
+                Reset policy
+                <select
+                  value={current.resetPolicy}
+                  onChange={(e) =>
+                    patch({ resetPolicy: e.target.value as ResetPolicy })
+                  }
+                  className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:ring-[3px] focus-visible:ring-ring/35"
+                >
+                  <option value="none">Never (continuous)</option>
+                  <option value="yearly">Yearly / Fiscal year</option>
+                  <option value="monthly">Monthly</option>
+                </select>
+              </label>
+              <label className="block text-sm font-bold">
+                Fiscal year start month
+                <input
+                  type="number"
+                  min={1}
+                  max={12}
+                  value={current.fiscalYearStartMonth}
+                  onChange={(e) =>
+                    patch({
+                      fiscalYearStartMonth: Number(e.target.value) || 1,
+                    })
+                  }
+                  className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:ring-[3px] focus-visible:ring-ring/35"
+                />
+              </label>
+              <label className="inline-flex items-center gap-2 self-end text-sm font-bold">
+                <input
+                  type="checkbox"
+                  checked={current.allowManualOverride}
+                  onChange={(e) =>
+                    patch({ allowManualOverride: e.target.checked })
+                  }
+                />
+                Allow manual override
+              </label>
+            </div>
+          </section>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Field({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+}) {
+  return (
+    <label className="block text-sm font-bold">
+      {label}
+      <input
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:ring-[3px] focus-visible:ring-ring/35"
+      />
+    </label>
+  );
+}

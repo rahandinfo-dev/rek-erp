@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ckb" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#FFAE42" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>Offline · REK ERP</title>
+    <link rel="icon" href="/icons/favicon-32x32.png" />
+    <style>
+      :root {
+        --brand: #ffae42;
+        --cream: #fef4e8;
+        --ink: #171412;
+        --muted: #6b635a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        font-family: "Segoe UI", Tahoma, system-ui, sans-serif;
+        background:
+          radial-gradient(ellipse 80% 50% at 50% -10%, rgba(255, 174, 66, 0.35), transparent),
+          linear-gradient(180deg, var(--cream) 0%, #fff 55%);
+        color: var(--ink);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+      }
+      .card {
+        width: min(28rem, 100%);
+        text-align: center;
+        padding: 2rem 1.5rem;
+      }
+      img {
+        width: 5.5rem;
+        height: 5.5rem;
+        object-fit: contain;
+        margin-inline: auto;
+      }
+      h1 {
+        margin: 1.25rem 0 0.5rem;
+        font-size: 1.65rem;
+        font-weight: 800;
+      }
+      p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.6;
+        font-size: 0.95rem;
+      }
+      .actions {
+        margin-top: 1.75rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: center;
+      }
+      button, a.btn {
+        appearance: none;
+        border: none;
+        border-radius: 999px;
+        padding: 0.85rem 1.4rem;
+        font-weight: 700;
+        font-size: 0.95rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+      .primary {
+        background: var(--brand);
+        color: #fff;
+      }
+      .ghost {
+        background: rgba(23, 20, 18, 0.06);
+        color: var(--ink);
+      }
+      .status {
+        margin-top: 1.25rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: var(--muted);
+      }
+      .status.online { color: #15803d; }
+    </style>
+  </head>
+  <body>
+    <main class="card" role="main">
+      <img src="/icons/icon-192x192.png" width="88" height="88" alt="REK" />
+      <h1>ئۆفلاینیت</h1>
+      <p>
+        پەیوەندی ئینتەرنێت بەردەست نییە. شێلەی ئەپ هێشتا لێرەیە —
+        کاتێک پەیوەندی گەڕایەوە، دووبارە هەوڵ بدە.
+      </p>
+      <div class="actions">
+        <button type="button" class="primary" id="retry">دووبارە هەوڵبدەوە</button>
+        <a class="btn ghost" href="/dashboard">Dashboard</a>
+      </div>
+      <p class="status" id="status" aria-live="polite">Connection: Offline</p>
+    </main>
+    <script>
+      (function () {
+        var status = document.getElementById("status");
+        var retry = document.getElementById("retry");
+        function sync() {
+          var on = navigator.onLine;
+          status.textContent = on ? "Connection: Online" : "Connection: Offline";
+          status.className = "status" + (on ? " online" : "");
+          if (on) {
+            // Prefer returning to the last attempted URL when possible.
+            location.reload();
+          }
+        }
+        retry.addEventListener("click", function () {
+          if (navigator.onLine) location.reload();
+          else sync();
+        });
+        window.addEventListener("online", sync);
+        window.addEventListener("offline", sync);
+        sync();
+      })();
+    </script>
+  </body>
+</html>

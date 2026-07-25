@@ -1,0 +1,25 @@
+﻿
+> rek@0.1.0 dev
+> next dev
+
+node.exe : ΓÜá Port 3000 is in use by process 8720, using available port 3001 instead.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (ΓÜá Port 3000 i...t 3001 instead.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Γû▓ Next.js 16.2.10 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://192.168.1.121:3001
+- Environments: .env
+Γ£ô Ready in 4.2s
+Γ¿» Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          8720
+- Dir:          C:\Users\lawan\pola-kesh
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 8720 /F to stop it.
+[?25h
