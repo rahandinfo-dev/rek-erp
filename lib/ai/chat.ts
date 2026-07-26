@@ -3,7 +3,8 @@ import type { Prisma } from "@/lib/prisma/client";
 import { auditSafe } from "@/lib/audit/log";
 import { parseAiIntent } from "@/lib/ai/parse";
 import { executeAiIntent } from "@/lib/ai/execute";
-import type { AiChatResponse } from "@/lib/ai/types";
+import type { AiChatResponse, AiIntentId } from "@/lib/ai/types";
+import type { MetricPeriod } from "@/lib/ai/metrics";
 
 function toJson(value: unknown): Prisma.InputJsonValue {
   return JSON.parse(JSON.stringify(value)) as Prisma.InputJsonValue;
@@ -41,6 +42,22 @@ export async function listMessages(
   return { conversationId: convo.id, messages };
 }
 
+async function loadParseContext(conversationId: string) {
+  const lastAssistant = await db.aiMessage.findFirst({
+    where: { conversationId, role: "assistant", intent: { not: null } },
+    orderBy: { createdAt: "desc" },
+    select: { intent: true, metadata: true },
+  });
+  if (!lastAssistant?.intent) {
+    return { lastIntent: null as AiIntentId | null, lastPeriod: null as MetricPeriod | null };
+  }
+  const meta = lastAssistant.metadata as { period?: MetricPeriod } | null;
+  return {
+    lastIntent: lastAssistant.intent as AiIntentId,
+    lastPeriod: meta?.period ?? null,
+  };
+}
+
 export async function askAiAssistant(input: {
   companyId: string;
   userId: string;
@@ -58,7 +75,8 @@ export async function askAiAssistant(input: {
   }
 
   const convo = await getOrCreateConversation(input.companyId, input.userId);
-  const parsed = parseAiIntent(text);
+  const context = await loadParseContext(convo.id);
+  const parsed = parseAiIntent(text, context);
   const response = await executeAiIntent(input.companyId, parsed);
 
   const userMsg = await db.aiMessage.create({
@@ -70,6 +88,8 @@ export async function askAiAssistant(input: {
       metadata: toJson({
         confidence: parsed.confidence,
         query: parsed.query || null,
+        period: parsed.period || null,
+        fromFollowUp: parsed.fromFollowUp || false,
       }),
     },
   });
@@ -84,6 +104,7 @@ export async function askAiAssistant(input: {
         links: response.links || [],
         suggestions: response.suggestions || [],
         data: response.data || null,
+        period: response.period || parsed.period || null,
       }),
     },
   });
@@ -108,6 +129,7 @@ export async function askAiAssistant(input: {
       ai: true,
       intent: parsed.intent,
       confidence: parsed.confidence,
+      period: parsed.period || null,
     },
     req: input.req,
   });

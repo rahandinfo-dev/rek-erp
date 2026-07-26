@@ -15,7 +15,7 @@ export async function GET() {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
         { status: 401 }
       );
     }
@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
         { status: 401 }
       );
     }
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Invalid message" },
+        { success: false, message: "پەیام نادروستە." },
         { status: 400 }
       );
     }

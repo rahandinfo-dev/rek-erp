@@ -82,16 +82,16 @@ export default function AiAssistantClient() {
         <div>
           <h1 className="flex items-center gap-2 text-3xl font-black text-primary">
             <Sparkles aria-hidden />
-            AI Assistant
+            یاریدەدەری زیرەک
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Natural language commands, insights, alerts, recommendations and
-            workflow automation — company-scoped and permission-safe.
+            وەڵام تەنها لەسەر داتای ڕاستەقینەی کۆمپانیاکەت — هیچ ژمارەیەکی خەیاڵی
+            یان خەملێنراو نییە.
           </p>
         </div>
         <Button type="button" onClick={() => openAiAssistant()}>
           <Bot size={16} aria-hidden />
-          Open chat
+          کردنەوەی گفتوگۆ
         </Button>
       </header>
 

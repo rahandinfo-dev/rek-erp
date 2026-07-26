@@ -1,6 +1,20 @@
+import type { MetricPeriod } from "@/lib/ai/metrics";
+
 export type AiIntentId =
   | "today_sales"
+  | "month_sales_total"
+  | "month_expenses_total"
+  | "month_net_profit"
+  | "customer_debt"
+  | "supplier_debt"
+  | "top_selling_product"
+  | "least_selling_product"
   | "low_stock"
+  | "stock_units"
+  | "today_invoices"
+  | "user_count"
+  | "week_transactions"
+  | "profit_mom_change"
   | "create_invoice"
   | "search_customer"
   | "unpaid_invoices"
@@ -31,6 +45,7 @@ export type AiChatResponse = {
   links?: AiActionLink[];
   data?: Record<string, unknown>;
   suggestions?: string[];
+  period?: MetricPeriod;
 };
 
 export type AiInsightView = {
@@ -80,17 +95,22 @@ export type AiDashboardBundle = {
   generatedAt: string;
 };
 
+/** Suggested chips — Kurdish Sorani, real ERP questions only. */
 export const AI_SUGGESTED_PROMPTS = [
-  "Show today's sales",
-  "Find low stock products",
-  "Create a new invoice",
-  "Search customer",
-  "Show unpaid invoices",
-  "Generate monthly report",
-  "Compare this month with last month",
-  "Sales analysis",
-  "Inventory analysis",
-  "Profit and loss summary",
-  "Top customers",
-  "Show smart recommendations",
+  "قازانجی سافی ئەم مانگە چەندە؟",
+  "کۆی فرۆشتنی ئەم مانگە چەندە؟",
+  "کۆی خەرجییەکانی ئەم مانگا چەندە؟",
+  "قەرزی کڕیاران چەندە؟",
+  "قەرزی دابینکەران چەندە؟",
+  "کام کاڵا زۆرترین فرۆشتراوە؟",
+  "کام کاڵا کەمترین فرۆشتراوە؟",
+  "کام کاڵا نزیکە لە تەواوبوون؟",
+  "چەند کاڵا لە کۆگا ماوە؟",
+  "چەند پسووڵەی ئەمڕۆ تۆمارکراون؟",
+  "چەند بەکارهێنەر هەیە؟",
+  "ئەم هەفتە چەند مامەڵە کراوە؟",
+  "ئەم مانگە قازانج زیاد بووە یان کەم بووە؟",
 ];
+
+export const AI_WELCOME_KU =
+  "سڵاو — من یاریدەدەری ERPـی ڕێکم. تەنها لەسەر داتای ڕاستەقینەی کۆمپانیاکەت وەڵام دەدەمەوە. هیچ ژمارەیەک خەیاڵی یان خەملێنراو نییە. پرسیارێک بکە یان یەکێک لە پێشنیارەکان هەڵبژێرە.";

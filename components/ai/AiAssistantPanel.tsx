@@ -7,7 +7,7 @@ import {
   closeAiAssistant,
   subscribeAiAssistant,
 } from "@/lib/ai/bus";
-import { AI_SUGGESTED_PROMPTS } from "@/lib/ai/types";
+import { AI_SUGGESTED_PROMPTS, AI_WELCOME_KU } from "@/lib/ai/types";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
@@ -24,13 +24,13 @@ export default function AiAssistantPanel() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const [lines, setLines] = useState<ChatLine[]>([
     {
       id: "welcome",
       role: "assistant",
-      content:
-        "Hi — I'm your ERP AI Assistant. Ask about sales, stock, reports, or say Help.",
-      suggestions: AI_SUGGESTED_PROMPTS.slice(0, 4),
+      content: AI_WELCOME_KU,
+      suggestions: AI_SUGGESTED_PROMPTS.slice(0, 6),
     },
   ]);
   const listRef = useRef<HTMLDivElement>(null);
@@ -76,6 +76,53 @@ export default function AiAssistantPanel() {
   }, [open]);
 
   useEffect(() => {
+    if (!open || hydrated) return;
+    let cancelled = false;
+    void fetch("/api/ai/chat", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((json) => {
+        if (cancelled || !json.success || !Array.isArray(json.data?.messages)) {
+          return;
+        }
+        const history: ChatLine[] = json.data.messages.map(
+          (m: {
+            id: string;
+            role: string;
+            content: string;
+            metadata?: {
+              links?: Array<{ label: string; href: string }>;
+              suggestions?: string[];
+            };
+          }) => ({
+            id: m.id,
+            role: m.role === "user" ? "user" : "assistant",
+            content: m.content,
+            links: m.metadata?.links,
+            suggestions: m.metadata?.suggestions,
+          })
+        );
+        if (history.length) {
+          setLines([
+            {
+              id: "welcome",
+              role: "assistant",
+              content: AI_WELCOME_KU,
+              suggestions: AI_SUGGESTED_PROMPTS.slice(0, 4),
+            },
+            ...history,
+          ]);
+        }
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) setHydrated(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [open, hydrated]);
+
+  useEffect(() => {
     listRef.current?.scrollTo({
       top: listRef.current.scrollHeight,
       behavior: "smooth",
@@ -106,7 +153,7 @@ export default function AiAssistantPanel() {
           {
             id: nextLineId("e"),
             role: "assistant",
-            content: json.message || "Something went wrong.",
+            content: json.message || "هەڵەیەک ڕوویدا. دووبارە هەوڵ بدەرەوە.",
           },
         ]);
         return;
@@ -128,7 +175,7 @@ export default function AiAssistantPanel() {
         {
           id: nextLineId("e"),
           role: "assistant",
-          content: "Network error — try again.",
+          content: "هەڵەی تۆڕ — دووبارە هەوڵ بدەرەوە.",
         },
       ]);
     } finally {
@@ -150,10 +197,10 @@ export default function AiAssistantPanel() {
           <Sparkles size={18} className="text-primary" aria-hidden />
           <div className="min-w-0">
             <h2 id={titleId} className="truncate text-sm font-black">
-              AI Assistant
+              یاریدەدەری زیرەک
             </h2>
             <p className="truncate text-[11px] text-muted-foreground">
-              Natural language · Insights · Automation
+              تەنها داتای ڕاستەقینە · کوردی سۆرانی
             </p>
           </div>
         </div>
@@ -166,12 +213,12 @@ export default function AiAssistantPanel() {
               closeAiAssistant();
             }}
           >
-            Full page
+            لاپەڕە
           </Link>
           <button
             type="button"
             className="rounded-lg p-1.5 hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
-            aria-label="Close AI Assistant"
+            aria-label="داخستنی یاریدەدەری زیرەک"
             onClick={() => {
               setOpen(false);
               closeAiAssistant();
@@ -199,7 +246,7 @@ export default function AiAssistantPanel() {
           >
             {line.role === "assistant" ? (
               <p className="mb-1 flex items-center gap-1 text-[10px] font-bold text-muted-foreground">
-                <Bot size={12} aria-hidden /> Assistant
+                <Bot size={12} aria-hidden /> یاریدەدەر
               </p>
             ) : null}
             <p className="whitespace-pre-wrap">{line.content}</p>
@@ -242,14 +289,14 @@ export default function AiAssistantPanel() {
         }}
       >
         <label className="sr-only" htmlFor="rek-ai-input">
-          Ask the AI assistant
+          پرسیار لە یاریدەدەری زیرەک
         </label>
         <input
           id="rek-ai-input"
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="هەر پرسیارێک بکە…"
+          placeholder="پرسیارێک بنووسە…"
           disabled={busy}
           className="h-10 flex-1 rounded-xl border border-border bg-background px-3 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
         />
@@ -257,7 +304,7 @@ export default function AiAssistantPanel() {
           type="submit"
           size="sm"
           disabled={busy || !input.trim()}
-          aria-label="Send"
+          aria-label="ناردن"
         >
           <Send size={16} aria-hidden />
         </Button>
