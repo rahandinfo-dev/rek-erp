@@ -10,6 +10,9 @@
  * pooled (PgBouncer) endpoint can fail on advisory locks.
  */
 
+// Match the Prisma CLI, which loads .env via prisma.config.ts. Without this the
+// step would skip locally even when DATABASE_URL is configured.
+import "dotenv/config";
 import { spawnSync } from "node:child_process";
 
 const isCI = Boolean(process.env.VERCEL || process.env.CI);
