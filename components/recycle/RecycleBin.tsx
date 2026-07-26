@@ -365,20 +365,22 @@ export default function RecycleBin() {
           role="toolbar"
           aria-label="کردارە کۆمەڵایەتییەکان"
         >
-          <span className="text-sm font-bold"{selected.size} هەڵبژێردراو</span>
+          <span className="text-sm font-bold">
+            {selected.size} هەڵبژێردراو
+          </span>
           <button
             type="button"
             className="rounded-xl bg-primary px-3 py-1.5 text-sm font-bold text-primary-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35"
             onClick={() => setBulkAction("restore")}
           >
-            Restore Selected
+            گەڕاندنەوەی هەڵبژێردراوەکان
           </button>
           <button
             type="button"
             className="rounded-xl border border-destructive/40 px-3 py-1.5 text-sm font-bold text-destructive focus-visible:ring-[3px] focus-visible:ring-ring/35"
             onClick={() => setBulkAction("purge")}
           >
-            Delete Permanently
+            سڕینەوەی هەمیشەیی
           </button>
         </div>
       )}
@@ -695,7 +697,7 @@ export default function RecycleBin() {
       <ConfirmDialog
         open={bulkAction === "restore"}
         title="هەڵبژێردراوەکان بگەڕێنرێنەوە؟"
-        description={`Restore ${selected.size} record(s) from the Recycle Bin.`}
+        description={`گەڕاندنەوەی ${selected.size} تۆمار لە سەبەتەی زبڵ.`}
         confirmText="گەڕاندنەوەی هەڵبژێردراوەکان"
         cancelText="هەڵوەشاندنەوە"
         loading={busy}
@@ -706,7 +708,7 @@ export default function RecycleBin() {
       <ConfirmDialog
         open={bulkAction === "purge"}
         title="هەڵبژێردراوەکان بە هەمیشەیی بسڕدرێنەوە؟"
-        description={`Permanently delete ${selected.size} record(s). Blocked items with related history will be skipped. This cannot be undone.`}
+        description={`سڕینەوەی هەمیشەیی ${selected.size} تۆمار. بڕگەکانی پەیوەندیدار تێدەپەڕدرێن. ئەم کردارە ناگەڕێتەوە.`}
         confirmText="سڕینەوەی هەمیشەیی"
         cancelText="هەڵوەشاندنەوە"
         loading={busy}
@@ -717,8 +719,8 @@ export default function RecycleBin() {
       <ConfirmDialog
         open={bulkAction === "empty"}
         title="سەبەتەی زبڵ بەتاڵ بکرێتەوە؟"
-        description="Permanently delete all eligible items. Records with related history will be kept. This cannot be undone."
-        confirmText="Empty Bin"
+        description="هەموو بڕگە گونجاوەکان بە هەمیشەیی بسڕەرەوە. تۆمارە پەیوەندیدارەکان دەمێننەوە. ئەم کردارە ناگەڕێتەوە."
+        confirmText="بەتاڵکردنەوەی سەبەتە"
         cancelText="هەڵوەشاندنەوە"
         loading={busy}
         onConfirm={() => void doEmpty()}
