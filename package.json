@@ -5,13 +5,15 @@
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
     "postinstall": "prisma generate",
-    "prebuild": "prisma generate && node scripts/generate-pwa-icons.mjs",
+    "prebuild": "prisma generate && node scripts/db-deploy.mjs && node scripts/generate-pwa-icons.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
+    "db:deploy": "prisma migrate deploy",
+    "db:status": "prisma migrate status",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs",
     "pwa:vapid": "node -e \"const w=require('web-push');const k=w.generateVAPIDKeys();console.log('NEXT_PUBLIC_VAPID_PUBLIC_KEY='+k.publicKey);console.log('VAPID_PRIVATE_KEY='+k.privateKey);console.log('VAPID_SUBJECT=mailto:admin@rek.app');\""
   },

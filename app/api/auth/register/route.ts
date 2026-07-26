@@ -196,13 +196,28 @@ export async function POST(req: NextRequest) {
       }
     );
   } catch (error) {
-    console.error("REGISTER ERROR:");
-console.error(error);
+    // Surface Prisma's error code in the server log: a schema that has not
+    // been migrated fails here with P2021 (missing table) or P2022 (missing
+    // column), which is otherwise invisible behind the generic 500.
+    const code =
+      error && typeof error === "object" && "code" in error
+        ? String((error as { code?: unknown }).code)
+        : null;
 
-if (error instanceof Error) {
-  console.error(error.message);
-  console.error(error.stack);
-}
+    console.error("REGISTER ERROR", {
+      code,
+      message: error instanceof Error ? error.message : String(error),
+      meta:
+        error && typeof error === "object" && "meta" in error
+          ? (error as { meta?: unknown }).meta
+          : undefined,
+    });
+
+    if (code === "P2021" || code === "P2022") {
+      console.error(
+        "REGISTER ERROR: database schema is out of date — run `prisma migrate deploy`."
+      );
+    }
 
     return NextResponse.json(
       {
