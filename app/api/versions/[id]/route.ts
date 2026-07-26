@@ -19,7 +19,7 @@ export async function GET(_req: NextRequest, { params }: Props) {
     const row = await getVersionById(user.companyId, id);
     if (!row) {
       return NextResponse.json(
-        { success: false, message: "Not found" },
+        { success: false, message: "نەدۆزرایەوە" },
         { status: 404 }
       );
     }

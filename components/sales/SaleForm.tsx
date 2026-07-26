@@ -200,7 +200,7 @@ export default function SaleForm() {
             discardDraft();
           }
         } catch {
-          /* ignore â€” user can still create manually */
+          /* ignore — user can still create manually */
         }
       }
     }
@@ -320,7 +320,7 @@ export default function SaleForm() {
 
       appToast.saleCompleted(
         result.data?.invoiceNo
-          ? `Ù¾Ø³ÙˆÙˆÙ„Û•ÛŒ ${result.data.invoiceNo} ØªÛ†Ù…Ø§Ø±Ú©Ø±Ø§.`
+          ? `پسوولەی ${result.data.invoiceNo} تۆمارکرا.`
           : undefined
       );
       emitNotificationsChanged({ reason: "mutation" });
@@ -338,7 +338,7 @@ export default function SaleForm() {
       } else if (saleId) {
         markCreated(
           `/dashboard/sales/${saleId}`,
-          invoiceNo ? `Sale ${invoiceNo}` : "New Sale",
+          invoiceNo ? `Sale ${invoiceNo}` : "فرۆشتنی نوێ",
           "sales"
         );
       }
@@ -405,15 +405,15 @@ export default function SaleForm() {
       <section className="rek-card grid gap-4 p-4 sm:grid-cols-3 sm:p-6">
         <div>
           <label className="mb-1.5 block text-sm font-bold">
-            Ú©Ú•ÛŒØ§Ø±{" "}
-            <span className="font-normal text-muted-foreground">(Ø¦Ø§Ø±Û•Ø²ÙˆÙˆÙ…Û•Ù†Ø¯Ø§Ù†Û•)</span>
+            کڕیار{" "}
+            <span className="font-normal text-muted-foreground">(ئارەزوومەندانە)</span>
           </label>
           <select
             value={customerId}
             onChange={(e) => setCustomerId(e.target.value)}
             className={inputClass}
           >
-            <option value="">Ú©Ú•ÛŒØ§Ø±ÛŒ Ú¯Ø´ØªÛŒ</option>
+            <option value="">کڕیاری گشتی</option>
             {customers.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -422,14 +422,14 @@ export default function SaleForm() {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">Ú©Û†Ú¯Ø§ *</label>
+          <label className="mb-1.5 block text-sm font-bold">کۆگا *</label>
           <select
             value={warehouseId}
             onChange={(e) => setWarehouseId(e.target.value)}
             className={inputClass}
             required
           >
-            <option value="">Ù‡Û•ÚµØ¨Ú˜ÛŽØ±Û•</option>
+            <option value="">هەڵبژێرە</option>
             {warehouses.map((w) => (
               <option key={w.id} value={w.id}>
                 {w.name}
@@ -438,7 +438,7 @@ export default function SaleForm() {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">Ø¨Û•Ø±ÙˆØ§Ø±ÛŒ Ù¾Ø³ÙˆÙˆÙ„Û•</label>
+          <label className="mb-1.5 block text-sm font-bold">بەرواری پسوولە</label>
           <input
             type="date"
             value={saleDate}
@@ -451,20 +451,20 @@ export default function SaleForm() {
 
       <section className="rek-card space-y-4 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-lg font-black text-foreground">Ø¨Û•Ø±Ù‡Û•Ù…Û•Ú©Ø§Ù†</h3>
+          <h3 className="text-lg font-black text-foreground">بەرهەمەکان</h3>
           <button
             type="button"
             onClick={() => setItems((prev) => [...prev, blankLine()])}
             className="inline-flex h-10 items-center gap-2 rounded-xl border border-border px-3 text-sm font-bold"
           >
             <Plus size={16} />
-            Ø²ÛŒØ§Ø¯Ú©Ø±Ø¯Ù†ÛŒ Ø¨Û•Ø±Ù‡Û•Ù…
+            زیادکردنی بەرهەم
           </button>
         </div>
 
         <div className="rounded-2xl border border-border bg-muted/30 p-3">
           <p className="mb-2 text-xs font-bold text-muted-foreground">
-            Ú¯Û•Ú•Ø§Ù† / Ø³Ú©Ø§Ù† / ÙˆÛŽÙ†Û•ÛŒ Ø¨Ø§Ø±Ú©Û†Ø¯ â€” Ø®Û†Ú©Ø§Ø± Ø²ÛŒØ§Ø¯ Ø¯Û•Ø¨ÛŽØª
+            گەڕان / سکان / وێنەی بارکۆد — خۆکار زیاد دەبێت
           </p>
           <BarcodeScanner
             compact
@@ -475,7 +475,7 @@ export default function SaleForm() {
             onNotFound={(code) =>
               appToast.warning(
                 "بەرهەم نەدۆزرایەوە",
-                `${code} â€” Ù„Û• Ø¨Û•Ø±Ù‡Û•Ù…Û•Ú©Ø§Ù† Ø²ÛŒØ§Ø¯ Ø¨Ú©Û•`
+                `${code} — لە بەرهەمەکان زیاد بکە`
               )
             }
             placeholder="ناو، SKU یان بارکۆد…"
@@ -496,7 +496,7 @@ export default function SaleForm() {
               >
                 <div className="sm:col-span-4">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    Ø¨Û•Ø±Ù‡Û•Ù…
+                    بەرهەم
                   </label>
                   <ProductPicker
                     products={products}
@@ -506,13 +506,13 @@ export default function SaleForm() {
                   />
                   {available != null ? (
                     <p className="mt-1 text-[11px] text-muted-foreground">
-                      Ø¨Û•Ø±Ø¯Û•Ø³Øª: {available}
+                      بەردەست: {available}
                     </p>
                   ) : null}
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    Ø¨Ú•
+                    بڕ
                   </label>
                   <input
                     type="number"
@@ -527,7 +527,7 @@ export default function SaleForm() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    Ù†Ø±Ø®
+                    نرخ
                   </label>
                   <input
                     type="number"
@@ -542,7 +542,7 @@ export default function SaleForm() {
                 </div>
                 <div className="sm:col-span-1">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    Ø¯Ø±Ø§Ùˆ
+                    دراو
                   </label>
                   <select
                     value={item.currency}
@@ -559,7 +559,7 @@ export default function SaleForm() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    Ú©Û†
+                    کۆ
                   </label>
                   <p className="flex h-11 items-center font-black tabular-nums">
                     {formatNumber(item.total)} {item.currency}
@@ -601,7 +601,7 @@ export default function SaleForm() {
 
       <section className="rek-card grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
         <div>
-          <label className="mb-1.5 block text-sm font-bold">Ø¯Ø§Ø´Ú©Ø§Ù†Ø¯Ù†</label>
+          <label className="mb-1.5 block text-sm font-bold">داشکاندن</label>
           <input
             type="number"
             min={0}
@@ -611,7 +611,7 @@ export default function SaleForm() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">Ø¨Ø§Ø¬</label>
+          <label className="mb-1.5 block text-sm font-bold">باج</label>
           <input
             type="number"
             min={0}
@@ -621,7 +621,7 @@ export default function SaleForm() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">Ø´ÛŽÙˆØ§Ø²ÛŒ Ù¾Ø§Ø±Û•Ø¯Ø§Ù†</label>
+          <label className="mb-1.5 block text-sm font-bold">شێوازی پارەدان</label>
           <select
             value={paymentMethod}
             onChange={(e) =>
@@ -637,21 +637,21 @@ export default function SaleForm() {
           </select>
         </div>
         <div className="rounded-2xl bg-muted/50 p-4">
-          <p className="text-xs font-bold text-muted-foreground">Ú©Û†ÛŒ Ú¯Ø´ØªÛŒ</p>
+          <p className="text-xs font-bold text-muted-foreground">کۆی گشتی</p>
           <p className="text-2xl font-black tabular-nums text-foreground">
             {formatNumber(total)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Ú˜ÛŽØ±Ú©Û† {formatNumber(subtotal)} âˆ’ Ø¯Ø§Ø´Ú©Ø§Ù†Ø¯Ù† {formatNumber(discount)}{" "}
-            + Ø¨Ø§Ø¬ {formatNumber(tax)}
+            ژێرکۆ {formatNumber(subtotal)} − داشکاندن {formatNumber(discount)}{" "}
+            + باج {formatNumber(tax)}
           </p>
         </div>
       </section>
 
       <section className="rek-card p-4 sm:p-6">
         <label className="mb-1.5 block text-sm font-bold">
-          ØªÛŽØ¨ÛŒÙ†ÛŒ{" "}
-          <span className="font-normal text-muted-foreground">(Ø¦Ø§Ø±Û•Ø²ÙˆÙˆÙ…Û•Ù†Ø¯Ø§Ù†Û•)</span>
+          تێبینی{" "}
+          <span className="font-normal text-muted-foreground">(ئارەزوومەندانە)</span>
         </label>
         <textarea
           value={notes}
@@ -669,7 +669,7 @@ export default function SaleForm() {
           onClick={() => void submit("new")}
           className="h-11 rounded-2xl border border-border px-4 text-sm font-bold disabled:opacity-50"
         >
-          Ù¾Ø§Ø´Û•Ú©Û•ÙˆØª Ùˆ Ù†ÙˆÛŽ
+          پاشەکەوت و نوێ
         </button>
         <button
           type="button"
@@ -678,7 +678,7 @@ export default function SaleForm() {
           className="inline-flex h-11 items-center gap-2 rounded-2xl border border-border px-4 text-sm font-bold disabled:opacity-50"
         >
           <Printer size={16} />
-          Ù¾Ø§Ø´Û•Ú©Û•ÙˆØª Ùˆ Ú†Ø§Ù¾
+          پاشەکەوت و چاپ
         </button>
         <button
           type="submit"

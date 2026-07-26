@@ -279,7 +279,7 @@ export default function PurchaseForm() {
       if (id) {
         markCreated(
           `/dashboard/purchases/${id}`,
-          invoiceNo ? `Purchase ${invoiceNo}` : "New Purchase",
+          invoiceNo ? `Purchase ${invoiceNo}` : "کڕینی نوێ",
           "purchases"
         );
       }

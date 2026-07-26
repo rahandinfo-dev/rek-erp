@@ -86,11 +86,11 @@ export default function RecentlyViewedPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="Recently Viewed"
+        title="دوایین بینراوەکان"
         description="Continue where you left off — search, filter, and pin anything."
         breadcrumb={[
-          { label: "Dashboard", href: "/dashboard" },
-          { label: "Recently Viewed" },
+          { label: "داشبۆرد", href: "/dashboard" },
+          { label: "دوایین بینراوەکان" },
         ]}
       />
 

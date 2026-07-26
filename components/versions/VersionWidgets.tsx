@@ -96,7 +96,7 @@ export function RecentChangesWidget() {
               </span>
               <span className="mt-0.5 block text-muted-foreground">
                 {VERSION_ACTION_LABELS[row.action] || row.action} ·{" "}
-                {row.userName || "System"}
+                {row.userName || "سیستەم"}
               </span>
             </Link>
           </li>

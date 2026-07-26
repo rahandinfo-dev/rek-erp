@@ -101,10 +101,10 @@ export default function ActivityFeed({
           </span>
           <div>
             <h2 className="text-lg font-black text-[#1f1218] sm:text-xl">
-              Ú†Ø§Ù„Ø§Ú©ÛŒ Ù†ÙˆÛŽ
+              چالاکی نوێ
             </h2>
             <p className="text-xs text-slate-500">
-              Ù„Û• Ø¯Ø§ØªØ§Ø¨Û•ÛŒØ³ÛŒ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©Ø§Ù† Â· Ù†ÙˆÛŽØªØ±ÛŒÙ† ÛŒÛ•Ú©Û•Ù…
+              لە داتابەیسی ئاگادارییەکان · نوێترین یەکەم
             </p>
           </div>
         </div>
@@ -127,7 +127,7 @@ export default function ActivityFeed({
             href="/dashboard/notifications"
             className="text-xs font-bold text-[#FFAE42] hover:underline"
           >
-            Ù‡Û•Ù…ÙˆÙˆ
+            هەموو
           </Link>
         </div>
       </div>
@@ -137,10 +137,10 @@ export default function ActivityFeed({
           <div className="px-5 py-12 text-center">
             <Activity className="mx-auto text-[#FFAE42]/35" size={32} />
             <p className="mt-3 font-bold text-slate-600">
-              Ù‡ÛŽØ´ØªØ§ Ú†Ø§Ù„Ø§Ú©ÛŒ Ù†ÛŒÛŒÛ•
+              هێشتا چالاکی نییە
             </p>
             <p className="mt-1 text-sm text-slate-400">
-              Ú©Ø±Ø¯Ø§Ø±Û•Ú©Ø§Ù† Ù„ÛŽØ±Û• Ø¯Û•Ø±Ø¯Û•Ú©Û•ÙˆÙ†.
+              کردارەکان لێرە دەردەکەون.
             </p>
           </div>
         ) : (

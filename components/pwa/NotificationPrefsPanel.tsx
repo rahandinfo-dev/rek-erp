@@ -113,7 +113,7 @@ export default function NotificationPrefsPanel({
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "Failed to save preferences");
+        appToast.error(json.message || "پاشەکەوتکردنی هەڵبژاردەکان سەرنەکەوت");
         return;
       }
       setPrefs((prev) => ({

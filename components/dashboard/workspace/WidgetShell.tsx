@@ -116,9 +116,9 @@ export default function WidgetShell({
           a.click();
         }
       }
-      appToast.success("Exported");
+      appToast.success("هەناردە کرا");
     } catch {
-      appToast.error("Export failed");
+      appToast.error("هەناردەکردن سەرنەکەوت");
     }
     setMenu(false);
   }
@@ -229,7 +229,7 @@ export default function WidgetShell({
                 }}
               >
                 {instance.pinned ? <PinOff size={12} /> : <Pin size={12} />}
-                {instance.pinned ? "Unpin" : "Pin"}
+                {instance.pinned ? "لابردنی هەڵواسین" : "هەڵواسین"}
               </button>
               <button
                 type="button"
@@ -287,7 +287,7 @@ export default function WidgetShell({
                 onClick={() => {
                   toggleHidden(instance.id);
                   setMenu(false);
-                  appToast.success("Widget hidden");
+                  appToast.success("ویجێت شاردرایەوە");
                 }}
               >
                 <X size={12} /> Hide
@@ -340,7 +340,7 @@ export default function WidgetShell({
               >
                 {REFRESH.map((r) => (
                   <option key={r} value={r}>
-                    {r === 0 ? "Manual only" : `${r}s`}
+                    {r === 0 ? "تەنها دەستی" : `${r}s`}
                   </option>
                 ))}
               </select>

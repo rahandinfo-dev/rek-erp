@@ -139,7 +139,7 @@ function CustomizeBody({
                 )}
                 onClick={() => togglePin(id)}
               >
-                {pinned ? "Pinned" : "Pin"}
+                {pinned ? "Pinned" : "هەڵواسین"}
               </button>
               <button
                 type="button"

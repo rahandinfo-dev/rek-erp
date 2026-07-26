@@ -35,14 +35,14 @@ export async function cancelBulkJob(jobId: string): Promise<BulkJobSummary> {
 export async function undoBulkJob(jobId: string) {
   const res = await fetch(`/api/bulk/jobs/${jobId}/undo`, { method: "POST" });
   const json = await res.json();
-  if (!json.success) throw new Error(json.message || "Undo failed");
+  if (!json.success) throw new Error(json.message || "پاشگەزبوونەوە سەرنەکەوت");
   return json.data;
 }
 
 export async function getBulkJob(jobId: string): Promise<BulkJobSummary> {
   const res = await fetch(`/api/bulk/jobs/${jobId}`, { cache: "no-store" });
   const json = await res.json();
-  if (!json.success) throw new Error(json.message || "Not found");
+  if (!json.success) throw new Error(json.message || "نەدۆزرایەوە");
   return json.data as BulkJobSummary;
 }
 

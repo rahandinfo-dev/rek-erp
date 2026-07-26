@@ -62,7 +62,7 @@ async function restoreOne(
     return {
       ok: false,
       id: entryId,
-      message: json.message || "Restore failed",
+      message: json.message || "گەڕاندنەوە سەرنەکەوت",
     };
   }
 
@@ -114,7 +114,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: ok,
       data: { results },
-      message: ok ? "Restored" : "Some restores failed",
+      message: ok ? "گەڕێندرایەوە" : "Some restores failed",
     });
   } catch (error) {
     console.error("RECYCLE RESTORE ERROR:", error);

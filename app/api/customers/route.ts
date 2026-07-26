@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
       category: "CUSTOMER",
       priority: "NORMAL",
       href: `/dashboard/customers/${customer.id}/edit`,
-      entityType: "Customer",
+      entityType: "کڕیار",
       entityId: customer.id,
     });
 

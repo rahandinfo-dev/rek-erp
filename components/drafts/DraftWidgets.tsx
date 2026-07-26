@@ -262,7 +262,7 @@ export function DraftStatisticsWidget() {
         ["Recovered", stats.recovered],
         ["Completed", stats.completed],
         ["Archived", stats.archived],
-        ["Failed", stats.failed],
+        ["سەرنەکەوت", stats.failed],
       ]
     : [];
 

@@ -129,7 +129,7 @@ export function BulkStatisticsWidget() {
           <Stat label="This week" value={stats.week} />
           <Stat label="Records" value={stats.recordsTouched} />
           <Stat label="Succeeded" value={stats.recordsSucceeded} />
-          <Stat label="Failed" value={stats.recordsFailed} />
+          <Stat label="سەرنەکەوت" value={stats.recordsFailed} />
         </div>
       )}
     </section>

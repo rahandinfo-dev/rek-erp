@@ -77,13 +77,13 @@ export function timeAgoKu(date: Date | string): string {
 
   if (seconds < 60) return "ئێستا";
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} Ø®ÙˆÙ„Û•Ú© Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
+  if (minutes < 60) return `${minutes} خولەک پێش ئێستا`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} Ú©Ø§ØªÚ˜Ù…ÛŽØ± Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
+  if (hours < 24) return `${hours} کاتژمێر پێش ئێستا`;
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} Ú•Û†Ú˜ Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
+  if (days < 30) return `${days} ڕۆژ پێش ئێستا`;
   const months = Math.floor(days / 30);
-  if (months < 12) return `${months} Ù…Ø§Ù†Ú¯ Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
+  if (months < 12) return `${months} مانگ پێش ئێستا`;
   const years = Math.floor(months / 12);
-  return `${years} Ø³Ø§Úµ Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
+  return `${years} ساڵ پێش ئێستا`;
 }

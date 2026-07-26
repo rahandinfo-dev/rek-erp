@@ -306,7 +306,7 @@ export function QuickActionsProvider({
         if (e.key === "Enter") fire("view");
       } else if (mod && key === "d") fire("duplicate");
       else if (mod && e.shiftKey && key === "c") fire("copy_link");
-      else if (e.key === "Delete" || e.key === "Backspace") {
+      else if (e.key === "سڕینەوە" || e.key === "Backspace") {
         // Prefer toolbar data-keyboard-delete; fallback to focused
         const btn = document.querySelector<HTMLButtonElement>(
           "[data-keyboard-delete]"
@@ -378,8 +378,8 @@ export function QuickActionsProvider({
         open={Boolean(pending)}
         title={pending?.title || ""}
         description={pending?.description || ""}
-        confirmText="Confirm"
-        cancelText="Cancel"
+        confirmText="پشتڕاستکردنەوە"
+        cancelText="هەڵوەشاندنەوە"
         loading={busy}
         onCancel={() => setPending(null)}
         onConfirm={() => {

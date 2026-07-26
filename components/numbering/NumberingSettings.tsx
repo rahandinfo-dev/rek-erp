@@ -88,7 +88,7 @@ export default function NumberingSettings() {
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "Save failed");
+        appToast.error(json.message || "پاشەکەوت سەرنەکەوت");
         return;
       }
       setRules(json.data.rules || rules);
@@ -96,7 +96,7 @@ export default function NumberingSettings() {
         resetNow ? "Counter reset & settings saved" : "Numbering settings saved"
       );
     } catch {
-      appToast.error("Save failed");
+      appToast.error("پاشەکەوت سەرنەکەوت");
     } finally {
       setSaving(false);
     }

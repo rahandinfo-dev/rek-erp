@@ -75,7 +75,7 @@ export async function softDeleteWithUndo(
   try {
     const deleted = await httpDelete(input.deleteUrl);
     if (!deleted.ok) {
-      appToast.error(deleted.message || "Delete failed.");
+      appToast.error(deleted.message || "سڕینەوە سەرنەکەوت.");
       return { ok: false, message: deleted.message };
     }
 
@@ -92,7 +92,7 @@ export async function softDeleteWithUndo(
         input.message ||
         deleted.message ||
         "Moved to recovery — Undo available for 30 seconds.",
-      undoLabel: input.undoLabel || "Undo",
+      undoLabel: input.undoLabel || "پاشگەزبوونەوە",
       durationMs,
       entityType: input.entityType,
       entityId: input.entityId,
@@ -120,7 +120,7 @@ export async function softDeleteWithUndo(
 
     return { ok: true, message: deleted.message };
   } catch {
-    appToast.error("Unable to complete action.", "Try again.");
+    appToast.error("نەتوانرا کردارەکە تەواو بکرێت.", "دووبارە هەوڵبدەرەوە.");
     return { ok: false };
   }
 }

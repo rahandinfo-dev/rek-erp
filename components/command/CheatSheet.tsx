@@ -13,28 +13,28 @@ import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 
 const LABELS: Record<string, { title: string; category: string }> = {
-  "global-search": { title: "Global Search", category: "Searching" },
-  "command-palette": { title: "Command Palette", category: "System" },
-  "cheat-sheet": { title: "Shortcut Cheat Sheet", category: "System" },
-  "ai-assistant": { title: "AI Assistant", category: "System" },
-  "create-new": { title: "Create New Record", category: "Creation" },
-  "manual-save": { title: "Manual Save", category: "Editing" },
-  undo: { title: "Undo", category: "Editing" },
-  redo: { title: "Redo", category: "Editing" },
-  print: { title: "Print", category: "System" },
-  "page-search": { title: "Search Current Page", category: "Searching" },
-  refresh: { title: "Refresh Module", category: "System" },
-  duplicate: { title: "Duplicate Record", category: "Editing" },
+  "global-search": { title: "گەڕانی گشتی", category: "Searching" },
+  "command-palette": { title: "پەلێتی فەرمان", category: "سیستەم" },
+  "cheat-sheet": { title: "Shortcut Cheat Sheet", category: "سیستەم" },
+  "ai-assistant": { title: "یاریدەدەری زیرەک", category: "سیستەم" },
+  "create-new": { title: "Create New Record", category: "دروستکردن" },
+  "manual-save": { title: "پاشەکەوتی دەستی", category: "Editing" },
+  undo: { title: "پاشگەزبوونەوە", category: "Editing" },
+  redo: { title: "دووبارەکردنەوە", category: "Editing" },
+  print: { title: "چاپکردن", category: "سیستەم" },
+  "page-search": { title: "گەڕان لە پەڕەی ئێستا", category: "Searching" },
+  refresh: { title: "Refresh Module", category: "سیستەم" },
+  duplicate: { title: "دووبارەکردنەوەی تۆمار", category: "Editing" },
   "delete-selected": { title: "Delete Selected", category: "Editing" },
-  "nav-1": { title: "Dashboard", category: "Navigation" },
-  "nav-2": { title: "Products", category: "Navigation" },
-  "nav-3": { title: "Sales", category: "Navigation" },
-  "nav-4": { title: "Purchases", category: "Navigation" },
-  "nav-5": { title: "Inventory", category: "Navigation" },
-  "nav-6": { title: "Customers", category: "Navigation" },
-  "nav-7": { title: "Suppliers", category: "Navigation" },
-  "nav-8": { title: "Reports", category: "Navigation" },
-  "nav-9": { title: "Settings", category: "Navigation" },
+  "nav-1": { title: "داشبۆرد", category: "گەشتکردن" },
+  "nav-2": { title: "بەرهەمەکان", category: "گەشتکردن" },
+  "nav-3": { title: "فرۆشتن", category: "گەشتکردن" },
+  "nav-4": { title: "کڕین", category: "گەشتکردن" },
+  "nav-5": { title: "ئینڤێنتۆری", category: "گەشتکردن" },
+  "nav-6": { title: "کڕیارەکان", category: "گەشتکردن" },
+  "nav-7": { title: "دابینکەران", category: "گەشتکردن" },
+  "nav-8": { title: "ڕاپۆرتەکان", category: "گەشتکردن" },
+  "nav-9": { title: "ڕێکخستنەکان", category: "گەشتکردن" },
 };
 
 export default function CheatSheetHost() {
@@ -112,7 +112,7 @@ export default function CheatSheetHost() {
       .map(([id, binding]) => {
         const meta = LABELS[id] || {
           title: id,
-          category: "System",
+          category: "سیستەم",
         };
         const cmd = ALL_STATIC_COMMANDS.find((c) => c.shortcutId === id);
         return {
@@ -153,7 +153,7 @@ export default function CheatSheetHost() {
       className="fixed inset-0 z-[95] flex items-start justify-center px-3 pt-[8vh]"
       role="dialog"
       aria-modal="true"
-      aria-label="Keyboard shortcuts"
+      aria-label="قەدبڕەکانی تەختەکلیل"
     >
       <button
         type="button"
@@ -169,7 +169,7 @@ export default function CheatSheetHost() {
             type="button"
             className="ms-auto rounded-lg p-1.5 text-muted-foreground hover:bg-muted"
             onClick={() => setOpen(false)}
-            aria-label="Close"
+            aria-label="داخستن"
           >
             <X size={16} />
           </button>
@@ -184,7 +184,7 @@ export default function CheatSheetHost() {
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search shortcuts…"
+              placeholder="گەڕان لە قەدبڕەکان…"
               className="h-9 w-full rounded-xl border-0 bg-muted/70 pe-3 ps-8 text-sm outline-none"
             />
           </div>
@@ -195,7 +195,7 @@ export default function CheatSheetHost() {
           >
             {categories.map((c) => (
               <option key={c} value={c}>
-                {c === "all" ? "All categories" : c}
+                {c === "all" ? "هەموو پۆلەکان" : c}
               </option>
             ))}
           </select>
@@ -240,7 +240,7 @@ export default function CheatSheetHost() {
                 className="text-[10px] font-bold text-muted-foreground"
                 onClick={() => disableBinding(r.id, !r.disabled)}
               >
-                {r.disabled ? "Enable" : "Disable"}
+                {r.disabled ? "چالاککردن" : "ناچالاککردن"}
               </button>
             </li>
           ))}

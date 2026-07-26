@@ -125,7 +125,7 @@ export default async function InvoiceDetailPage({
       />
 
       <RecordVersionHistorySection
-        entityType="Invoice"
+        entityType="پسوولە"
         entityId={invoice.id}
         recordLabel={invoice.invoiceNo}
       />

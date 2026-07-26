@@ -14,7 +14,7 @@ export function parseDevice(userAgent: string | null | undefined): string {
     return "Mobile";
   }
   if (/Windows|Macintosh|Linux|CrOS|X11/i.test(ua)) return "Desktop";
-  return "Other";
+  return "هیتر";
 }
 
 export function getRequestAuditMeta(

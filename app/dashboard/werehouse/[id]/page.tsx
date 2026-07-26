@@ -84,7 +84,7 @@ export default async function EditWerehousePage({ params }: PageProps) {
       <EditWerehouseForm werehouse={werehouse} />
 
       <RecordVersionHistorySection
-        entityType="Warehouse"
+        entityType="کۆگا"
         entityId={werehouse.id}
         recordLabel={werehouse.name}
       />

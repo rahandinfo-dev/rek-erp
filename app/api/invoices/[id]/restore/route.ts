@@ -76,7 +76,7 @@ export async function POST(req: NextRequest, { params }: Props) {
       userId,
       module: "INVOICE",
       action: "RESTORE",
-      entityType: "Invoice",
+      entityType: "پسوولە",
       entityId: invoice.id,
       summary: `Invoice undo void: ${invoice.invoiceNo}`,
       req,

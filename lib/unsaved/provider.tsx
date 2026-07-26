@@ -636,7 +636,7 @@ export function SaveGuardProvider({
             })
           );
           setConflict(null);
-          appToast.success("Merged changes applied");
+          appToast.success("گۆڕانکارییە تێکەڵکراوەکان جێبەجێکران");
         }}
         onCompare={() => {
           setCompareOpen(true);

@@ -196,7 +196,7 @@ export default function BulkActionBar({
           className
         )}
         role="toolbar"
-        aria-label="Bulk actions"
+        aria-label="کردارە کۆمەڵایەتییەکان"
       >
         <div className="flex flex-wrap items-center gap-2 text-sm">
           <span className="font-black">{selectedIds.length} selected</span>
@@ -234,7 +234,7 @@ export default function BulkActionBar({
           {actions.includes("delete") && (
             <ActionBtn
               icon={Trash2}
-              label="Delete"
+              label="سڕینەوە"
               danger
               onClick={() => requestAction("delete")}
             />
@@ -242,21 +242,21 @@ export default function BulkActionBar({
           {actions.includes("restore") && (
             <ActionBtn
               icon={RotateCcw}
-              label="Restore"
+              label="گەڕاندنەوە"
               onClick={() => requestAction("restore")}
             />
           )}
           {actions.includes("archive") && (
             <ActionBtn
               icon={Archive}
-              label="Archive"
+              label="ئەرشیفکردن"
               onClick={() => requestAction("archive")}
             />
           )}
           {actions.includes("duplicate") && (
             <ActionBtn
               icon={Copy}
-              label="Duplicate"
+              label="دووبارەکردنەوە"
               onClick={() => requestAction("duplicate")}
             />
           )}
@@ -277,21 +277,21 @@ export default function BulkActionBar({
           {actions.includes("print") && (
             <ActionBtn
               icon={Printer}
-              label="Print"
+              label="چاپکردن"
               onClick={() => requestAction("print")}
             />
           )}
           {actions.includes("edit") && (
             <ActionBtn
               icon={Pencil}
-              label="Edit"
+              label="دەستکاری"
               onClick={() => requestAction("edit")}
             />
           )}
           {actions.includes("change_status") && (
             <ActionBtn
               icon={CheckSquare}
-              label="Status"
+              label="دۆخ"
               onClick={() => requestAction("change_status")}
             />
           )}
@@ -305,7 +305,7 @@ export default function BulkActionBar({
           {actions.includes("assign_warehouse") && (
             <ActionBtn
               icon={Warehouse}
-              label="Warehouse"
+              label="کۆگا"
               onClick={() => requestAction("assign_warehouse")}
             />
           )}
@@ -327,8 +327,8 @@ export default function BulkActionBar({
             ? `This will affect ${selectedIds.length} record(s). Soft-deleted items go to the Recycle Bin when supported. Continue?`
             : `Apply to ${selectedIds.length} selected record(s)?`
         }
-        confirmText="Continue"
-        cancelText="Cancel"
+        confirmText="بەردەوامبوون"
+        cancelText="هەڵوەشاندنەوە"
         loading={busy}
         onConfirm={confirmPending}
         onCancel={() => setPendingAction(null)}
@@ -478,7 +478,7 @@ export default function BulkActionBar({
               onComplete?.();
             })
             .catch((e) =>
-              appToast.error(e instanceof Error ? e.message : "Undo failed")
+              appToast.error(e instanceof Error ? e.message : "پاشگەزبوونەوە سەرنەکەوت")
             )
             .finally(() => setUndoing(false));
         }}

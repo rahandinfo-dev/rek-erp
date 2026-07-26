@@ -34,15 +34,15 @@ export async function relatedForEntity(
           db.invoice.count({ where: { companyId, customerId: entityId } }),
         ]);
         return [
-          { label: "Sales", count: sales },
-          { label: "Invoices", count: invoices },
+          { label: "فرۆشتن", count: sales },
+          { label: "پسوولەکان", count: invoices },
         ].filter((r) => r.count > 0);
       }
       case "suppliers": {
         const purchases = await db.purchase.count({
           where: { companyId, supplierId: entityId },
         });
-        return [{ label: "Purchases", count: purchases }].filter(
+        return [{ label: "کڕین", count: purchases }].filter(
           (r) => r.count > 0
         );
       }
@@ -56,15 +56,15 @@ export async function relatedForEntity(
         ]);
         return [
           { label: "Stock rows", count: stocks },
-          { label: "Sales", count: sales },
-          { label: "Purchases", count: purchases },
+          { label: "فرۆشتن", count: sales },
+          { label: "کڕین", count: purchases },
         ].filter((r) => r.count > 0);
       }
       case "categories": {
         const suppliers = await db.supplier.count({
           where: { companyId, categoryId: entityId },
         });
-        return [{ label: "Suppliers", count: suppliers }].filter(
+        return [{ label: "دابینکەران", count: suppliers }].filter(
           (r) => r.count > 0
         );
       }
@@ -72,7 +72,7 @@ export async function relatedForEntity(
         const products = await db.product.count({
           where: { companyId, unitId: entityId },
         });
-        return [{ label: "Products", count: products }].filter(
+        return [{ label: "بەرهەمەکان", count: products }].filter(
           (r) => r.count > 0
         );
       }
@@ -80,7 +80,7 @@ export async function relatedForEntity(
         const invoices = await db.invoice.count({
           where: { companyId, saleId: entityId },
         });
-        return [{ label: "Invoices", count: invoices }].filter(
+        return [{ label: "پسوولەکان", count: invoices }].filter(
           (r) => r.count > 0
         );
       }

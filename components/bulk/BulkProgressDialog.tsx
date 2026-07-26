@@ -64,7 +64,7 @@ export default function BulkProgressDialog({
             </p>
             <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
               <Stat label="Completed" value={job.successCount} />
-              <Stat label="Failed" value={job.failedCount} />
+              <Stat label="سەرنەکەوت" value={job.failedCount} />
               <Stat label="Skipped" value={job.skippedCount} />
               <Stat label="Cancelled" value={job.cancelledCount} />
             </dl>
@@ -106,7 +106,7 @@ export default function BulkProgressDialog({
                 disabled={undoing}
                 onClick={onUndo}
               >
-                {undoing ? "Undoing…" : "Undo"}
+                {undoing ? "Undoing…" : "پاشگەزبوونەوە"}
               </Button>
             )}
             {done && (

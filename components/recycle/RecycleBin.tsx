@@ -61,7 +61,7 @@ export default function RecycleBin() {
         if (module !== "all") sp.set("module", module);
         const res = await fetch(`/api/recycle-bin?${sp}`, { cache: "no-store" });
         const json = await res.json();
-        if (!json.success) throw new Error(json.message || "Failed");
+        if (!json.success) throw new Error(json.message || "سەرنەکەوت");
         const next: RecycleBinItem[] = json.data.items || [];
         setItems((prev) => (append ? [...prev, ...next] : next));
         setTotal(json.data.total || 0);
@@ -69,7 +69,7 @@ export default function RecycleBin() {
         if (json.data.retentionDays) setRetentionDays(json.data.retentionDays);
         setPage(pageNum);
       } catch {
-        appToast.error("Could not load Recycle Bin.");
+        appToast.error("نەتوانرا سەبەتەی زبڵ بار بکرێت.");
       } finally {
         setLoading(false);
         setLoadingMore(false);
@@ -128,14 +128,14 @@ export default function RecycleBin() {
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "Restore failed");
+        appToast.error(json.message || "گەڕاندنەوە سەرنەکەوت");
         return;
       }
-      appToast.success("Restored successfully");
+      appToast.success("بە سەرکەوتوویی گەڕێندرایەوە");
       setSelected(new Set());
       await load(1, false);
     } catch {
-      appToast.error("Restore failed");
+      appToast.error("گەڕاندنەوە سەرنەکەوت");
     } finally {
       setBusy(false);
       setRestoreId(null);
@@ -153,14 +153,14 @@ export default function RecycleBin() {
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "Permanent delete failed");
+        appToast.error(json.message || "سڕینەوەی هەمیشەیی سەرنەکەوت");
         return;
       }
-      appToast.success("Permanently deleted");
+      appToast.success("بە هەمیشەیی سڕایەوە");
       setSelected(new Set());
       await load(1, false);
     } catch {
-      appToast.error("Permanent delete failed");
+      appToast.error("سڕینەوەی هەمیشەیی سەرنەکەوت");
     } finally {
       setBusy(false);
       setPurgeId(null);
@@ -179,7 +179,7 @@ export default function RecycleBin() {
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "Empty failed");
+        appToast.error(json.message || "بەتاڵکردنەوە سەرنەکەوت");
         return;
       }
       appToast.success(
@@ -188,7 +188,7 @@ export default function RecycleBin() {
       setSelected(new Set());
       await load(1, false);
     } catch {
-      appToast.error("Empty failed");
+      appToast.error("بەتاڵکردنەوە سەرنەکەوت");
     } finally {
       setBusy(false);
       setBulkAction(null);
@@ -204,14 +204,14 @@ export default function RecycleBin() {
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "Could not save retention");
+        appToast.error(json.message || "نەتوانرا ماوەی پاراستن پاشەکەوت بکرێت");
         return;
       }
       setRetentionDays(days);
       appToast.success(`Retention set to ${days} days`);
       await load(1, false);
     } catch {
-      appToast.error("Could not save retention");
+      appToast.error("نەتوانرا ماوەی پاراستن پاشەکەوت بکرێت");
     }
   };
 
@@ -222,22 +222,22 @@ export default function RecycleBin() {
         : `/dashboard/recycle-bin?id=${item.id}`;
     try {
       await navigator.clipboard.writeText(href);
-      appToast.success("Link copied");
+      appToast.success("بەستەر کۆپی کرا");
     } catch {
-      appToast.error("Copy failed");
+      appToast.error("کۆپیکردن سەرنەکەوت");
     }
   };
 
   const exportCsv = () => {
     const rows = [
       [
-        "Name",
-        "Module",
-        "Deleted By",
-        "Deleted At",
-        "Reason",
-        "Days Remaining",
-        "Status",
+        "ناو",
+        "مۆدیوول",
+        "سڕاوە لەلایەن",
+        "سڕاوە لە",
+        "هۆکار",
+        "ڕۆژە ماوەکان",
+        "دۆخ",
       ],
       ...items.map((i) => [
         i.name,

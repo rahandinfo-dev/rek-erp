@@ -208,7 +208,7 @@ export async function processBulkItem(
     ) {
       return {
         status: "success",
-        message: action === "print" ? "Queued for print" : "Exported",
+        message: action === "print" ? "بۆ چاپکردن خرایە سەر ڕیز" : "هەناردە کرا",
         exportRow: toExportRow(ctx.moduleKey, row),
         before: { id: entityId, label },
       };
@@ -312,7 +312,7 @@ export async function processBulkItem(
         };
       }
       if (ctx.moduleKey === "products") {
-        // Metadata only â€” does not move stock balances
+        // Metadata only — does not move stock balances
         await upsertEntityMeta(ctx.companyId, entityType, entityId, {
           tags: payload.warehouseId
             ? [`warehouse:${payload.warehouseId}`]
@@ -486,7 +486,7 @@ async function softDeleteOne(
       };
     }
     default:
-      return { status: "skipped", message: "Delete not supported" };
+      return { status: "skipped", message: "سڕینەوە پشتگیری ناکرێت" };
   }
 }
 

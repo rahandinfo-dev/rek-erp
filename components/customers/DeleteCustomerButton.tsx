@@ -32,7 +32,7 @@ export default function DeleteCustomerButton({
         module: "customers",
         title: "Customer archived",
         message: name ? `«${name}»` : undefined,
-        entityType: "Customer",
+        entityType: "کڕیار",
         entityId: id,
         onSoftDeleted: onDeleted,
         onRestored,

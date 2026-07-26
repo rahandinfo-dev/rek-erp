@@ -310,7 +310,7 @@ async function httpDeleteOrRestore(input: {
     }
     return {
       status: "success" as const,
-      message: json.message || (input.action === "delete" ? "Deleted" : "Restored"),
+      message: json.message || (input.action === "delete" ? "سڕایەوە" : "گەڕێندرایەوە"),
       undo: input.action === "delete" ? { action: "restore" } : undefined,
     };
   } catch (error) {

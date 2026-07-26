@@ -78,7 +78,7 @@ function ActivityListCard({
                 {r.recordName}
               </p>
               <p className="truncate text-xs text-muted-foreground">
-                {r.userName || "System"} ·{" "}
+                {r.userName || "سیستەم"} ·{" "}
                 {AUDIT_ACTION_LABELS[r.action] || r.action} ·{" "}
                 {AUDIT_MODULE_LABELS[r.module] || r.module} ·{" "}
                 {relativeTime(new Date(r.createdAt).getTime())}

@@ -59,15 +59,15 @@ export const SEARCH_FILTERS: Array<{
   key: SearchModuleFilter;
   label: string;
 }> = [
-  { key: "all", label: "All" },
-  { key: "products", label: "Products" },
-  { key: "sales", label: "Sales" },
-  { key: "customers", label: "Customers" },
-  { key: "invoices", label: "Invoices" },
-  { key: "warehouses", label: "Warehouses" },
-  { key: "employees", label: "Employees" },
-  { key: "reports", label: "Reports" },
-  { key: "purchases", label: "Purchases" },
-  { key: "suppliers", label: "Suppliers" },
-  { key: "settings", label: "Settings" },
+  { key: "all", label: "هەموو" },
+  { key: "products", label: "بەرهەمەکان" },
+  { key: "sales", label: "فرۆشتن" },
+  { key: "customers", label: "کڕیارەکان" },
+  { key: "invoices", label: "پسوولەکان" },
+  { key: "warehouses", label: "کۆگاکان" },
+  { key: "employees", label: "کارمەندان" },
+  { key: "reports", label: "ڕاپۆرتەکان" },
+  { key: "purchases", label: "کڕین" },
+  { key: "suppliers", label: "دابینکەران" },
+  { key: "settings", label: "ڕێکخستنەکان" },
 ];

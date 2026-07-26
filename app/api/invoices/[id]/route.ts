@@ -163,7 +163,7 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
       category: "SALE",
       priority: "HIGH",
       href: `/dashboard/invoices/${invoice.id}`,
-      entityType: "Invoice",
+      entityType: "پسوولە",
       entityId: invoice.id,
     });
 
@@ -179,7 +179,7 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
       userId,
       module: "INVOICE",
       action: "DELETE",
-      entityType: "Invoice",
+      entityType: "پسوولە",
       entityId: invoice.id,
       summary: `پسوولە soft delete: ${invoice.invoiceNo}`,
       oldValue: { status: invoice.status, invoiceNo: invoice.invoiceNo },

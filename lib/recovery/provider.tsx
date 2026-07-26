@@ -479,9 +479,9 @@ export function SessionRecoveryProvider({
 
       <ConfirmDialog
         open={confirmDiscard}
-        title="Discard Session"
+        title="فڕێدانی دانیشتن"
         description="Delete this recovery snapshot permanently? This cannot be undone."
-        confirmText="Discard Session"
+        confirmText="فڕێدانی دانیشتن"
         onCancel={() => setConfirmDiscard(false)}
         onConfirm={async () => {
           if (welcomeSession) {
@@ -502,7 +502,7 @@ export function SessionRecoveryProvider({
         title="Recovery Failed"
         description="Unable to restore this session. You can retry or discard it. Your data was not deleted."
         confirmText="Retry"
-        cancelText="Discard"
+        cancelText="فڕێدان"
         onCancel={async () => {
           if (failedSession) await discardSession(failedSession.moduleKey);
           setRecoveryFailed(false);

@@ -41,7 +41,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       userId: user.id,
       module: "EMPLOYEE",
       action: "RESTORE",
-      entityType: "Employee",
+      entityType: "کارمەند",
       entityId: id,
       summary: `Employee restored: ${employee.fullName}`,
       req,

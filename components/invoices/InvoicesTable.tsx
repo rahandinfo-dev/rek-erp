@@ -72,7 +72,7 @@ export default function InvoicesTable({
     if (row.status === "VOID") return;
     if (
       !confirm(
-        `Ù¾Ø³ÙˆÙˆÙ„Û•ÛŒ ${row.invoiceNo} Ù‡Û•ÚµØ¨ÙˆÛ•Ø´ÛŽÙ†ÛŒØªÛ•ÙˆÛ•ØŸ Ú©Û†Ú¯Ø§ Ø¯Û•Ú¯Û•Ú•ÛŽØªÛ•ÙˆÛ• Ø¦Û•Ú¯Û•Ø± ÙØ±Û†Ø´ØªÙ† ØªÛ•ÙˆØ§Ùˆ Ø¨ÙˆÙˆØ¨ÛŽØª.`
+        `پسوولەی ${row.invoiceNo} هەڵبوەشێنیتەوە؟ کۆگا دەگەڕێتەوە ئەگەر فرۆشتن تەواو بووبێت.`
       )
     ) {
       return;
@@ -86,7 +86,7 @@ export default function InvoicesTable({
         restoreUrl: `/api/invoices/${row.id}/restore`,
         module: "invoices",
         title: "Invoice voided",
-        message: `${row.invoiceNo} â€” Undo`,
+        message: `${row.invoiceNo} — پاشگەزبوونەوە`,
         entityType: "Invoice",
         entityId: row.id,
         onSoftDeleted: () => {
@@ -202,7 +202,7 @@ export default function InvoicesTable({
           className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#FFAE42] px-4 text-sm font-semibold text-white"
         >
           <FileText size={16} />
-          ÙØ±Û†Ø´ØªÙ†ÛŒ Ù†ÙˆÛŽ
+          فرۆشتنی نوێ
         </Link>
       }
       actions={(row) => (

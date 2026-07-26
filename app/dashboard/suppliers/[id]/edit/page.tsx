@@ -39,7 +39,7 @@ export default async function EditSupplierPage({
 
       <EditSupplierForm id={id} />
 
-      <RecordVersionHistorySection entityType="Supplier" entityId={id} />
+      <RecordVersionHistorySection entityType="دابینکەر" entityId={id} />
     </div>
   );
 }

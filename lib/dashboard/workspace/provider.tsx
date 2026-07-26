@@ -295,7 +295,7 @@ export function DashboardWorkspaceProvider({
 
   const createDashboard = useCallback(
     (name: string) => {
-      const dash = buildDefaultDashboard(userId, companyId, name.trim() || "Dashboard");
+      const dash = buildDefaultDashboard(userId, companyId, name.trim() || "داشبۆرد");
       persist({
         ...bundle,
         dashboards: [

@@ -53,18 +53,18 @@ type FilterKey =
   | "failed";
 
 const FILTERS: { key: FilterKey; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "products", label: "Products" },
-  { key: "sales", label: "Sales" },
-  { key: "purchases", label: "Purchases" },
-  { key: "invoices", label: "Invoices" },
-  { key: "customers", label: "Customers" },
-  { key: "suppliers", label: "Suppliers" },
-  { key: "reports", label: "Reports" },
+  { key: "all", label: "هەموو" },
+  { key: "products", label: "بەرهەمەکان" },
+  { key: "sales", label: "فرۆشتن" },
+  { key: "purchases", label: "کڕین" },
+  { key: "invoices", label: "پسوولەکان" },
+  { key: "customers", label: "کڕیارەکان" },
+  { key: "suppliers", label: "دابینکەران" },
+  { key: "reports", label: "ڕاپۆرتەکان" },
   { key: "completed", label: "Completed" },
   { key: "recovered", label: "Recovered" },
   { key: "archived", label: "Archived" },
-  { key: "failed", label: "Failed" },
+  { key: "failed", label: "سەرنەکەوت" },
 ];
 
 function mergeDrafts(
@@ -245,14 +245,14 @@ export default function DraftCenter() {
       });
       const json = await res.json();
       if (!res.ok || !json.success) {
-        appToast.error(json.message || "Action failed");
+        appToast.error(json.message || "کردار سەرنەکەوت");
         return;
       }
       if (action === "share" && json.data?.shareUrl) {
         await navigator.clipboard?.writeText(
           `${window.location.origin}${json.data.shareUrl}`
         );
-        appToast.success("Link copied");
+        appToast.success("بەستەر کۆپی کرا");
       } else if (action === "duplicate") {
         appToast.success("Draft duplicated");
       } else {
@@ -350,7 +350,7 @@ export default function DraftCenter() {
         `drafts-${Date.now()}.csv`
       );
     }
-    appToast.success("Export ready");
+    appToast.success("هەناردە ئامادەیە");
   }
 
   async function exportExcel() {
@@ -484,7 +484,7 @@ export default function DraftCenter() {
             ["Recovered", stats.recovered],
             ["Completed", stats.completed],
             ["Archived", stats.archived],
-            ["Failed", stats.failed],
+            ["سەرنەکەوت", stats.failed],
           ].map(([label, value]) => (
             <div
               key={String(label)}
@@ -648,13 +648,13 @@ export default function DraftCenter() {
                     <div className="absolute end-0 z-20 mt-1 w-44 rounded-xl border border-border bg-card p-1 shadow-lg">
                       {[
                         {
-                          label: d.pinned ? "Unpin" : "Pin",
+                          label: d.pinned ? "لابردنی هەڵواسین" : "هەڵواسین",
                           icon: Pin,
                           run: () =>
                             void patchDraft(d.key, d.pinned ? "unpin" : "pin"),
                         },
                         {
-                          label: "Rename",
+                          label: "ناوگۆڕین",
                           icon: Copy,
                           run: () => {
                             const title = window.prompt("Draft name", d.title);
@@ -663,22 +663,22 @@ export default function DraftCenter() {
                           },
                         },
                         {
-                          label: "Duplicate",
+                          label: "دووبارەکردنەوە",
                           icon: Copy,
                           run: () => void patchDraft(d.key, "duplicate"),
                         },
                         {
-                          label: "Versions",
+                          label: "وەشانەکان",
                           icon: Eye,
                           run: () => void openVersions(d.key),
                         },
                         {
-                          label: "Copy Link",
+                          label: "کۆپیکردنی بەستەر",
                           icon: Link2,
                           run: () => void patchDraft(d.key, "share"),
                         },
                         {
-                          label: d.archived ? "Restore" : "Archive",
+                          label: d.archived ? "گەڕاندنەوە" : "ئەرشیفکردن",
                           icon: Archive,
                           run: () =>
                             void patchDraft(
@@ -687,7 +687,7 @@ export default function DraftCenter() {
                             ),
                         },
                         {
-                          label: "Delete",
+                          label: "سڕینەوە",
                           icon: Trash2,
                           run: () => setDeleteKey(d.key),
                         },
@@ -842,10 +842,10 @@ export default function DraftCenter() {
                         );
                         const json = await res.json();
                         if (json.success) {
-                          appToast.success("Version restored");
+                          appToast.success("وەشان گەڕێندرایەوە");
                           setVersionsFor(null);
                           void refresh();
-                        } else appToast.error("Restore failed");
+                        } else appToast.error("گەڕاندنەوە سەرنەکەوت");
                       }}
                     >
                       Restore
@@ -903,10 +903,10 @@ export default function DraftCenter() {
 
       <ConfirmDialog
         open={Boolean(deleteKey)}
-        title="Delete Draft"
+        title="سڕینەوەی ڕەشنووس"
         description="This draft will be removed. You can still recover session snapshots from Recovery Center."
-        confirmText="Delete"
-        cancelText="Cancel"
+        confirmText="سڕینەوە"
+        cancelText="هەڵوەشاندنەوە"
         onConfirm={() => void confirmDelete()}
         onCancel={() => setDeleteKey(null)}
       />

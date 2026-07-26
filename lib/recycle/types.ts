@@ -43,20 +43,20 @@ export type RecycleBinPrefs = {
 export const RETENTION_OPTIONS = [30, 60, 90] as const;
 
 export const MODULE_LABELS: Record<string, string> = {
-  products: "Products",
-  sales: "Sales",
-  purchases: "Purchases",
-  invoices: "Invoices",
-  customers: "Customers",
-  suppliers: "Suppliers",
-  warehouses: "Warehouses",
-  employees: "Employees",
-  brands: "Brands",
-  categories: "Categories",
-  units: "Units",
-  expenses: "Expenses",
-  reports: "Reports",
-  settings: "Settings",
+  products: "بەرهەمەکان",
+  sales: "فرۆشتن",
+  purchases: "کڕین",
+  invoices: "پسوولەکان",
+  customers: "کڕیارەکان",
+  suppliers: "دابینکەران",
+  warehouses: "کۆگاکان",
+  employees: "کارمەندان",
+  brands: "براندەکان",
+  categories: "پۆلەکان",
+  units: "یەکەکان",
+  expenses: "خەرجییەکان",
+  reports: "ڕاپۆرتەکان",
+  settings: "ڕێکخستنەکان",
 };
 
 export function daysRemaining(expiresAt: number, now = Date.now()) {

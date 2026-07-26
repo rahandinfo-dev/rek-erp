@@ -22,7 +22,7 @@ export async function getOrCreateConversation(
     data: {
       companyId,
       userId,
-      title: "AI Assistant",
+      title: "یاریدەدەری زیرەک",
     },
   });
 }

@@ -27,7 +27,7 @@ export type AuditLogInput = {
   userAgent?: string | null;
   device?: string | null;
   metadata?: Prisma.InputJsonValue;
-  /** Optional request â€” fills IP / UA / device when not set */
+  /** Optional request — fills IP / UA / device when not set */
   req?: NextRequest | Request | null;
 };
 
@@ -42,7 +42,7 @@ function toJson(value: unknown): Prisma.InputJsonValue | undefined {
 }
 
 /**
- * Append-only audit row. Never throws to the caller â€” logging must not
+ * Append-only audit row. Never throws to the caller — logging must not
  * break business mutations. Rows are permanent (no delete API).
  */
 export async function createAuditLog(input: AuditLogInput) {
@@ -78,7 +78,7 @@ export async function createAuditLog(input: AuditLogInput) {
       },
     });
 
-    // Recycle Bin ledger â€” never breaks audit write
+    // Recycle Bin ledger — never breaks audit write
     const action = String(input.action);
     const metaObj =
       input.metadata && typeof input.metadata === "object"
@@ -124,7 +124,7 @@ export async function createAuditLog(input: AuditLogInput) {
       });
     }
 
-    // Enterprise version history â€” CREATE / UPDATE / RESTORE / ARCHIVE / DELETE
+    // Enterprise version history — CREATE / UPDATE / RESTORE / ARCHIVE / DELETE
     if (
       input.entityId &&
       input.entityType &&

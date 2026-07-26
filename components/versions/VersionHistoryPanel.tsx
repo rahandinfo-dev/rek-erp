@@ -107,7 +107,7 @@ export default function VersionHistoryPanel({
       );
       appToast.success("Version link copied");
     } catch {
-      appToast.error("Copy failed");
+      appToast.error("کۆپیکردن سەرنەکەوت");
     }
   }
 
@@ -122,10 +122,10 @@ export default function VersionHistoryPanel({
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "Restore failed");
+        appToast.error(json.message || "گەڕاندنەوە سەرنەکەوت");
         return;
       }
-      appToast.success("Version restored");
+      appToast.success("وەشان گەڕێندرایەوە");
       setRestoreId(null);
       setCompareDiffs(null);
       await load();
@@ -313,7 +313,7 @@ export default function VersionHistoryPanel({
                 {VERSION_ACTION_LABELS[viewing.action] || viewing.action}
               </p>
               <p className="text-xs text-muted-foreground">
-                {viewing.userName || "System"} · {viewing.date} {viewing.time}
+                {viewing.userName || "سیستەم"} · {viewing.date} {viewing.time}
               </p>
               {viewing.comment ? (
                 <p className="mt-1 text-sm">{viewing.comment}</p>
@@ -328,8 +328,8 @@ export default function VersionHistoryPanel({
             </button>
           </div>
           <VersionCompare
-            leftLabel="Before"
-            rightLabel="After"
+            leftLabel="پێش"
+            rightLabel="دوای"
             diffs={viewing.changedFields.map((f) => ({
               field: f.field,
               before: f.before,
@@ -347,10 +347,10 @@ export default function VersionHistoryPanel({
 
       <ConfirmDialog
         open={Boolean(restoreId)}
-        title="Restore this version?"
+        title="ئەم وەشانە بگەڕێنرێتەوە؟"
         description="The live record will be updated to match this version snapshot. A new version entry will be created. This cannot be undone except by restoring another version."
-        confirmText="Restore"
-        cancelText="Cancel"
+        confirmText="گەڕاندنەوە"
+        cancelText="هەڵوەشاندنەوە"
         loading={restoring}
         onCancel={() => setRestoreId(null)}
         onConfirm={() => void confirmRestore()}

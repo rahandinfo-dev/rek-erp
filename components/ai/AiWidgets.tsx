@@ -100,7 +100,7 @@ export function BusinessHealthWidget() {
   const bundle = useAiBundle();
   const health = bundle?.health;
   return (
-    <Shell title="Business Health" icon={Activity} empty={!health}>
+    <Shell title="تەندروستی کار" icon={Activity} empty={!health}>
       {health ? (
         <div>
           <p className="text-2xl font-black tabular-nums">

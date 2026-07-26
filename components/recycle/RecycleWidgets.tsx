@@ -85,7 +85,7 @@ export function RecentlyDeletedWidget() {
             <li key={r.id} className="px-5 py-3">
               <p className="truncate text-sm font-bold text-foreground">{r.name}</p>
               <p className="truncate text-xs text-muted-foreground">
-                {r.moduleLabel} · {r.deletedBy || "System"} ·{" "}
+                {r.moduleLabel} · {r.deletedBy || "سیستەم"} ·{" "}
                 {relativeTime(r.deletedAt)} · {r.daysRemaining}d left
               </p>
             </li>
@@ -192,7 +192,7 @@ export function RecycleBinStatsWidget() {
       ) : (
         <div className="grid grid-cols-2 gap-3 px-5 py-5 sm:grid-cols-3">
           <Stat label="In bin" value={stats.deleted} />
-          <Stat label="Restored" value={stats.restored} />
+          <Stat label="گەڕێندرایەوە" value={stats.restored} />
           <Stat label="Purged" value={stats.purged} />
           <Stat label="This week" value={stats.recent} />
           <Stat label="Expiring soon" value={stats.expiringSoon} />

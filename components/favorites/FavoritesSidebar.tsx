@@ -65,9 +65,9 @@ function FavoriteRow({
       await navigator.clipboard.writeText(
         `${window.location.origin}${item.href}`
       );
-      appToast.success("Link copied");
+      appToast.success("بەستەر کۆپی کرا");
     } catch {
-      appToast.error("Copy failed");
+      appToast.error("کۆپیکردن سەرنەکەوت");
     }
     setMenu(false);
   }
@@ -161,7 +161,7 @@ function FavoriteRow({
               }}
             >
               {item.pinned ? <PinOff size={12} /> : <Pin size={12} />}
-              {item.pinned ? "Unpin" : "Pin"}
+              {item.pinned ? "لابردنی هەڵواسین" : "هەڵواسین"}
             </button>
             <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground">
               Color
@@ -454,7 +454,7 @@ export default function FavoritesSidebar({
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search favorites…"
+                  placeholder="گەڕان لە دڵخوازەکان…"
                   className="h-8 w-full rounded-xl border-0 bg-muted/70 px-2.5 text-xs outline-none focus:ring-2 focus:ring-ring/30"
                 />
               </div>
@@ -470,7 +470,7 @@ export default function FavoritesSidebar({
                 <button
                   type="button"
                   className="inline-flex h-7 items-center justify-center rounded-lg bg-muted px-2 text-muted-foreground"
-                  title="Export"
+                  title="هەناردەکردن"
                   onClick={() => {
                     const blob = new Blob([exportFavorites()], {
                       type: "application/json",
@@ -522,7 +522,7 @@ export default function FavoritesSidebar({
                     autoFocus
                     value={groupName}
                     onChange={(e) => setGroupName(e.target.value)}
-                    placeholder="Group name"
+                    placeholder="ناوی گرووپ"
                     className="h-8 w-full rounded-xl border border-border bg-background px-2 text-xs"
                   />
                 </form>

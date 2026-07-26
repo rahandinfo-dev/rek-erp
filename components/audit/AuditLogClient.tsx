@@ -32,7 +32,7 @@ type Props = {
   initialPagination: Pagination;
 };
 
-const DEVICES = ["Desktop", "Mobile", "Tablet", "Other", "Unknown"];
+const DEVICES = ["Desktop", "Mobile", "Tablet", "هیتر", "Unknown"];
 
 function formatJson(value: unknown) {
   if (value == null) return "—";

@@ -46,7 +46,7 @@ export async function POST(_req: NextRequest, { params }: Props) {
       category: "INVOICE",
       priority: "NORMAL",
       href: `/dashboard/invoices/${invoice.id}`,
-      entityType: "Invoice",
+      entityType: "پسوولە",
       entityId: invoice.id,
       metadata: { action: "PRINT", eventId: event.id },
     });

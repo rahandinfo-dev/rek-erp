@@ -5,7 +5,7 @@ import type { ConnectionStatus } from "@/lib/recovery/types";
 const LABELS: Record<ConnectionStatus, string> = {
   online: "Online",
   syncing: "Syncing",
-  offline: "Offline",
+  offline: "دەرهێڵ",
 };
 
 const DOT: Record<ConnectionStatus, string> = {

@@ -120,7 +120,7 @@ export function pushUndoable(input: PushUndoableInput): string {
       appToast.actionWithUndo({
         title,
         message: input.message,
-        undoLabel: input.undoLabel || "Undo",
+        undoLabel: input.undoLabel || "پاشگەزبوونەوە",
         durationMs,
         onUndo: async () => {
           try {

@@ -97,7 +97,7 @@ const TABS: { id: TabId; label: string; icon: typeof Info }[] = [
   { id: "pricing", label: "نرخ", icon: Package },
   { id: "barcode", label: "بارکۆد", icon: Barcode },
   { id: "history", label: "مێژوو", icon: History },
-  { id: "versions", label: "Versions", icon: History },
+  { id: "versions", label: "وەشانەکان", icon: History },
   { id: "images", label: "وێنە", icon: ImageIcon },
 ];
 

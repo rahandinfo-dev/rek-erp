@@ -123,7 +123,7 @@ export default async function SettingsPage() {
       <ChangePasswordForm />
 
       <RecordVersionHistorySection
-        entityType="Settings"
+        entityType="ڕێکخستنەکان"
         entityId={user.companyId}
         recordLabel={user.company.name}
       />

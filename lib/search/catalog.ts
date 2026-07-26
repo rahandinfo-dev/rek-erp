@@ -52,7 +52,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   {
     id: "invoices",
     title: "پسوولەکان",
-    subtitle: "Invoice",
+    subtitle: "پسوولە",
     href: "/dashboard/invoices",
     type: "invoice",
     group: "modules",
@@ -79,7 +79,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   {
     id: "warehouses",
     title: "کۆگاکان",
-    subtitle: "Warehouse",
+    subtitle: "کۆگا",
     href: "/dashboard/werehouse",
     type: "warehouse",
     group: "modules",
@@ -114,8 +114,8 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   },
   {
     id: "activity-timeline",
-    title: "Activity Timeline",
-    subtitle: "Enterprise activity history",
+    title: "تێمڵاینی چالاکی",
+    subtitle: "مێژووی چالاکییەکانی سیستەم",
     href: "/dashboard/activity",
     type: "reports",
     group: "reports",
@@ -141,7 +141,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   },
   {
     id: "version-history",
-    title: "Version History",
+    title: "مێژووی وەشان",
     subtitle: "Compare · Restore · Change log",
     href: "/dashboard/version-history",
     type: "reports",
@@ -158,7 +158,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   },
   {
     id: "ai-assistant",
-    title: "AI Assistant",
+    title: "یاریدەدەری زیرەک",
     subtitle: "Ask · Insights · Alerts · Automation",
     href: "/dashboard/ai-assistant",
     type: "reports",
@@ -205,7 +205,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   {
     id: "analytics",
     title: "شیکاری",
-    subtitle: "Analytics",
+    subtitle: "شیکاری",
     href: "/dashboard/analytics",
     type: "reports",
     group: "reports",
@@ -259,7 +259,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   {
     id: "settings",
     title: "ڕێکخستنەکان",
-    subtitle: "Settings",
+    subtitle: "ڕێکخستنەکان",
     href: "/dashboard/settings",
     type: "settings",
     group: "settings",
@@ -268,7 +268,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   {
     id: "calculator",
     title: "ژمێرەر",
-    subtitle: "Calculator",
+    subtitle: "ژمێرەر",
     href: "/dashboard/calculator",
     type: "module",
     group: "tools",
@@ -286,7 +286,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   {
     id: "draft-center",
     title: "ناوەندی ڕەشنووس",
-    subtitle: "Draft Center",
+    subtitle: "ناوەندی ڕەشنووس",
     href: "/dashboard/drafts",
     type: "module",
     group: "tools",
@@ -294,8 +294,8 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   },
   {
     id: "recycle-bin",
-    title: "Recycle Bin",
-    subtitle: "Restore soft-deleted records",
+    title: "سەبەتەی زبڵ",
+    subtitle: "گەڕاندنەوەی تۆمارە سڕاوەکان",
     href: "/dashboard/recycle-bin",
     type: "module",
     group: "tools",
@@ -312,7 +312,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   },
   {
     id: "bulk-operations",
-    title: "Bulk Operations",
+    title: "کردارە کۆمەڵایەتییەکان",
     subtitle: "Multi-record jobs",
     href: "/dashboard/bulk",
     type: "module",
@@ -331,7 +331,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   {
     id: "favorites",
     title: "دڵخوازەکان",
-    subtitle: "Favorites",
+    subtitle: "دڵخوازەکان",
     href: "/dashboard",
     type: "module",
     group: "modules",
@@ -340,7 +340,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   {
     id: "recent-history",
     title: "مێژووی دوایین",
-    subtitle: "Recently Viewed",
+    subtitle: "دوایین بینراوەکان",
     href: "/dashboard/recent",
     type: "module",
     group: "modules",
@@ -352,58 +352,58 @@ export const SEARCH_QUICK_START: SearchHit[] = [
   {
     id: "qs-products",
     title: "بەرهەمەکان",
-    subtitle: "Products · SKU · Barcode",
+    subtitle: "بەرهەمەکان · SKU · بارکۆد",
     href: "/dashboard/products",
     type: "product",
-    module: "Products",
+    module: "بەرهەمەکان",
   },
   {
     id: "qs-customers",
     title: "کڕیاران",
-    subtitle: "Customers",
+    subtitle: "کڕیارەکان",
     href: "/dashboard/customers",
     type: "customer",
-    module: "Customers",
+    module: "کڕیارەکان",
   },
   {
     id: "qs-suppliers",
     title: "دابینکەران",
-    subtitle: "Suppliers",
+    subtitle: "دابینکەران",
     href: "/dashboard/suppliers",
     type: "supplier",
-    module: "Suppliers",
+    module: "دابینکەران",
   },
   {
     id: "qs-invoices",
     title: "پسوولەکان",
-    subtitle: "Invoices",
+    subtitle: "پسوولەکان",
     href: "/dashboard/invoices",
     type: "invoice",
-    module: "Invoices",
+    module: "پسوولەکان",
   },
   {
     id: "qs-warehouses",
     title: "کۆگاکان",
-    subtitle: "Warehouses",
+    subtitle: "کۆگاکان",
     href: "/dashboard/werehouse",
     type: "warehouse",
-    module: "Warehouses",
+    module: "کۆگاکان",
   },
   {
     id: "qs-employees",
     title: "کارمەندان",
-    subtitle: "Employees",
+    subtitle: "کارمەندان",
     href: "/dashboard/employees",
     type: "employee",
-    module: "Employees",
+    module: "کارمەندان",
   },
   {
     id: "qs-reports",
     title: "ڕاپۆرتەکان",
-    subtitle: "Reports",
+    subtitle: "ڕاپۆرتەکان",
     href: "/dashboard/reports",
     type: "reports",
-    module: "Reports",
+    module: "ڕاپۆرتەکان",
   },
   {
     id: "qs-barcode",
@@ -411,15 +411,15 @@ export const SEARCH_QUICK_START: SearchHit[] = [
     subtitle: "Barcode scanner & print",
     href: "/dashboard/barcode",
     type: "barcode",
-    module: "Barcode",
+    module: "بارکۆد",
   },
   {
     id: "qs-units",
     title: "یەکەکان",
-    subtitle: "Units",
+    subtitle: "یەکەکان",
     href: "/dashboard/units",
     type: "unit",
-    module: "Products",
+    module: "بەرهەمەکان",
   },
 ];
 
@@ -455,9 +455,9 @@ export function matchCatalog(
       type: item.type,
       module:
         item.group === "reports"
-          ? "Reports"
+          ? "ڕاپۆرتەکان"
           : item.group === "settings"
-            ? "Settings"
+            ? "ڕێکخستنەکان"
             : item.group === "tools"
               ? "Tools"
               : "Pages",

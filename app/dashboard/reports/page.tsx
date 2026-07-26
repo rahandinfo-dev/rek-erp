@@ -35,12 +35,12 @@ export default async function ReportsPage() {
       <RecordVersionHistorySection
         entityType="Report"
         entityId={user.companyId}
-        recordLabel="Reports"
+        recordLabel="ڕاپۆرتەکان"
       />
       <RecordVersionHistorySection
         entityType="Expense"
         entityId={user.companyId}
-        recordLabel="Expenses"
+        recordLabel="خەرجییەکان"
       />
     </div>
   );

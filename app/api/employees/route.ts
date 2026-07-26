@@ -119,7 +119,7 @@ export async function POST(req: NextRequest) {
       category: "EMPLOYEE",
       priority: "NORMAL",
       href: `/dashboard/employees/${employee.id}`,
-      entityType: "Employee",
+      entityType: "کارمەند",
       entityId: employee.id,
     });
 
@@ -128,7 +128,7 @@ export async function POST(req: NextRequest) {
       userId: user.id,
       module: "EMPLOYEE",
       action: "CREATE",
-      entityType: "Employee",
+      entityType: "کارمەند",
       entityId: employee.id,
       summary: `کارمەند ${employee.fullName} زیادکرا`,
       newValue: { username: employee.username, position: employee.position },

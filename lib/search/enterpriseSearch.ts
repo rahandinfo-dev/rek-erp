@@ -449,7 +449,7 @@ export async function runEnterpriseSearch(input: {
       href: `/dashboard/products/${p.id}`,
       editHref: `/dashboard/products/${p.id}/edit`,
       type,
-      module: "Products",
+      module: "بەرهەمەکان",
       updatedAt: p.updatedAt.getTime(),
       exactMatch: exact,
       preview: {
@@ -462,7 +462,7 @@ export async function runEnterpriseSearch(input: {
         notes: p.notes,
         extras: [
           { label: "SKU", value: p.sku },
-          ...(p.barcode ? [{ label: "Barcode", value: p.barcode }] : []),
+          ...(p.barcode ? [{ label: "بارکۆد", value: p.barcode }] : []),
         ],
       },
     };
@@ -478,19 +478,19 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       filter === "settings" ? "settings" : "modules",
-      filter === "settings" ? "Settings" : "Pages / Reports / Tools",
+      filter === "settings" ? "ڕێکخستنەکان" : "Pages / Reports / Tools",
       catalogHits.slice(0, 10)
     );
   }
 
   if (wantProducts) {
-    pushGroup(groups, "products", "Products", namedProducts);
+    pushGroup(groups, "products", "بەرهەمەکان", namedProducts);
     pushGroup(groups, "sku", "SKU", skuHits);
-    pushGroup(groups, "barcode", "Barcode", barcodeHits);
+    pushGroup(groups, "barcode", "بارکۆد", barcodeHits);
     pushGroup(
       groups,
       "categories",
-      "Categories",
+      "پۆلەکان",
       categories.map((c) => ({
         id: c.id,
         title: c.name,
@@ -498,14 +498,14 @@ export async function runEnterpriseSearch(input: {
         href: `/dashboard/category/${c.id}/edit`,
         editHref: `/dashboard/category/${c.id}/edit`,
         type: "product",
-        module: "Products",
+        module: "بەرهەمەکان",
         updatedAt: c.updatedAt.getTime(),
       }))
     );
     pushGroup(
       groups,
       "brands",
-      "Brands",
+      "براندەکان",
       brands.map((b) => ({
         id: b.id,
         title: b.name,
@@ -513,7 +513,7 @@ export async function runEnterpriseSearch(input: {
         href: `/dashboard/brands/${b.id}/edit`,
         editHref: `/dashboard/brands/${b.id}/edit`,
         type: "product",
-        module: "Products",
+        module: "بەرهەمەکان",
         updatedAt: b.updatedAt.getTime(),
       }))
     );
@@ -523,7 +523,7 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       "customers",
-      "Customers",
+      "کڕیارەکان",
       customers.map((c) => ({
         id: c.id,
         title: c.name,
@@ -532,7 +532,7 @@ export async function runEnterpriseSearch(input: {
         href: `/dashboard/customers/${c.id}/edit`,
         editHref: `/dashboard/customers/${c.id}/edit`,
         type: "customer",
-        module: "Customers",
+        module: "کڕیارەکان",
         updatedAt: c.updatedAt.getTime(),
         preview: {
           phone: c.phone,
@@ -551,7 +551,7 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       "suppliers",
-      "Suppliers",
+      "دابینکەران",
       suppliers.map((s) => ({
         id: s.id,
         title: s.name,
@@ -560,7 +560,7 @@ export async function runEnterpriseSearch(input: {
         href: `/dashboard/suppliers/${s.id}/edit`,
         editHref: `/dashboard/suppliers/${s.id}/edit`,
         type: "supplier",
-        module: "Suppliers",
+        module: "دابینکەران",
         updatedAt: s.updatedAt.getTime(),
         preview: {
           phone: s.phone,
@@ -579,7 +579,7 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       "invoices",
-      "Invoices",
+      "پسوولەکان",
       invoices.map((inv) => ({
         id: inv.id,
         title: inv.invoiceNo,
@@ -587,14 +587,14 @@ export async function runEnterpriseSearch(input: {
         description: `${Number(inv.grandTotal).toLocaleString()} IQD · ${inv.status}`,
         href: `/dashboard/invoices/${inv.id}`,
         type: "invoice",
-        module: "Invoices",
+        module: "پسوولەکان",
         updatedAt: inv.updatedAt.getTime(),
         preview: {
           status: inv.status,
           total: Number(inv.grandTotal),
           currency: "IQD",
           warehouse: inv.warehouseName,
-          extras: [{ label: "Customer", value: inv.customerName }],
+          extras: [{ label: "کڕیار", value: inv.customerName }],
         },
       }))
     );
@@ -604,7 +604,7 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       "sales",
-      "Sales",
+      "فرۆشتن",
       sales.map((s) => ({
         id: s.id,
         title: s.invoiceNo,
@@ -614,7 +614,7 @@ export async function runEnterpriseSearch(input: {
           ? `/dashboard/invoices/${s.invoice.id}`
           : `/dashboard/sales/${s.id}`,
         type: "sale",
-        module: "Sales",
+        module: "فرۆشتن",
         updatedAt: s.updatedAt.getTime(),
         preview: {
           status: s.status,
@@ -630,7 +630,7 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       "purchases",
-      "Purchases",
+      "کڕین",
       purchases.map((p) => ({
         id: p.id,
         title: p.invoiceNo,
@@ -638,7 +638,7 @@ export async function runEnterpriseSearch(input: {
         description: `${Number(p.total).toLocaleString()} · ${p.status}`,
         href: `/dashboard/purchases/${p.id}`,
         type: "purchase",
-        module: "Purchases",
+        module: "کڕین",
         updatedAt: p.updatedAt.getTime(),
         preview: {
           status: p.status,
@@ -654,7 +654,7 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       "warehouses",
-      "Warehouses",
+      "کۆگاکان",
       warehouses.map((w) => ({
         id: w.id,
         title: w.name,
@@ -664,7 +664,7 @@ export async function runEnterpriseSearch(input: {
         href: `/dashboard/werehouse/${w.id}`,
         editHref: `/dashboard/werehouse/${w.id}`,
         type: "warehouse",
-        module: "Warehouses",
+        module: "کۆگاکان",
         updatedAt: w.updatedAt.getTime(),
         preview: {
           warehouse: w.name,
@@ -681,7 +681,7 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       "units",
-      "Units",
+      "یەکەکان",
       units.map((u) => ({
         id: u.id,
         title: u.name,
@@ -689,7 +689,7 @@ export async function runEnterpriseSearch(input: {
         href: `/dashboard/units/${u.id}/edit`,
         editHref: `/dashboard/units/${u.id}/edit`,
         type: "unit",
-        module: "Products",
+        module: "بەرهەمەکان",
         updatedAt: u.updatedAt.getTime(),
       }))
     );
@@ -699,7 +699,7 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       "employees",
-      "Employees",
+      "کارمەندان",
       employees.map((e) => ({
         id: e.id,
         title: e.fullName,
@@ -709,7 +709,7 @@ export async function runEnterpriseSearch(input: {
         href: `/dashboard/employees/${e.id}`,
         editHref: `/dashboard/employees/${e.id}`,
         type: "employee",
-        module: "Employees",
+        module: "کارمەندان",
         updatedAt: e.updatedAt.getTime(),
         preview: {
           phone: e.phone,
@@ -730,14 +730,14 @@ export async function runEnterpriseSearch(input: {
     pushGroup(
       groups,
       "notifications",
-      "Notifications",
+      "ئاگادارییەکان",
       notifications.map((n) => ({
         id: n.id,
         title: n.title,
         subtitle: n.message.slice(0, 90),
         href: n.href || "/dashboard/notifications",
         type: "notification",
-        module: "Notifications",
+        module: "ئاگادارییەکان",
         updatedAt: n.createdAt.getTime(),
       }))
     );
@@ -747,32 +747,32 @@ export async function runEnterpriseSearch(input: {
     pushGroup(groups, "suggest", "Suggestions", [
       {
         id: "suggest-products",
-        title: "Products",
+        title: "بەرهەمەکان",
         subtitle: "Browse catalog",
         href: "/dashboard/products",
         type: "product",
-        module: "Products",
+        module: "بەرهەمەکان",
       },
       {
         id: "suggest-customers",
-        title: "Customers",
+        title: "کڕیارەکان",
         href: "/dashboard/customers",
         type: "customer",
-        module: "Customers",
+        module: "کڕیارەکان",
       },
       {
         id: "suggest-invoices",
-        title: "Invoices",
+        title: "پسوولەکان",
         href: "/dashboard/invoices",
         type: "invoice",
-        module: "Invoices",
+        module: "پسوولەکان",
       },
       {
         id: "suggest-reports",
-        title: "Reports",
+        title: "ڕاپۆرتەکان",
         href: "/dashboard/reports",
         type: "reports",
-        module: "Reports",
+        module: "ڕاپۆرتەکان",
       },
     ]);
   }
@@ -867,7 +867,7 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
       href: `/dashboard/products/${p.id}`,
       editHref: `/dashboard/products/${p.id}/edit`,
       type: "product",
-      module: "Products",
+      module: "بەرهەمەکان",
       updatedAt: p.updatedAt.getTime(),
       description: String(p.currentStock),
     })),
@@ -878,7 +878,7 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
       href: `/dashboard/customers/${c.id}/edit`,
       editHref: `/dashboard/customers/${c.id}/edit`,
       type: "customer",
-      module: "Customers",
+      module: "کڕیارەکان",
       updatedAt: c.updatedAt.getTime(),
     })),
     ...suppliers.map((s) => ({
@@ -888,7 +888,7 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
       href: `/dashboard/suppliers/${s.id}/edit`,
       editHref: `/dashboard/suppliers/${s.id}/edit`,
       type: "supplier",
-      module: "Suppliers",
+      module: "دابینکەران",
       updatedAt: s.updatedAt.getTime(),
     })),
     ...warehouses.map((w) => ({
@@ -897,7 +897,7 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
       subtitle: w.code,
       href: `/dashboard/werehouse/${w.id}`,
       type: "warehouse",
-      module: "Warehouses",
+      module: "کۆگاکان",
       updatedAt: w.updatedAt.getTime(),
     })),
     ...employees.map((e) => ({
@@ -906,7 +906,7 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
       subtitle: e.username,
       href: `/dashboard/employees/${e.id}`,
       type: "employee",
-      module: "Employees",
+      module: "کارمەندان",
       updatedAt: e.updatedAt.getTime(),
     })),
     ...invoices.map((inv) => ({
@@ -915,7 +915,7 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
       subtitle: inv.customerName,
       href: `/dashboard/invoices/${inv.id}`,
       type: "invoice",
-      module: "Invoices",
+      module: "پسوولەکان",
       updatedAt: inv.updatedAt.getTime(),
     })),
   ];

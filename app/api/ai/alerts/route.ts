@@ -52,7 +52,7 @@ export async function PATCH(req: NextRequest) {
     const ok = await acknowledgeAlert(user.companyId, parsed.data.id);
     if (!ok) {
       return NextResponse.json(
-        { success: false, message: "Not found" },
+        { success: false, message: "نەدۆزرایەوە" },
         { status: 404 }
       );
     }

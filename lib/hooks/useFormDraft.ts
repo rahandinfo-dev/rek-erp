@@ -422,7 +422,7 @@ export function useFormDraft<T>({
         if (retryCountRef.current >= RETRY_DELAYS_MS.length) {
           import("@/lib/toast").then(({ appToast }) => {
             appToast.error(
-              "Save Failed",
+              "پاشەکەوت سەرنەکەوت",
               "Could not sync after 3 retries. Changes are kept locally."
             );
           });

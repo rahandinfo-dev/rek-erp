@@ -37,9 +37,9 @@ export type AuditLogQuery = {
   status?: string;
   from?: string;
   to?: string;
-  /** ISO â€” fetch only newer than this (realtime poll) */
+  /** ISO — fetch only newer than this (realtime poll) */
   since?: string;
-  /** Cursor pagination â€” createdAt ISO of last item */
+  /** Cursor pagination — createdAt ISO of last item */
   cursor?: string;
   page?: number;
   pageSize?: number;
@@ -93,7 +93,7 @@ function mapRow(r: {
   };
 }
 
-/** Permanent audit ledger query â€” searchable & filterable. No deletes. */
+/** Permanent audit ledger query — searchable & filterable. No deletes. */
 export async function queryAuditLogs(input: AuditLogQuery) {
   const page = Math.max(1, input.page || 1);
   const pageSize = Math.min(100, Math.max(1, input.pageSize || 25));

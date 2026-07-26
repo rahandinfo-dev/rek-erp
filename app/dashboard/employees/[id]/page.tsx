@@ -102,7 +102,7 @@ export default async function EmployeeDetailsPage({ params }: Props) {
       }))}
     />
     <RecordVersionHistorySection
-      entityType="Employee"
+      entityType="کارمەند"
       entityId={employee.id}
       recordLabel={employee.fullName}
     />

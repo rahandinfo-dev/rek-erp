@@ -37,28 +37,28 @@ export type HistoryModuleKey =
   | "general";
 
 export const HISTORY_MODULE_LABELS: Record<string, string> = {
-  products: "Products",
-  sales: "Sales",
-  purchases: "Purchases",
-  invoices: "Invoices",
-  customers: "Customers",
-  suppliers: "Suppliers",
-  warehouses: "Warehouses",
-  employees: "Employees",
-  reports: "Reports",
-  settings: "Settings",
-  calculator: "Calculator",
-  notifications: "Notifications",
-  inventory: "Inventory",
-  barcode: "Barcode",
-  units: "Units",
-  brands: "Brands",
-  categories: "Categories",
-  analytics: "Analytics",
-  audit: "Audit Log",
-  drafts: "Draft Center",
-  favorites: "Favorites",
-  general: "General",
+  products: "بەرهەمەکان",
+  sales: "فرۆشتن",
+  purchases: "کڕین",
+  invoices: "پسوولەکان",
+  customers: "کڕیارەکان",
+  suppliers: "دابینکەران",
+  warehouses: "کۆگاکان",
+  employees: "کارمەندان",
+  reports: "ڕاپۆرتەکان",
+  settings: "ڕێکخستنەکان",
+  calculator: "ژمێرەر",
+  notifications: "ئاگادارییەکان",
+  inventory: "ئینڤێنتۆری",
+  barcode: "بارکۆد",
+  units: "یەکەکان",
+  brands: "براندەکان",
+  categories: "پۆلەکان",
+  analytics: "شیکاری",
+  audit: "تۆماری چاودێری",
+  drafts: "ناوەندی ڕەشنووس",
+  favorites: "دڵخوازەکان",
+  general: "گشتی",
 };
 
 export const HISTORY_FILTER_MODULES: HistoryModuleKey[] = [
@@ -132,7 +132,7 @@ export function freshHistoryExpiry(pinned: boolean) {
 export function relativeOpened(ts: number) {
   const diff = Math.max(0, Date.now() - ts);
   const sec = Math.floor(diff / 1000);
-  if (sec < 60) return "just now";
+  if (sec < 60) return "ئێستا";
   const min = Math.floor(sec / 60);
   if (min < 60) return `${min} minute${min === 1 ? "" : "s"} ago`;
   const hr = Math.floor(min / 60);

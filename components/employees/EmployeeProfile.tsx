@@ -330,7 +330,7 @@ export default function EmployeeProfile({
         module: "employees",
         title: "Employee archived",
         message: employee.fullName,
-        entityType: "Employee",
+        entityType: "کارمەند",
         entityId: employee.id,
         onSoftDeleted: () => {
           setConfirmDelete(false);

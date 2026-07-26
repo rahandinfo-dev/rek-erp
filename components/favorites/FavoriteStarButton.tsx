@@ -53,8 +53,8 @@ export default function FavoriteStarButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      aria-label={active ? "Remove from Favorites" : "Add to Favorites"}
-      title={active ? "Remove from Favorites" : "Add to Favorites"}
+      aria-label={active ? "Remove from Favorites" : "زیادکردن بۆ دڵخوازەکان"}
+      title={active ? "Remove from Favorites" : "زیادکردن بۆ دڵخوازەکان"}
       className={cn(
         "inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 text-sm font-bold transition hover:bg-muted",
         active && "border-amber-300 bg-amber-50 text-amber-700",
@@ -68,7 +68,7 @@ export default function FavoriteStarButton({
         aria-hidden
       />
       {!iconOnly ? (
-        <span>{active ? "Favorited" : "Favorite"}</span>
+        <span>{active ? "Favorited" : "دڵخواز"}</span>
       ) : null}
     </button>
   );

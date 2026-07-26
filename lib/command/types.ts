@@ -25,18 +25,18 @@ export type CommandIconKey =
   | "mic";
 
 export type CommandCategory =
-  | "Navigation"
-  | "Creation"
+  | "گەشتکردن"
+  | "دروستکردن"
   | "Editing"
   | "Searching"
-  | "Reports"
-  | "Settings"
-  | "System"
-  | "Inventory"
-  | "Sales"
-  | "Purchases"
-  | "Warehouse"
-  | "Analytics";
+  | "ڕاپۆرتەکان"
+  | "ڕێکخستنەکان"
+  | "سیستەم"
+  | "ئینڤێنتۆری"
+  | "فرۆشتن"
+  | "کڕین"
+  | "کۆگا"
+  | "شیکاری";
 
 export type CommandSection =
   | "recent"

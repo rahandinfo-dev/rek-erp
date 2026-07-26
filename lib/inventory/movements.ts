@@ -144,7 +144,7 @@ async function syncProductCurrentStock(
 
 /**
  * Apply a single stock movement: WarehouseStock + Product.currentStock + audit row.
- * History rows are append-only â€” never updated or deleted by this helper.
+ * History rows are append-only — never updated or deleted by this helper.
  */
 export async function applyStockMovement(
   tx: TxClient,

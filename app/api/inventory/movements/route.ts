@@ -3,7 +3,7 @@ import type { InventoryTransactionType } from "@/lib/prisma/client";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { queryMovementHistory } from "@/lib/inventory/history";
 
-/** Append-only inventory movement ledger. No DELETE â€” history is permanent. */
+/** Append-only inventory movement ledger. No DELETE — history is permanent. */
 export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser();

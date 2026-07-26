@@ -23,7 +23,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
 
     if (!row) {
       return NextResponse.json(
-        { success: false, message: "Not found" },
+        { success: false, message: "نەدۆزرایەوە" },
         { status: 404 }
       );
     }

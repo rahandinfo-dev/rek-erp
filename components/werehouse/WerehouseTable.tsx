@@ -52,7 +52,7 @@ export default function WerehouseTable({ werehouses }: Props) {
               moduleKey: "warehouses",
               label: item.name,
               href: `/dashboard/werehouse/${item.id}`,
-              entityType: "Warehouse",
+              entityType: "کۆگا",
             }}
           >
             <div className="flex items-start justify-between gap-3">
@@ -124,7 +124,7 @@ export default function WerehouseTable({ werehouses }: Props) {
                     moduleKey: "warehouses",
                     label: item.name,
                     href: `/dashboard/werehouse/${item.id}`,
-                    entityType: "Warehouse",
+                    entityType: "کۆگا",
                   }}
                 >
                   <td className="px-4 py-3">

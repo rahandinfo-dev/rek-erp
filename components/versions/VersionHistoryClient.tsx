@@ -77,7 +77,7 @@ export default function VersionHistoryClient() {
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "Failed to load");
+        appToast.error(json.message || "بارکردن سەرنەکەوت");
         return;
       }
       setItems(json.data.items || []);
@@ -142,13 +142,13 @@ export default function VersionHistoryClient() {
     const res = await fetch(`/api/versions/export?${queryString}`);
     const json = await res.json();
     if (!json.success) {
-      appToast.error(json.message || "Export failed");
+      appToast.error(json.message || "هەناردەکردن سەرنەکەوت");
       return;
     }
     const rows = json.data.rows as Record<string, string | number | null>[];
     if (format === "csv") exportToCsv("version-history.csv", rows);
-    else await exportToExcel("version-history.xlsx", "Versions", rows);
-    appToast.success("Exported");
+    else await exportToExcel("version-history.xlsx", "وەشانەکان", rows);
+    appToast.success("هەناردە کرا");
   }
 
   async function copyLink(id: string) {
@@ -156,9 +156,9 @@ export default function VersionHistoryClient() {
       await navigator.clipboard.writeText(
         `${window.location.origin}${versionPageHref(id)}`
       );
-      appToast.success("Link copied");
+      appToast.success("بەستەر کۆپی کرا");
     } catch {
-      appToast.error("Copy failed");
+      appToast.error("کۆپیکردن سەرنەکەوت");
     }
   }
 
@@ -173,10 +173,10 @@ export default function VersionHistoryClient() {
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "Restore failed");
+        appToast.error(json.message || "گەڕاندنەوە سەرنەکەوت");
         return;
       }
-      appToast.success("Version restored");
+      appToast.success("وەشان گەڕێندرایەوە");
       setRestoreId(null);
       router.refresh();
       await load();
@@ -329,7 +329,7 @@ export default function VersionHistoryClient() {
       </div>
 
       <p className="text-sm text-muted-foreground" aria-live="polite">
-        {loading ? "Loading…" : `${total} versions`}
+        {loading ? "چاوەڕوان بە…" : `${total} versions`}
       </p>
 
       <div className="rek-table-shell">
@@ -444,7 +444,7 @@ export default function VersionHistoryClient() {
                         <button
                           type="button"
                           className="rounded-lg p-1.5 text-primary hover:bg-primary/10 focus-visible:ring-[3px] focus-visible:ring-ring/35"
-                          aria-label="Restore version"
+                          aria-label="گەڕاندنەوەی وەشان"
                           onClick={() => setRestoreId(row.id)}
                         >
                           <RotateCcw size={15} />
@@ -510,7 +510,7 @@ export default function VersionHistoryClient() {
               </h2>
               <p className="text-sm text-muted-foreground">
                 {VERSION_ACTION_LABELS[viewRow.action] || viewRow.action} ·{" "}
-                {viewRow.userName || "System"} · {viewRow.date} {viewRow.time}
+                {viewRow.userName || "سیستەم"} · {viewRow.date} {viewRow.time}
               </p>
               {viewRow.comment ? (
                 <p className="mt-2 text-sm">{viewRow.comment}</p>
@@ -526,8 +526,8 @@ export default function VersionHistoryClient() {
             </Button>
           </div>
           <VersionCompare
-            leftLabel="Before"
-            rightLabel="After"
+            leftLabel="پێش"
+            rightLabel="دوای"
             diffs={viewRow.changedFields.map((f) => ({
               field: f.field,
               before: f.before,
@@ -545,10 +545,10 @@ export default function VersionHistoryClient() {
 
       <ConfirmDialog
         open={Boolean(restoreId)}
-        title="Restore this version?"
+        title="ئەم وەشانە بگەڕێنرێتەوە؟"
         description="The live record will be updated to match this version. A new version entry will be created for the restore action."
-        confirmText="Restore"
-        cancelText="Cancel"
+        confirmText="گەڕاندنەوە"
+        cancelText="هەڵوەشاندنەوە"
         loading={restoring}
         onCancel={() => setRestoreId(null)}
         onConfirm={() => void confirmRestore()}

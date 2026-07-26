@@ -161,7 +161,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
       message: `${employee.fullName} نوێکرایەوە.`,
       category: "EMPLOYEE",
       href: `/dashboard/employees/${employee.id}`,
-      entityType: "Employee",
+      entityType: "کارمەند",
       entityId: employee.id,
     });
 
@@ -170,7 +170,7 @@ export async function PUT(req: NextRequest, { params }: Params) {
       userId: user.id,
       module: "EMPLOYEE",
       action: "UPDATE",
-      entityType: "Employee",
+      entityType: "کارمەند",
       entityId: employee.id,
       summary: `کارمەند ${employee.fullName} نوێکرایەوە`,
       oldValue: {
@@ -240,7 +240,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
       category: "EMPLOYEE",
       priority: "HIGH",
       href: "/dashboard/employees",
-      entityType: "Employee",
+      entityType: "کارمەند",
       entityId: existing.id,
     });
 
@@ -249,7 +249,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
       userId: user.id,
       module: "EMPLOYEE",
       action: "DELETE",
-      entityType: "Employee",
+      entityType: "کارمەند",
       entityId: existing.id,
       summary: `کارمەند ${existing.fullName} سڕایەوە (soft)`,
       oldValue: { username: existing.username, status: existing.status },

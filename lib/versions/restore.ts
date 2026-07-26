@@ -109,7 +109,7 @@ export async function restoreEntityVersion(input: {
         };
         break;
       }
-      case "Customer": {
+      case "کڕیار": {
         const current = await db.customer.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
@@ -138,7 +138,7 @@ export async function restoreEntityVersion(input: {
         after = updated;
         break;
       }
-      case "Supplier": {
+      case "دابینکەر": {
         const current = await db.supplier.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
@@ -167,7 +167,7 @@ export async function restoreEntityVersion(input: {
         after = updated;
         break;
       }
-      case "Warehouse": {
+      case "کۆگا": {
         const current = await db.warehouse.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
@@ -197,7 +197,7 @@ export async function restoreEntityVersion(input: {
         };
         break;
       }
-      case "Employee": {
+      case "کارمەند": {
         const current = await db.employee.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
@@ -238,7 +238,7 @@ export async function restoreEntityVersion(input: {
         };
         break;
       }
-      case "Settings":
+      case "ڕێکخستنەکان":
       case "Company": {
         const current = await db.company.findFirst({
           where: { id: input.companyId },
@@ -294,7 +294,7 @@ export async function restoreEntityVersion(input: {
       }
       case "Sale":
       case "Purchase":
-      case "Invoice": {
+      case "پسوولە": {
         // Document entities: restore soft-deleted / cancelled via status fields only
         if (entityType === "Sale") {
           const current = await db.sale.findFirst({
@@ -360,7 +360,7 @@ export async function restoreEntityVersion(input: {
     }
   } catch (error) {
     console.error("RESTORE ENTITY VERSION ERROR:", error);
-    return { ok: false, message: "Restore failed" };
+    return { ok: false, message: "گەڕاندنەوە سەرنەکەوت" };
   }
 
   const comment =
@@ -389,7 +389,7 @@ export async function restoreEntityVersion(input: {
     action: "RESTORE",
     entityType,
     entityId:
-      entityType === "Settings" || entityType === "Company"
+      entityType === "ڕێکخستنەکان" || entityType === "Company"
         ? input.companyId
         : entityId,
     summary: comment,
@@ -404,7 +404,7 @@ export async function restoreEntityVersion(input: {
   void notifySafe({
     companyId: input.companyId,
     userId: input.userId,
-    title: "Version restored",
+    title: "وەشان گەڕێندرایەوە",
     message: comment,
     category: "SYSTEM",
     href: versionRecordHref(entityType, entityId),

@@ -35,7 +35,7 @@ export async function POST(req: NextRequest) {
     const row = await getAuditLogById(user.companyId, parsed.data.auditId);
     if (!row) {
       return NextResponse.json(
-        { success: false, message: "Not found" },
+        { success: false, message: "نەدۆزرایەوە" },
         { status: 404 }
       );
     }
@@ -102,7 +102,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: json.message || "Restore failed",
+          message: json.message || "گەڕاندنەوە سەرنەکەوت",
         },
         { status: 400 }
       );

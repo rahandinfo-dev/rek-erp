@@ -33,7 +33,7 @@ export default function DeleteSupplierButton({
         module: "suppliers",
         title: "Supplier archived",
         message: name ? `«${name}»` : undefined,
-        entityType: "Supplier",
+        entityType: "دابینکەر",
         entityId: id,
         onSoftDeleted: onDeleted,
         onRestored,

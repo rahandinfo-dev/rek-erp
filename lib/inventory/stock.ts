@@ -77,7 +77,7 @@ export const STOCK_STATUS_LABELS_KU: Record<StockStatus, string> = {
 export const STOCK_STATUS_LABELS_EN: Record<StockStatus, string> = {
   IN_STOCK: "Available",
   LOW_STOCK: "Low Stock",
-  OUT_OF_STOCK: "Out of Stock",
+  OUT_OF_STOCK: "کۆگا بەتاڵە",
 };
 
 export function formatStockQty(quantity: number, unit?: string | null) {

@@ -135,7 +135,7 @@ export default function DashboardShell({
             tabIndex={-1}
             className="rek-page rek-page-enter min-h-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain bg-background p-3 text-foreground outline-none sm:p-4 md:p-5 lg:p-6 xl:p-8"
           >
-            <ErrorBoundary area="dashboard.main" fallbackTitle="Page error">
+            <ErrorBoundary area="dashboard.main" fallbackTitle="هەڵەی پەڕە">
               {children}
             </ErrorBoundary>
           </main>

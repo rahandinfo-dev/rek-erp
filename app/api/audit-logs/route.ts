@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
       const row = await getAuditLogById(user.companyId, id);
       if (!row) {
         return NextResponse.json(
-          { success: false, message: "Not found" },
+          { success: false, message: "نەدۆزرایەوە" },
           { status: 404 }
         );
       }

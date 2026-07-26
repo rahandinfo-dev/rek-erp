@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       category: "SUPPLIER",
       priority: "NORMAL",
       href: `/dashboard/suppliers/${supplier.id}/edit`,
-      entityType: "Supplier",
+      entityType: "دابینکەر",
       entityId: supplier.id,
     });
 

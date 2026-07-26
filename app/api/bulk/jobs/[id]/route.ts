@@ -18,7 +18,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     const data = await serializeJob(id);
     if (!data) {
       return NextResponse.json(
-        { success: false, message: "Not found" },
+        { success: false, message: "نەدۆزرایەوە" },
         { status: 404 }
       );
     }
@@ -31,7 +31,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     });
     if (!owned) {
       return NextResponse.json(
-        { success: false, message: "Not found" },
+        { success: false, message: "نەدۆزرایەوە" },
         { status: 404 }
       );
     }

@@ -140,7 +140,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
       },
       {
         Section: "Summary",
-        Label: "Expenses",
+        Label: "خەرجییەکان",
         Value: data.summary.expenses,
       },
       {
@@ -194,7 +194,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
         record={{
           id: "reports-current",
           moduleKey: "reports",
-          label: "Reports",
+          label: "ڕاپۆرتەکان",
           href: "/dashboard/reports",
           entityType: "Report",
         }}
@@ -232,7 +232,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
           <button
             type="button"
             onClick={() => {
-              void exportToExcel("reports.xlsx", "Reports", exportRows());
+              void exportToExcel("reports.xlsx", "ڕاپۆرتەکان", exportRows());
               markDownloaded("/dashboard/reports", "Reports Excel", "reports");
               appToast.success("Excel داگیرا.");
             }}
@@ -261,7 +261,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
         record={{
           id: "expenses-summary",
           moduleKey: "expenses",
-          label: "Expenses",
+          label: "خەرجییەکان",
           href: "/dashboard/reports",
           entityType: "Expense",
         }}

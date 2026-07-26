@@ -8,7 +8,7 @@ import { formatTime } from "@/lib/utils/datetime";
 function relativeSaved(savedAt: number | null, now: number) {
   if (!savedAt || !now) return "";
   const sec = Math.max(0, Math.floor((now - savedAt) / 1000));
-  if (sec < 5) return "just now";
+  if (sec < 5) return "ئێستا";
   if (sec < 60) return `${sec} seconds ago`;
   const min = Math.floor(sec / 60);
   if (min < 60) return `${min} min ago`;
@@ -27,18 +27,18 @@ export default function HeaderSaveStatus({
   const last = history[0];
   const savedLabel = relativeSaved(lastSavedAt, now);
 
-  let text = "All Changes Saved";
+  let text = "هەموو گۆڕانکارییەکان پاشەکەوتکران";
   let tone =
     "bg-[color-mix(in_srgb,var(--success)_12%,transparent)] text-[var(--success)]";
 
   if (aggregateState === "saving") {
-    text = "Saving...";
+    text = "پاشەکەوت دەکرێت…";
     tone = "bg-[color-mix(in_srgb,var(--info)_12%,transparent)] text-[var(--info)]";
   } else if (aggregateState === "error") {
-    text = "Save Failed";
+    text = "پاشەکەوت سەرنەکەوت";
     tone = "bg-destructive/10 text-destructive";
   } else if (hasUnsaved || aggregateState === "modified") {
-    text = "Unsaved Changes";
+    text = "گۆڕانکاری پاشەکەوتنەکراو";
     tone = "bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200";
   } else if (savedLabel) {
     text = `Saved ${savedLabel}`;

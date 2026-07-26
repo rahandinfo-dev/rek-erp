@@ -144,7 +144,7 @@ export default function RecoveryCenter() {
                       value={renameValue}
                       onChange={(e) => setRenameValue(e.target.value)}
                       className="h-9 flex-1 rounded-xl border border-border bg-background px-3 text-sm"
-                      placeholder="Rename session"
+                      placeholder="ناوگۆڕینی دانیشتن"
                       autoFocus
                     />
                     <button
@@ -183,7 +183,7 @@ export default function RecoveryCenter() {
                       setRenameValue(s.title || label);
                     }}
                     className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-border px-3 text-sm font-bold"
-                    title="Rename"
+                    title="ناوگۆڕین"
                   >
                     <Pencil size={14} />
                   </button>
@@ -191,7 +191,7 @@ export default function RecoveryCenter() {
                     type="button"
                     onClick={() => setDeleteKey(s.moduleKey)}
                     className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-destructive/30 px-3 text-sm font-bold text-destructive"
-                    title="Delete"
+                    title="سڕینەوە"
                   >
                     <Trash2 size={14} />
                   </button>
@@ -213,9 +213,9 @@ export default function RecoveryCenter() {
 
       <ConfirmDialog
         open={Boolean(deleteKey)}
-        title="Delete Session"
+        title="سڕینەوەی دانیشتن"
         description="Remove this recovery snapshot? Form drafts for the module may remain until discarded separately."
-        confirmText="Delete"
+        confirmText="سڕینەوە"
         onCancel={() => setDeleteKey(null)}
         onConfirm={async () => {
           if (deleteKey) await discardSession(deleteKey);
@@ -225,7 +225,7 @@ export default function RecoveryCenter() {
 
       <ConfirmDialog
         open={confirmAll}
-        title="Delete All Sessions"
+        title="سڕینەوەی هەموو دانیشتنەکان"
         description="Remove every unfinished recovery snapshot for your account?"
         confirmText="Delete All"
         onCancel={() => setConfirmAll(false)}

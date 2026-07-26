@@ -149,7 +149,7 @@ async function allocateSequence(
     });
     return created.nextValue - 1;
   } catch {
-    // Concurrent create â€” increment existing
+    // Concurrent create — increment existing
     const updated = await tx.numberingCounter.update({
       where: {
         companyId_moduleKey_periodKey: {
@@ -184,7 +184,7 @@ export async function generateDocumentNumber(
 
   const rule = await getNumberingRule(ctx.companyId, moduleKey);
   if (!rule.enabled) {
-    // Legacy fallback â€” timestamp-based, still unique
+    // Legacy fallback — timestamp-based, still unique
     const stamp = `${moduleKey.slice(0, 3).toUpperCase()}-${Date.now()}`;
     return { value: stamp.slice(0, 64), sequential: 0, fromOverride: false };
   }

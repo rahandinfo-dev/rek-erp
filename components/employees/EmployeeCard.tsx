@@ -42,7 +42,7 @@ export default function EmployeeCard({
         moduleKey: "employees",
         label: employee.fullName,
         href: `/dashboard/employees/${employee.id}`,
-        entityType: "Employee",
+        entityType: "کارمەند",
         archived: employee.status !== "ACTIVE",
       }}
     >

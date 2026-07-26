@@ -70,7 +70,7 @@ export function searchOfflineIndex(
           ["product", "sku", "barcode"].includes(x.item.type)) ||
         (typeFilter === "reports" && x.item.type === "reports") ||
         (typeFilter === "settings" &&
-          (x.item.type === "settings" || x.item.module === "Settings"))
+          (x.item.type === "settings" || x.item.module === "ڕێکخستنەکان"))
       );
     })
     .sort((a, b) => b.score - a.score)

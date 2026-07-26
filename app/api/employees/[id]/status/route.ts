@@ -68,7 +68,7 @@ export async function PATCH(req: NextRequest, { params }: Params) {
       message: `${employee.fullName}: ${EMPLOYEE_STATUS_LABELS[status]}`,
       category: "EMPLOYEE",
       href: `/dashboard/employees/${employee.id}`,
-      entityType: "Employee",
+      entityType: "کارمەند",
       entityId: employee.id,
     });
 

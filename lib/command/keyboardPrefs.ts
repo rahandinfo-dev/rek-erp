@@ -33,7 +33,7 @@ export const DEFAULT_BINDINGS: Record<string, ShortcutBinding> = {
   "page-search": { keys: "Ctrl+F" },
   refresh: { keys: "Ctrl+R" },
   duplicate: { keys: "Ctrl+D" },
-  "delete-selected": { keys: "Delete" },
+  "delete-selected": { keys: "سڕینەوە" },
   "nav-1": { keys: "Ctrl+1" },
   "nav-2": { keys: "Ctrl+2" },
   "nav-3": { keys: "Ctrl+3" },

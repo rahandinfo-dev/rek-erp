@@ -249,7 +249,7 @@ export default function AiAssistantPanel() {
           ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Ask anything…"
+          placeholder="هەر پرسیارێک بکە…"
           disabled={busy}
           className="h-10 flex-1 rounded-xl border border-border bg-background px-3 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
         />

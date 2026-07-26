@@ -74,8 +74,8 @@ function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
             variant="outline"
             size="icon"
             onClick={() => toggleAiAssistant()}
-            aria-label="Open AI Assistant"
-            title="AI Assistant"
+            aria-label="کردنەوەی یاریدەدەری زیرەک"
+            title="یاریدەدەری زیرەک"
             className="size-10 shrink-0 rounded-xl border-border bg-card shadow-none"
           >
             <Sparkles size={18} aria-hidden />

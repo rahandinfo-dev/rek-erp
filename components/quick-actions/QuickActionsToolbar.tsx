@@ -81,7 +81,7 @@ export default function QuickActionsToolbar({
     <>
       <div
         role="toolbar"
-        aria-label="Quick actions"
+        aria-label="کردارە خێراکان"
         className={cn(
           "flex flex-wrap items-center gap-1.5 rounded-2xl border border-primary/20 bg-primary/5 px-3 py-2",
           className

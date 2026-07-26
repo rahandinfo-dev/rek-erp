@@ -184,9 +184,9 @@ export default function NotificationBell() {
         <div className="absolute left-0 z-50 mt-2 w-[min(92vw,380px)] overflow-hidden rounded-3xl border border-[rgba(255, 174, 66,0.12)] bg-white shadow-xl shadow-[#FFAE42]/10">
           <div className="flex items-center justify-between border-b border-[rgba(255, 174, 66,0.08)] px-4 py-3">
             <div>
-              <h3 className="font-bold text-[#1f1218]">Ù†Ø§ÙˆÛ•Ù†Ø¯ÛŒ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒ</h3>
+              <h3 className="font-bold text-[#1f1218]">ناوەندی ئاگاداری</h3>
               <p className="text-xs text-[#6b5560]">
-                {unreadCount} Ù†Û•Ø®ÙˆÛŽÙ†Ø¯Ø±Ø§Ùˆ
+                {unreadCount} نەخوێندراو
               </p>
             </div>
             <button
@@ -195,20 +195,20 @@ export default function NotificationBell() {
               className="inline-flex items-center gap-1 rounded-xl px-2 py-1 text-xs font-semibold text-[#FFAE42] hover:bg-[#FFF8EF]"
             >
               <CheckCheck size={14} />
-              Ø®ÙˆÛŽÙ†Ø¯Ù†Û•ÙˆÛ•ÛŒ Ù‡Û•Ù…ÙˆÙˆ
+              خوێندنەوەی هەموو
             </button>
           </div>
 
           <div className="max-h-[420px] overflow-y-auto">
             {loading && items.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-slate-500">
-                Ú†Ø§ÙˆÛ•Ú•ÛŽ Ø¨Ú©Û•...
+                چاوەڕێ بکە...
               </p>
             ) : null}
 
             {!loading && items.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-slate-500">
-                Ù‡ÛŒÚ† Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú© Ù†ÛŒÛŒÛ•
+                هیچ ئاگادارییەک نییە
               </p>
             ) : null}
 
@@ -247,7 +247,7 @@ export default function NotificationBell() {
             onClick={() => setOpen(false)}
             className="flex items-center justify-center gap-2 border-t border-[rgba(255, 174, 66,0.08)] bg-[#FFF8EF]/50 px-4 py-3 text-sm font-bold text-[#FFAE42] transition hover:bg-[#FFF8EF]"
           >
-            Ú©Ø±Ø¯Ù†Û•ÙˆÛ•ÛŒ Ù†Ø§ÙˆÛ•Ù†Ø¯ÛŒ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒ
+            کردنەوەی ناوەندی ئاگاداری
             <ExternalLink size={14} />
           </Link>
         </div>

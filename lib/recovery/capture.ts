@@ -145,7 +145,7 @@ export function captureDomSnapshot(pathname: string, search: string): {
         : moduleKeyHint.includes("product")
           ? "products"
           : "general"
-    ] || "Session";
+    ] || "دانیشتن";
 
   const payload: RecoveryPayload = {
     pathname,

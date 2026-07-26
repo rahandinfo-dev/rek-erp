@@ -159,7 +159,7 @@ const makeMain =
       category: "WAREHOUSE",
       priority: "NORMAL",
       href: `/dashboard/werehouse/${warehouse.id}`,
-      entityType: "Warehouse",
+      entityType: "کۆگا",
       entityId: warehouse.id,
     });
 
@@ -168,7 +168,7 @@ const makeMain =
       userId: user.id,
       module: "WAREHOUSE",
       action: "CREATE",
-      entityType: "Warehouse",
+      entityType: "کۆگا",
       entityId: warehouse.id,
       summary: `کۆگای ${warehouse.name} دروستکرا`,
       newValue: { name: warehouse.name, code: warehouse.code },

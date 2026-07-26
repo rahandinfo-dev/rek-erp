@@ -20,7 +20,7 @@ export default function UndoToast({
   id,
   title,
   message,
-  undoLabel = "Undo",
+  undoLabel = "پاشگەزبوونەوە",
   durationMs,
   onUndo,
 }: Props) {

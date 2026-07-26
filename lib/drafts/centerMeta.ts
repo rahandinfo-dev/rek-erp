@@ -43,25 +43,25 @@ export type DraftListItem = {
 };
 
 const MODULE_LABELS: Record<string, string> = {
-  products: "Products",
-  sales: "Sales",
-  purchases: "Purchases",
-  invoices: "Invoices",
-  customers: "Customers",
-  suppliers: "Suppliers",
-  warehouses: "Warehouses",
-  employees: "Employees",
-  reports: "Reports",
-  expenses: "Expenses",
-  settings: "Settings",
-  analytics: "Analytics",
-  dashboard: "Dashboard Layout",
-  notifications: "Notifications",
-  calculator: "Calculator",
-  brands: "Brands",
-  categories: "Categories",
-  units: "Units",
-  other: "Other",
+  products: "بەرهەمەکان",
+  sales: "فرۆشتن",
+  purchases: "کڕین",
+  invoices: "پسوولەکان",
+  customers: "کڕیارەکان",
+  suppliers: "دابینکەران",
+  warehouses: "کۆگاکان",
+  employees: "کارمەندان",
+  reports: "ڕاپۆرتەکان",
+  expenses: "خەرجییەکان",
+  settings: "ڕێکخستنەکان",
+  analytics: "شیکاری",
+  dashboard: "شێوازی داشبۆرد",
+  notifications: "ئاگادارییەکان",
+  calculator: "ژمێرەر",
+  brands: "براندەکان",
+  categories: "پۆلەکان",
+  units: "یەکەکان",
+  other: "هیتر",
 };
 
 export function moduleLabel(moduleKey: string) {
@@ -92,26 +92,26 @@ export function moduleFromDraftKey(key: string): string {
 
 export function defaultTitleForKey(key: string): string {
   const map: Record<string, string> = {
-    [DRAFT_KEYS.saleNew]: "New Sale",
-    [DRAFT_KEYS.purchaseNew]: "New Purchase",
-    [DRAFT_KEYS.productNew]: "New Product",
+    [DRAFT_KEYS.saleNew]: "فرۆشتنی نوێ",
+    [DRAFT_KEYS.purchaseNew]: "کڕینی نوێ",
+    [DRAFT_KEYS.productNew]: "بەرهەمی نوێ",
     [DRAFT_KEYS.productEdit]: "Edit Product",
     [DRAFT_KEYS.companySettings]: "Company Settings",
-    [DRAFT_KEYS.employeeNew]: "New Employee",
+    [DRAFT_KEYS.employeeNew]: "کارمەندی نوێ",
     [DRAFT_KEYS.employeeEdit]: "Edit Employee",
-    [DRAFT_KEYS.customerNew]: "New Customer",
+    [DRAFT_KEYS.customerNew]: "کڕیاری نوێ",
     [DRAFT_KEYS.customerEdit]: "Edit Customer",
-    [DRAFT_KEYS.supplierNew]: "New Supplier",
+    [DRAFT_KEYS.supplierNew]: "دابینکەری نوێ",
     [DRAFT_KEYS.supplierEdit]: "Edit Supplier",
-    [DRAFT_KEYS.warehouseNew]: "New Warehouse",
+    [DRAFT_KEYS.warehouseNew]: "کۆگای نوێ",
     [DRAFT_KEYS.warehouseEdit]: "Edit Warehouse",
     [DRAFT_KEYS.reportsFilters]: "Report Filters",
-    [DRAFT_KEYS.calculator]: "Calculator",
-    [DRAFT_KEYS.brandNew]: "New Brand",
+    [DRAFT_KEYS.calculator]: "ژمێرەر",
+    [DRAFT_KEYS.brandNew]: "براندی نوێ",
     [DRAFT_KEYS.brandEdit]: "Edit Brand",
-    [DRAFT_KEYS.categoryNew]: "New Category",
+    [DRAFT_KEYS.categoryNew]: "پۆلی نوێ",
     [DRAFT_KEYS.categoryEdit]: "Edit Category",
-    [DRAFT_KEYS.unitNew]: "New Unit",
+    [DRAFT_KEYS.unitNew]: "یەکەی نوێ",
     [DRAFT_KEYS.unitEdit]: "Edit Unit",
   };
   if (map[key]) return map[key];
@@ -231,7 +231,7 @@ export const ARCHIVE_AFTER_MS = 90 * 24 * 60 * 60 * 1000;
 
 export function relativeTime(ts: number) {
   const sec = Math.max(0, Math.floor((Date.now() - ts) / 1000));
-  if (sec < 45) return "just now";
+  if (sec < 45) return "ئێستا";
   if (sec < 3600) return `${Math.floor(sec / 60)}m ago`;
   if (sec < 86400) return `${Math.floor(sec / 3600)}h ago`;
   return `${Math.floor(sec / 86400)}d ago`;

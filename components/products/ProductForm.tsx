@@ -157,7 +157,7 @@ export default function ProductForm({
       clearDraft();
       form.reset();
       const id = data.data?.id as string | undefined;
-      const name = (data.data?.name as string | undefined) || "New Product";
+      const name = (data.data?.name as string | undefined) || "بەرهەمی نوێ";
       if (id) {
         markCreated(`/dashboard/products/${id}`, name, "products");
       }

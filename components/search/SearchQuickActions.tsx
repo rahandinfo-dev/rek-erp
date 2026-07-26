@@ -36,9 +36,9 @@ export default function SearchQuickActions({
       await navigator.clipboard.writeText(
         `${window.location.origin}${item.href}`
       );
-      appToast.success("Link copied");
+      appToast.success("بەستەر کۆپی کرا");
     } catch {
-      appToast.error("Copy failed");
+      appToast.error("کۆپیکردن سەرنەکەوت");
     }
     onClose();
   }
@@ -97,7 +97,7 @@ export default function SearchQuickActions({
         onClick={onFavorite}
       >
         <Star size={12} className={isFavorite ? "fill-amber-400 text-amber-500" : ""} />{" "}
-        {isFavorite ? "Unfavorite" : "Favorite"}
+        {isFavorite ? "لابردن لە دڵخواز" : "دڵخواز"}
       </button>
       <button
         type="button"

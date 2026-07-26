@@ -38,16 +38,16 @@ export function versionEntityPageHref(
 export function normalizeEntityType(raw: string): VersionEntityType {
   const t = raw.toLowerCase();
   if (t.includes("product")) return "Product";
-  if (t.includes("customer")) return "Customer";
-  if (t.includes("supplier")) return "Supplier";
+  if (t.includes("customer")) return "کڕیار";
+  if (t.includes("supplier")) return "دابینکەر";
   if (t.includes("sale")) return "Sale";
   if (t.includes("purchase")) return "Purchase";
-  if (t.includes("invoice")) return "Invoice";
-  if (t.includes("warehouse") || t.includes("werehouse")) return "Warehouse";
-  if (t.includes("employee")) return "Employee";
+  if (t.includes("invoice")) return "پسوولە";
+  if (t.includes("warehouse") || t.includes("werehouse")) return "کۆگا";
+  if (t.includes("employee")) return "کارمەند";
   if (t.includes("expense")) return "Expense";
   if (t.includes("report")) return "Report";
-  if (t.includes("setting") || t.includes("company")) return "Settings";
+  if (t.includes("setting") || t.includes("company")) return "ڕێکخستنەکان";
   if (t.includes("categor")) return "Category";
   if (t.includes("brand")) return "Brand";
   if (t.includes("unit")) return "Unit";

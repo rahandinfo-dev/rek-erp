@@ -38,7 +38,7 @@ export async function POST(req: NextRequest, { params }: Params) {
       userId: user.id,
       module: "WAREHOUSE",
       action: "RESTORE",
-      entityType: "Warehouse",
+      entityType: "کۆگا",
       entityId: id,
       summary: `Warehouse restored: ${warehouse.name}`,
       req,

@@ -41,7 +41,7 @@ export default function AutoSaveSettingsPanel({
               setPrefs({ autoSaveEnabled: e.target.checked })
             }
             className="size-4 accent-primary"
-            aria-label="Enable Auto Save"
+            aria-label="چالاککردنی پاشەکەوتی خۆکار"
           />
         </label>
 

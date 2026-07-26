@@ -64,7 +64,7 @@ export async function PATCH(req: NextRequest) {
     });
     if (!row) {
       return NextResponse.json(
-        { success: false, message: "Not found" },
+        { success: false, message: "نەدۆزرایەوە" },
         { status: 404 }
       );
     }

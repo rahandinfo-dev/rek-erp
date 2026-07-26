@@ -117,7 +117,7 @@ export default function BulkCenter() {
                                 })
                                 .catch((e) =>
                                   appToast.error(
-                                    e instanceof Error ? e.message : "Undo failed"
+                                    e instanceof Error ? e.message : "پاشگەزبوونەوە سەرنەکەوت"
                                   )
                                 );
                             }}

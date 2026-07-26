@@ -151,15 +151,15 @@ export function entityTypeFor(moduleKey: string): string {
     case "purchases":
       return "Purchase";
     case "invoices":
-      return "Invoice";
+      return "پسوولە";
     case "customers":
-      return "Customer";
+      return "کڕیار";
     case "suppliers":
-      return "Supplier";
+      return "دابینکەر";
     case "warehouses":
-      return "Warehouse";
+      return "کۆگا";
     case "employees":
-      return "Employee";
+      return "کارمەند";
     case "categories":
       return "Category";
     case "brands":

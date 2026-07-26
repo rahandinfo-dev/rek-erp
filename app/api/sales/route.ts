@@ -288,7 +288,7 @@ export async function POST(req: NextRequest) {
       category: "INVOICE",
       priority: "NORMAL",
       href: `/dashboard/invoices/${invoice.id}`,
-      entityType: "Invoice",
+      entityType: "پسوولە",
       entityId: invoice.id,
     });
 

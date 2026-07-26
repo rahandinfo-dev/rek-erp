@@ -314,7 +314,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
               value={taxNumber}
               onChange={(e) => setTaxNumber(e.target.value)}
               className={inputClassName}
-              placeholder="Tax Number"
+              placeholder="ژمارەی باج"
             />
           </FormField>
         </div>

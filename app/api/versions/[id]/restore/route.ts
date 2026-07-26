@@ -45,7 +45,7 @@ export async function POST(req: NextRequest, { params }: Props) {
 
     return NextResponse.json({
       success: true,
-      message: "Version restored",
+      message: "وەشان گەڕێندرایەوە",
       data: result,
     });
   } catch (error) {

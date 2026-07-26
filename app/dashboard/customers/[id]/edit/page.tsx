@@ -29,7 +29,7 @@ export default async function EditCustomerPage({ params }: Props) {
 
       <EditCustomerForm id={id} />
 
-      <RecordVersionHistorySection entityType="Customer" entityId={id} />
+      <RecordVersionHistorySection entityType="کڕیار" entityId={id} />
     </div>
   );
 }

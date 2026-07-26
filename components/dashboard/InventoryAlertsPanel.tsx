@@ -94,10 +94,10 @@ export default function InventoryAlertsPanel({
           </span>
           <div>
             <h2 className="text-lg font-black text-[#1f1218] sm:text-xl">
-              Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©Ø§Ù†ÛŒ Ú©Û†Ú¯Ø§
+              ئاگادارییەکانی کۆگا
             </h2>
             <p className="text-xs text-slate-500">
-              Ú•ÙˆÙˆØ¯Ø§ÙˆÛ•Ú©Ø§Ù†ÛŒ Ú•Ø§Ø³ØªÛ•Ù‚ÛŒÙ†Û•ÛŒ Ø¯Ø§ØªØ§Ø¨Û•ÛŒØ³ Â· Ù†ÙˆÛŽØªØ±ÛŒÙ† ÛŒÛ•Ú©Û•Ù…
+              ڕووداوەکانی ڕاستەقینەی داتابەیس · نوێترین یەکەم
             </p>
           </div>
         </div>
@@ -105,7 +105,7 @@ export default function InventoryAlertsPanel({
           href="/dashboard/notifications"
           className="text-xs font-bold text-[#FFAE42] hover:underline"
         >
-          Ù†Ø§ÙˆÛ•Ù†Ø¯ÛŒ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒ
+          ناوەندی ئاگاداری
         </Link>
       </div>
 
@@ -114,7 +114,7 @@ export default function InventoryAlertsPanel({
           <div className="px-5 py-10 text-center">
             <Package className="mx-auto text-[#FFAE42]/40" size={28} />
             <p className="mt-3 font-bold text-slate-600">
-              Ù‡ÛŒÚ† Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©ÛŒ Ú©Û†Ú¯Ø§ Ù†ÛŒÛŒÛ•
+              هیچ ئاگادارییەکی کۆگا نییە
             </p>
           </div>
         ) : (

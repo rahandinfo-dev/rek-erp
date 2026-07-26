@@ -48,7 +48,7 @@ type Props = {
 type Scope = "all" | "mine" | "team";
 type SortKey = "newest" | "oldest";
 
-const DEVICES = ["Desktop", "Mobile", "Tablet", "Other", "Unknown"];
+const DEVICES = ["Desktop", "Mobile", "Tablet", "هیتر", "Unknown"];
 const STATUSES = ["success", "failed", "pending", "warning"];
 
 export default function ActivityTimeline({
@@ -106,7 +106,7 @@ export default function ActivityTimeline({
           const cached = readActivityCache(userId || viewerId);
           setItems(cached);
           setHasMore(false);
-          appToast.info("Offline", "Showing cached activity");
+          appToast.info("دەرهێڵ", "Showing cached activity");
           return;
         }
 
@@ -142,7 +142,7 @@ export default function ActivityTimeline({
         const cached = readActivityCache(userId || viewerId);
         if (cached.length) {
           setItems(cached);
-          appToast.info("Offline", "Showing cached activity");
+          appToast.info("دەرهێڵ", "Showing cached activity");
         } else appToast.error("Failed to load activity");
       } finally {
         if (!opts?.silent) setLoading(false);
@@ -322,20 +322,20 @@ export default function ActivityTimeline({
       });
       const json = await res.json();
       if (!res.ok || !json.success) {
-        appToast.error(json.message || "Restore failed");
+        appToast.error(json.message || "گەڕاندنەوە سەرنەکەوت");
         return;
       }
       appToast.success("Record restored");
       void load();
     } catch {
-      appToast.error("Restore failed");
+      appToast.error("گەڕاندنەوە سەرنەکەوت");
     }
   }
 
   function copyLink(row: AuditLogRow) {
     const url = `${window.location.origin}/dashboard/activity?id=${row.id}`;
     void navigator.clipboard?.writeText(url);
-    appToast.success("Link copied");
+    appToast.success("بەستەر کۆپی کرا");
   }
 
   function exportJson() {
@@ -346,7 +346,7 @@ export default function ActivityTimeline({
     a.href = URL.createObjectURL(blob);
     a.download = `activity-${Date.now()}.json`;
     a.click();
-    appToast.success("Exported");
+    appToast.success("هەناردە کرا");
   }
 
   const diffs = compareRow
@@ -529,7 +529,7 @@ export default function ActivityTimeline({
 
       {groups.length === 0 ? (
         <div className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
-          {loading ? "Loading activity…" : "No activity found."}
+          {loading ? "چالاکی باردەکرێت…" : "No activity found."}
         </div>
       ) : (
         <div className="space-y-8">
@@ -554,7 +554,7 @@ export default function ActivityTimeline({
                         </p>
                         <p className="mt-0.5 text-xs text-muted-foreground">
                           <span className="font-bold text-foreground">
-                            {row.userName || "System"}
+                            {row.userName || "سیستەم"}
                           </span>
                           {" · "}
                           {AUDIT_ACTION_LABELS[row.action] || row.action}
@@ -591,19 +591,19 @@ export default function ActivityTimeline({
                       />
                       <ActionBtn
                         icon={GitCompare}
-                        label="Compare"
+                        label="بەراورد"
                         onClick={() => void openVersions(row)}
                       />
                       {canRestoreVersion(row) && restoreApiFor(row) ? (
                         <ActionBtn
                           icon={RotateCcw}
-                          label="Restore"
+                          label="گەڕاندنەوە"
                           onClick={() => void restore(row)}
                         />
                       ) : null}
                       <ActionBtn
                         icon={Link2}
-                        label="Copy Link"
+                        label="کۆپیکردنی بەستەر"
                         onClick={() => copyLink(row)}
                       />
                       {recordHrefFor(row) ? (
@@ -633,14 +633,14 @@ export default function ActivityTimeline({
       )}
 
       {details ? (
-        <Modal title="Activity Details" onClose={() => setDetails(null)}>
+        <Modal title="وردەکاری چالاکی" onClose={() => setDetails(null)}>
           <dl className="space-y-2 text-sm">
             {[
-              ["User", details.userName || "System"],
+              ["User", details.userName || "سیستەم"],
               ["Action", AUDIT_ACTION_LABELS[details.action] || details.action],
-              ["Module", AUDIT_MODULE_LABELS[details.module] || details.module],
+              ["مۆدیوول", AUDIT_MODULE_LABELS[details.module] || details.module],
               ["Record", details.recordName],
-              ["Status", AUDIT_STATUS_LABELS[details.status] || details.status],
+              ["دۆخ", AUDIT_STATUS_LABELS[details.status] || details.status],
               ["Date", `${details.date} ${details.time}`],
               ["Device", details.device || "—"],
               ["IP", details.ipAddress || "—"],
@@ -664,7 +664,7 @@ export default function ActivityTimeline({
 
       {compareRow ? (
         <Modal
-          title="Compare Changes"
+          title="بەراوردکردنی گۆڕانکارییەکان"
           onClose={() => {
             setCompareRow(null);
             setVersions([]);
@@ -774,7 +774,7 @@ function Modal({
       <button
         type="button"
         className="absolute inset-0"
-        aria-label="Close"
+        aria-label="داخستن"
         onClick={onClose}
       />
       <div

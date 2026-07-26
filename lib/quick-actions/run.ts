@@ -118,7 +118,7 @@ export async function runQuickAction(
           }
         } else {
           await runBulk(moduleKey, "duplicate", ids);
-          appToast.success("Duplicated");
+          appToast.success("دووبارەکرایەوە");
         }
         deps.onComplete?.();
         return { ok: true };
@@ -126,7 +126,7 @@ export async function runQuickAction(
       case "copy": {
         const text = `${primary.label}\n${absoluteUrl(href)}`;
         await navigator.clipboard.writeText(text);
-        appToast.success("Copied");
+        appToast.success("کۆپی کرا");
         return { ok: true };
       }
 
@@ -161,14 +161,14 @@ export async function runQuickAction(
             deleteUrl: url,
             restoreUrl: restore || url,
             module: moduleKey as never,
-            title: "Deleted",
+            title: "سڕایەوە",
             entityType: entityTypeFor(moduleKey),
             entityId: primary.id,
             onSoftDeleted: () => deps.onComplete?.(),
           });
         } else {
           await runBulk(moduleKey, "delete", ids);
-          appToast.success("Deleted");
+          appToast.success("سڕایەوە");
           deps.onComplete?.();
         }
         return { ok: true };
@@ -184,13 +184,13 @@ export async function runQuickAction(
           const res = await fetch(url, { method: "POST" });
           const json = await res.json();
           if (!json.success) {
-            appToast.error(json.message || "Restore failed");
+            appToast.error(json.message || "گەڕاندنەوە سەرنەکەوت");
             return { ok: false };
           }
-          appToast.success("Restored");
+          appToast.success("گەڕێندرایەوە");
         } else {
           await runBulk(moduleKey, "restore", ids);
-          appToast.success("Restored");
+          appToast.success("گەڕێندرایەوە");
         }
         deps.onComplete?.();
         return { ok: true };
@@ -212,17 +212,17 @@ export async function runQuickAction(
 
       case "export_pdf":
         await runBulk(moduleKey, "export_pdf", ids);
-        appToast.success("Exported");
+        appToast.success("هەناردە کرا");
         return { ok: true };
 
       case "export_excel":
         await runBulk(moduleKey, "export_excel", ids);
-        appToast.success("Exported");
+        appToast.success("هەناردە کرا");
         return { ok: true };
 
       case "export_csv":
         await runBulk(moduleKey, "export_csv", ids);
-        appToast.success("Exported");
+        appToast.success("هەناردە کرا");
         return { ok: true };
 
       case "share": {
@@ -242,7 +242,7 @@ export async function runQuickAction(
 
       case "copy_link":
         await navigator.clipboard.writeText(absoluteUrl(href));
-        appToast.success("Link copied");
+        appToast.success("بەستەر کۆپی کرا");
         return { ok: true };
 
       case "open_new_tab":
@@ -293,7 +293,7 @@ export async function runQuickAction(
     }
   } catch (e) {
     console.error("Quick action error:", e);
-    appToast.error(e instanceof Error ? e.message : "Action failed");
+    appToast.error(e instanceof Error ? e.message : "کردار سەرنەکەوت");
     return { ok: false };
   }
 }

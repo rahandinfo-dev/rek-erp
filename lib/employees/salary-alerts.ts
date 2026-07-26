@@ -53,7 +53,7 @@ export async function runSalaryAlerts(
     db.notification.findMany({
       where: {
         companyId,
-        entityType: "Employee",
+        entityType: "کارمەند",
         deletedAt: null,
         createdAt: { gte: today },
         metadata: {
@@ -110,7 +110,7 @@ export async function runSalaryAlerts(
       category: "EMPLOYEE",
       priority: overdue || daysUntil <= 2 ? "HIGH" : "NORMAL",
       href: `/dashboard/employees/${employee.id}`,
-      entityType: "Employee",
+      entityType: "کارمەند",
       entityId: employee.id,
       metadata: {
         kind: "SALARY_APPROACHING",

@@ -45,7 +45,7 @@ export async function POST(_req: NextRequest, { params }: Props) {
       companyId,
       module: "CUSTOMER",
       action: "RESTORE",
-      entityType: "Customer",
+      entityType: "کڕیار",
       entityId: customer.id,
       summary: `کڕیار گەڕێنرایەوە: ${customer.name}`,
       oldValue: { active: false },

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   },
   description: `${BRAND.productName} — ${BRAND.taglineEn}. ${BRAND.taglineKu}`,
   applicationName: BRAND.productName,
-  keywords: [BRAND.nameEn, BRAND.nameKu, "ERP", "Inventory", "Sales"],
+  keywords: [BRAND.nameEn, BRAND.nameKu, "ERP", "ئینڤێنتۆری", "فرۆشتن"],
   authors: [{ name: BRAND.nameEn }],
   openGraph: {
     title: BRAND.productName,

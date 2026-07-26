@@ -59,7 +59,7 @@ export async function refreshAiAlerts(companyId: string): Promise<AiAlertView[]>
   if (analytics.summary.lowStockCount > 0) {
     desired.push({
       kind: "low_stock",
-      title: "Low stock detected",
+      title: "کەمی کۆگا دۆزرایەوە",
       message: `${analytics.summary.lowStockCount} products are at or below minimum stock.`,
       severity: "warning",
       href: "/dashboard/inventory",
@@ -136,7 +136,7 @@ export async function refreshAiAlerts(companyId: string): Promise<AiAlertView[]>
   if (analytics.summary.profitThisMonth < 0) {
     desired.push({
       kind: "negative_margin",
-      title: "Negative profit this month",
+      title: "قازانجی نەرێنی لەم مانگەدا",
       message: "This month's profit is negative — review costs and pricing.",
       severity: "critical",
       href: "/dashboard/reports",

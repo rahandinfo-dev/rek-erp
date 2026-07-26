@@ -61,13 +61,13 @@ export async function executeAiIntent(
         .join("\n");
       return {
         intent: "today_sales",
-        reply: `Today's sales: ${sales.length} orders · ${money(total)}.\n${lines || "No sales recorded yet today."}`,
+        reply: `فرۆشتنەکانی ئەمڕۆ: ${sales.length} داواکاری · ${money(total)}.\n${lines || "ئەمڕۆ هیچ فرۆشتنێک تۆمار نەکراوە."}`,
         links: [
-          { label: "Open Sales", href: "/dashboard/sales" },
-          { label: "Analytics", href: "/dashboard/analytics" },
+          { label: "کردنەوەی فرۆشتن", href: "/dashboard/sales" },
+          { label: "شیکاری", href: "/dashboard/analytics" },
         ],
         data: { count: sales.length, total },
-        suggestions: ["Compare this month with last month", "Sales analysis"],
+        suggestions: ["بەراوردکردنی ئەم مانگە لەگەڵ مانگی پێشوو", "شیکاری فرۆشتن"],
       };
     }
 
@@ -83,16 +83,16 @@ export async function executeAiIntent(
       ].join("\n");
       return {
         intent: "low_stock",
-        reply: `Stock alerts: ${analytics.summary.lowStockCount} low · ${analytics.summary.outOfStockCount} out of stock.\n${lines || "Inventory looks healthy."}`,
+        reply: `ئاگاداری کۆگا: ${analytics.summary.lowStockCount} کەم · ${analytics.summary.outOfStockCount} بەتاڵە.\n${lines || "ئینڤێنتۆری باش دیارە."}`,
         links: [
-          { label: "Inventory", href: "/dashboard/inventory" },
-          { label: "Products", href: "/dashboard/products" },
+          { label: "ئینڤێنتۆری", href: "/dashboard/inventory" },
+          { label: "بەرهەمەکان", href: "/dashboard/products" },
         ],
         data: {
           lowStockCount: analytics.summary.lowStockCount,
           outOfStockCount: analytics.summary.outOfStockCount,
         },
-        suggestions: ["Show smart recommendations", "Inventory analysis"],
+        suggestions: ["پێشنیارە زیرەکەکان پیشان بدە", "شیکاری ئینڤێنتۆری"],
       };
     }
 
@@ -100,12 +100,12 @@ export async function executeAiIntent(
       return {
         intent: "create_invoice",
         reply:
-          "Ready to create a new invoice. Open New Sale — a completed sale generates the invoice automatically.",
+          "ئامادەیت بۆ دروستکردنی پسوولەی نوێ. فرۆشتنی نوێ بکەرەوە — فرۆشتنی تەواوکراو خۆکارانە پسوولە دروست دەکات.",
         links: [
-          { label: "New Sale / Invoice", href: "/dashboard/sales/new" },
-          { label: "Invoices", href: "/dashboard/invoices" },
+          { label: "فرۆشتن / پسوولەی نوێ", href: "/dashboard/sales/new" },
+          { label: "پسوولەکان", href: "/dashboard/invoices" },
         ],
-        suggestions: ["Show today's sales", "Show unpaid invoices"],
+        suggestions: ["فرۆشتنەکانی ئەمڕۆ پیشان بدە", "پسوولە نەدراوەکان پیشان بدە"],
       };
 
     case "search_customer": {
@@ -113,9 +113,9 @@ export async function executeAiIntent(
       if (!q) {
         return {
           intent: "search_customer",
-          reply: "Tell me the customer name, e.g. “Search customer Ahmed”.",
-          links: [{ label: "Customers", href: "/dashboard/customers" }],
-          suggestions: ["Search customer Ahmed"],
+          reply: "ناوی کڕیارەکەم پێ بڵێ، بۆ نموونە «گەڕان بۆ کڕیار ئەحمەد».",
+          links: [{ label: "کڕیارەکان", href: "/dashboard/customers" }],
+          suggestions: ["گەڕان بۆ کڕیار ئەحمەد"],
         };
       }
       const hits = await runEnterpriseSearch({
@@ -132,7 +132,7 @@ export async function executeAiIntent(
               .join("\n")}`
           : `No customers matched “${q}”.`,
         links: [
-          { label: "Customers", href: "/dashboard/customers" },
+          { label: "کڕیارەکان", href: "/dashboard/customers" },
           ...items.slice(0, 3).map((h) => ({ label: h.title, href: h.href })),
         ],
         data: { total: hits.total },
@@ -167,14 +167,14 @@ export async function executeAiIntent(
         .join("\n");
       return {
         intent: "unpaid_invoices",
-        reply: `Credit / unpaid sales: ${credit.length} · ${money(total)} outstanding.\n${lines || "No credit sales found."}`,
+        reply: `فرۆشتنەکانی قەرز / نەدراو: ${credit.length} · ${money(total)} ماوە.\n${lines || "هیچ فرۆشتنی قەرزێک نەدۆزرایەوە."}`,
         links: [
-          { label: "Sales", href: "/dashboard/sales" },
-          { label: "Invoices", href: "/dashboard/invoices" },
-          { label: "Customers", href: "/dashboard/customers" },
+          { label: "فرۆشتن", href: "/dashboard/sales" },
+          { label: "پسوولەکان", href: "/dashboard/invoices" },
+          { label: "کڕیارەکان", href: "/dashboard/customers" },
         ],
         data: { count: credit.length, total },
-        suggestions: ["Customer insights", "Show active alerts"],
+        suggestions: ["تێڕوانینی کڕیار", "ئاگاداری چالاکەکان پیشان بدە"],
       };
     }
 
@@ -185,13 +185,13 @@ export async function executeAiIntent(
       });
       return {
         intent: "monthly_report",
-        reply: `Monthly report summary:\n• Revenue ${money(report.summary.revenue)}\n• Expenses ${money(report.summary.expenses)}\n• Profit ${money(report.summary.profit)}\n• Sales ${report.summary.salesCount} · Purchases ${report.summary.purchasesCount}`,
+        reply: `پوختەی ڕاپۆرتی مانگانە:\n• داهات ${money(report.summary.revenue)}\n• خەرجی ${money(report.summary.expenses)}\n• قازانج ${money(report.summary.profit)}\n• فرۆشتن ${report.summary.salesCount} · کڕین ${report.summary.purchasesCount}`,
         links: [
-          { label: "Open Reports", href: "/dashboard/reports" },
-          { label: "Analytics", href: "/dashboard/analytics" },
+          { label: "کردنەوەی ڕاپۆرتەکان", href: "/dashboard/reports" },
+          { label: "شیکاری", href: "/dashboard/analytics" },
         ],
         data: report.summary as unknown as Record<string, unknown>,
-        suggestions: ["Compare this month with last month", "Profit and loss summary"],
+        suggestions: ["بەراوردکردنی ئەم مانگە لەگەڵ مانگی پێشوو", "پوختەی قازانج و زیان"],
       };
     }
 
@@ -226,54 +226,54 @@ export async function executeAiIntent(
         lastRev > 0 ? Math.round((revDelta / lastRev) * 100) : thisM.revenueThisMonth > 0 ? 100 : 0;
       return {
         intent: "compare_months",
-        reply: `This month vs last month:\n• Revenue ${money(thisM.revenueThisMonth)} vs ${money(lastRev)} (${pct >= 0 ? "+" : ""}${pct}%)\n• Expenses ${money(thisM.expensesThisMonth)} vs ${money(lastExp)}\n• Profit ${money(thisM.profitThisMonth)} vs ${money(lastRev - lastExp)}\n• Orders ${thisM.salesCountThisMonth} vs ${lastSales._count}`,
+        reply: `ئەم مانگە بەرامبەر مانگی پێشوو:\n• داهات ${money(thisM.revenueThisMonth)} vs ${money(lastRev)} (${pct >= 0 ? "+" : ""}${pct}%)\n• خەرجی ${money(thisM.expensesThisMonth)} vs ${money(lastExp)}\n• قازانج ${money(thisM.profitThisMonth)} vs ${money(lastRev - lastExp)}\n• داواکاری ${thisM.salesCountThisMonth} vs ${lastSales._count}`,
         links: [
-          { label: "Analytics", href: "/dashboard/analytics" },
-          { label: "Reports", href: "/dashboard/reports" },
+          { label: "شیکاری", href: "/dashboard/analytics" },
+          { label: "ڕاپۆرتەکان", href: "/dashboard/reports" },
         ],
-        suggestions: ["Sales analysis", "Generate monthly report"],
+        suggestions: ["شیکاری فرۆشتن", "دروستکردنی ڕاپۆرتی مانگانە"],
       };
     }
 
     case "sales_analysis":
       return {
         intent: "sales_analysis",
-        reply: `Sales analysis:\n• Today ${money(analytics.summary.revenueToday)} · Month ${money(analytics.summary.revenueThisMonth)} · All-time ${money(analytics.summary.revenueTotal)}\n• Orders this month: ${analytics.summary.salesCountThisMonth}\n• Top product: ${analytics.topProducts[0]?.name || "—"}\n• Top customer: ${analytics.bestCustomers[0]?.name || "—"}`,
+        reply: `شیکاری فرۆشتن:\n• ئەمڕۆ ${money(analytics.summary.revenueToday)} · مانگ ${money(analytics.summary.revenueThisMonth)} · هەموو کات ${money(analytics.summary.revenueTotal)}\n• داواکاری this month: ${analytics.summary.salesCountThisMonth}\n• باشترین بەرهەم: ${analytics.topProducts[0]?.name || "—"}\n• باشترین کڕیار: ${analytics.bestCustomers[0]?.name || "—"}`,
         links: [
-          { label: "Sales", href: "/dashboard/sales" },
-          { label: "Analytics", href: "/dashboard/analytics" },
+          { label: "فرۆشتن", href: "/dashboard/sales" },
+          { label: "شیکاری", href: "/dashboard/analytics" },
         ],
-        suggestions: ["Top customers", "Best selling products"],
+        suggestions: ["باشترین کڕیارەکان", "زۆرترین فرۆشراوەکان"],
       };
 
     case "purchase_analysis":
       return {
         intent: "purchase_analysis",
-        reply: `Purchase analysis:\n• Today ${money(analytics.summary.expensesToday)} · Month ${money(analytics.summary.expensesThisMonth)} · All-time ${money(analytics.summary.expensesTotal)}\n• Purchases this month: ${analytics.summary.purchasesCountThisMonth}\n• Top supplier: ${analytics.topSuppliers[0]?.name || "—"}`,
+        reply: `شیکاری کڕین:\n• ئەمڕۆ ${money(analytics.summary.expensesToday)} · مانگ ${money(analytics.summary.expensesThisMonth)} · هەموو کات ${money(analytics.summary.expensesTotal)}\n• کڕینەکانی ئەم مانگە: ${analytics.summary.purchasesCountThisMonth}\n• باشترین دابینکەر: ${analytics.topSuppliers[0]?.name || "—"}`,
         links: [
-          { label: "Purchases", href: "/dashboard/purchases" },
-          { label: "Suppliers", href: "/dashboard/suppliers" },
+          { label: "کڕین", href: "/dashboard/purchases" },
+          { label: "دابینکەران", href: "/dashboard/suppliers" },
         ],
       };
 
     case "inventory_analysis":
       return {
         intent: "inventory_analysis",
-        reply: `Inventory analysis:\n• Health score ${analytics.summary.inventoryHealthScore}%\n• Value ${money(analytics.summary.inventoryValue)} · Units ${analytics.summary.inventoryUnits}\n• Low ${analytics.summary.lowStockCount} · Out ${analytics.summary.outOfStockCount} · At min ${analytics.summary.atMinimumCount}\n• Products ${analytics.summary.productsCount} · Warehouses ${analytics.summary.warehousesCount}`,
+        reply: `شیکاری ئینڤێنتۆری:\n• نمرەی تەندروستی ${analytics.summary.inventoryHealthScore}%\n• بەها ${money(analytics.summary.inventoryValue)} · یەکە ${analytics.summary.inventoryUnits}\n• کەم ${analytics.summary.lowStockCount} · بەتاڵ ${analytics.summary.outOfStockCount} · لە کەمترین ${analytics.summary.atMinimumCount}\n• بەرهەمەکان ${analytics.summary.productsCount} · کۆگاکان ${analytics.summary.warehousesCount}`,
         links: [
-          { label: "Inventory", href: "/dashboard/inventory" },
-          { label: "Warehouses", href: "/dashboard/werehouse" },
+          { label: "ئینڤێنتۆری", href: "/dashboard/inventory" },
+          { label: "کۆگاکان", href: "/dashboard/werehouse" },
         ],
-        suggestions: ["Find low stock products", "Show smart recommendations"],
+        suggestions: ["دۆزینەوەی بەرهەمە کەمەکان", "پێشنیارە زیرەکەکان پیشان بدە"],
       };
 
     case "profit_loss":
       return {
         intent: "profit_loss",
-        reply: `Profit & Loss:\n• Today profit ${money(analytics.summary.profitToday)} (loss ${money(analytics.summary.lossToday)})\n• This month profit ${money(analytics.summary.profitThisMonth)} · Gross ${money(analytics.summary.grossProfitThisMonth)}\n• All-time profit ${money(analytics.summary.profitTotal)}`,
+        reply: `قازانج و زیان:\n• ئەمڕۆ profit ${money(analytics.summary.profitToday)} (زیان ${money(analytics.summary.lossToday)})\n• قازانجی ئەم مانگە ${money(analytics.summary.profitThisMonth)} · قازانجی گشتی ${money(analytics.summary.grossProfitThisMonth)}\n• قازانجی هەموو کات ${money(analytics.summary.profitTotal)}`,
         links: [
-          { label: "Reports", href: "/dashboard/reports" },
-          { label: "Analytics", href: "/dashboard/analytics" },
+          { label: "ڕاپۆرتەکان", href: "/dashboard/reports" },
+          { label: "شیکاری", href: "/dashboard/analytics" },
         ],
       };
 
@@ -281,15 +281,15 @@ export async function executeAiIntent(
       const tops = analytics.bestCustomers.slice(0, 5);
       return {
         intent: "customer_insights",
-        reply: `Customer insights (${analytics.summary.customersCount} customers):\n${
+        reply: `تێڕوانینی کڕیار (${analytics.summary.customersCount} customers):\n${
           tops
             .map(
               (c, i) =>
-                `${i + 1}. ${c.name} — ${c.orders} orders · ${money(c.revenue)}`
+                `${i + 1}. ${c.name} — ${c.orders} داواکاری · ${money(c.revenue)}`
             )
             .join("\n") || "No customer sales yet."
         }`,
-        links: [{ label: "Customers", href: "/dashboard/customers" }],
+        links: [{ label: "کڕیارەکان", href: "/dashboard/customers" }],
       };
     }
 
@@ -297,15 +297,15 @@ export async function executeAiIntent(
       const tops = analytics.topSuppliers.slice(0, 5);
       return {
         intent: "supplier_performance",
-        reply: `Supplier performance (${analytics.summary.suppliersCount} suppliers):\n${
+        reply: `ئەدای دابینکەر (${analytics.summary.suppliersCount} suppliers):\n${
           tops
             .map(
               (s, i) =>
-                `${i + 1}. ${s.name} — ${s.orders} orders · ${money(s.spent)}`
+                `${i + 1}. ${s.name} — ${s.orders} داواکاری · ${money(s.spent)}`
             )
             .join("\n") || "No supplier purchases yet."
         }`,
-        links: [{ label: "Suppliers", href: "/dashboard/suppliers" }],
+        links: [{ label: "دابینکەران", href: "/dashboard/suppliers" }],
       };
     }
 
@@ -316,10 +316,10 @@ export async function executeAiIntent(
       ]);
       return {
         intent: "employee_stats",
-        reply: `Employee statistics:\n• Total ${total} · Active ${active} · Inactive/other ${total - active}`,
+        reply: `ئاماری کارمەندان:\n• کۆی ${total} · چالاک ${active} · ناچالاک/هیتر ${total - active}`,
         links: [
-          { label: "Employees", href: "/dashboard/employees" },
-          { label: "Employee reports", href: "/dashboard/employees/reports" },
+          { label: "کارمەندان", href: "/dashboard/employees" },
+          { label: "ڕاپۆرتەکانی کارمەند", href: "/dashboard/employees/reports" },
         ],
       };
     }
@@ -334,8 +334,8 @@ export async function executeAiIntent(
         .join("\n");
       return {
         intent: "warehouse_performance",
-        reply: `Warehouse performance:\n${lines || "No warehouses found."}`,
-        links: [{ label: "Warehouses", href: "/dashboard/werehouse" }],
+        reply: `ئەدای کۆگا:\n${lines || "هیچ کۆگایەک نەدۆزرایەوە."}`,
+        links: [{ label: "کۆگاکان", href: "/dashboard/werehouse" }],
       };
     }
 
@@ -343,13 +343,13 @@ export async function executeAiIntent(
       const recs = await buildRecommendations(companyId, analytics);
       return {
         intent: "recommendations",
-        reply: `Smart recommendations:\n${recs
+        reply: `پێشنیارە زیرەکەکان:\n${recs
           .slice(0, 6)
           .map((r, i) => `${i + 1}. ${r.title} — ${r.reason}`)
           .join("\n")}`,
         links: [
-          { label: "AI Assistant", href: "/dashboard/ai-assistant" },
-          { label: "Products", href: "/dashboard/products" },
+          { label: "یاریدەدەری زیرەک", href: "/dashboard/ai-assistant" },
+          { label: "بەرهەمەکان", href: "/dashboard/products" },
         ],
         data: { recommendations: recs },
       };
@@ -366,8 +366,8 @@ export async function executeAiIntent(
               .join("\n")}`
           : "No open AI alerts. Inventory and credit look calm.",
         links: [
-          { label: "Notifications", href: "/dashboard/notifications" },
-          { label: "AI Assistant", href: "/dashboard/ai-assistant" },
+          { label: "ئاگادارییەکان", href: "/dashboard/notifications" },
+          { label: "یاریدەدەری زیرەک", href: "/dashboard/ai-assistant" },
         ],
       };
     }
@@ -392,8 +392,8 @@ export async function executeAiIntent(
         intent: "help",
         reply: `I'm your ERP AI Assistant. Try:\n${AI_SUGGESTED_PROMPTS.map((p) => `• ${p}`).join("\n")}`,
         links: [
-          { label: "Open AI Assistant", href: "/dashboard/ai-assistant" },
-          { label: "Dashboard", href: "/dashboard" },
+          { label: "کردنەوەی یاریدەدەری زیرەک", href: "/dashboard/ai-assistant" },
+          { label: "داشبۆرد", href: "/dashboard" },
         ],
         suggestions: AI_SUGGESTED_PROMPTS.slice(0, 6),
       };
@@ -402,9 +402,9 @@ export async function executeAiIntent(
       return {
         intent: "unknown",
         reply:
-          "I didn't catch that. Try “Show today's sales”, “Find low stock products”, or ask for help.",
+          "I didn't catch that. Try “فرۆشتنەکانی ئەمڕۆ پیشان بدە”, “دۆزینەوەی بەرهەمە کەمەکان”, or ask for help.",
         suggestions: AI_SUGGESTED_PROMPTS.slice(0, 5),
-        links: [{ label: "AI Assistant", href: "/dashboard/ai-assistant" }],
+        links: [{ label: "یاریدەدەری زیرەک", href: "/dashboard/ai-assistant" }],
       };
   }
 }

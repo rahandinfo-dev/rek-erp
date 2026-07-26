@@ -35,9 +35,9 @@ export default function HistoryItemActions({
       await navigator.clipboard.writeText(
         `${window.location.origin}${item.href}`
       );
-      appToast.success("Link copied");
+      appToast.success("بەستەر کۆپی کرا");
     } catch {
-      appToast.error("Copy failed");
+      appToast.error("کۆپیکردن سەرنەکەوت");
     }
     setOpen(false);
   }
@@ -107,7 +107,7 @@ export default function HistoryItemActions({
               size={12}
               className={isFav ? "fill-amber-400 text-amber-500" : ""}
             />
-            {isFav ? "Unfavorite" : "Favorite"}
+            {isFav ? "لابردن لە دڵخواز" : "دڵخواز"}
           </button>
           <button
             type="button"
@@ -118,7 +118,7 @@ export default function HistoryItemActions({
             }}
           >
             {item.pinned ? <PinOff size={12} /> : <Pin size={12} />}
-            {item.pinned ? "Unpin" : "Pin"}
+            {item.pinned ? "لابردنی هەڵواسین" : "هەڵواسین"}
           </button>
           <button
             type="button"
@@ -161,7 +161,7 @@ export function HistoryActionBadge({
     { label: string; className: string }
   > = {
     edited: {
-      label: "Edited",
+      label: "دەستکاریکرا",
       className: "bg-amber-100 text-amber-800",
     },
     created: {
@@ -170,7 +170,7 @@ export function HistoryActionBadge({
         "bg-[color-mix(in_srgb,var(--success)_18%,white)] text-[var(--success)]",
     },
     printed: {
-      label: "Printed",
+      label: "چاپکرا",
       className: "bg-sky-100 text-sky-800",
     },
     downloaded: {

@@ -315,14 +315,14 @@ export function CommandPaletteHost() {
       if (favCmds.length) {
         groups.push({
           key: "cmd-favorites",
-          label: "Favorite Commands",
+          label: "فەرمانە دڵخوازەکان",
           items: favCmds.slice(0, 8),
         });
       }
       if (histCmds.length || recents.length) {
         groups.push({
           key: "command-recent",
-          label: "Recent Commands",
+          label: "دوایین فەرمانەکان",
           items: (histCmds.length ? histCmds : recents).slice(0, 10),
         });
       }
@@ -338,12 +338,12 @@ export function CommandPaletteHost() {
       }
       groups.push({
         key: "action",
-        label: "Commands",
+        label: "فەرمانەکان",
         items: staticCommands.filter((c) => c.section === "action").slice(0, 10),
       });
       groups.push({
         key: "navigate",
-        label: "Navigation",
+        label: "گەشتکردن",
         items: staticCommands
           .filter((c) => c.section === "navigate")
           .slice(0, 10),
@@ -354,7 +354,7 @@ export function CommandPaletteHost() {
     if (searchHistory.length) {
       groups.push({
         key: "search-history",
-        label: "Recent Searches",
+        label: "دوایین گەڕانەکان",
         items: searchHistory.slice(0, 8).map((h) => ({
           id: `sh-${h.query}`,
           title: h.query,
@@ -371,7 +371,7 @@ export function CommandPaletteHost() {
     if (favCmds.length) {
       groups.push({
         key: "cmd-favorites",
-        label: "Favorite Commands",
+        label: "فەرمانە دڵخوازەکان",
         items: favCmds.slice(0, 6),
       });
     }
@@ -379,7 +379,7 @@ export function CommandPaletteHost() {
     if (favorites.activeItems.length) {
       groups.push({
         key: "favorites",
-        label: "Favorites",
+        label: "دڵخوازەکان",
         items: favorites.activeItems.slice(0, 6).map((f) => ({
           id: `fav-${f.id}`,
           title: f.alias || f.title,
@@ -396,7 +396,7 @@ export function CommandPaletteHost() {
     if (navHistory.items.length) {
       groups.push({
         key: "recently-viewed",
-        label: "Recently Viewed",
+        label: "دوایین بینراوەکان",
         items: navHistory.items.slice(0, 6).map((h) => ({
           id: `hist-${h.id || h.href}`,
           title: h.title,
@@ -413,7 +413,7 @@ export function CommandPaletteHost() {
     if (recents.length) {
       groups.push({
         key: "command-recent",
-        label: "Recent Commands",
+        label: "دوایین فەرمانەکان",
         items: recents.slice(0, 8),
       });
     }
@@ -477,7 +477,7 @@ export function CommandPaletteHost() {
     const navigate = scored.filter((i) => i.section === "navigate");
     const groups: CommandGroup[] = [];
     if (actions.length) {
-      groups.push({ key: "action", label: "Commands", items: actions });
+      groups.push({ key: "action", label: "فەرمانەکان", items: actions });
     }
     if (navigate.length) {
       groups.push({ key: "navigate", label: "Pages", items: navigate });
@@ -896,7 +896,7 @@ export function CommandPaletteHost() {
         appToast.error(json.message || "Delete failed");
         return;
       }
-      appToast.success("Deleted");
+      appToast.success("سڕایەوە");
       setMenuFor(null);
       setApiGroups((prev) =>
         prev
@@ -922,12 +922,12 @@ export function CommandPaletteHost() {
       className="rek-cmd-root fixed inset-0 z-[90] flex items-start justify-center px-2 pt-[max(1rem,env(safe-area-inset-top),6vh)] pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-4 sm:pt-[10vh]"
       role="dialog"
       aria-modal="true"
-      aria-label={mode === "commands" ? "Command Palette" : "Smart Search"}
+      aria-label={mode === "commands" ? "پەلێتی فەرمان" : "گەڕانی زیرەک"}
     >
       <button
         type="button"
         className="rek-cmd-backdrop absolute inset-0 bg-[var(--overlay)] backdrop-blur-[3px]"
-        aria-label="Close"
+        aria-label="داخستن"
         onClick={close}
       />
 
@@ -1156,7 +1156,7 @@ export function CommandPaletteHost() {
                                 "rounded-md p-1 opacity-0 transition group-hover/item:opacity-100",
                                 active && "opacity-100"
                               )}
-                              aria-label="Quick actions"
+                              aria-label="کردارە خێراکان"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 setMenuFor((id) =>
@@ -1274,7 +1274,7 @@ export default function CommandPaletteTrigger({
     >
       <Search size={18} className="shrink-0 text-primary" aria-hidden />
       <span className="min-w-0 flex-1 truncate">
-        {mobile ? "Search…" : "Search or jump to…"}
+        {mobile ? "گەڕان…" : "بگەڕێ یان بڕۆ بۆ…"}
       </span>
       {!mobile ? (
         <kbd className="rek-cmd-kbd hidden lg:inline">Ctrl K</kbd>

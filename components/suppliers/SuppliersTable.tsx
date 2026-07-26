@@ -91,7 +91,7 @@ export default function SuppliersTable({
                     label: supplier.name,
                     href: `/dashboard/suppliers/${supplier.id}/edit`,
                     editHref: `/dashboard/suppliers/${supplier.id}/edit`,
-                    entityType: "Supplier",
+                    entityType: "دابینکەر",
                     archived: !supplier.active,
                   }}
                 >

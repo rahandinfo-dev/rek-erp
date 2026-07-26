@@ -149,7 +149,7 @@ export default function RecentHistorySidebar({
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search history…"
+          placeholder="گەڕان لە مێژوو…"
           aria-label="Search history"
           className="h-8 w-full rounded-xl border border-transparent bg-muted/70 px-2.5 text-xs outline-none focus:border-primary/40 focus:bg-card"
         />

@@ -163,7 +163,7 @@ export async function PUT(
       category: "WAREHOUSE",
       priority: "NORMAL",
       href: `/dashboard/werehouse/${updated.id}`,
-      entityType: "Warehouse",
+      entityType: "کۆگا",
       entityId: updated.id,
     });
 
@@ -172,7 +172,7 @@ export async function PUT(
       userId: user.id,
       module: "WAREHOUSE",
       action: "UPDATE",
-      entityType: "Warehouse",
+      entityType: "کۆگا",
       entityId: updated.id,
       summary: `کۆگای ${updated.name} نوێکرایەوە`,
       oldValue: {
@@ -303,7 +303,7 @@ export async function DELETE(
         userId: user.id,
         module: "WAREHOUSE",
         action: "DELETE",
-        entityType: "Warehouse",
+        entityType: "کۆگا",
         entityId: warehouse.id,
         summary: `کۆگا permanent delete: ${warehouse.name}`,
         oldValue: { name: warehouse.name, code: warehouse.code },
@@ -362,7 +362,7 @@ export async function DELETE(
       userId: user.id,
       module: "WAREHOUSE",
       action: "DELETE",
-      entityType: "Warehouse",
+      entityType: "کۆگا",
       entityId: warehouse.id,
       summary: `کۆگای ${warehouse.name} سڕایەوە (soft)`,
       oldValue: { name: warehouse.name, code: warehouse.code },

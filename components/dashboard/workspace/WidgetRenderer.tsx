@@ -252,7 +252,7 @@ export default function WidgetRenderer({
     case "stat-out-of-stock":
       return (
         <DashboardStatCard
-          title="Out of Stock"
+          title="کۆگا بەتاڵە"
           value={summary.outOfStockCount}
           todayChange={0}
           todayLabel=""
@@ -262,10 +262,10 @@ export default function WidgetRenderer({
     case "stat-today-purchases":
       return (
         <DashboardStatCard
-          title="Today's Purchases"
+          title="کڕینەکانی ئەمڕۆ"
           value={0}
           todayChange={0}
-          todayLabel="Open Purchases"
+          todayLabel="کردنەوەی کڕین"
           iconName="shoppingCart"
         />
       );
@@ -286,10 +286,10 @@ export default function WidgetRenderer({
     case "quick-resume":
       return <QuickResumeWidget />;
     case "history-edited":
-      return <HistoryActionListWidget action="edited" title="Recently Edited" />;
+      return <HistoryActionListWidget action="edited" title="دوایین دەستکاریکراوەکان" />;
     case "history-created":
       return (
-        <HistoryActionListWidget action="created" title="Recently Created" />
+        <HistoryActionListWidget action="created" title="دوایین دروستکراوەکان" />
       );
     case "recent-sales":
       return <RecentSalesList items={data.sales.slice(0, count)} />;
@@ -298,8 +298,8 @@ export default function WidgetRenderer({
     case "recent-purchases":
       return (
         <SimpleListCard
-          title="Recent Purchases"
-          empty="No purchases yet."
+          title="دوایین کڕینەکان"
+          empty="هێشتا هیچ کڕینێک نییە."
           hrefAll="/dashboard/purchases"
           items={[]}
         />
@@ -307,7 +307,7 @@ export default function WidgetRenderer({
     case "recent-customers":
       return (
         <SimpleListCard
-          title="Recent Customers"
+          title="دوایین کڕیارەکان"
           empty="Open customers to populate."
           hrefAll="/dashboard/customers"
           items={[]}
@@ -316,7 +316,7 @@ export default function WidgetRenderer({
     case "recent-suppliers":
       return (
         <SimpleListCard
-          title="Recent Suppliers"
+          title="دوایین دابینکەران"
           empty="Open suppliers to populate."
           hrefAll="/dashboard/suppliers"
           items={[]}
@@ -325,7 +325,7 @@ export default function WidgetRenderer({
     case "recent-products":
       return (
         <SimpleListCard
-          title="Recent Products"
+          title="دوایین بەرهەمەکان"
           empty="Open products to populate."
           hrefAll="/dashboard/products"
           items={[]}
@@ -355,7 +355,7 @@ export default function WidgetRenderer({
         <SimpleListCard
           title={
             instance.widgetKey === "top-products"
-              ? "Top Selling Products"
+              ? "زۆرترین فرۆشراوەکان"
               : instance.widgetKey === "top-customers"
                 ? "Top Customers"
                 : "Top Suppliers"
@@ -377,10 +377,10 @@ export default function WidgetRenderer({
         <SimpleListCard
           title={
             instance.widgetKey === "salary-alerts"
-              ? "Salary Alerts"
+              ? "ئاگاداری مووچە"
               : "Employee Alerts"
           }
-          empty="No alerts right now."
+          empty="ئێستا هیچ ئاگادارییەک نییە."
           hrefAll="/dashboard/employees"
           items={[]}
         />

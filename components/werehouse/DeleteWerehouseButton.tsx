@@ -33,7 +33,7 @@ export default function DeleteWerehouseButton({ id, name, isMain }: Props) {
         module: "warehouses",
         title: "Warehouse deleted",
         message: name ? `«${name}» — Undo for 30 seconds` : undefined,
-        entityType: "Warehouse",
+        entityType: "کۆگا",
         entityId: id,
         onSoftDeleted: () => {
           setHidden(true);

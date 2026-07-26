@@ -66,7 +66,7 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
     label: "سڕینەوەی نەرم",
     group: "mutate",
     destructive: true,
-    shortcut: "Delete",
+    shortcut: "سڕینەوە",
     bulkAction: "delete",
     permission: "delete",
   },

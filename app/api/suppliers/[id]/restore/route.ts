@@ -45,7 +45,7 @@ export async function POST(_req: NextRequest, { params }: Props) {
       companyId,
       module: "SUPPLIER",
       action: "RESTORE",
-      entityType: "Supplier",
+      entityType: "دابینکەر",
       entityId: supplier.id,
       summary: `دابینکەر گەڕێنرایەوە: ${supplier.name}`,
       oldValue: { active: false },

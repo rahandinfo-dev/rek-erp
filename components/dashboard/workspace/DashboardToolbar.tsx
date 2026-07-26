@@ -189,7 +189,7 @@ export default function DashboardToolbar() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search widgets…"
+              placeholder="گەڕان لە ویجێتەکان…"
               className="h-10 w-full rounded-xl border border-border bg-background pe-3 ps-9 text-sm outline-none focus:ring-2 focus:ring-ring/30"
             />
           </div>
