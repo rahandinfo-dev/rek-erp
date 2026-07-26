@@ -217,6 +217,9 @@ model User {
   email    String @unique
   password String
 
+  /// Profile avatar (Vercel Blob URL)
+  avatar String?
+
   verified Boolean @default(false)
 
   otp String?
@@ -1005,6 +1008,9 @@ model Warehouse {
 
   address String?
 
+  /// Optional warehouse photo (Vercel Blob URL)
+  image String?
+
   isMain Boolean @default(false)
 
   /// Optional unit capacity for warehouse health / capacity warnings.
@@ -1037,6 +1043,9 @@ model Category {
 
   name        String
   description String?
+
+  /// Optional category image (Vercel Blob URL)
+  image String?
 
   /// Soft-delete for Undo recovery
   active Boolean @default(true)
@@ -1160,6 +1169,9 @@ model Supplier {
   address String?
   notes   String?
 
+  /// Optional supplier photo/logo (Vercel Blob URL)
+  image String?
+
   active Boolean @default(true)
 
   companyId String
@@ -1183,6 +1195,9 @@ model Customer {
   email   String?
   address String?
   notes   String?
+
+  /// Optional customer photo (Vercel Blob URL)
+  image String?
 
   active Boolean @default(true)
 

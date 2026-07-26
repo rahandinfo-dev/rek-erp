@@ -8,6 +8,7 @@ import { inputClassName, textareaClassName } from "@/components/ui/FormPrimitive
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 type Werehouse = {
   id: string;
@@ -16,6 +17,7 @@ type Werehouse = {
   address: string | null;
   isMain: boolean;
   capacity?: unknown;
+  image?: string | null;
 };
 
 type Props = {
@@ -28,6 +30,7 @@ type WarehouseDraft = {
   address: string;
   capacity: string;
   isMain: boolean;
+  image: string;
 };
 
 export default function EditWerehouseForm({ werehouse }: Props) {
@@ -42,13 +45,14 @@ export default function EditWerehouseForm({ werehouse }: Props) {
       : ""
   );
   const [isMain, setIsMain] = useState(werehouse.isMain);
+  const [image, setImage] = useState(werehouse.image ?? "");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const draftValue = useMemo<WarehouseDraft>(
-    () => ({ name, code, address, capacity, isMain }),
-    [name, code, address, capacity, isMain]
+    () => ({ name, code, address, capacity, isMain, image }),
+    [name, code, address, capacity, isMain, image]
   );
 
   const {
@@ -94,6 +98,7 @@ export default function EditWerehouseForm({ werehouse }: Props) {
           address,
           isMain,
           capacity: capacity === "" ? null : Number(capacity),
+          image: image || null,
         }),
       });
 
@@ -133,8 +138,17 @@ export default function EditWerehouseForm({ werehouse }: Props) {
             setAddress(data.address || "");
             setCapacity(data.capacity || "");
             setIsMain(Boolean(data.isMain));
+            setImage(data.image || "");
           }}
           onDiscard={discardDraft}
+        />
+
+        <ImageUpload
+          kind="warehouse"
+          value={image || null}
+          onChange={(url) => setImage(url || "")}
+          label="وێنەی کۆگا"
+          shape="square"
         />
 
         <div>

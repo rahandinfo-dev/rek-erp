@@ -7,6 +7,7 @@ import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import { useNavigationHistory } from "@/lib/history/provider";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 type Unit = {
   id: string;
@@ -386,15 +387,13 @@ export default function EditProductForm({ id }: Props) {
         />
       </div>
 
-      <div>
-        <label className="mb-2 block font-bold">وێنە (URL)</label>
-        <input
-          value={image}
-          onChange={(e) => setImage(e.target.value)}
-          className="w-full rounded-xl border border-border p-3"
-          placeholder="/uploads/..."
-        />
-      </div>
+      <ImageUpload
+        kind="product"
+        value={image || null}
+        onChange={(url) => setImage(url || "")}
+        label="وێنەی بەرهەم"
+        shape="square"
+      />
 
       <div>
         <label className="mb-2 block font-bold">تێبینی</label>

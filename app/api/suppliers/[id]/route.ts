@@ -155,7 +155,16 @@ export async function PUT(
       where: {
         id,
       },
-      data,
+      data: {
+        name: data.name,
+        code: data.code,
+        phone: data.phone || null,
+        email: data.email || null,
+        address: data.address || null,
+        notes: data.notes || null,
+        image: data.image || null,
+        active: data.active,
+      },
     });
 
     const user = await getCurrentUser();

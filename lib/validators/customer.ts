@@ -12,6 +12,7 @@ export const customerSchema = z.object({
     .or(z.literal("")),
   address: z.string().optional(),
   notes: z.string().optional(),
+  image: z.string().optional().nullable().or(z.literal("")),
   active: z.boolean(),
 });
 

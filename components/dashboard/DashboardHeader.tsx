@@ -36,6 +36,7 @@ const NotificationBell = dynamic(
 type DashboardHeaderProps = {
   user: {
     fullName: string;
+    avatar?: string | null;
     company: {
       name: string;
       logo: string | null;
@@ -92,15 +93,27 @@ function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
               </p>
             </div>
 
-            <Image
-              src={user.company.logo || BRAND.logo}
-              alt={`لۆگۆی ${user.company.name}`}
-              width={36}
-              height={36}
-              className="size-9 shrink-0 rounded-xl border border-border object-contain"
-              sizes="36px"
-              unoptimized={Boolean(user.company.logo)}
-            />
+            {user.avatar ? (
+              <Image
+                src={user.avatar}
+                alt={user.fullName}
+                width={36}
+                height={36}
+                className="size-9 shrink-0 rounded-full border border-border object-cover"
+                sizes="36px"
+                unoptimized
+              />
+            ) : (
+              <Image
+                src={user.company.logo || BRAND.logo}
+                alt={`لۆگۆی ${user.company.name}`}
+                width={36}
+                height={36}
+                className="size-9 shrink-0 rounded-xl border border-border object-contain"
+                sizes="36px"
+                unoptimized={Boolean(user.company.logo)}
+              />
+            )}
           </div>
         </div>
       </div>

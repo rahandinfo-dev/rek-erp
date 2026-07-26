@@ -3,8 +3,6 @@ import { toDateInputValue } from "@/lib/utils/datetime";
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { ImagePlus } from "lucide-react";
 import { appToast } from "@/lib/toast";
 import {
   employeeRoles,
@@ -18,6 +16,7 @@ import {
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar } from "@/components/ui/AutoSaveStatus";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 const inputClass =
   "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-[#FFAE42] focus:bg-white";
@@ -25,7 +24,6 @@ const inputClass =
 export default function EmployeeForm() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState<EmployeeFormValues>({
     photo: "",
     fullName: "",
@@ -71,27 +69,6 @@ export default function EmployeeForm() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
-  async function uploadPhoto(file: File) {
-    setUploading(true);
-    try {
-      const body = new FormData();
-      body.append("file", file);
-      body.append("kind", "employee");
-      const res = await fetch("/api/uploads", { method: "POST", body });
-      const data = await res.json();
-      if (!data.success || !data.data?.url) {
-        appToast.error(data.message || "بارکردنی وێنە سەرنەکەوت.");
-        return;
-      }
-      update("photo", data.data.url);
-      appToast.success("وێنە بارکرا");
-    } catch {
-      appToast.error("بارکردنی وێنە سەرنەکەوت.");
-    } finally {
-      setUploading(false);
-    }
-  }
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
@@ -135,36 +112,13 @@ export default function EmployeeForm() {
         onDiscard={discardDraft}
       />
 
-      <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
-        <div className="relative h-24 w-24 overflow-hidden rounded-3xl bg-[#FFF8EF]">
-          {form.photo ? (
-            <Image
-              src={form.photo}
-              alt="photo"
-              fill
-              unoptimized
-              className="object-cover"
-            />
-          ) : (
-            <div className="flex h-full items-center justify-center text-[#FFAE42]/40">
-              <ImagePlus size={28} />
-            </div>
-          )}
-        </div>
-        <label className="cursor-pointer rounded-2xl border border-[#FFAE42]/25 bg-[#FFF8EF] px-4 py-2.5 text-sm font-bold text-[#FFAE42]">
-          {uploading ? "بارکردن..." : "وێنەی کارمەند"}
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            disabled={uploading}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) void uploadPhoto(file);
-            }}
-          />
-        </label>
-      </div>
+      <ImageUpload
+        kind="employee"
+        value={form.photo || null}
+        onChange={(url) => update("photo", url || "")}
+        label="وێنەی کارمەند"
+        shape="circle"
+      />
 
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="ناوی تەواو">

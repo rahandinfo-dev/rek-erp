@@ -3,10 +3,12 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import CompanySettingsForm from "@/components/forms/CompanySettingsForm";
 import ChangePasswordForm from "@/components/forms/ChangePasswordForm";
+import UserAvatarForm from "@/components/forms/UserAvatarForm";
 import AutoSaveSettingsPanel from "@/components/unsaved/AutoSaveSettingsPanel";
 import NotificationPrefsPanel from "@/components/pwa/NotificationPrefsPanel";
 import RecordVersionHistorySection from "@/components/versions/RecordVersionHistorySection";
 import { FileText, Hash, Plus } from "lucide-react";
+import Image from "next/image";
 
 export default async function SettingsPage() {
   const user = await getCurrentUser();
@@ -98,8 +100,37 @@ export default async function SettingsPage() {
         </div>
       </div>
 
+      <UserAvatarForm
+        user={{
+          fullName: user.fullName,
+          email: user.email,
+          username: user.username,
+          avatar: user.avatar ?? null,
+        }}
+      />
+
       <div className="rounded-3xl bg-white p-4 shadow-sm sm:p-8">
         <h2 className="mb-4 text-xl font-bold">زانیاری بەکارهێنەر</h2>
+        <div className="mb-6 flex items-center gap-4">
+          {user.avatar ? (
+            <Image
+              src={user.avatar}
+              alt={user.fullName}
+              width={64}
+              height={64}
+              unoptimized
+              className="size-16 rounded-full border object-cover"
+            />
+          ) : (
+            <div className="flex size-16 items-center justify-center rounded-full border bg-slate-50 text-sm font-bold text-slate-400">
+              {user.fullName.slice(0, 1)}
+            </div>
+          )}
+          <div>
+            <p className="font-semibold">{user.fullName}</p>
+            <p className="text-sm text-slate-500">@{user.username}</p>
+          </div>
+        </div>
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
             <dt className="text-sm text-slate-500">ناو</dt>

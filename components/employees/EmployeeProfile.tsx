@@ -40,6 +40,7 @@ import {
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 type TabId = "profile" | "attendance" | "leave" | "salary" | "history";
 
@@ -133,7 +134,6 @@ export default function EmployeeProfile({
 
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
@@ -219,27 +219,6 @@ export default function EmployeeProfile({
     value: EmployeeFormValues[K]
   ) {
     setForm((prev) => ({ ...prev, [key]: value }));
-  }
-
-  async function uploadPhoto(file: File) {
-    setUploading(true);
-    try {
-      const body = new FormData();
-      body.append("file", file);
-      body.append("kind", "employee");
-      const res = await fetch("/api/uploads", { method: "POST", body });
-      const data = await res.json();
-      if (!data.success || !data.data?.url) {
-        appToast.error(data.message || "بارکردنی وێنە سەرنەکەوت.");
-        return;
-      }
-      updateForm("photo", data.data.url);
-      appToast.success("وێنە بارکرا", "پاشەکەوت بکە بۆ جێگیرکردن.");
-    } catch {
-      appToast.error("بارکردنی وێنە سەرنەکەوت.");
-    } finally {
-      setUploading(false);
-    }
   }
 
   async function handleSave() {
@@ -689,20 +668,13 @@ export default function EmployeeProfile({
             </h2>
 
             {editing && (
-              <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl border border-[#FFAE42]/25 bg-[#FFF8EF] px-4 py-2 text-sm font-bold text-[#FFAE42]">
-                <ImagePlus size={16} />
-                {uploading ? "بارکردن..." : "گۆڕینی وێنە"}
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  disabled={uploading}
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) void uploadPhoto(file);
-                  }}
-                />
-              </label>
+              <ImageUpload
+                kind="employee"
+                value={form.photo || null}
+                onChange={(url) => updateForm("photo", url || "")}
+                label="وێنەی کارمەند"
+                shape="circle"
+              />
             )}
 
             <div className="grid gap-4 md:grid-cols-2">

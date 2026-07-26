@@ -29,6 +29,7 @@ import {
 } from "@/lib/inventory/stock";
 import { StockStatusBadge } from "@/components/inventory/StockStatusBadge";
 import { inputClassName } from "@/components/ui/FormPrimitives";
+import ImageUpload from "@/components/uploads/ImageUpload";
 import { cn } from "@/lib/utils";
 import dynamic from "next/dynamic";
 
@@ -118,7 +119,6 @@ export default function ProductDetails({
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmOpen, setConfirmOpen] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [barcodeBusy, setBarcodeBusy] = useState(false);
   const [, startTransition] = useTransition();
 
@@ -278,28 +278,6 @@ export default function ProductDetails({
       appToast.error("هەڵەیەک ڕوویدا.");
     } finally {
       setDeleting(false);
-    }
-  }
-
-  async function uploadImage(file: File) {
-    setUploading(true);
-    try {
-      const body = new FormData();
-      body.append("file", file);
-      body.append("kind", "product");
-      const res = await fetch("/api/uploads", { method: "POST", body });
-      const data = await res.json();
-      const url = data.data?.url as string | undefined;
-      if (!data.success || !url) {
-        appToast.error(data.message || "بارکردنی وێنە سەرنەکەوت.");
-        return;
-      }
-      update("image", url);
-      appToast.productSaved("وێنە بارکرا — پاشەکەوت بکە.");
-    } catch {
-      appToast.error("بارکردنی وێنە سەرنەکەوت.");
-    } finally {
-      setUploading(false);
     }
   }
 
@@ -810,63 +788,48 @@ export default function ProductDetails({
         {tab === "images" && (
           <div className="space-y-6">
             <SectionTitle>وێنەی بەرهەم</SectionTitle>
-            <div className="grid gap-6 lg:grid-cols-2">
-              <div className="relative aspect-square overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-secondary to-muted">
-                {form.image ? (
-                  <Image
-                    src={form.image}
-                    alt={form.name}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 40vw"
-                  />
-                ) : (
-                  <div className="flex h-full items-center justify-center text-primary/30">
-                    <ImageIcon size={64} />
-                  </div>
-                )}
-              </div>
-
-              <div className="flex flex-col justify-center gap-4">
-                <p className="text-muted-foreground">
-                  وێنەی سەرەکی بەرهەم. لە کاتی دەستکاریدا دەتوانیت وێنەی نوێ
-                  باربکەیت.
-                </p>
-                {editing ? (
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border-2 border-dashed border-primary/40 bg-secondary/50 px-6 py-12 transition hover:bg-secondary">
-                    <ImageIcon className="text-primary" size={36} />
-                    <span className="mt-3 font-bold text-primary">
-                      {uploading ? "بارکردن..." : "هەڵبژاردنی وێنە"}
-                    </span>
-                    <span className="mt-1 text-xs text-muted-foreground">
-                      PNG · JPG · WEBP
-                    </span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="hidden"
-                      disabled={uploading}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) void uploadImage(file);
-                      }}
+            <p className="text-muted-foreground">
+              وێنەی سەرەکی بەرهەم. لە کاتی دەستکاریدا دەتوانیت وێنەی نوێ
+              باربکەیت — پاشان پاشەکەوت بکە.
+            </p>
+            {editing ? (
+              <ImageUpload
+                kind="product"
+                value={form.image || null}
+                onChange={(url) => update("image", url || "")}
+                label="وێنەی بەرهەم"
+                shape="square"
+              />
+            ) : (
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+                <div className="relative aspect-square w-full max-w-[11rem] overflow-hidden rounded-[1.75rem] bg-gradient-to-br from-secondary to-muted">
+                  {form.image ? (
+                    <Image
+                      src={form.image}
+                      alt={form.name}
+                      fill
+                      className="object-cover"
+                      sizes="176px"
                     />
-                  </label>
-                ) : (
-                  <Button
-                    type="button"
-                    className="w-fit"
-                    onClick={() => {
-                      setEditing(true);
-                      setTab("images");
-                    }}
-                  >
-                    <Pencil size={16} />
-                    دەستکاری وێنە
-                  </Button>
-                )}
+                  ) : (
+                    <div className="flex h-full min-h-[7rem] items-center justify-center text-primary/30">
+                      <ImageIcon size={48} />
+                    </div>
+                  )}
+                </div>
+                <Button
+                  type="button"
+                  className="w-fit"
+                  onClick={() => {
+                    setEditing(true);
+                    setTab("images");
+                  }}
+                >
+                  <Pencil size={16} />
+                  دەستکاری وێنە
+                </Button>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

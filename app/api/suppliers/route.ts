@@ -99,8 +99,14 @@ export async function POST(req: NextRequest) {
 
     const supplier = await db.supplier.create({
       data: {
-        ...data,
+        name: data.name,
         code,
+        phone: data.phone || null,
+        email: data.email || null,
+        address: data.address || null,
+        notes: data.notes || null,
+        image: data.image || null,
+        active: data.active,
         companyId,
       },
     });

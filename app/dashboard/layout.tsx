@@ -24,6 +24,7 @@ export default async function DashboardLayout({
     id: user.id,
     companyId: user.companyId,
     fullName: user.fullName,
+    avatar: user.avatar,
     company: {
       name: user.company.name,
       logo: user.company.logo,

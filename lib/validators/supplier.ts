@@ -20,6 +20,8 @@ export const supplierSchema = z.object({
 
   notes: z.string().optional(),
 
+  image: z.string().optional().nullable().or(z.literal("")),
+
   active: z.boolean(),
 });
 

@@ -34,6 +34,7 @@ export async function GET(_req: NextRequest, { params }: Props) {
         email: true,
         address: true,
         notes: true,
+        image: true,
         active: true,
         createdAt: true,
       },
@@ -115,6 +116,7 @@ export async function PUT(req: NextRequest, { params }: Props) {
         email: data.email || null,
         address: data.address || null,
         notes: data.notes || null,
+        image: data.image || null,
         active: data.active,
       },
     });

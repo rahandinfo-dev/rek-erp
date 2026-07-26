@@ -91,7 +91,7 @@ export async function PUT(
 
     const body = await req.json();
 
-    const { name, code, address, isMain, capacity } = body;
+    const { name, code, address, isMain, capacity, image } = body;
 
     if (!name || !code) {
       return NextResponse.json(
@@ -153,6 +153,7 @@ export async function PUT(
         address,
         isMain,
         capacity: capacityValue,
+        image: image || null,
       },
     });
 

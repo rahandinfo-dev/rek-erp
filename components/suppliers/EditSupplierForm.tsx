@@ -11,6 +11,7 @@ import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import { appToast } from "@/lib/toast";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 type Props = {
   id: string;
@@ -31,6 +32,7 @@ export default function EditSupplierForm({ id }: Props) {
     email: "",
     address: "",
     notes: "",
+    image: "",
     active: true,
   });
 
@@ -63,6 +65,7 @@ export default function EditSupplierForm({ id }: Props) {
             email: result.data.email ?? "",
             address: result.data.address ?? "",
             notes: result.data.notes ?? "",
+            image: result.data.image ?? "",
             active: result.data.active,
           });
           setHydrated(true);
@@ -158,6 +161,16 @@ export default function EditSupplierForm({ id }: Props) {
           if (data) setForm(data);
         }}
         onDiscard={discardDraft}
+      />
+
+      <ImageUpload
+        kind="supplier"
+        value={form.image || null}
+        onChange={(url) =>
+          setForm((prev) => ({ ...prev, image: url || "" }))
+        }
+        label="وێنەی دابینکەر"
+        shape="circle"
       />
 
       <div>

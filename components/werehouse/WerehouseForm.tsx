@@ -8,6 +8,7 @@ import { inputClassName, textareaClassName } from "@/components/ui/FormPrimitive
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 type WarehouseDraft = {
   name: string;
@@ -15,6 +16,7 @@ type WarehouseDraft = {
   address: string;
   capacity: string;
   isMain: boolean;
+  image: string;
 };
 
 function isEmpty(v: WarehouseDraft) {
@@ -23,7 +25,8 @@ function isEmpty(v: WarehouseDraft) {
     !v.code.trim() &&
     !v.address.trim() &&
     !v.capacity.trim() &&
-    !v.isMain
+    !v.isMain &&
+    !v.image
   );
 }
 
@@ -35,13 +38,14 @@ export default function WarehouseForm() {
   const [address, setAddress] = useState("");
   const [capacity, setCapacity] = useState("");
   const [isMain, setIsMain] = useState(false);
+  const [image, setImage] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const draftValue = useMemo<WarehouseDraft>(
-    () => ({ name, code, address, capacity, isMain }),
-    [name, code, address, capacity, isMain]
+    () => ({ name, code, address, capacity, isMain, image }),
+    [name, code, address, capacity, isMain, image]
   );
 
   const {
@@ -64,6 +68,7 @@ export default function WarehouseForm() {
     setAddress(data.address || "");
     setCapacity(data.capacity || "");
     setIsMain(Boolean(data.isMain));
+    setImage(data.image || "");
   }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -90,6 +95,7 @@ export default function WarehouseForm() {
           address,
           isMain,
           capacity: capacity === "" ? null : Number(capacity),
+          image: image || null,
         }),
       });
 
@@ -127,6 +133,14 @@ export default function WarehouseForm() {
             if (data) applyDraft(data);
           }}
           onDiscard={discardDraft}
+        />
+
+        <ImageUpload
+          kind="warehouse"
+          value={image || null}
+          onChange={(url) => setImage(url || "")}
+          label="وێنەی کۆگا"
+          shape="square"
         />
 
         <div>

@@ -13,6 +13,7 @@ import { appToast } from "@/lib/toast";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 function isSupplierDraftEmpty(v: SupplierFormData) {
   return (
@@ -21,7 +22,8 @@ function isSupplierDraftEmpty(v: SupplierFormData) {
     !(v.phone || "").trim() &&
     !(v.email || "").trim() &&
     !(v.address || "").trim() &&
-    !(v.notes || "").trim()
+    !(v.notes || "").trim() &&
+    !(v.image || "").trim()
   );
 }
 
@@ -35,6 +37,7 @@ export default function SupplierForm() {
     control,
     reset,
     getValues,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<SupplierFormData>({
     resolver: zodResolver(supplierSchema),
@@ -45,11 +48,13 @@ export default function SupplierForm() {
       email: "",
       address: "",
       notes: "",
+      image: "",
       active: true,
     },
   });
 
   const watched = useWatch({ control });
+  const imageValue = useWatch({ control, name: "image" });
 
   const {
     status: draftStatus,
@@ -110,6 +115,14 @@ export default function SupplierForm() {
           if (data) reset(data);
         }}
         onDiscard={discardDraft}
+      />
+
+      <ImageUpload
+        kind="supplier"
+        value={imageValue || null}
+        onChange={(url) => setValue("image", url || "", { shouldDirty: true })}
+        label="وێنەی دابینکەر"
+        shape="circle"
       />
 
       <div>

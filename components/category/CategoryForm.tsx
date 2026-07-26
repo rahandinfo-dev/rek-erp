@@ -6,26 +6,29 @@ import { appToast } from "@/lib/toast";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar } from "@/components/ui/AutoSaveStatus";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 type Props = {
   category?: {
     id: string;
     name: string;
     description: string | null;
+    image?: string | null;
   };
 };
 
-type CategoryDraft = { name: string; description: string };
+type CategoryDraft = { name: string; description: string; image: string };
 
 export default function CategoryForm({ category }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [name, setName] = useState(category?.name ?? "");
   const [description, setDescription] = useState(category?.description ?? "");
+  const [image, setImage] = useState(category?.image ?? "");
 
   const draftValue = useMemo<CategoryDraft>(
-    () => ({ name, description }),
-    [name, description]
+    () => ({ name, description, image }),
+    [name, description, image]
   );
 
   const draftKey = category
@@ -43,7 +46,7 @@ export default function CategoryForm({ category }: Props) {
   } = useFormDraft({
     key: draftKey,
     value: draftValue,
-    isEmpty: (v) => !v.name.trim() && !v.description.trim(),
+    isEmpty: (v) => !v.name.trim() && !v.description.trim() && !v.image,
   });
 
   async function saveCategory() {
@@ -61,7 +64,11 @@ export default function CategoryForm({ category }: Props) {
         {
           method: editing ? "PUT" : "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, description }),
+          body: JSON.stringify({
+            name,
+            description,
+            image: image || null,
+          }),
         }
       );
 
@@ -101,8 +108,17 @@ export default function CategoryForm({ category }: Props) {
             if (!data) return;
             setName(data.name || "");
             setDescription(data.description || "");
+            setImage(data.image || "");
           }}
           onDiscard={discardDraft}
+        />
+
+        <ImageUpload
+          kind="category"
+          value={image || null}
+          onChange={(url) => setImage(url || "")}
+          label="وێنەی پۆل"
+          shape="square"
         />
 
         <div>

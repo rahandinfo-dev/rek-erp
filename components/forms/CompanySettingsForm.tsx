@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import {
   FormAlert,
   FormField,
@@ -11,6 +10,7 @@ import {
   inputClassName,
   textareaClassName,
 } from "@/components/ui/FormPrimitives";
+import ImageUpload from "@/components/uploads/ImageUpload";
 import { appToast } from "@/lib/toast";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
@@ -97,7 +97,6 @@ export default function CompanySettingsForm({ company, settings }: Props) {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
-  const [uploading, setUploading] = useState(false);
 
   const draftValue = useMemo<SettingsDraft>(
     () => ({
@@ -166,33 +165,6 @@ export default function CompanySettingsForm({ company, settings }: Props) {
     setAccentColor(data.accentColor);
     setFontFamily(data.fontFamily);
     setCurrency(data.currency);
-  }
-
-  async function uploadImage(
-    file: File,
-    onDone: (url: string) => void
-  ) {
-    try {
-      setUploading(true);
-      setError("");
-      const form = new FormData();
-      form.append("file", file);
-      form.append("kind", "company");
-
-      const res = await fetch("/api/uploads", { method: "POST", body: form });
-      const result = await res.json();
-      if (!res.ok) {
-        setError(result.message || "بارکردن سەرنەکەوت.");
-        appToast.error(result.message || "بارکردن سەرنەکەوت.");
-        return;
-      }
-      onDone(result.data.url);
-      setMessage("وێنە بارکرا. پاشەکەوتی بکە بۆ جێگیرکردن.");
-    } catch {
-      setError("هەڵەیەک ڕوویدا.");
-    } finally {
-      setUploading(false);
-    }
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -266,12 +238,12 @@ export default function CompanySettingsForm({ company, settings }: Props) {
         title="لۆگۆی کۆمپانیا"
         description="لە داشبۆرد، سایدبار، پسوولە، ڕاپۆرت، PDF و چاپدا دەردەکەوێت"
       >
-        <AssetUpload
+        <ImageUpload
+          kind="company"
+          value={logo || null}
+          onChange={(url) => setLogo(url || "")}
           label="لۆگۆ"
-          url={logo}
-          uploading={uploading}
-          onUpload={(file) => void uploadImage(file, setLogo)}
-          onClear={() => setLogo("")}
+          shape="square"
         />
       </FormSection>
 
@@ -353,19 +325,19 @@ export default function CompanySettingsForm({ company, settings }: Props) {
             />
           </FormField>
           <div className="grid gap-4 md:grid-cols-2">
-            <AssetUpload
+            <ImageUpload
+              kind="company"
+              value={signature || null}
+              onChange={(url) => setSignature(url || "")}
               label="واژوو (Signature)"
-              url={signature}
-              uploading={uploading}
-              onUpload={(file) => void uploadImage(file, setSignature)}
-              onClear={() => setSignature("")}
+              shape="wide"
             />
-            <AssetUpload
+            <ImageUpload
+              kind="company"
+              value={stamp || null}
+              onChange={(url) => setStamp(url || "")}
               label="مۆر (Stamp)"
-              url={stamp}
-              uploading={uploading}
-              onUpload={(file) => void uploadImage(file, setStamp)}
-              onClear={() => setStamp("")}
+              shape="square"
             />
           </div>
         </div>
@@ -410,65 +382,9 @@ export default function CompanySettingsForm({ company, settings }: Props) {
         </div>
       </FormSection>
 
-      <FormSubmitButton loading={saving || uploading}>
+      <FormSubmitButton loading={saving}>
         پاشەکەوتکردنی پڕۆفایل
       </FormSubmitButton>
     </form>
-  );
-}
-
-function AssetUpload({
-  label,
-  url,
-  uploading,
-  onUpload,
-  onClear,
-}: {
-  label: string;
-  url: string;
-  uploading: boolean;
-  onUpload: (file: File) => void;
-  onClear: () => void;
-}) {
-  return (
-    <div className="space-y-2">
-      <p className="text-sm font-semibold text-slate-700">{label}</p>
-      <div className="flex items-center gap-4">
-        <div className="flex h-24 w-24 items-center justify-center overflow-hidden rounded-2xl border bg-slate-50">
-          {url ? (
-            <Image
-              src={url}
-              alt={label}
-              width={96}
-              height={96}
-              unoptimized
-              className="h-full w-full object-contain"
-            />
-          ) : (
-            <span className="text-xs text-slate-400">نییە</span>
-          )}
-        </div>
-        <div className="space-y-2">
-          <input
-            type="file"
-            accept="image/*"
-            disabled={uploading}
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) onUpload(file);
-            }}
-          />
-          {url ? (
-            <button
-              type="button"
-              onClick={onClear}
-              className="block text-sm text-red-600"
-            >
-              سڕینەوە
-            </button>
-          ) : null}
-        </div>
-      </div>
-    </div>
   );
 }

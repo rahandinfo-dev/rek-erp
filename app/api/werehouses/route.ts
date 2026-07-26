@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const { name, address, isMain, capacity } = body;
+    const { name, address, isMain, capacity, image } = body;
     let code = typeof body.code === "string" ? body.code.trim() : "";
 
     if (!name) {
@@ -149,6 +149,7 @@ const makeMain =
         address,
         isMain: makeMain,
         capacity: capacityValue,
+        image: image || null,
       },
     });
 

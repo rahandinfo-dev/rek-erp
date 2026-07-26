@@ -12,6 +12,7 @@ import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import { appToast } from "@/lib/toast";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 type Props = { id: string };
 
@@ -27,6 +28,7 @@ export default function EditCustomerForm({ id }: Props) {
     reset,
     control,
     getValues,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
@@ -37,11 +39,13 @@ export default function EditCustomerForm({ id }: Props) {
       email: "",
       address: "",
       notes: "",
+      image: "",
       active: true,
     },
   });
 
   const watched = useWatch({ control });
+  const imageValue = useWatch({ control, name: "image" });
 
   const {
     status: draftStatus,
@@ -76,6 +80,7 @@ export default function EditCustomerForm({ id }: Props) {
           email: result.data.email ?? "",
           address: result.data.address ?? "",
           notes: result.data.notes ?? "",
+          image: result.data.image ?? "",
           active: result.data.active,
         });
         setHydrated(true);
@@ -144,6 +149,14 @@ export default function EditCustomerForm({ id }: Props) {
       {serverError && (
         <p className="rounded-xl bg-red-50 p-3 text-red-600">{serverError}</p>
       )}
+
+      <ImageUpload
+        kind="customer"
+        value={imageValue || null}
+        onChange={(url) => setValue("image", url || "", { shouldDirty: true })}
+        label="وێنەی کڕیار"
+        shape="circle"
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
         <div>

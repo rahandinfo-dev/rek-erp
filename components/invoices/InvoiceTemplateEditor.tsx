@@ -26,6 +26,7 @@ import {
 import { reportClientNotification } from "@/lib/notifications/client";
 import { appToast } from "@/lib/toast";
 import { Download, Printer, Save } from "lucide-react";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 type CompanyInfo = {
   name: string;
@@ -77,23 +78,6 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
 
   function patchConfig(patch: Partial<InvoiceTemplateConfig>) {
     setConfig((prev) => ({ ...prev, ...patch }));
-  }
-
-  async function uploadAsset(
-    file: File,
-    key: "signatureImage" | "stampImage"
-  ) {
-    const form = new FormData();
-    form.append("file", file);
-    form.append("kind", "template");
-
-    const res = await fetch("/api/uploads", { method: "POST", body: form });
-    const result = await res.json();
-    if (!res.ok) {
-      setError(result.message || "بارکردن سەرنەکەوت.");
-      return;
-    }
-    patchConfig({ [key]: result.data.url });
   }
 
   async function onSave(e: React.FormEvent) {
@@ -456,13 +440,14 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
                 />
               </FormField>
               <FormField label="وێنەی واژوو">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) uploadAsset(file, "signatureImage");
-                  }}
+                <ImageUpload
+                  kind="template"
+                  value={config.signatureImage || null}
+                  onChange={(url) =>
+                    patchConfig({ signatureImage: url })
+                  }
+                  label="وێنەی واژوو"
+                  shape="wide"
                 />
               </FormField>
 
@@ -477,13 +462,12 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
                 مۆر
               </label>
               <FormField label="وێنەی مۆر">
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    const file = e.target.files?.[0];
-                    if (file) uploadAsset(file, "stampImage");
-                  }}
+                <ImageUpload
+                  kind="template"
+                  value={config.stampImage || null}
+                  onChange={(url) => patchConfig({ stampImage: url })}
+                  label="وێنەی مۆر"
+                  shape="square"
                 />
               </FormField>
             </div>

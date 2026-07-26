@@ -58,6 +58,7 @@ type UserInfo = {
   id: string;
   companyId: string;
   fullName: string;
+  avatar?: string | null;
   company: {
     name: string;
     logo: string | null;

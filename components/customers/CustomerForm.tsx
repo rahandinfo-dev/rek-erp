@@ -12,6 +12,7 @@ import { appToast } from "@/lib/toast";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
+import ImageUpload from "@/components/uploads/ImageUpload";
 
 function isCustomerDraftEmpty(v: CustomerFormData) {
   return (
@@ -20,7 +21,8 @@ function isCustomerDraftEmpty(v: CustomerFormData) {
     !(v.phone || "").trim() &&
     !(v.email || "").trim() &&
     !(v.address || "").trim() &&
-    !(v.notes || "").trim()
+    !(v.notes || "").trim() &&
+    !(v.image || "").trim()
   );
 }
 
@@ -34,6 +36,7 @@ export default function CustomerForm() {
     control,
     reset,
     getValues,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<CustomerFormData>({
     resolver: zodResolver(customerSchema),
@@ -44,11 +47,13 @@ export default function CustomerForm() {
       email: "",
       address: "",
       notes: "",
+      image: "",
       active: true,
     },
   });
 
   const watched = useWatch({ control });
+  const imageValue = useWatch({ control, name: "image" });
 
   const {
     status: draftStatus,
@@ -112,6 +117,14 @@ export default function CustomerForm() {
       {serverError && (
         <p className="rounded-xl bg-red-50 p-3 text-red-600">{serverError}</p>
       )}
+
+      <ImageUpload
+        kind="customer"
+        value={imageValue || null}
+        onChange={(url) => setValue("image", url || "", { shouldDirty: true })}
+        label="وێنەی کڕیار"
+        shape="circle"
+      />
 
       <div className="grid gap-6 md:grid-cols-2">
         <div>

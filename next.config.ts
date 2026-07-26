@@ -35,9 +35,9 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob:",
+      "img-src 'self' data: blob: https://*.public.blob.vercel-storage.com https://*.blob.vercel-storage.com",
       "font-src 'self' data:",
-      "connect-src 'self'",
+      "connect-src 'self' https://*.public.blob.vercel-storage.com https://*.blob.vercel-storage.com",
       "frame-ancestors 'self'",
       "base-uri 'self'",
       "form-action 'self'",
@@ -65,6 +65,16 @@ const nextConfig: NextConfig = {
       },
       {
         pathname: "/**",
+      },
+    ],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "*.public.blob.vercel-storage.com",
+      },
+      {
+        protocol: "https",
+        hostname: "*.blob.vercel-storage.com",
       },
     ],
   },
