@@ -279,12 +279,12 @@ export default function RecycleBin() {
           <h1 className="text-2xl font-black text-foreground">سەبەتەی زبڵ</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             تۆمارە سڕاوەکان · گەڕاندنەوە بۆ ماوەی {retentionDays} ڕۆژ · {total}{" "}
-            items
+            بڕگە
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <label className="flex items-center gap-2 text-xs font-bold text-muted-foreground">
-            Retention
+            ماوەی پاراستن
             <select
               className="rounded-xl border border-border bg-background px-3 py-2 text-sm font-bold text-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
               value={retentionDays}
@@ -293,7 +293,7 @@ export default function RecycleBin() {
             >
               {RETENTION_OPTIONS.map((d) => (
                 <option key={d} value={d}>
-                  {d} days
+                  {d} ڕۆژ
                 </option>
               ))}
             </select>
@@ -304,7 +304,7 @@ export default function RecycleBin() {
             className="inline-flex items-center gap-2 rounded-xl border border-border px-3 py-2 text-sm font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
           >
             <Download size={16} aria-hidden />
-            Export
+            هەناردەکردن
           </button>
           <button
             type="button"
