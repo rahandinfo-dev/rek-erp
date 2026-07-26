@@ -11,13 +11,13 @@ import type {
 export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   view: {
     id: "view",
-    label: "View",
+    label: "بینین",
     group: "navigate",
     shortcut: "Enter",
   },
   edit: {
     id: "edit",
-    label: "Edit",
+    label: "دەستکاری",
     group: "mutate",
     shortcut: "E",
     bulkAction: "edit",
@@ -25,7 +25,7 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   },
   duplicate: {
     id: "duplicate",
-    label: "Duplicate",
+    label: "دووبارەکردنەوە",
     group: "mutate",
     shortcut: "Ctrl+D",
     bulkAction: "duplicate",
@@ -33,13 +33,13 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   },
   copy: {
     id: "copy",
-    label: "Copy",
+    label: "کۆپیکردن",
     group: "mutate",
     permission: "duplicate",
   },
   move: {
     id: "move",
-    label: "Move",
+    label: "گواستنەوە",
     group: "mutate",
     destructive: true,
     lazy: true,
@@ -48,7 +48,7 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   },
   archive: {
     id: "archive",
-    label: "Archive",
+    label: "ئەرشیفکردن",
     group: "mutate",
     destructive: true,
     bulkAction: "archive",
@@ -56,14 +56,14 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   },
   unarchive: {
     id: "unarchive",
-    label: "Unarchive",
+    label: "دەرهێنان لە ئەرشیف",
     group: "mutate",
     bulkAction: "unarchive",
     permission: "unarchive",
   },
   soft_delete: {
     id: "soft_delete",
-    label: "Soft Delete",
+    label: "سڕینەوەی نەرم",
     group: "mutate",
     destructive: true,
     shortcut: "Delete",
@@ -72,14 +72,14 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   },
   restore: {
     id: "restore",
-    label: "Restore",
+    label: "گەڕاندنەوە",
     group: "mutate",
     bulkAction: "restore",
     permission: "restore",
   },
   print: {
     id: "print",
-    label: "Print",
+    label: "چاپکردن",
     group: "export",
     shortcut: "Ctrl+P",
     bulkAction: "print",
@@ -87,7 +87,7 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   },
   export_pdf: {
     id: "export_pdf",
-    label: "Export PDF",
+    label: "هەناردەی PDF",
     group: "export",
     lazy: true,
     bulkAction: "export_pdf",
@@ -95,7 +95,7 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   },
   export_excel: {
     id: "export_excel",
-    label: "Export Excel",
+    label: "هەناردەی Excel",
     group: "export",
     lazy: true,
     bulkAction: "export_excel",
@@ -103,7 +103,7 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   },
   export_csv: {
     id: "export_csv",
-    label: "Export CSV",
+    label: "هەناردەی CSV",
     group: "export",
     lazy: true,
     bulkAction: "export_csv",
@@ -111,39 +111,39 @@ export const ACTION_DEFS: Record<QuickActionId, QuickActionDef> = {
   },
   share: {
     id: "share",
-    label: "Share",
+    label: "هاوبەشکردن",
     group: "share",
   },
   copy_link: {
     id: "copy_link",
-    label: "Copy Link",
+    label: "کۆپیکردنی بەستەر",
     group: "share",
     shortcut: "Ctrl+Shift+C",
   },
   open_new_tab: {
     id: "open_new_tab",
-    label: "Open in New Tab",
+    label: "کردنەوە لە تابێکی نوێ",
     group: "navigate",
   },
   favorite: {
     id: "favorite",
-    label: "Add to Favorites",
+    label: "زیادکردن بۆ دڵخوازەکان",
     group: "meta",
   },
   pin: {
     id: "pin",
-    label: "Pin",
+    label: "هەڵواسین",
     group: "meta",
   },
   timeline: {
     id: "timeline",
-    label: "View Timeline",
+    label: "بینینی تێمڵاین",
     group: "advanced",
     lazy: true,
   },
   audit: {
     id: "audit",
-    label: "View Audit History",
+    label: "بینینی مێژووی چاودێری",
     group: "advanced",
     lazy: true,
   },

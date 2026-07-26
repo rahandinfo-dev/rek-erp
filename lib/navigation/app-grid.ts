@@ -121,34 +121,34 @@ export const APP_GRID: AppMenuItem[] = [
     description: "نۆتیف",
   },
   {
-    title: "Recently Viewed",
+    title: "دوایین بینراوەکان",
     href: "/dashboard/recent",
     icon: History,
-    description: "Activity history",
+    description: "مێژووی چالاکی",
   },
   {
-    title: "Draft Center",
+    title: "ناوەندی ڕەشنووس",
     href: "/dashboard/drafts",
     icon: History,
-    description: "Resume unfinished drafts",
+    description: "بەردەوامبوون لە ڕەشنووسە تەواونەبووەکان",
   },
   {
-    title: "Recycle Bin",
+    title: "سەبەتەی زبڵ",
     href: "/dashboard/recycle-bin",
     icon: History,
-    description: "Restore soft-deleted records",
+    description: "گەڕاندنەوەی تۆمارە سڕاوەکان",
   },
   {
-    title: "Bulk Operations",
+    title: "کردارە کۆمەڵایەتییەکان",
     href: "/dashboard/bulk",
     icon: History,
-    description: "Multi-record jobs & progress",
+    description: "کارە کۆمەڵەکان و پێشکەوتن",
   },
   {
-    title: "Recovery Center",
+    title: "ناوەندی گەڕاندنەوە",
     href: "/dashboard/recovery",
     icon: History,
-    description: "Session recovery",
+    description: "گەڕاندنەوەی دانیشتن",
   },
 
   {
@@ -170,10 +170,10 @@ export const APP_GRID: AppMenuItem[] = [
     description: "کۆگا",
   },
   {
-    title: "Activity Timeline",
+    title: "تێمڵاینی چالاکی",
     href: "/dashboard/activity",
     icon: History,
-    description: "Enterprise activity history",
+    description: "مێژووی چالاکییەکانی سیستەم",
   },
   {
     title: "تۆماری چاودێری",
@@ -182,16 +182,16 @@ export const APP_GRID: AppMenuItem[] = [
     description: "چاودێری",
   },
   {
-    title: "Version History",
+    title: "مێژووی وەشان",
     href: "/dashboard/version-history",
     icon: History,
-    description: "Compare · Restore versions",
+    description: "بەراورد · گەڕاندنەوەی وەشان",
   },
   {
-    title: "AI Assistant",
+    title: "یاریدەدەری زیرەک",
     href: "/dashboard/ai-assistant",
     icon: Sparkles,
-    description: "Insights · Alerts · Automation",
+    description: "تێڕوانین · ئاگاداری · خۆکارکردن",
   },
   {
     title: "بارکۆد",

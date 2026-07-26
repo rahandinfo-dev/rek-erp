@@ -21,10 +21,10 @@ export default function InstallAppButton({
           "inline-flex items-center gap-1.5 rounded-full bg-[color-mix(in_srgb,var(--success)_12%,transparent)] px-2.5 py-1 text-[11px] font-bold text-[var(--success)]",
           className
         )}
-        title="Installed as app"
+        title="وەک ئەپ دامەزراوە"
       >
         <Check size={12} />
-        {compact ? "App" : "Installed"}
+        {compact ? "ئەپ" : "دامەزراوە"}
       </span>
     );
   }
@@ -42,10 +42,10 @@ export default function InstallAppButton({
         "inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-2.5 py-1 text-[11px] font-bold text-primary transition hover:bg-primary/20",
         className
       )}
-      aria-label="Install REK ERP app"
+      aria-label="دامەزراندنی ئەپی REK ERP"
     >
       <Download size={12} />
-      {compact ? "Install" : "Install App"}
+      {compact ? "دامەزراندن" : "دامەزراندنی ئەپ"}
     </button>
   );
 }

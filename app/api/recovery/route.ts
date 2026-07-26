@@ -81,7 +81,7 @@ export async function GET() {
   } catch (error) {
     console.error("GET RECOVERY ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
+      { success: false, message: "هەڵەیەک ڕوویدا." },
       { status: 500 }
     );
   }
@@ -152,7 +152,7 @@ export async function PUT(req: NextRequest) {
   } catch (error) {
     console.error("PUT RECOVERY ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
+      { success: false, message: "هەڵەیەک ڕوویدا." },
       { status: 500 }
     );
   }
@@ -188,7 +188,7 @@ export async function DELETE(req: NextRequest) {
   } catch (error) {
     console.error("DELETE RECOVERY ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
+      { success: false, message: "هەڵەیەک ڕوویدا." },
       { status: 500 }
     );
   }

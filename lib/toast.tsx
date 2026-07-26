@@ -67,7 +67,7 @@ export const appToast = {
           id={id}
           title={input.title}
           message={input.message}
-          undoLabel={input.undoLabel || "Undo"}
+          undoLabel={input.undoLabel || "پاشگەزبوونەوە"}
           durationMs={durationMs}
           onUndo={input.onUndo}
         />

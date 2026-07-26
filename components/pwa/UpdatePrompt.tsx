@@ -22,7 +22,7 @@ export default function UpdatePrompt({
             id="pwa-update-title"
             className="text-sm font-bold text-foreground"
           >
-            Update Available
+            نوێکردنەوە بەردەستە
           </h2>
           <p
             id="pwa-update-desc"
@@ -37,7 +37,7 @@ export default function UpdatePrompt({
             onClick={onLater}
             className="rounded-xl bg-muted px-3 py-2 text-xs font-bold text-muted-foreground"
           >
-            Later
+            دواتر
           </button>
           <button
             type="button"
@@ -45,7 +45,7 @@ export default function UpdatePrompt({
             className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground"
           >
             <RefreshCw size={14} />
-            Update Now
+            ئێستا نوێ بکەرەوە
           </button>
         </div>
       </div>

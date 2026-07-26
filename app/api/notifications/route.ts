@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "ØªÚ©Ø§ÛŒÛ• Ø³Û•Ø±Û•ØªØ§ Ø¨Ú†Û† Ú˜ÙˆÙˆØ±Û•ÙˆÛ•." },
+        { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
         { status: 401 }
       );
     }
@@ -130,7 +130,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("GET NOTIFICATIONS ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
+      { success: false, message: "هەڵەیەک ڕوویدا." },
       { status: 500 }
     );
   }
@@ -141,7 +141,7 @@ export async function DELETE(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "ØªÚ©Ø§ÛŒÛ• Ø³Û•Ø±Û•ØªØ§ Ø¨Ú†Û† Ú˜ÙˆÙˆØ±Û•ÙˆÛ•." },
+        { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
         { status: 401 }
       );
     }
@@ -166,13 +166,13 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "Ù‡Û•Ù…ÙˆÙˆ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©Ø§Ù† Ø´Ø§Ø±Ø¯Ø±Ø§Ù†Û•ÙˆÛ•.",
+      message: "هەموو ئاگادارییەکان شاردرانەوە.",
       data: { count: result.count },
     });
   } catch (error) {
     console.error("DELETE ALL NOTIFICATIONS ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
+      { success: false, message: "هەڵەیەک ڕوویدا." },
       { status: 500 }
     );
   }

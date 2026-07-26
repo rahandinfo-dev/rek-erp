@@ -9,10 +9,10 @@ import { formatTime } from "@/lib/utils/datetime";
 function formatRelative(savedAt: number | null | undefined, now: number) {
   if (!savedAt || !now) return "";
   const sec = Math.max(0, Math.floor((now - savedAt) / 1000));
-  if (sec < 5) return "just now";
-  if (sec < 60) return `${sec} seconds ago`;
+  if (sec < 5) return "ئێستا";
+  if (sec < 60) return `${sec} چرکە پێش ئێستا`;
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} min ago`;
+  if (min < 60) return `${min} خولەک پێش ئێستا`;
   return formatTime(savedAt);
 }
 
@@ -40,7 +40,7 @@ export function AutoSaveStatus({
         aria-live="polite"
       >
         <Loader2 size={12} className="animate-spin" />
-        🔵 Saving...
+        🔵 پاشەکەوت دەکرێت…
       </span>
     );
   }
@@ -53,7 +53,7 @@ export function AutoSaveStatus({
         aria-live="polite"
       >
         <AlertTriangle size={12} />
-        🟡 Unsaved Changes
+        🟡 گۆڕانکاری پاشەکەوتنەکراو
       </span>
     );
   }
@@ -66,7 +66,7 @@ export function AutoSaveStatus({
         aria-live="assertive"
       >
         <WifiOff size={12} />
-        Offline
+        دەرهێڵ
       </span>
     );
   }
@@ -79,7 +79,7 @@ export function AutoSaveStatus({
         aria-live="assertive"
       >
         <CloudOff size={12} />
-        🔴 Save Failed
+        🔴 پاشەکەوت سەرنەکەوت
       </span>
     );
   }
@@ -92,7 +92,7 @@ export function AutoSaveStatus({
         aria-live="assertive"
       >
         <CloudOff size={12} />
-        Waiting For Connection
+        چاوەڕوانی پەیوەندی
       </span>
     );
   }
@@ -105,7 +105,7 @@ export function AutoSaveStatus({
         aria-live="polite"
       >
         <Check size={12} />
-        Draft Restored
+        ڕەشنووس گەڕێندرایەوە
       </span>
     );
   }
@@ -117,7 +117,7 @@ export function AutoSaveStatus({
       aria-live="polite"
     >
       <Check size={12} />
-      🟢 {time ? `Saved ${time}` : "All Changes Saved"}
+      🟢 {time ? `پاشەکەوتکرا ${time}` : "هەموو گۆڕانکارییەکان پاشەکەوتکران"}
     </span>
   );
 }

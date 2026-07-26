@@ -110,18 +110,18 @@ export default function InvoicesTable({
   const columns: DataTableColumn<InvoiceRow>[] = [
     {
       id: "invoiceNo",
-      header: "Ú˜Ù…Ø§Ø±Û•ÛŒ Ù¾Ø³ÙˆÙˆÙ„Û•",
+      header: "ژمارەی پسوولە",
       accessor: (row) => row.invoiceNo,
       cell: (row) => <span className="font-bold">{row.invoiceNo}</span>,
     },
     {
       id: "customer",
-      header: "Ú©Ú•ÛŒØ§Ø±",
+      header: "کڕیار",
       accessor: (row) => row.customerName,
     },
     {
       id: "date",
-      header: "Ø¨Û•Ø±ÙˆØ§Ø±",
+      header: "بەروار",
       accessor: (row) => new Date(row.invoiceDate).getTime(),
       cell: (row) => (
         <span>{formatDate(row.invoiceDate)}</span>
@@ -129,18 +129,18 @@ export default function InvoicesTable({
     },
     {
       id: "warehouse",
-      header: "Ú©Û†Ú¯Ø§",
+      header: "کۆگا",
       accessor: (row) => row.warehouseName,
     },
     {
       id: "payment",
-      header: "Ù¾Ø§Ø±Û•Ø¯Ø§Ù†",
+      header: "پارەدان",
       accessor: (row) => row.paymentMethod,
       cell: (row) => PAYMENT_METHOD_LABELS[row.paymentMethod],
     },
     {
       id: "status",
-      header: "Ø¯Û†Ø®",
+      header: "دۆخ",
       accessor: (row) => row.status,
       cell: (row) => (
         <span
@@ -150,13 +150,13 @@ export default function InvoicesTable({
               : "bg-red-100 text-red-700"
           }`}
         >
-          {row.status === "ACTIVE" ? "Ú†Ø§Ù„Ø§Ú©" : "Ù‡Û•ÚµÙˆÛ•Ø´Ø§ÙˆÛ•"}
+          {row.status === "ACTIVE" ? "چالاک" : "هەڵوەشاوە"}
         </span>
       ),
     },
     {
       id: "total",
-      header: "Ú©Û†ÛŒ Ú¯Ø´ØªÛŒ",
+      header: "کۆی گشتی",
       accessor: (row) => Number(row.grandTotal),
       cell: (row) => `${formatMoney(row.grandTotal)} IQD`,
     },
@@ -179,13 +179,13 @@ export default function InvoicesTable({
       data={rows}
       columns={columns}
       getRowId={(row) => row.id}
-      searchPlaceholder="Ú¯Û•Ú•Ø§Ù† Ø¨Û• Ú˜Ù…Ø§Ø±Û•ÛŒ Ù¾Ø³ÙˆÙˆÙ„Û• ÛŒØ§Ù† Ú©Ú•ÛŒØ§Ø±..."
+      searchPlaceholder="گەڕان بە ژمارەی پسوولە یان کڕیار..."
       searchFilter={(row, q) =>
         row.invoiceNo.toLowerCase().includes(q) ||
         row.customerName.toLowerCase().includes(q) ||
         row.warehouseName.toLowerCase().includes(q)
       }
-      emptyMessage="Ù‡ÛŒÚ† Ù¾Ø³ÙˆÙˆÙ„Û•ÛŒÛ•Ú© Ù†ÛŒÛŒÛ•. ÙØ±Û†Ø´ØªÙ†ÛŽÚ©ÛŒ ØªÛ•ÙˆØ§Ùˆ Ù¾Ø³ÙˆÙˆÙ„Û• Ø¯Ø±ÙˆØ³Øª Ø¯Û•Ú©Ø§Øª."
+      emptyMessage="هیچ پسوولەیەک نییە. فرۆشتنێکی تەواو پسوولە دروست دەکات."
       selection={{
         selectedIds: selection.selectedIds,
         onChange: selection.setIds,
@@ -210,21 +210,21 @@ export default function InvoicesTable({
           <Link
             href={`/dashboard/invoices/${row.id}`}
             className="inline-flex size-8 items-center justify-center rounded-lg text-[#FFAE42] hover:bg-[#FFF8EF]"
-            title="Ø¨ÛŒÙ†ÛŒÙ†"
+            title="بینین"
           >
             <Eye size={16} />
           </Link>
           <Link
             href={`/dashboard/invoices/${row.id}?print=1`}
             className="inline-flex size-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50"
-            title="Ú†Ø§Ù¾"
+            title="چاپ"
           >
             <Printer size={16} />
           </Link>
           <Link
             href={`/dashboard/invoices/${row.id}?pdf=1`}
             className="inline-flex size-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50"
-            title="Ø¯Ø§Ú¯Ø±ØªÙ†ÛŒ PDF"
+            title="داگرتنی PDF"
           >
             <Download size={16} />
           </Link>
@@ -233,7 +233,7 @@ export default function InvoicesTable({
             disabled={busyId === row.id}
             onClick={() => void handleDuplicate(row)}
             className="inline-flex size-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-            title="Ø¯ÙˆÙˆØ¨Ø§Ø±Û•Ú©Ø±Ø¯Ù†Û•ÙˆÛ•"
+            title="دووبارەکردنەوە"
           >
             <Copy size={16} />
           </button>
@@ -242,7 +242,7 @@ export default function InvoicesTable({
             disabled={busyId === row.id || row.status === "VOID"}
             onClick={() => void handleDelete(row)}
             className="inline-flex size-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-40"
-            title="Ø³Ú•ÛŒÙ†Û•ÙˆÛ•"
+            title="سڕینەوە"
           >
             <Trash2 size={16} />
           </button>

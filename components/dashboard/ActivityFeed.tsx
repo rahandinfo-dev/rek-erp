@@ -121,7 +121,7 @@ export default function ActivityFeed({
                 live ? "animate-pulse bg-emerald-500" : "bg-slate-400"
               }`}
             />
-            {live ? "Ø²ÛŒÙ†Ø¯ÙˆÙˆ" : "Ù¾Û•ÛŒÙˆÛ•Ù†Ø¯ÛŒ Ù†Û•Ù…Ø§"}
+            {live ? "زیندوو" : "پەیوەندی نەما"}
           </span>
           <Link
             href="/dashboard/notifications"

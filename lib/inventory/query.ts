@@ -284,7 +284,7 @@ export async function queryInventory(input: InventoryQueryInput) {
       buildInventorySummary(companyId),
     ]);
 
-  const warehouseName = mainWarehouse?.name || "Ú©Û†Ú¯Ø§";
+  const warehouseName = mainWarehouse?.name || "کۆگا";
 
   const rows: InventoryProductRow[] = products.map((p) => {
     const currentStock = num(p.currentStock);

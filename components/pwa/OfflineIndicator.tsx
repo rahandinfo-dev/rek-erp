@@ -16,7 +16,7 @@ export default function OfflineIndicator() {
     >
       <div className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-destructive px-3 py-1.5 text-xs font-bold text-destructive-foreground shadow-lg">
         <WifiOff size={14} aria-hidden />
-        Offline — هەندێک تایبەتمەندی بەردەست نین
+        دەرهێڵ — هەندێک تایبەتمەندی بەردەست نین
       </div>
     </div>
   );

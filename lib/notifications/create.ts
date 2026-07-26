@@ -75,7 +75,7 @@ export function timeAgoKu(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
   const seconds = Math.floor((Date.now() - d.getTime()) / 1000);
 
-  if (seconds < 60) return "Ø¦ÛŽØ³ØªØ§";
+  if (seconds < 60) return "ئێستا";
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes} Ø®ÙˆÙ„Û•Ú© Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
   const hours = Math.floor(minutes / 60);

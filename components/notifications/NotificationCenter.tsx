@@ -153,7 +153,7 @@ export default function NotificationCenter() {
   }
 
   async function deleteAll() {
-    if (!window.confirm("Ø¯ÚµÙ†ÛŒØ§ÛŒØª Ù„Û• Ø´Ø§Ø±Ø¯Ù†Û•ÙˆÛ•ÛŒ Ù‡Û•Ù…ÙˆÙˆ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©Ø§Ù†ØŸ")) return;
+    if (!window.confirm("دڵنیایت لە شاردنەوەی هەموو ئاگادارییەکان؟")) return;
     setBusy(true);
     try {
       await fetch("/api/notifications", {
@@ -214,7 +214,7 @@ export default function NotificationCenter() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Ú¯Û•Ú•Ø§Ù† Ù„Û• Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒ..."
+            placeholder="گەڕان لە ئاگاداری..."
             className="h-11 w-full rounded-2xl border border-[rgba(255, 174, 66,0.12)] bg-[#FFF8EF] pr-10 pl-4 outline-none focus:border-[#FFAE42] focus:bg-white"
           />
         </label>
@@ -330,7 +330,7 @@ export default function NotificationCenter() {
                         onClick={() => void markRead(item.id, !item.isRead)}
                         className="inline-flex h-10 items-center rounded-2xl border px-3 text-sm font-semibold disabled:opacity-50"
                       >
-                        {item.isRead ? "Ù†Û•Ø®ÙˆÛŽÙ†Ø¯Ø±Ø§Ùˆ" : "Ø®ÙˆÛŽÙ†Ø¯Ø±Ø§Ùˆ"}
+                        {item.isRead ? "نەخوێندراو" : "خوێندراو"}
                       </button>
                       <button
                         type="button"

@@ -136,9 +136,9 @@ export function pushUndoable(input: PushUndoableInput): string {
               entityType: input.entityType,
               entityId: input.entityId,
             });
-            appToast.info("Undone", "Action restored.");
+            appToast.info("پاشگەزبووەوە", "کردارەکە گەڕێندرایەوە.");
           } catch {
-            appToast.error("Unable to restore action.", "Try again.");
+            appToast.error("نەتوانرا کردارەکە بگەڕێنرێتەوە.", "دووبارە هەوڵبدەرەوە.");
             throw new Error("undo failed");
           }
         },
@@ -161,10 +161,10 @@ export async function performUndo(module?: UndoModule) {
       entityType: entry.meta?.entityType as string | undefined,
       entityId: entry.meta?.entityId as string | undefined,
     });
-    appToast.info("Undone", entry.label);
+    appToast.info("پاشگەزبووەوە", entry.label);
     return true;
   } catch {
-    appToast.error("Unable to restore action.", "Try again.");
+    appToast.error("نەتوانرا کردارەکە بگەڕێنرێتەوە.", "دووبارە هەوڵبدەرەوە.");
     return false;
   }
 }
@@ -181,11 +181,11 @@ export async function performRedo(module?: UndoModule) {
       entityType: entry.meta?.entityType as string | undefined,
       entityId: entry.meta?.entityId as string | undefined,
     });
-    appToast.info("Redone", entry.label);
+    appToast.info("دووبارەکرایەوە", entry.label);
     // Re-show undo toast for the redone action
     appToast.actionWithUndo({
       title: entry.label,
-      undoLabel: "Undo",
+      undoLabel: "پاشگەزبوونەوە",
       durationMs: UNDO_WINDOW_MS,
       onUndo: async () => {
         await performUndo(entry.module);
@@ -193,7 +193,7 @@ export async function performRedo(module?: UndoModule) {
     });
     return true;
   } catch {
-    appToast.error("Unable to restore action.", "Try again.");
+    appToast.error("نەتوانرا کردارەکە بگەڕێنرێتەوە.", "دووبارە هەوڵبدەرەوە.");
     return false;
   }
 }

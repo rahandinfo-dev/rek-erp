@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("RECYCLE BIN LIST ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
+      { success: false, message: "هەڵەیەک ڕوویدا." },
       { status: 500 }
     );
   }

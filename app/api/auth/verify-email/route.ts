@@ -2,53 +2,32 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 import { db } from "@/lib/prisma/db";
+import { verifyOtp } from "@/lib/auth/otp";
 
 const verifySchema = z.object({
   email: z.string().email(),
-
-  otp: z
-    .string()
-    .length(6),
+  otp: z.string().length(6),
 });
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-
-    const result =
-      verifySchema.safeParse(body);
+    const result = verifySchema.safeParse(body);
 
     if (!result.success) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "زانیاری نادروستە.",
-        },
-        {
-          status: 400,
-        }
+        { success: false, message: "زانیاری نادروستە." },
+        { status: 400 }
       );
     }
 
-    const {
-      email,
-      otp,
-    } = result.data;
-    const user = await db.user.findUnique({
-      where: {
-        email,
-      },
-    });
+    const { email, otp } = result.data;
+    const user = await db.user.findUnique({ where: { email } });
 
     if (!user) {
       return NextResponse.json(
-        {
-          success: false,
-          message: "هەژمار نەدۆزرایەوە.",
-        },
-        {
-          status: 404,
-        }
+        { success: false, message: "هەژمار نەدۆزرایەوە." },
+        { status: 404 }
       );
     }
 
@@ -58,9 +37,7 @@ export async function POST(req: NextRequest) {
           success: false,
           message: "ئەم هەژمارە پێشتر پشتڕاستکراوەتەوە.",
         },
-        {
-          status: 400,
-        }
+        { status: 400 }
       );
     }
 
@@ -70,21 +47,17 @@ export async function POST(req: NextRequest) {
           success: false,
           message: "کۆدی پشتڕاستکردنەوە بوونی نییە.",
         },
-        {
-          status: 400,
-        }
+        { status: 400 }
       );
     }
 
-    if (user.otp !== otp) {
+    if (!verifyOtp(otp, user.otp)) {
       return NextResponse.json(
         {
           success: false,
           message: "کۆدی پشتڕاستکردنەوە هەڵەیە.",
         },
-        {
-          status: 400,
-        }
+        { status: 400 }
       );
     }
 
@@ -94,15 +67,12 @@ export async function POST(req: NextRequest) {
           success: false,
           message: "کۆدی پشتڕاستکردنەوە بەسەرچووە.",
         },
-        {
-          status: 400,
-        }
+        { status: 400 }
       );
     }
+
     await db.user.update({
-      where: {
-        id: user.id,
-      },
+      where: { id: user.id },
       data: {
         verified: true,
         otp: null,
@@ -115,21 +85,13 @@ export async function POST(req: NextRequest) {
         success: true,
         message: "ئیمەیڵەکەت بە سەرکەوتوویی پشتڕاستکرایەوە.",
       },
-      {
-        status: 200,
-      }
+      { status: 200 }
     );
   } catch (error) {
     console.error("VERIFY EMAIL ERROR:", error);
-
     return NextResponse.json(
-      {
-        success: false,
-        message: "هەڵەیەک ڕوویدا.",
-      },
-      {
-        status: 500,
-      }
+      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { status: 500 }
     );
   }
 }

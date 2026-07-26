@@ -56,7 +56,7 @@ export async function GET() {
   } catch (error) {
     console.error("GET WORKSPACE ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
+      { success: false, message: "هەڵەیەک ڕوویدا." },
       { status: 500 }
     );
   }
@@ -124,7 +124,7 @@ export async function PUT(req: NextRequest) {
   } catch (error) {
     console.error("PUT WORKSPACE ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
+      { success: false, message: "هەڵەیەک ڕوویدا." },
       { status: 500 }
     );
   }

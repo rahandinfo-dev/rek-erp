@@ -151,7 +151,7 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/activity",
-        label: "Activity Timeline",
+        label: "تێمڵاینی چالاکی",
         icon: History,
         keywords: ["activity", "timeline", "audit", "history", "چاودێری"],
       },
@@ -163,7 +163,7 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/version-history",
-        label: "Version History",
+        label: "مێژووی وەشان",
         icon: History,
         keywords: [
           "version",
@@ -176,7 +176,7 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/ai-assistant",
-        label: "AI Assistant",
+        label: "یاریدەدەری زیرەک",
         icon: Sparkles,
         keywords: [
           "ai",
@@ -202,19 +202,19 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/recent",
-        label: "Recently Viewed",
+        label: "دوایین بینراوەکان",
         icon: History,
         keywords: ["recent", "history", "viewed", "دوایین", "مێژوو"],
       },
       {
         href: "/dashboard/drafts",
-        label: "Draft Center",
+        label: "ناوەندی ڕەشنووس",
         icon: History,
         keywords: ["draft", "drafts", "recovery", "resume", "گەڕاندنەوە"],
       },
       {
         href: "/dashboard/recycle-bin",
-        label: "Recycle Bin",
+        label: "سەبەتەی زبڵ",
         icon: History,
         keywords: [
           "recycle",
@@ -228,13 +228,13 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/bulk",
-        label: "Bulk Operations",
+        label: "کردارە کۆمەڵایەتییەکان",
         icon: History,
         keywords: ["bulk", "multi", "batch", "select", "کۆمەڵ", "هەڵبژاردن"],
       },
       {
         href: "/dashboard/settings/numbering",
-        label: "Auto Numbering",
+        label: "ژمارەدانی خۆکار",
         icon: Settings,
         keywords: [
           "numbering",
@@ -247,7 +247,7 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/recovery",
-        label: "Recovery Center",
+        label: "ناوەندی گەڕاندنەوە",
         icon: History,
         keywords: ["recovery", "session", "گەڕاندنەوە"],
       },

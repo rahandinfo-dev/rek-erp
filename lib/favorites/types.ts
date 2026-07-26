@@ -80,11 +80,11 @@ export const DEFAULT_FAVORITES: Array<{
   title: string;
   moduleKey: string;
 }> = [
-  { href: "/dashboard", title: "Dashboard", moduleKey: "dashboard" },
-  { href: "/dashboard/products", title: "Products", moduleKey: "products" },
-  { href: "/dashboard/sales", title: "Sales", moduleKey: "sales" },
-  { href: "/dashboard/reports", title: "Reports", moduleKey: "reports" },
-  { href: "/dashboard/settings", title: "Settings", moduleKey: "settings" },
+  { href: "/dashboard", title: "داشبۆرد", moduleKey: "dashboard" },
+  { href: "/dashboard/products", title: "بەرهەمەکان", moduleKey: "products" },
+  { href: "/dashboard/sales", title: "فرۆشتن", moduleKey: "sales" },
+  { href: "/dashboard/reports", title: "ڕاپۆرتەکان", moduleKey: "reports" },
+  { href: "/dashboard/settings", title: "ڕێکخستنەکان", moduleKey: "settings" },
 ];
 
 export function displayName(item: FavoriteItem) {

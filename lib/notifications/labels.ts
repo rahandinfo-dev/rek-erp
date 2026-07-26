@@ -5,25 +5,25 @@ import type {
 import { formatDateTime } from "@/lib/utils/datetime";
 
 export const CATEGORY_LABELS: Record<NotificationCategory, string> = {
-  PRODUCT: "Ø¨Û•Ø±Ù‡Û•Ù…",
-  INVENTORY: "Ø¦ÛŒÙ†Ú¤ÛŽÙ†ØªÛ†Ø±ÛŒ",
-  SALE: "ÙØ±Û†Ø´ØªÙ†",
-  PURCHASE: "Ú©Ú•ÛŒÙ†",
-  CUSTOMER: "Ú©Ú•ÛŒØ§Ø±",
-  SUPPLIER: "Ø¯Ø§Ø¨ÛŒÙ†Ú©Û•Ø±",
-  WAREHOUSE: "Ú©Û†Ú¯Ø§",
-  INVOICE: "Ù¾Ø³ÙˆÙˆÙ„Û•",
-  EMPLOYEE: "Ú©Ø§Ø±Ù…Û•Ù†Ø¯",
-  SYSTEM: "Ø³ÛŒØ³ØªÛ•Ù… / Ú•ÛŽÚ©Ø®Ø³ØªÙ†",
-  ERROR: "Ù‡Û•ÚµÛ•",
-  WARNING: "Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒ",
+  PRODUCT: "بەرهەم",
+  INVENTORY: "ئینڤێنتۆری",
+  SALE: "فرۆشتن",
+  PURCHASE: "کڕین",
+  CUSTOMER: "کڕیار",
+  SUPPLIER: "دابینکەر",
+  WAREHOUSE: "کۆگا",
+  INVOICE: "پسوولە",
+  EMPLOYEE: "کارمەند",
+  SYSTEM: "سیستەم / ڕێکخستن",
+  ERROR: "هەڵە",
+  WARNING: "ئاگاداری",
 };
 
 export const PRIORITY_LABELS: Record<NotificationPriority, string> = {
-  LOW: "Ù†Ø²Ù…",
-  NORMAL: "Ø¦Ø§Ø³Ø§ÛŒÛŒ",
-  HIGH: "Ø¨Û•Ø±Ø²",
-  CRITICAL: "Ú¯Ø±Ù†Ú¯",
+  LOW: "نزم",
+  NORMAL: "ئاسایی",
+  HIGH: "بەرز",
+  CRITICAL: "گرنگ",
 };
 
 /** Primary filters shown first in Notification Center */
@@ -31,12 +31,12 @@ export const PRIMARY_CATEGORY_OPTIONS: Array<{
   value: NotificationCategory | "";
   label: string;
 }> = [
-  { value: "", label: "Ù‡Û•Ù…ÙˆÙˆ" },
-  { value: "INVENTORY", label: "Ø¦ÛŒÙ†Ú¤ÛŽÙ†ØªÛ†Ø±ÛŒ" },
-  { value: "SALE", label: "ÙØ±Û†Ø´ØªÙ†" },
-  { value: "PURCHASE", label: "Ú©Ú•ÛŒÙ†" },
-  { value: "EMPLOYEE", label: "Ú©Ø§Ø±Ù…Û•Ù†Ø¯" },
-  { value: "SYSTEM", label: "Ø³ÛŒØ³ØªÛ•Ù… / Ú•ÛŽÚ©Ø®Ø³ØªÙ†" },
+  { value: "", label: "هەموو" },
+  { value: "INVENTORY", label: "ئینڤێنتۆری" },
+  { value: "SALE", label: "فرۆشتن" },
+  { value: "PURCHASE", label: "کڕین" },
+  { value: "EMPLOYEE", label: "کارمەند" },
+  { value: "SYSTEM", label: "سیستەم / ڕێکخستن" },
 ];
 
 export const CATEGORY_OPTIONS = Object.entries(CATEGORY_LABELS).map(

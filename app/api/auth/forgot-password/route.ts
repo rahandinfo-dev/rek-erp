@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { randomInt } from "crypto";
 import { db } from "@/lib/prisma/db";
+import { generateOtp, hashOtp } from "@/lib/auth/otp";
 import { sendForgotPasswordEmail } from "@/lib/email/sendForgotPasswordEmail";
 import { apiFail, apiOk, apiRateLimited } from "@/lib/api/response";
 import { clientKey, rateLimit } from "@/lib/security/rate-limit";
@@ -33,20 +33,20 @@ export async function POST(req: NextRequest) {
       return apiOk(undefined, { message: GENERIC_OK });
     }
 
-    const otp = randomInt(100000, 999999).toString();
+    const otp = generateOtp();
     const expiresAt = new Date(Date.now() + 1000 * 60 * 10);
+    const otpDigest = hashOtp(otp);
 
     await db.passwordReset.upsert({
       where: { email },
-      update: { otp, expiresAt, verified: false },
-      create: { email, otp, expiresAt, verified: false },
+      update: { otp: otpDigest, expiresAt, verified: false },
+      create: { email, otp: otpDigest, expiresAt, verified: false },
     });
 
     try {
       await sendForgotPasswordEmail(email, user.fullName, otp);
     } catch (mailErr) {
       console.error("[forgot-password] email failed", mailErr);
-      // Still generic — don't leak mail infra issues to attackers
     }
 
     return apiOk(undefined, { message: GENERIC_OK });

@@ -33,11 +33,10 @@ export default function DraftRestoreDialog({
     <Dialog open={open} onOpenChange={() => undefined}>
       <DialogContent showCloseButton={false} className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Unsaved Changes Found</DialogTitle>
+          <DialogTitle>گۆڕانکاری پاشەکەوتنەکراو دۆزرایەوە</DialogTitle>
           <DialogDescription>
-            We found unsaved changes from your previous session
-            {when ? ` (${when})` : ""}. Would you like to continue where you left
-            off?
+            گۆڕانکاری پاشەکەوتنەکراو لە دانیشتنی پێشووتان دۆزرایەوە
+            {when ? ` (${when})` : ""}. دەتەوێت لەو شوێنەوە بەردەوام بیت؟
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex-col gap-2 sm:flex-row-reverse sm:justify-start">
@@ -46,14 +45,14 @@ export default function DraftRestoreDialog({
             onClick={onContinue}
             className="inline-flex h-11 items-center justify-center rounded-2xl bg-primary px-5 text-sm font-bold text-primary-foreground"
           >
-            Continue Editing
+            بەردەوامبوون لە دەستکاری
           </button>
           <button
             type="button"
             onClick={onDiscard}
             className="inline-flex h-11 items-center justify-center rounded-2xl border border-border bg-card px-5 text-sm font-bold text-foreground"
           >
-            Discard Draft
+            فڕێدانی ڕەشنووس
           </button>
         </DialogFooter>
       </DialogContent>

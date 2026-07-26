@@ -43,10 +43,10 @@ export default class ErrorBoundary extends Component<Props, State> {
         </div>
         <div>
           <h2 className="text-lg font-black">
-            {this.props.fallbackTitle || "Something went wrong"}
+            {this.props.fallbackTitle || "هەڵەیەک ڕوویدا"}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            The page crashed. Your data is safe — try reloading this section.
+            پەڕەکە تێکچوو. زانیارییەکانت پارێزراون — دووبارە هەوڵبدەرەوە یان ئەم بەشە بار بکەرەوە.
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-2">
@@ -55,7 +55,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             variant="outline"
             onClick={() => this.setState({ error: null })}
           >
-            Try again
+            دووبارە هەوڵبدەرەوە
           </Button>
           <Button
             type="button"
@@ -64,7 +64,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             }}
           >
             <RefreshCw size={16} aria-hidden />
-            Reload
+            بارکردنەوە
           </Button>
         </div>
       </div>

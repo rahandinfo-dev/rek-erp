@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma/db";
+import { generateOtp, hashOtp } from "@/lib/auth/otp";
 import { sendVerificationEmail } from "@/lib/email/sendVerificationEmail";
 import { clientKey, rateLimit } from "@/lib/security/rate-limit";
 import { apiRateLimited } from "@/lib/api/response";
-
-function generateOtp() {
-  return Math.floor(100000 + Math.random() * 900000).toString();
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -44,7 +41,7 @@ export async function POST(req: NextRequest) {
     await db.user.update({
       where: { id: user.id },
       data: {
-        otp: verificationCode,
+        otp: hashOtp(verificationCode),
         otpExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
       },
     });

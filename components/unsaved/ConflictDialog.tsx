@@ -33,30 +33,30 @@ export default function ConflictDialog({
         <AlertDialog.Overlay className="fixed inset-0 z-[100] bg-[var(--overlay)] backdrop-blur-[2px]" />
         <AlertDialog.Content className="rek-dialog fixed top-1/2 left-1/2 z-[101] w-[95%] max-w-lg -translate-x-1/2 -translate-y-1/2 p-6">
           <AlertDialog.Title className="text-xl font-bold">
-            Version Conflict
+            پێکدادانی وەشان
           </AlertDialog.Title>
           <AlertDialog.Description className="mt-2 text-muted-foreground">
-            Another device modified “{conflict?.label || "this record"}”. Choose
-            how to resolve.
+            ئامێرێکی تر “{conflict?.label || "ئەم تۆمارە"}”ی دەستکاری کرد. چۆن
+            چارەسەری بکەیت؟
           </AlertDialog.Description>
           <div className="mt-6 grid gap-2 sm:grid-cols-2">
             <Button type="button" onClick={onKeepMine}>
-              Keep Mine
+              هی من بهێڵەوە
             </Button>
             <Button type="button" variant="outline" onClick={onKeepTheirs}>
-              Keep Theirs
+              هی ئەوان بهێڵەوە
             </Button>
             <Button type="button" variant="outline" onClick={onMerge}>
-              Merge Changes
+              تێکەڵکردنی گۆڕانکارییەکان
             </Button>
             <Button type="button" variant="outline" onClick={onCompare}>
-              Compare Versions
+              بەراوردکردنی وەشانەکان
             </Button>
           </div>
           <div className="mt-4 flex justify-end">
             <AlertDialog.Cancel asChild>
               <Button type="button" variant="ghost" onClick={onCancel}>
-                Cancel
+                هەڵوەشاندنەوە
               </Button>
             </AlertDialog.Cancel>
           </div>

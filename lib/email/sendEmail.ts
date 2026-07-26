@@ -1,29 +1,24 @@
 import nodemailer from "nodemailer";
 
+function smtpSecure(): boolean {
+  const flag = process.env.EMAIL_SECURE;
+  if (flag === "true" || flag === "1") return true;
+  if (flag === "false" || flag === "0") return false;
+  const port = Number(process.env.EMAIL_PORT || 587);
+  return port === 465;
+}
+
 export const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
-  port: Number(process.env.EMAIL_PORT),
-  secure: false,
+  port: Number(process.env.EMAIL_PORT || 587),
+  secure: smtpSecure(),
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
 
-transporter.verify((error) => {
-  if (error) {
-    console.error("SMTP ERROR:");
-    console.error(error);
-  } else {
-    console.log("SMTP READY");
-  }
-});
-
-export async function sendEmail(
-  to: string,
-  subject: string,
-  html: string
-) {
+export async function sendEmail(to: string, subject: string, html: string) {
   const info = await transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to,
@@ -31,13 +26,9 @@ export async function sendEmail(
     html,
   });
 
-  console.log("==================================");
-  console.log("EMAIL SENT");
-  console.log("MESSAGE ID:", info.messageId);
-  console.log("ACCEPTED:", info.accepted);
-  console.log("REJECTED:", info.rejected);
-  console.log("RESPONSE:", info.response);
-  console.log("==================================");
+  if (process.env.NODE_ENV !== "production") {
+    console.log("[email] sent", info.messageId);
+  }
 
   return info;
 }

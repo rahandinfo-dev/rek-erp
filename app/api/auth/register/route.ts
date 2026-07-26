@@ -6,6 +6,8 @@ import { db } from "@/lib/prisma/db";
 
 import { hashPassword } from "@/lib/auth/hash";
 
+import { generateOtp, hashOtp } from "@/lib/auth/otp";
+
 import { sendVerificationEmail } from "@/lib/email/sendVerificationEmail";
 import { clientKey, rateLimit } from "@/lib/security/rate-limit";
 import { apiRateLimited } from "@/lib/api/response";
@@ -50,11 +52,6 @@ const registerSchema = z.object({
     ),
 });
 
-function generateOtp() {
-  return Math.floor(
-    100000 + Math.random() * 900000
-  ).toString();
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -129,6 +126,7 @@ export async function POST(req: NextRequest) {
       await hashPassword(password);
 
     const otp = generateOtp();
+    const otpHash = hashOtp(otp);
 
     const otpExpiresAt = new Date(
       Date.now() + 10 * 60 * 1000
@@ -153,7 +151,7 @@ export async function POST(req: NextRequest) {
     password: hashedPassword,
 
     verified: false,
-    otp,
+    otp: otpHash,
     otpExpiresAt,
   },
 });
@@ -172,11 +170,13 @@ export async function POST(req: NextRequest) {
         };
       }
     );
-    await sendVerificationEmail(
-      email,
-      fullName,
-      otp
-    );
+
+    try {
+      await sendVerificationEmail(email, fullName, otp);
+    } catch (mailErr) {
+      console.error("[register] verification email failed", mailErr);
+      // Account exists; user can resend code. Do not fail registration.
+    }
 
     return NextResponse.json(
       {

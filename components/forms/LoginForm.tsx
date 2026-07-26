@@ -304,7 +304,7 @@ export default function LoginForm() {
                       autoComplete="username"
                       value={login}
                       onChange={(e) => setLogin(e.target.value)}
-                      placeholder="Email یان Username"
+                      placeholder="ئیمەیڵ یان ناوی بەکارهێنەر"
                       aria-invalid={Boolean(error)}
                       className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-5 pl-14 outline-none transition focus:border-[#FFAE42] focus-visible:ring-[3px] focus-visible:ring-[#FFAE42]/35"
                     />

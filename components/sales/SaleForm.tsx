@@ -283,15 +283,15 @@ export default function SaleForm() {
   async function submit(mode: SaveMode) {
     setError("");
     if (!warehouseId) {
-      setError("Ú©Û†Ú¯Ø§ Ù¾ÛŽÙˆÛŒØ³ØªÛ•.");
+      setError("کۆگا پێویستە.");
       return;
     }
     if (items.some((item) => !item.productId || item.quantity <= 0)) {
-      setError("Ù‡Û•Ù…ÙˆÙˆ Ø¨Û•Ø±Ù‡Û•Ù…Û•Ú©Ø§Ù† Ø¨Û• ØªÛ•ÙˆØ§ÙˆÛŒ Ù¾Ú•Ø¨Ú©Û•Ø±Û•ÙˆÛ•.");
+      setError("هەموو بەرهەمەکان بە تەواوی پڕبکەرەوە.");
       return;
     }
     if (items.some((item) => item.unitPrice < 0)) {
-      setError("Ù†Ø±Ø® Ù†Ø§Ø¨ÛŽØª Ù†Û•Ø±ÛŽÙ†ÛŒ Ø¨ÛŽØª.");
+      setError("نرخ نابێت نەرێنی بێت.");
       return;
     }
 
@@ -313,8 +313,8 @@ export default function SaleForm() {
       });
       const result = await res.json();
       if (!res.ok) {
-        setError(result.message || "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§.");
-        appToast.error(result.message || "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§.");
+        setError(result.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(result.message || "هەڵەیەک ڕوویدا.");
         return;
       }
 
@@ -351,7 +351,7 @@ export default function SaleForm() {
         setNotes("");
         setItems([blankLine()]);
         setSaleDate(toDateInputValue());
-        appToast.success("ÙØ±Û†Ø´ØªÙ† ØªÛ†Ù…Ø§Ø±Ú©Ø±Ø§", "Ø¯Û•Ø³ØªÙ¾ÛŽÚ©Ø±Ø¯Ù†ÛŒ ÙØ±Û†Ø´ØªÙ†ÛŒ Ù†ÙˆÛŽ");
+        appToast.success("فرۆشتن تۆمارکرا", "دەستپێکردنی فرۆشتنی نوێ");
         return;
       }
 
@@ -366,8 +366,8 @@ export default function SaleForm() {
       );
       router.refresh();
     } catch {
-      setError("Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§.");
-      appToast.error("Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§.");
+      setError("هەڵەیەک ڕوویدا.");
+      appToast.error("هەڵەیەک ڕوویدا.");
     } finally {
       setSaving(false);
     }
@@ -474,11 +474,11 @@ export default function SaleForm() {
             onProduct={addProductFromScan}
             onNotFound={(code) =>
               appToast.warning(
-                "Ø¨Û•Ø±Ù‡Û•Ù… Ù†Û•Ø¯Û†Ø²Ø±Ø§ÛŒÛ•ÙˆÛ•",
+                "بەرهەم نەدۆزرایەوە",
                 `${code} â€” Ù„Û• Ø¨Û•Ø±Ù‡Û•Ù…Û•Ú©Ø§Ù† Ø²ÛŒØ§Ø¯ Ø¨Ú©Û•`
               )
             }
-            placeholder="Ù†Ø§ÙˆØŒ SKU ÛŒØ§Ù† Ø¨Ø§Ø±Ú©Û†Ø¯â€¦"
+            placeholder="ناو، SKU یان بارکۆد…"
           />
         </div>
 
@@ -568,7 +568,7 @@ export default function SaleForm() {
                 <div className="flex gap-1 sm:col-span-1 sm:justify-end">
                   <button
                     type="button"
-                    title="Ø¯ÙˆÙˆØ¨Ø§Ø±Û•Ú©Ø±Ø¯Ù†Û•ÙˆÛ•"
+                    title="دووبارەکردنەوە"
                     onClick={() =>
                       setItems((prev) => [
                         ...prev.slice(0, index + 1),
@@ -583,7 +583,7 @@ export default function SaleForm() {
                   {items.length > 1 ? (
                     <button
                       type="button"
-                      title="Ø³Ú•ÛŒÙ†Û•ÙˆÛ•"
+                      title="سڕینەوە"
                       onClick={() =>
                         setItems((prev) => prev.filter((_, i) => i !== index))
                       }
@@ -685,7 +685,7 @@ export default function SaleForm() {
           disabled={saving}
           className="h-11 rounded-2xl bg-primary px-6 text-sm font-bold text-primary-foreground disabled:opacity-50"
         >
-          {saving ? "Ù¾Ø§Ø´Û•Ú©Û•ÙˆØª..." : "Ù¾Ø§Ø´Û•Ú©Û•ÙˆØªÚ©Ø±Ø¯Ù†ÛŒ ÙØ±Û†Ø´ØªÙ†"}
+          {saving ? "پاشەکەوت..." : "پاشەکەوتکردنی فرۆشتن"}
         </button>
       </div>
     </form>

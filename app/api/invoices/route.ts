@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "ØªÚ©Ø§ÛŒÛ• Ø³Û•Ø±Û•ØªØ§ Ø¨Ú†Û† Ú˜ÙˆÙˆØ±Û•ÙˆÛ•." },
+        { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
         { status: 401 }
       );
     }
@@ -82,7 +82,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("GET INVOICES ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
+      { success: false, message: "هەڵەیەک ڕوویدا." },
       { status: 500 }
     );
   }

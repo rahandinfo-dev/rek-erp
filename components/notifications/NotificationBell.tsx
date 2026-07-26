@@ -163,7 +163,7 @@ export default function NotificationBell() {
     <div className="relative" ref={panelRef}>
       <button
         type="button"
-        aria-label="Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©Ø§Ù†"
+        aria-label="ئاگادارییەکان"
         aria-expanded={open}
         onClick={() => {
           const next = !open;
