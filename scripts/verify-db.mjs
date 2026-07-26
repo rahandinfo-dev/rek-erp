@@ -11,9 +11,23 @@
  *   DATABASE_URL="postgresql://…" node scripts/verify-db.mjs
  */
 
-import "dotenv/config";
+import dotenv from "dotenv";
 import { readFileSync } from "node:fs";
 import pg from "pg";
+
+const argv = process.argv.slice(2);
+const envIndex = argv.indexOf("--env");
+const envFile = envIndex !== -1 ? argv[envIndex + 1] : null;
+if (envFile) {
+  const loaded = dotenv.config({ path: envFile, override: true });
+  if (loaded.error) {
+    console.error(`[verify] Could not read env file: ${envFile}`);
+    process.exit(1);
+  }
+  console.log(`[verify] Loaded environment from ${envFile}`);
+} else {
+  dotenv.config();
+}
 
 const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
 

@@ -18,14 +18,30 @@
  * Target: DIRECT_URL || DATABASE_URL (override by exporting DATABASE_URL).
  */
 
-import "dotenv/config";
+import dotenv from "dotenv";
 import { spawnSync } from "node:child_process";
 import pg from "pg";
 
-const args = new Set(process.argv.slice(2));
+const argv = process.argv.slice(2);
+const args = new Set(argv);
 const doReset = args.has("--reset");
 const doRebaseline = args.has("--rebaseline");
 const force = args.has("--force");
+
+// Targeting anything other than the default .env must be explicit, so a
+// production reset can never be run by accident.
+const envIndex = argv.indexOf("--env");
+const envFile = envIndex !== -1 ? argv[envIndex + 1] : null;
+if (envFile) {
+  const loaded = dotenv.config({ path: envFile, override: true });
+  if (loaded.error) {
+    console.error(`[recover] Could not read env file: ${envFile}`);
+    process.exit(1);
+  }
+  console.log(`[recover] Loaded environment from ${envFile}`);
+} else {
+  dotenv.config();
+}
 
 const connectionString = process.env.DIRECT_URL || process.env.DATABASE_URL;
 if (!connectionString) {
@@ -40,6 +56,23 @@ function maskedTarget(raw) {
   } catch {
     return "(unparseable connection string)";
   }
+}
+
+/**
+ * Run the Prisma CLI against exactly the database this script inspected.
+ * prisma.config.ts would otherwise resolve the URL from .env, which could point
+ * somewhere else entirely.
+ */
+function runPrisma(prismaArgs) {
+  return spawnSync("npx", ["prisma", ...prismaArgs], {
+    stdio: "inherit",
+    shell: process.platform === "win32",
+    env: {
+      ...process.env,
+      DATABASE_URL: connectionString,
+      DIRECT_URL: connectionString,
+    },
+  });
 }
 
 const client = new pg.Client({
@@ -176,19 +209,19 @@ try {
 
 if (doRebaseline) {
   console.log("[recover] Marking 0_init as applied…");
-  const r = spawnSync("npx", ["prisma", "migrate", "resolve", "--applied", "0_init"], {
-    stdio: "inherit",
-    shell: process.platform === "win32",
-  });
+  const r = runPrisma(["migrate", "resolve", "--applied", "0_init"]);
   process.exit(r.status ?? 0);
 }
 
 if (doReset) {
   console.log("\n[recover] Applying migrations with `prisma migrate deploy`…");
-  const r = spawnSync("npx", ["prisma", "migrate", "deploy"], {
-    stdio: "inherit",
-    shell: process.platform === "win32",
-  });
-  if (r.status !== 0) process.exit(r.status ?? 1);
+  const r = runPrisma(["migrate", "deploy"]);
+  if (r.status !== 0) {
+    console.error(
+      "\n[recover] migrate deploy failed. Re-run the inspect mode to read the " +
+        "SQL error recorded in _prisma_migrations."
+    );
+    process.exit(r.status ?? 1);
+  }
   console.log("\n[recover] Done. Verify with: npm run db:verify");
 }
