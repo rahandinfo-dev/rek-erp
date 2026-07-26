@@ -276,9 +276,9 @@ export default function RecycleBin() {
     <div className="space-y-5">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black text-foreground">Recycle Bin</h1>
+          <h1 className="text-2xl font-black text-foreground">سەبەتەی زبڵ</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Soft-deleted records · recoverable for {retentionDays} days · {total}{" "}
+            تۆمارە سڕاوەکان · گەڕاندنەوە بۆ ماوەی {retentionDays} ڕۆژ · {total}{" "}
             items
           </p>
         </div>
@@ -289,7 +289,7 @@ export default function RecycleBin() {
               className="rounded-xl border border-border bg-background px-3 py-2 text-sm font-bold text-foreground focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
               value={retentionDays}
               onChange={(e) => void saveRetention(Number(e.target.value))}
-              aria-label="Retention period in days"
+              aria-label="ماوەی پاراستن بە ڕۆژ"
             >
               {RETENTION_OPTIONS.map((d) => (
                 <option key={d} value={d}>
@@ -327,18 +327,18 @@ export default function RecycleBin() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search name, module, reason, deleted by…"
+            placeholder="گەڕان بە ناو، مۆدیوول، هۆکار، سڕاو لەلایەن…"
             className="w-full rounded-2xl border border-border bg-background py-2.5 ps-10 pe-3 text-sm font-medium focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
-            aria-label="Search recycle bin"
+            aria-label="گەڕان لە سەبەتەی زبڵ"
           />
         </div>
         <select
           value={module}
           onChange={(e) => setModule(e.target.value)}
           className="rounded-2xl border border-border bg-background px-3 py-2.5 text-sm font-bold focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
-          aria-label="Filter by module"
+          aria-label="فلتەر بەپێی مۆدیوول"
         >
-          <option value="all">All modules</option>
+          <option value="all">هەموو مۆدیوولەکان</option>
           {RECYCLE_MODULES.map((m) => (
             <option key={m} value={m}>
               {MODULE_LABELS[m] || m}
@@ -349,13 +349,13 @@ export default function RecycleBin() {
           value={sort}
           onChange={(e) => setSort(e.target.value as SortKey)}
           className="rounded-2xl border border-border bg-background px-3 py-2.5 text-sm font-bold focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
-          aria-label="Sort recycle bin"
+          aria-label="ڕیزکردنی سەبەتەی زبڵ"
         >
-          <option value="newest">Newest deleted</option>
-          <option value="oldest">Oldest deleted</option>
-          <option value="expires">Expires soon</option>
-          <option value="name">Name</option>
-          <option value="module">Module</option>
+          <option value="newest">نوێترین سڕاوەکان</option>
+          <option value="oldest">کۆنترین سڕاوەکان</option>
+          <option value="expires">بەم زووانە بەسەردەچێت</option>
+          <option value="name">ناو</option>
+          <option value="module">مۆدیوول</option>
         </select>
       </div>
 
@@ -363,9 +363,9 @@ export default function RecycleBin() {
         <div
           className="flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-muted/40 px-4 py-3"
           role="toolbar"
-          aria-label="Bulk actions"
+          aria-label="کردارە کۆمەڵایەتییەکان"
         >
-          <span className="text-sm font-bold">{selected.size} selected</span>
+          <span className="text-sm font-bold"{selected.size} هەڵبژێردراو</span>
           <button
             type="button"
             className="rounded-xl bg-primary px-3 py-1.5 text-sm font-bold text-primary-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35"
@@ -385,7 +385,7 @@ export default function RecycleBin() {
 
       <section
         className="rek-card overflow-hidden p-0"
-        aria-label="Deleted records"
+        aria-label="تۆمارە سڕاوەکان"
       >
         <div className="overflow-x-auto">
           <table className="w-full min-w-[960px] text-start text-sm">
@@ -396,17 +396,17 @@ export default function RecycleBin() {
                     type="checkbox"
                     checked={allSelected}
                     onChange={toggleAll}
-                    aria-label="Select all"
+                    aria-label="هەڵبژاردنی هەموو"
                   />
                 </th>
-                <th className="px-4 py-3 text-start">Name</th>
-                <th className="px-4 py-3 text-start">Module</th>
-                <th className="px-4 py-3 text-start">Deleted By</th>
-                <th className="px-4 py-3 text-start">Deleted At</th>
-                <th className="px-4 py-3 text-start">Reason</th>
-                <th className="px-4 py-3 text-start">Days Left</th>
-                <th className="px-4 py-3 text-start">Status</th>
-                <th className="px-4 py-3 text-end">Actions</th>
+                <th className="px-4 py-3 text-start">ناو</th>
+                <th className="px-4 py-3 text-start">مۆدیوول</th>
+                <th className="px-4 py-3 text-start">سڕاوە لەلایەن</th>
+                <th className="px-4 py-3 text-start">سڕاوە لە</th>
+                <th className="px-4 py-3 text-start">هۆکار</th>
+                <th className="px-4 py-3 text-start">ڕۆژی ماوە</th>
+                <th className="px-4 py-3 text-start">دۆخ</th>
+                <th className="px-4 py-3 text-end">کردارەکان</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
@@ -553,11 +553,11 @@ export default function RecycleBin() {
         </div>
         <div ref={sentinelRef} className="px-4 py-4 text-center text-xs text-muted-foreground">
           {loadingMore
-            ? "Loading more…"
+            ? "زیاتر باردەکرێت…"
             : hasMore
-              ? "Scroll for more"
+              ? "بۆ زیاتر بشۆڕەوە"
               : items.length > 0
-                ? "End of list"
+                ? "کۆتایی لیست"
                 : null}
         </div>
       </section>
@@ -579,25 +579,25 @@ export default function RecycleBin() {
             </h2>
             <dl className="mt-4 space-y-2 text-sm">
               <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Module</dt>
+                <dt className="text-muted-foreground">مۆدیوول</dt>
                 <dd className="font-bold">{details.moduleLabel}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Deleted by</dt>
+                <dt className="text-muted-foreground">سڕاوە لەلایەن</dt>
                 <dd className="font-bold">{details.deletedBy || "—"}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Deleted at</dt>
+                <dt className="text-muted-foreground">سڕاوە لە</dt>
                 <dd className="font-bold">
                   {formatDateTime(details.deletedAt, true)}
                 </dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Days remaining</dt>
+                <dt className="text-muted-foreground">ڕۆژە ماوەکان</dt>
                 <dd className="font-bold">{details.daysRemaining}</dd>
               </div>
               <div className="flex justify-between gap-4">
-                <dt className="text-muted-foreground">Reason</dt>
+                <dt className="text-muted-foreground">هۆکار</dt>
                 <dd className="font-bold">{details.reason || "—"}</dd>
               </div>
             </dl>
@@ -641,14 +641,14 @@ export default function RecycleBin() {
 
       <ConfirmDialog
         open={Boolean(restoreId)}
-        title="Restore record?"
+        title="تۆمارەکە بگەڕێنرێتەوە؟"
         description={
           restoreTarget
             ? `Restore “${restoreTarget.name}” (${restoreTarget.moduleLabel}). Related links will be recovered safely where supported.`
-            : "Restore this record?"
+            : "ئەم تۆمارە بگەڕێنرێتەوە؟"
         }
-        confirmText="Restore"
-        cancelText="Cancel"
+        confirmText="گەڕاندنەوە"
+        cancelText="هەڵوەشاندنەوە"
         loading={busy}
         onConfirm={() => restoreId && void doRestore([restoreId])}
         onCancel={() => setRestoreId(null)}
@@ -656,7 +656,7 @@ export default function RecycleBin() {
 
       <ConfirmDialog
         open={Boolean(purgeId) && !purgeConfirm2}
-        title="Permanent delete?"
+        title="سڕینەوەی هەمیشەیی؟"
         description={
           purgeTarget
             ? `This will permanently remove “${purgeTarget.name}”.${
@@ -666,10 +666,10 @@ export default function RecycleBin() {
                       .join(", ")}.`
                   : ""
               } This cannot be undone.`
-            : "This cannot be undone."
+            : "ئەم کردارە ناگەڕێتەوە."
         }
-        confirmText="Continue"
-        cancelText="Cancel"
+        confirmText="بەردەوامبوون"
+        cancelText="هەڵوەشاندنەوە"
         loading={busy}
         onConfirm={() => setPurgeConfirm2(true)}
         onCancel={() => {
@@ -680,10 +680,10 @@ export default function RecycleBin() {
 
       <ConfirmDialog
         open={Boolean(purgeId) && purgeConfirm2}
-        title="Confirm permanent delete"
+        title="پشتڕاستکردنەوەی سڕینەوەی هەمیشەیی"
         description="Type-level confirmation: permanently delete this record from the database?"
-        confirmText="Delete forever"
-        cancelText="Cancel"
+        confirmText="سڕینەوەی هەمیشەیی"
+        cancelText="هەڵوەشاندنەوە"
         loading={busy}
         onConfirm={() => purgeId && void doPurge([purgeId])}
         onCancel={() => {
@@ -694,10 +694,10 @@ export default function RecycleBin() {
 
       <ConfirmDialog
         open={bulkAction === "restore"}
-        title="Restore selected?"
+        title="هەڵبژێردراوەکان بگەڕێنرێنەوە؟"
         description={`Restore ${selected.size} record(s) from the Recycle Bin.`}
-        confirmText="Restore Selected"
-        cancelText="Cancel"
+        confirmText="گەڕاندنەوەی هەڵبژێردراوەکان"
+        cancelText="هەڵوەشاندنەوە"
         loading={busy}
         onConfirm={() => void doRestore([...selected])}
         onCancel={() => setBulkAction(null)}
@@ -705,10 +705,10 @@ export default function RecycleBin() {
 
       <ConfirmDialog
         open={bulkAction === "purge"}
-        title="Permanently delete selected?"
+        title="هەڵبژێردراوەکان بە هەمیشەیی بسڕدرێنەوە؟"
         description={`Permanently delete ${selected.size} record(s). Blocked items with related history will be skipped. This cannot be undone.`}
-        confirmText="Delete forever"
-        cancelText="Cancel"
+        confirmText="سڕینەوەی هەمیشەیی"
+        cancelText="هەڵوەشاندنەوە"
         loading={busy}
         onConfirm={() => void doPurge([...selected])}
         onCancel={() => setBulkAction(null)}
@@ -716,10 +716,10 @@ export default function RecycleBin() {
 
       <ConfirmDialog
         open={bulkAction === "empty"}
-        title="Empty Recycle Bin?"
+        title="سەبەتەی زبڵ بەتاڵ بکرێتەوە؟"
         description="Permanently delete all eligible items. Records with related history will be kept. This cannot be undone."
         confirmText="Empty Bin"
-        cancelText="Cancel"
+        cancelText="هەڵوەشاندنەوە"
         loading={busy}
         onConfirm={() => void doEmpty()}
         onCancel={() => setBulkAction(null)}
