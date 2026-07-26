@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import { RECOVERY_TTL_MS } from "@/lib/recovery/types";
-import type { Prisma } from "@/app/generated/prisma/client";
+import type { Prisma } from "@/lib/prisma/client";
 
 const putSchema = z.object({
   id: z.string().optional(),
@@ -81,7 +81,7 @@ export async function GET() {
   } catch (error) {
     console.error("GET RECOVERY ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
       { status: 500 }
     );
   }
@@ -152,7 +152,7 @@ export async function PUT(req: NextRequest) {
   } catch (error) {
     console.error("PUT RECOVERY ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
       { status: 500 }
     );
   }
@@ -188,7 +188,7 @@ export async function DELETE(req: NextRequest) {
   } catch (error) {
     console.error("DELETE RECOVERY ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
       { status: 500 }
     );
   }

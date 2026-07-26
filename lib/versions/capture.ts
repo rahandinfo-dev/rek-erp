@@ -1,4 +1,4 @@
-import type { Prisma } from "@/app/generated/prisma/client";
+import type { Prisma } from "@/lib/prisma/client";
 import { db } from "@/lib/prisma/db";
 import { compareValues, recordDisplayName } from "@/lib/audit/diff";
 import { normalizeEntityType } from "@/lib/versions/urls";

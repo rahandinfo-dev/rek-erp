@@ -1,4 +1,4 @@
-import { Prisma } from "@/app/generated/prisma/client";
+import { Prisma } from "@/lib/prisma/client";
 import { db } from "@/lib/prisma/db";
 import { recordDisplayName } from "@/lib/audit/diff";
 import { splitDateTime as formatDateTimeParts } from "@/lib/utils/datetime";
@@ -37,9 +37,9 @@ export type AuditLogQuery = {
   status?: string;
   from?: string;
   to?: string;
-  /** ISO — fetch only newer than this (realtime poll) */
+  /** ISO â€” fetch only newer than this (realtime poll) */
   since?: string;
-  /** Cursor pagination — createdAt ISO of last item */
+  /** Cursor pagination â€” createdAt ISO of last item */
   cursor?: string;
   page?: number;
   pageSize?: number;
@@ -93,7 +93,7 @@ function mapRow(r: {
   };
 }
 
-/** Permanent audit ledger query — searchable & filterable. No deletes. */
+/** Permanent audit ledger query â€” searchable & filterable. No deletes. */
 export async function queryAuditLogs(input: AuditLogQuery) {
   const page = Math.max(1, input.page || 1);
   const pageSize = Math.min(100, Math.max(1, input.pageSize || 25));

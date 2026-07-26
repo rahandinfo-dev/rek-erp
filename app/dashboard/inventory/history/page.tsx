@@ -1,5 +1,5 @@
 import { getCurrentUser } from "@/lib/auth/current-user";
-import type { InventoryTransactionType } from "@/app/generated/prisma/client";
+import type { InventoryTransactionType } from "@/lib/prisma/client";
 import {
   loadMovementHistoryFilters,
   queryMovementHistory,

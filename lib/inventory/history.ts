@@ -1,5 +1,5 @@
-import { Prisma } from "@/app/generated/prisma/client";
-import type { InventoryTransactionType } from "@/app/generated/prisma/client";
+import { Prisma } from "@/lib/prisma/client";
+import type { InventoryTransactionType } from "@/lib/prisma/client";
 import { db } from "@/lib/prisma/db";
 import { splitDateTime as formatDateTimeParts } from "@/lib/utils/datetime";
 

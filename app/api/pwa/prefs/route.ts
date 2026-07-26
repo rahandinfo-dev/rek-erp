@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
-import type { Prisma } from "@/app/generated/prisma/client";
+import type { Prisma } from "@/lib/prisma/client";
 import {
   DEFAULT_PUSH_CATEGORIES,
   PUSH_CATEGORIES,

@@ -1,4 +1,4 @@
-import type { PaymentMethod, Prisma } from "@/app/generated/prisma/client";
+import type { PaymentMethod, Prisma } from "@/lib/prisma/client";
 
 type Tx = Prisma.TransactionClient;
 

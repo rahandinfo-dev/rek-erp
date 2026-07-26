@@ -1,4 +1,4 @@
-import { Prisma } from "@/app/generated/prisma/client";
+import { Prisma } from "@/lib/prisma/client";
 import { db } from "@/lib/prisma/db";
 import { getAvailableStock, getStockStatus } from "@/lib/inventory/stock";
 import type {
@@ -284,7 +284,7 @@ export async function queryInventory(input: InventoryQueryInput) {
       buildInventorySummary(companyId),
     ]);
 
-  const warehouseName = mainWarehouse?.name || "کۆگا";
+  const warehouseName = mainWarehouse?.name || "Ú©Û†Ú¯Ø§";
 
   const rows: InventoryProductRow[] = products.map((p) => {
     const currentStock = num(p.currentStock);

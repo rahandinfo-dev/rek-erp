@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma/db";
-import type { Prisma } from "@/app/generated/prisma/client";
+import type { Prisma } from "@/lib/prisma/client";
 import { entityTypeFor } from "@/lib/bulk/modules";
 import { upsertEntityMeta, getEntityMeta } from "@/lib/bulk/meta";
 import type { BulkPayload } from "@/lib/bulk/types";
@@ -312,7 +312,7 @@ export async function processBulkItem(
         };
       }
       if (ctx.moduleKey === "products") {
-        // Metadata only — does not move stock balances
+        // Metadata only â€” does not move stock balances
         await upsertEntityMeta(ctx.companyId, entityType, entityId, {
           tags: payload.warehouseId
             ? [`warehouse:${payload.warehouseId}`]
@@ -661,7 +661,7 @@ async function changeStatusOne(
     });
     return {
       status: "success",
-      message: `Status → ${status}`,
+      message: `Status â†’ ${status}`,
       before,
       after: { status },
       undo: before,
@@ -680,7 +680,7 @@ async function changeStatusOne(
     });
     return {
       status: "success",
-      message: `Status → ${status}`,
+      message: `Status â†’ ${status}`,
       before,
       after: { status },
       undo: before,
@@ -699,7 +699,7 @@ async function changeStatusOne(
     });
     return {
       status: "success",
-      message: `Status → ${status}`,
+      message: `Status â†’ ${status}`,
       before,
       after: { status },
       undo: before,
@@ -718,7 +718,7 @@ async function changeStatusOne(
     });
     return {
       status: "success",
-      message: `Status → ${status}`,
+      message: `Status â†’ ${status}`,
       before,
       after: { status },
       undo: before,
@@ -920,7 +920,7 @@ async function duplicateOne(
   if (ctx.moduleKey === "invoices") {
     return {
       status: "success",
-      message: "Open duplicate from invoice → new sale",
+      message: "Open duplicate from invoice â†’ new sale",
       after: { duplicateHref: `/dashboard/sales/new?duplicate=${entityId}` },
     };
   }

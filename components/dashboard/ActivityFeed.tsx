@@ -26,7 +26,7 @@ import { onNotificationsChanged } from "@/lib/notifications/bus";
 import type {
   NotificationCategory,
   NotificationPriority,
-} from "@/app/generated/prisma/client";
+} from "@/lib/prisma/client";
 
 type ActivityItem = {
   id: string;
@@ -101,10 +101,10 @@ export default function ActivityFeed({
           </span>
           <div>
             <h2 className="text-lg font-black text-[#1f1218] sm:text-xl">
-              چالاکی نوێ
+              Ú†Ø§Ù„Ø§Ú©ÛŒ Ù†ÙˆÛŽ
             </h2>
             <p className="text-xs text-slate-500">
-              لە داتابەیسی ئاگادارییەکان · نوێترین یەکەم
+              Ù„Û• Ø¯Ø§ØªØ§Ø¨Û•ÛŒØ³ÛŒ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©Ø§Ù† Â· Ù†ÙˆÛŽØªØ±ÛŒÙ† ÛŒÛ•Ú©Û•Ù…
             </p>
           </div>
         </div>
@@ -121,13 +121,13 @@ export default function ActivityFeed({
                 live ? "animate-pulse bg-emerald-500" : "bg-slate-400"
               }`}
             />
-            {live ? "زیندوو" : "پەیوەندی نەما"}
+            {live ? "Ø²ÛŒÙ†Ø¯ÙˆÙˆ" : "Ù¾Û•ÛŒÙˆÛ•Ù†Ø¯ÛŒ Ù†Û•Ù…Ø§"}
           </span>
           <Link
             href="/dashboard/notifications"
             className="text-xs font-bold text-[#FFAE42] hover:underline"
           >
-            هەموو
+            Ù‡Û•Ù…ÙˆÙˆ
           </Link>
         </div>
       </div>
@@ -137,10 +137,10 @@ export default function ActivityFeed({
           <div className="px-5 py-12 text-center">
             <Activity className="mx-auto text-[#FFAE42]/35" size={32} />
             <p className="mt-3 font-bold text-slate-600">
-              هێشتا چالاکی نییە
+              Ù‡ÛŽØ´ØªØ§ Ú†Ø§Ù„Ø§Ú©ÛŒ Ù†ÛŒÛŒÛ•
             </p>
             <p className="mt-1 text-sm text-slate-400">
-              کردارەکان لێرە دەردەکەون.
+              Ú©Ø±Ø¯Ø§Ø±Û•Ú©Ø§Ù† Ù„ÛŽØ±Û• Ø¯Û•Ø±Ø¯Û•Ú©Û•ÙˆÙ†.
             </p>
           </div>
         ) : (

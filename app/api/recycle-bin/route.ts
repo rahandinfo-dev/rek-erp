@@ -7,7 +7,7 @@ import { serializeRecycleEntry } from "@/lib/recycle/serialize";
 import { relatedForEntity } from "@/lib/recycle/related";
 import { getRetentionDays } from "@/lib/recycle/record";
 import { RETENTION_OPTIONS } from "@/lib/recycle/types";
-import type { Prisma } from "@/app/generated/prisma/client";
+import type { Prisma } from "@/lib/prisma/client";
 
 export async function GET(req: NextRequest) {
   try {
@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("RECYCLE BIN LIST ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
       { status: 500 }
     );
   }

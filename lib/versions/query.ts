@@ -1,4 +1,4 @@
-import { Prisma } from "@/app/generated/prisma/client";
+import { Prisma } from "@/lib/prisma/client";
 import { db } from "@/lib/prisma/db";
 import { versionRecordHref } from "@/lib/versions/urls";
 import { splitDateTime as formatDateTimeParts } from "@/lib/utils/datetime";

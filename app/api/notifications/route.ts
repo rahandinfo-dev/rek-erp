@@ -5,7 +5,7 @@ import type {
   NotificationCategory,
   NotificationPriority,
   Prisma,
-} from "@/app/generated/prisma/client";
+} from "@/lib/prisma/client";
 import { timeAgoKu } from "@/lib/notifications/create";
 import { extractNotificationKind } from "@/lib/notifications/kinds";
 
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
+        { success: false, message: "ØªÚ©Ø§ÛŒÛ• Ø³Û•Ø±Û•ØªØ§ Ø¨Ú†Û† Ú˜ÙˆÙˆØ±Û•ÙˆÛ•." },
         { status: 401 }
       );
     }
@@ -130,7 +130,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("GET NOTIFICATIONS ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
       { status: 500 }
     );
   }
@@ -141,7 +141,7 @@ export async function DELETE(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
+        { success: false, message: "ØªÚ©Ø§ÛŒÛ• Ø³Û•Ø±Û•ØªØ§ Ø¨Ú†Û† Ú˜ÙˆÙˆØ±Û•ÙˆÛ•." },
         { status: 401 }
       );
     }
@@ -166,13 +166,13 @@ export async function DELETE(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: "هەموو ئاگادارییەکان شاردرانەوە.",
+      message: "Ù‡Û•Ù…ÙˆÙˆ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©Ø§Ù† Ø´Ø§Ø±Ø¯Ø±Ø§Ù†Û•ÙˆÛ•.",
       data: { count: result.count },
     });
   } catch (error) {
     console.error("DELETE ALL NOTIFICATIONS ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
       { status: 500 }
     );
   }

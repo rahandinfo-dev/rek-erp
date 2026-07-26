@@ -1,6 +1,6 @@
 import { PAYMENT_METHOD_LABELS } from "@/lib/invoices/payment";
 import type { InvoicePreviewData } from "@/lib/invoices/template-config";
-import type { PaymentMethod } from "@/app/generated/prisma/client";
+import type { PaymentMethod } from "@/lib/prisma/client";
 import { formatDate, formatTime } from "@/lib/utils/datetime";
 
 type InvoiceLike = {

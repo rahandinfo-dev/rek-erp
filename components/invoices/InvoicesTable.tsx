@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
 import { formatMoney } from "@/lib/utils/format";
 import { PAYMENT_METHOD_LABELS } from "@/lib/invoices/payment";
-import type { PaymentMethod } from "@/app/generated/prisma/client";
+import type { PaymentMethod } from "@/lib/prisma/client";
 import BulkActionBar from "@/components/bulk/BulkActionBar";
 import { useBulkSelection } from "@/lib/bulk/useSelection";
 
@@ -72,7 +72,7 @@ export default function InvoicesTable({
     if (row.status === "VOID") return;
     if (
       !confirm(
-        `پسوولەی ${row.invoiceNo} هەڵبوەشێنیتەوە؟ کۆگا دەگەڕێتەوە ئەگەر فرۆشتن تەواو بووبێت.`
+        `Ù¾Ø³ÙˆÙˆÙ„Û•ÛŒ ${row.invoiceNo} Ù‡Û•ÚµØ¨ÙˆÛ•Ø´ÛŽÙ†ÛŒØªÛ•ÙˆÛ•ØŸ Ú©Û†Ú¯Ø§ Ø¯Û•Ú¯Û•Ú•ÛŽØªÛ•ÙˆÛ• Ø¦Û•Ú¯Û•Ø± ÙØ±Û†Ø´ØªÙ† ØªÛ•ÙˆØ§Ùˆ Ø¨ÙˆÙˆØ¨ÛŽØª.`
       )
     ) {
       return;
@@ -86,7 +86,7 @@ export default function InvoicesTable({
         restoreUrl: `/api/invoices/${row.id}/restore`,
         module: "invoices",
         title: "Invoice voided",
-        message: `${row.invoiceNo} — Undo`,
+        message: `${row.invoiceNo} â€” Undo`,
         entityType: "Invoice",
         entityId: row.id,
         onSoftDeleted: () => {
@@ -110,18 +110,18 @@ export default function InvoicesTable({
   const columns: DataTableColumn<InvoiceRow>[] = [
     {
       id: "invoiceNo",
-      header: "ژمارەی پسوولە",
+      header: "Ú˜Ù…Ø§Ø±Û•ÛŒ Ù¾Ø³ÙˆÙˆÙ„Û•",
       accessor: (row) => row.invoiceNo,
       cell: (row) => <span className="font-bold">{row.invoiceNo}</span>,
     },
     {
       id: "customer",
-      header: "کڕیار",
+      header: "Ú©Ú•ÛŒØ§Ø±",
       accessor: (row) => row.customerName,
     },
     {
       id: "date",
-      header: "بەروار",
+      header: "Ø¨Û•Ø±ÙˆØ§Ø±",
       accessor: (row) => new Date(row.invoiceDate).getTime(),
       cell: (row) => (
         <span>{formatDate(row.invoiceDate)}</span>
@@ -129,18 +129,18 @@ export default function InvoicesTable({
     },
     {
       id: "warehouse",
-      header: "کۆگا",
+      header: "Ú©Û†Ú¯Ø§",
       accessor: (row) => row.warehouseName,
     },
     {
       id: "payment",
-      header: "پارەدان",
+      header: "Ù¾Ø§Ø±Û•Ø¯Ø§Ù†",
       accessor: (row) => row.paymentMethod,
       cell: (row) => PAYMENT_METHOD_LABELS[row.paymentMethod],
     },
     {
       id: "status",
-      header: "دۆخ",
+      header: "Ø¯Û†Ø®",
       accessor: (row) => row.status,
       cell: (row) => (
         <span
@@ -150,13 +150,13 @@ export default function InvoicesTable({
               : "bg-red-100 text-red-700"
           }`}
         >
-          {row.status === "ACTIVE" ? "چالاک" : "هەڵوەشاوە"}
+          {row.status === "ACTIVE" ? "Ú†Ø§Ù„Ø§Ú©" : "Ù‡Û•ÚµÙˆÛ•Ø´Ø§ÙˆÛ•"}
         </span>
       ),
     },
     {
       id: "total",
-      header: "کۆی گشتی",
+      header: "Ú©Û†ÛŒ Ú¯Ø´ØªÛŒ",
       accessor: (row) => Number(row.grandTotal),
       cell: (row) => `${formatMoney(row.grandTotal)} IQD`,
     },
@@ -179,13 +179,13 @@ export default function InvoicesTable({
       data={rows}
       columns={columns}
       getRowId={(row) => row.id}
-      searchPlaceholder="گەڕان بە ژمارەی پسوولە یان کڕیار..."
+      searchPlaceholder="Ú¯Û•Ú•Ø§Ù† Ø¨Û• Ú˜Ù…Ø§Ø±Û•ÛŒ Ù¾Ø³ÙˆÙˆÙ„Û• ÛŒØ§Ù† Ú©Ú•ÛŒØ§Ø±..."
       searchFilter={(row, q) =>
         row.invoiceNo.toLowerCase().includes(q) ||
         row.customerName.toLowerCase().includes(q) ||
         row.warehouseName.toLowerCase().includes(q)
       }
-      emptyMessage="هیچ پسوولەیەک نییە. فرۆشتنێکی تەواو پسوولە دروست دەکات."
+      emptyMessage="Ù‡ÛŒÚ† Ù¾Ø³ÙˆÙˆÙ„Û•ÛŒÛ•Ú© Ù†ÛŒÛŒÛ•. ÙØ±Û†Ø´ØªÙ†ÛŽÚ©ÛŒ ØªÛ•ÙˆØ§Ùˆ Ù¾Ø³ÙˆÙˆÙ„Û• Ø¯Ø±ÙˆØ³Øª Ø¯Û•Ú©Ø§Øª."
       selection={{
         selectedIds: selection.selectedIds,
         onChange: selection.setIds,
@@ -202,7 +202,7 @@ export default function InvoicesTable({
           className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#FFAE42] px-4 text-sm font-semibold text-white"
         >
           <FileText size={16} />
-          فرۆشتنی نوێ
+          ÙØ±Û†Ø´ØªÙ†ÛŒ Ù†ÙˆÛŽ
         </Link>
       }
       actions={(row) => (
@@ -210,21 +210,21 @@ export default function InvoicesTable({
           <Link
             href={`/dashboard/invoices/${row.id}`}
             className="inline-flex size-8 items-center justify-center rounded-lg text-[#FFAE42] hover:bg-[#FFF8EF]"
-            title="بینین"
+            title="Ø¨ÛŒÙ†ÛŒÙ†"
           >
             <Eye size={16} />
           </Link>
           <Link
             href={`/dashboard/invoices/${row.id}?print=1`}
             className="inline-flex size-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50"
-            title="چاپ"
+            title="Ú†Ø§Ù¾"
           >
             <Printer size={16} />
           </Link>
           <Link
             href={`/dashboard/invoices/${row.id}?pdf=1`}
             className="inline-flex size-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50"
-            title="داگرتنی PDF"
+            title="Ø¯Ø§Ú¯Ø±ØªÙ†ÛŒ PDF"
           >
             <Download size={16} />
           </Link>
@@ -233,7 +233,7 @@ export default function InvoicesTable({
             disabled={busyId === row.id}
             onClick={() => void handleDuplicate(row)}
             className="inline-flex size-8 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-50 disabled:opacity-50"
-            title="دووبارەکردنەوە"
+            title="Ø¯ÙˆÙˆØ¨Ø§Ø±Û•Ú©Ø±Ø¯Ù†Û•ÙˆÛ•"
           >
             <Copy size={16} />
           </button>
@@ -242,7 +242,7 @@ export default function InvoicesTable({
             disabled={busyId === row.id || row.status === "VOID"}
             onClick={() => void handleDelete(row)}
             className="inline-flex size-8 items-center justify-center rounded-lg text-red-600 hover:bg-red-50 disabled:opacity-40"
-            title="سڕینەوە"
+            title="Ø³Ú•ÛŒÙ†Û•ÙˆÛ•"
           >
             <Trash2 size={16} />
           </button>

@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma/db";
-import type { Prisma } from "@/app/generated/prisma/client";
+import type { Prisma } from "@/lib/prisma/client";
 import { auditSafe } from "@/lib/audit/log";
 import { parseAiIntent } from "@/lib/ai/parse";
 import { executeAiIntent } from "@/lib/ai/execute";

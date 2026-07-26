@@ -24,7 +24,7 @@ import {
 import type {
   NotificationCategory,
   NotificationPriority,
-} from "@/app/generated/prisma/client";
+} from "@/lib/prisma/client";
 
 type NotificationItem = {
   id: string;
@@ -153,7 +153,7 @@ export default function NotificationCenter() {
   }
 
   async function deleteAll() {
-    if (!window.confirm("دڵنیایت لە شاردنەوەی هەموو ئاگادارییەکان؟")) return;
+    if (!window.confirm("Ø¯ÚµÙ†ÛŒØ§ÛŒØª Ù„Û• Ø´Ø§Ø±Ø¯Ù†Û•ÙˆÛ•ÛŒ Ù‡Û•Ù…ÙˆÙˆ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©Ø§Ù†ØŸ")) return;
     setBusy(true);
     try {
       await fetch("/api/notifications", {
@@ -173,13 +173,13 @@ export default function NotificationCenter() {
         <div>
           <div className="mb-2 inline-flex items-center gap-2 rounded-2xl bg-[#FFF8EF] px-3 py-1 text-sm font-bold text-[#FFAE42]">
             <Bell size={16} />
-            {unreadCount} نەخوێندراو
+            {unreadCount} Ù†Û•Ø®ÙˆÛŽÙ†Ø¯Ø±Ø§Ùˆ
           </div>
           <h1 className="text-4xl font-black text-[#FFAE42]">
-            ناوەندی ئاگاداری
+            Ù†Ø§ÙˆÛ•Ù†Ø¯ÛŒ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒ
           </h1>
           <p className="mt-2 text-slate-500">
-            هەموو ئاگادارییەکان لە داتابەیسەوە — هەمیشە دەمێننەوە.
+            Ù‡Û•Ù…ÙˆÙˆ Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú©Ø§Ù† Ù„Û• Ø¯Ø§ØªØ§Ø¨Û•ÛŒØ³Û•ÙˆÛ• â€” Ù‡Û•Ù…ÛŒØ´Û• Ø¯Û•Ù…ÛŽÙ†Ù†Û•ÙˆÛ•.
           </p>
         </div>
 
@@ -191,7 +191,7 @@ export default function NotificationCenter() {
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-[rgba(255, 174, 66,0.15)] px-4 font-semibold text-[#FFAE42] transition hover:bg-[#FFF8EF] disabled:opacity-50"
           >
             <CheckCheck size={16} />
-            خوێندنەوەی هەموو
+            Ø®ÙˆÛŽÙ†Ø¯Ù†Û•ÙˆÛ•ÛŒ Ù‡Û•Ù…ÙˆÙˆ
           </button>
           <button
             type="button"
@@ -200,7 +200,7 @@ export default function NotificationCenter() {
             className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#FFAE42] px-4 font-semibold text-white transition hover:bg-[#E8942A] disabled:opacity-50"
           >
             <Trash2 size={16} />
-            سڕینەوەی هەموو
+            Ø³Ú•ÛŒÙ†Û•ÙˆÛ•ÛŒ Ù‡Û•Ù…ÙˆÙˆ
           </button>
         </div>
       </div>
@@ -214,7 +214,7 @@ export default function NotificationCenter() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="گەڕان لە ئاگاداری..."
+            placeholder="Ú¯Û•Ú•Ø§Ù† Ù„Û• Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒ..."
             className="h-11 w-full rounded-2xl border border-[rgba(255, 174, 66,0.12)] bg-[#FFF8EF] pr-10 pl-4 outline-none focus:border-[#FFAE42] focus:bg-white"
           />
         </label>
@@ -226,11 +226,11 @@ export default function NotificationCenter() {
           }
           className="h-11 rounded-2xl border border-[rgba(255, 174, 66,0.12)] bg-[#FFF8EF] px-4 outline-none focus:border-[#FFAE42] focus:bg-white"
         >
-          <option value="active">چالاک</option>
-          <option value="unread">نەخوێندراو</option>
-          <option value="read">خوێندراو</option>
-          <option value="deleted">سڕاوە (مێژوو)</option>
-          <option value="all">هەموو</option>
+          <option value="active">Ú†Ø§Ù„Ø§Ú©</option>
+          <option value="unread">Ù†Û•Ø®ÙˆÛŽÙ†Ø¯Ø±Ø§Ùˆ</option>
+          <option value="read">Ø®ÙˆÛŽÙ†Ø¯Ø±Ø§Ùˆ</option>
+          <option value="deleted">Ø³Ú•Ø§ÙˆÛ• (Ù…ÛŽÚ˜ÙˆÙˆ)</option>
+          <option value="all">Ù‡Û•Ù…ÙˆÙˆ</option>
         </select>
 
         <select
@@ -254,7 +254,7 @@ export default function NotificationCenter() {
           }
           className="h-11 rounded-2xl border border-[rgba(255, 174, 66,0.12)] bg-[#FFF8EF] px-4 outline-none focus:border-[#FFAE42] focus:bg-white"
         >
-          <option value="">هەموو ئاستەکان</option>
+          <option value="">Ù‡Û•Ù…ÙˆÙˆ Ø¦Ø§Ø³ØªÛ•Ú©Ø§Ù†</option>
           {PRIORITY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -265,15 +265,15 @@ export default function NotificationCenter() {
 
       <div className="overflow-hidden rounded-3xl border border-[rgba(255, 174, 66,0.1)] bg-white shadow-sm">
         {loading ? (
-          <p className="px-6 py-16 text-center text-slate-500">چاوەڕێ بکە...</p>
+          <p className="px-6 py-16 text-center text-slate-500">Ú†Ø§ÙˆÛ•Ú•ÛŽ Ø¨Ú©Û•...</p>
         ) : items.length === 0 ? (
           <div className="px-6 py-16 text-center">
             <Bell className="mx-auto text-[#FFAE42]/40" size={36} />
             <h2 className="mt-4 text-xl font-bold text-slate-700">
-              هیچ ئاگادارییەک نەدۆزرایەوە
+              Ù‡ÛŒÚ† Ø¦Ø§Ú¯Ø§Ø¯Ø§Ø±ÛŒÛŒÛ•Ú© Ù†Û•Ø¯Û†Ø²Ø±Ø§ÛŒÛ•ÙˆÛ•
             </h2>
             <p className="mt-2 text-slate-500">
-              فلتەر یان گەڕان بگۆڕە بۆ بینینی ئەنجام.
+              ÙÙ„ØªÛ•Ø± ÛŒØ§Ù† Ú¯Û•Ú•Ø§Ù† Ø¨Ú¯Û†Ú•Û• Ø¨Û† Ø¨ÛŒÙ†ÛŒÙ†ÛŒ Ø¦Û•Ù†Ø¬Ø§Ù….
             </p>
           </div>
         ) : (
@@ -292,7 +292,7 @@ export default function NotificationCenter() {
                     </h3>
                     {!item.isRead && !item.deletedAt ? (
                       <span className="rounded-lg bg-[#FFAE42] px-2 py-0.5 text-[10px] font-bold text-white">
-                        نوێ
+                        Ù†ÙˆÛŽ
                       </span>
                     ) : null}
                     <span
@@ -308,7 +308,7 @@ export default function NotificationCenter() {
                     {item.message}
                   </p>
                   <p className="text-xs text-slate-400">
-                    {item.timeAgo} · {formatNotificationDate(item.date)}
+                    {item.timeAgo} Â· {formatNotificationDate(item.date)}
                   </p>
                 </div>
 
@@ -318,7 +318,7 @@ export default function NotificationCenter() {
                       href={item.href}
                       className="inline-flex h-10 items-center gap-1 rounded-2xl border px-3 text-sm font-semibold text-[#FFAE42] hover:bg-[#FFF8EF]"
                     >
-                      کردنەوە
+                      Ú©Ø±Ø¯Ù†Û•ÙˆÛ•
                       <ExternalLink size={14} />
                     </Link>
                   ) : null}
@@ -330,7 +330,7 @@ export default function NotificationCenter() {
                         onClick={() => void markRead(item.id, !item.isRead)}
                         className="inline-flex h-10 items-center rounded-2xl border px-3 text-sm font-semibold disabled:opacity-50"
                       >
-                        {item.isRead ? "نەخوێندراو" : "خوێندراو"}
+                        {item.isRead ? "Ù†Û•Ø®ÙˆÛŽÙ†Ø¯Ø±Ø§Ùˆ" : "Ø®ÙˆÛŽÙ†Ø¯Ø±Ø§Ùˆ"}
                       </button>
                       <button
                         type="button"
@@ -339,12 +339,12 @@ export default function NotificationCenter() {
                         className="inline-flex h-10 items-center gap-1 rounded-2xl border border-red-200 px-3 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
                       >
                         <Trash2 size={14} />
-                        سڕینەوە
+                        Ø³Ú•ÛŒÙ†Û•ÙˆÛ•
                       </button>
                     </>
                   ) : (
                     <span className="inline-flex h-10 items-center rounded-2xl bg-slate-100 px-3 text-sm text-slate-500">
-                      مێژوو
+                      Ù…ÛŽÚ˜ÙˆÙˆ
                     </span>
                   )}
                 </div>
@@ -356,7 +356,7 @@ export default function NotificationCenter() {
 
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <p className="text-sm text-slate-500">
-          لاپەڕە {pagination.page} لە {pagination.totalPages} · کۆی{" "}
+          Ù„Ø§Ù¾Û•Ú•Û• {pagination.page} Ù„Û• {pagination.totalPages} Â· Ú©Û†ÛŒ{" "}
           {pagination.total}
         </p>
         <div className="flex gap-2">
@@ -369,7 +369,7 @@ export default function NotificationCenter() {
             }}
             className="h-10 rounded-2xl border px-4 text-sm font-semibold disabled:opacity-40"
           >
-            پێشوو
+            Ù¾ÛŽØ´ÙˆÙˆ
           </button>
           <button
             type="button"
@@ -380,7 +380,7 @@ export default function NotificationCenter() {
             }}
             className="h-10 rounded-2xl border px-4 text-sm font-semibold disabled:opacity-40"
           >
-            دواتر
+            Ø¯ÙˆØ§ØªØ±
           </button>
         </div>
       </div>

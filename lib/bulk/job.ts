@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma/db";
-import type { Prisma } from "@/app/generated/prisma/client";
+import type { Prisma } from "@/lib/prisma/client";
 import { BATCH_SIZE, type BulkPayload } from "@/lib/bulk/types";
 import { isActionAllowed } from "@/lib/bulk/modules";
 import { processBulkItem, type ProcessResult } from "@/lib/bulk/process";
@@ -366,7 +366,7 @@ async function finalizeJob(
     action: "OTHER",
     entityType: "BulkJob",
     entityId: jobId,
-    summary: `Bulk ${job.action} finished · ${success} ok · ${failed} failed · ${skipped} skipped`,
+    summary: `Bulk ${job.action} finished Â· ${success} ok Â· ${failed} failed Â· ${skipped} skipped`,
     status: failed > 0 ? "warning" : "success",
     metadata: {
       bulk: true,
@@ -504,7 +504,7 @@ export async function undoBulkJob(input: {
     action: "UNDO",
     entityType: "BulkJob",
     entityId: job.id,
-    summary: `Bulk undo · ${restored} restored · ${failed} failed`,
+    summary: `Bulk undo Â· ${restored} restored Â· ${failed} failed`,
     metadata: { bulk: true, restored, failed },
   });
 

@@ -40,6 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-/app/generated/prisma
+# prisma generated client (recreated by `prisma generate` on install/build)
+/generated
 /public/uploads
 

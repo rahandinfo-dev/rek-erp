@@ -3,7 +3,7 @@ import type {
   NotificationCategory,
   NotificationPriority,
   Prisma,
-} from "@/app/generated/prisma/client";
+} from "@/lib/prisma/client";
 
 export type CreateNotificationInput = {
   companyId: string;
@@ -75,15 +75,15 @@ export function timeAgoKu(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
   const seconds = Math.floor((Date.now() - d.getTime()) / 1000);
 
-  if (seconds < 60) return "ئێستا";
+  if (seconds < 60) return "Ø¦ÛŽØ³ØªØ§";
   const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes} خولەک پێش ئێستا`;
+  if (minutes < 60) return `${minutes} Ø®ÙˆÙ„Û•Ú© Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
   const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} کاتژمێر پێش ئێستا`;
+  if (hours < 24) return `${hours} Ú©Ø§ØªÚ˜Ù…ÛŽØ± Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
   const days = Math.floor(hours / 24);
-  if (days < 30) return `${days} ڕۆژ پێش ئێستا`;
+  if (days < 30) return `${days} Ú•Û†Ú˜ Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
   const months = Math.floor(days / 30);
-  if (months < 12) return `${months} مانگ پێش ئێستا`;
+  if (months < 12) return `${months} Ù…Ø§Ù†Ú¯ Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
   const years = Math.floor(months / 12);
-  return `${years} ساڵ پێش ئێستا`;
+  return `${years} Ø³Ø§Úµ Ù¾ÛŽØ´ Ø¦ÛŽØ³ØªØ§`;
 }

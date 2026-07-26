@@ -1,5 +1,5 @@
 import { db } from "@/lib/prisma/db";
-import type { Prisma } from "@/app/generated/prisma/client";
+import type { Prisma } from "@/lib/prisma/client";
 
 export async function getEntityMeta(
   companyId: string,

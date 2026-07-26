@@ -16,6 +16,7 @@ Enterprise production notes for deploying and operating REK without changing bus
 ```bash
 npm ci
 npx prisma generate
+# Also runs automatically via npm postinstall + prebuild (required on Vercel)
 npx prisma db push   # or migrate deploy in CI
 npm run build
 npm start

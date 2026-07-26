@@ -8,7 +8,7 @@ import { roundMoney , formatNumber} from "@/lib/utils/format";
 import { appToast } from "@/lib/toast";
 import { emitNotificationsChanged } from "@/lib/notifications/bus";
 import { PAYMENT_METHOD_OPTIONS } from "@/lib/invoices/payment";
-import type { PaymentMethod } from "@/app/generated/prisma/client";
+import type { PaymentMethod } from "@/lib/prisma/client";
 import BarcodeScanner from "@/components/barcode/BarcodeScanner";
 import type { BarcodeLookupProduct } from "@/lib/barcode/lookup";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
@@ -200,7 +200,7 @@ export default function SaleForm() {
             discardDraft();
           }
         } catch {
-          /* ignore — user can still create manually */
+          /* ignore â€” user can still create manually */
         }
       }
     }
@@ -283,15 +283,15 @@ export default function SaleForm() {
   async function submit(mode: SaveMode) {
     setError("");
     if (!warehouseId) {
-      setError("کۆگا پێویستە.");
+      setError("Ú©Û†Ú¯Ø§ Ù¾ÛŽÙˆÛŒØ³ØªÛ•.");
       return;
     }
     if (items.some((item) => !item.productId || item.quantity <= 0)) {
-      setError("هەموو بەرهەمەکان بە تەواوی پڕبکەرەوە.");
+      setError("Ù‡Û•Ù…ÙˆÙˆ Ø¨Û•Ø±Ù‡Û•Ù…Û•Ú©Ø§Ù† Ø¨Û• ØªÛ•ÙˆØ§ÙˆÛŒ Ù¾Ú•Ø¨Ú©Û•Ø±Û•ÙˆÛ•.");
       return;
     }
     if (items.some((item) => item.unitPrice < 0)) {
-      setError("نرخ نابێت نەرێنی بێت.");
+      setError("Ù†Ø±Ø® Ù†Ø§Ø¨ÛŽØª Ù†Û•Ø±ÛŽÙ†ÛŒ Ø¨ÛŽØª.");
       return;
     }
 
@@ -313,14 +313,14 @@ export default function SaleForm() {
       });
       const result = await res.json();
       if (!res.ok) {
-        setError(result.message || "هەڵەیەک ڕوویدا.");
-        appToast.error(result.message || "هەڵەیەک ڕوویدا.");
+        setError(result.message || "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§.");
+        appToast.error(result.message || "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§.");
         return;
       }
 
       appToast.saleCompleted(
         result.data?.invoiceNo
-          ? `پسوولەی ${result.data.invoiceNo} تۆمارکرا.`
+          ? `Ù¾Ø³ÙˆÙˆÙ„Û•ÛŒ ${result.data.invoiceNo} ØªÛ†Ù…Ø§Ø±Ú©Ø±Ø§.`
           : undefined
       );
       emitNotificationsChanged({ reason: "mutation" });
@@ -351,7 +351,7 @@ export default function SaleForm() {
         setNotes("");
         setItems([blankLine()]);
         setSaleDate(toDateInputValue());
-        appToast.success("فرۆشتن تۆمارکرا", "دەستپێکردنی فرۆشتنی نوێ");
+        appToast.success("ÙØ±Û†Ø´ØªÙ† ØªÛ†Ù…Ø§Ø±Ú©Ø±Ø§", "Ø¯Û•Ø³ØªÙ¾ÛŽÚ©Ø±Ø¯Ù†ÛŒ ÙØ±Û†Ø´ØªÙ†ÛŒ Ù†ÙˆÛŽ");
         return;
       }
 
@@ -366,8 +366,8 @@ export default function SaleForm() {
       );
       router.refresh();
     } catch {
-      setError("هەڵەیەک ڕوویدا.");
-      appToast.error("هەڵەیەک ڕوویدا.");
+      setError("Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§.");
+      appToast.error("Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§.");
     } finally {
       setSaving(false);
     }
@@ -405,15 +405,15 @@ export default function SaleForm() {
       <section className="rek-card grid gap-4 p-4 sm:grid-cols-3 sm:p-6">
         <div>
           <label className="mb-1.5 block text-sm font-bold">
-            کڕیار{" "}
-            <span className="font-normal text-muted-foreground">(ئارەزوومەندانە)</span>
+            Ú©Ú•ÛŒØ§Ø±{" "}
+            <span className="font-normal text-muted-foreground">(Ø¦Ø§Ø±Û•Ø²ÙˆÙˆÙ…Û•Ù†Ø¯Ø§Ù†Û•)</span>
           </label>
           <select
             value={customerId}
             onChange={(e) => setCustomerId(e.target.value)}
             className={inputClass}
           >
-            <option value="">کڕیاری گشتی</option>
+            <option value="">Ú©Ú•ÛŒØ§Ø±ÛŒ Ú¯Ø´ØªÛŒ</option>
             {customers.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -422,14 +422,14 @@ export default function SaleForm() {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">کۆگا *</label>
+          <label className="mb-1.5 block text-sm font-bold">Ú©Û†Ú¯Ø§ *</label>
           <select
             value={warehouseId}
             onChange={(e) => setWarehouseId(e.target.value)}
             className={inputClass}
             required
           >
-            <option value="">هەڵبژێرە</option>
+            <option value="">Ù‡Û•ÚµØ¨Ú˜ÛŽØ±Û•</option>
             {warehouses.map((w) => (
               <option key={w.id} value={w.id}>
                 {w.name}
@@ -438,7 +438,7 @@ export default function SaleForm() {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">بەرواری پسوولە</label>
+          <label className="mb-1.5 block text-sm font-bold">Ø¨Û•Ø±ÙˆØ§Ø±ÛŒ Ù¾Ø³ÙˆÙˆÙ„Û•</label>
           <input
             type="date"
             value={saleDate}
@@ -451,20 +451,20 @@ export default function SaleForm() {
 
       <section className="rek-card space-y-4 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-lg font-black text-foreground">بەرهەمەکان</h3>
+          <h3 className="text-lg font-black text-foreground">Ø¨Û•Ø±Ù‡Û•Ù…Û•Ú©Ø§Ù†</h3>
           <button
             type="button"
             onClick={() => setItems((prev) => [...prev, blankLine()])}
             className="inline-flex h-10 items-center gap-2 rounded-xl border border-border px-3 text-sm font-bold"
           >
             <Plus size={16} />
-            زیادکردنی بەرهەم
+            Ø²ÛŒØ§Ø¯Ú©Ø±Ø¯Ù†ÛŒ Ø¨Û•Ø±Ù‡Û•Ù…
           </button>
         </div>
 
         <div className="rounded-2xl border border-border bg-muted/30 p-3">
           <p className="mb-2 text-xs font-bold text-muted-foreground">
-            گەڕان / سکان / وێنەی بارکۆد — خۆکار زیاد دەبێت
+            Ú¯Û•Ú•Ø§Ù† / Ø³Ú©Ø§Ù† / ÙˆÛŽÙ†Û•ÛŒ Ø¨Ø§Ø±Ú©Û†Ø¯ â€” Ø®Û†Ú©Ø§Ø± Ø²ÛŒØ§Ø¯ Ø¯Û•Ø¨ÛŽØª
           </p>
           <BarcodeScanner
             compact
@@ -474,11 +474,11 @@ export default function SaleForm() {
             onProduct={addProductFromScan}
             onNotFound={(code) =>
               appToast.warning(
-                "بەرهەم نەدۆزرایەوە",
-                `${code} — لە بەرهەمەکان زیاد بکە`
+                "Ø¨Û•Ø±Ù‡Û•Ù… Ù†Û•Ø¯Û†Ø²Ø±Ø§ÛŒÛ•ÙˆÛ•",
+                `${code} â€” Ù„Û• Ø¨Û•Ø±Ù‡Û•Ù…Û•Ú©Ø§Ù† Ø²ÛŒØ§Ø¯ Ø¨Ú©Û•`
               )
             }
-            placeholder="ناو، SKU یان بارکۆد…"
+            placeholder="Ù†Ø§ÙˆØŒ SKU ÛŒØ§Ù† Ø¨Ø§Ø±Ú©Û†Ø¯â€¦"
           />
         </div>
 
@@ -496,7 +496,7 @@ export default function SaleForm() {
               >
                 <div className="sm:col-span-4">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    بەرهەم
+                    Ø¨Û•Ø±Ù‡Û•Ù…
                   </label>
                   <ProductPicker
                     products={products}
@@ -506,13 +506,13 @@ export default function SaleForm() {
                   />
                   {available != null ? (
                     <p className="mt-1 text-[11px] text-muted-foreground">
-                      بەردەست: {available}
+                      Ø¨Û•Ø±Ø¯Û•Ø³Øª: {available}
                     </p>
                   ) : null}
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    بڕ
+                    Ø¨Ú•
                   </label>
                   <input
                     type="number"
@@ -527,7 +527,7 @@ export default function SaleForm() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    نرخ
+                    Ù†Ø±Ø®
                   </label>
                   <input
                     type="number"
@@ -542,7 +542,7 @@ export default function SaleForm() {
                 </div>
                 <div className="sm:col-span-1">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    دراو
+                    Ø¯Ø±Ø§Ùˆ
                   </label>
                   <select
                     value={item.currency}
@@ -559,7 +559,7 @@ export default function SaleForm() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    کۆ
+                    Ú©Û†
                   </label>
                   <p className="flex h-11 items-center font-black tabular-nums">
                     {formatNumber(item.total)} {item.currency}
@@ -568,7 +568,7 @@ export default function SaleForm() {
                 <div className="flex gap-1 sm:col-span-1 sm:justify-end">
                   <button
                     type="button"
-                    title="دووبارەکردنەوە"
+                    title="Ø¯ÙˆÙˆØ¨Ø§Ø±Û•Ú©Ø±Ø¯Ù†Û•ÙˆÛ•"
                     onClick={() =>
                       setItems((prev) => [
                         ...prev.slice(0, index + 1),
@@ -583,7 +583,7 @@ export default function SaleForm() {
                   {items.length > 1 ? (
                     <button
                       type="button"
-                      title="سڕینەوە"
+                      title="Ø³Ú•ÛŒÙ†Û•ÙˆÛ•"
                       onClick={() =>
                         setItems((prev) => prev.filter((_, i) => i !== index))
                       }
@@ -601,7 +601,7 @@ export default function SaleForm() {
 
       <section className="rek-card grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
         <div>
-          <label className="mb-1.5 block text-sm font-bold">داشکاندن</label>
+          <label className="mb-1.5 block text-sm font-bold">Ø¯Ø§Ø´Ú©Ø§Ù†Ø¯Ù†</label>
           <input
             type="number"
             min={0}
@@ -611,7 +611,7 @@ export default function SaleForm() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">باج</label>
+          <label className="mb-1.5 block text-sm font-bold">Ø¨Ø§Ø¬</label>
           <input
             type="number"
             min={0}
@@ -621,7 +621,7 @@ export default function SaleForm() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">شێوازی پارەدان</label>
+          <label className="mb-1.5 block text-sm font-bold">Ø´ÛŽÙˆØ§Ø²ÛŒ Ù¾Ø§Ø±Û•Ø¯Ø§Ù†</label>
           <select
             value={paymentMethod}
             onChange={(e) =>
@@ -637,21 +637,21 @@ export default function SaleForm() {
           </select>
         </div>
         <div className="rounded-2xl bg-muted/50 p-4">
-          <p className="text-xs font-bold text-muted-foreground">کۆی گشتی</p>
+          <p className="text-xs font-bold text-muted-foreground">Ú©Û†ÛŒ Ú¯Ø´ØªÛŒ</p>
           <p className="text-2xl font-black tabular-nums text-foreground">
             {formatNumber(total)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            ژێرکۆ {formatNumber(subtotal)} − داشکاندن {formatNumber(discount)}{" "}
-            + باج {formatNumber(tax)}
+            Ú˜ÛŽØ±Ú©Û† {formatNumber(subtotal)} âˆ’ Ø¯Ø§Ø´Ú©Ø§Ù†Ø¯Ù† {formatNumber(discount)}{" "}
+            + Ø¨Ø§Ø¬ {formatNumber(tax)}
           </p>
         </div>
       </section>
 
       <section className="rek-card p-4 sm:p-6">
         <label className="mb-1.5 block text-sm font-bold">
-          تێبینی{" "}
-          <span className="font-normal text-muted-foreground">(ئارەزوومەندانە)</span>
+          ØªÛŽØ¨ÛŒÙ†ÛŒ{" "}
+          <span className="font-normal text-muted-foreground">(Ø¦Ø§Ø±Û•Ø²ÙˆÙˆÙ…Û•Ù†Ø¯Ø§Ù†Û•)</span>
         </label>
         <textarea
           value={notes}
@@ -669,7 +669,7 @@ export default function SaleForm() {
           onClick={() => void submit("new")}
           className="h-11 rounded-2xl border border-border px-4 text-sm font-bold disabled:opacity-50"
         >
-          پاشەکەوت و نوێ
+          Ù¾Ø§Ø´Û•Ú©Û•ÙˆØª Ùˆ Ù†ÙˆÛŽ
         </button>
         <button
           type="button"
@@ -678,14 +678,14 @@ export default function SaleForm() {
           className="inline-flex h-11 items-center gap-2 rounded-2xl border border-border px-4 text-sm font-bold disabled:opacity-50"
         >
           <Printer size={16} />
-          پاشەکەوت و چاپ
+          Ù¾Ø§Ø´Û•Ú©Û•ÙˆØª Ùˆ Ú†Ø§Ù¾
         </button>
         <button
           type="submit"
           disabled={saving}
           className="h-11 rounded-2xl bg-primary px-6 text-sm font-bold text-primary-foreground disabled:opacity-50"
         >
-          {saving ? "پاشەکەوت..." : "پاشەکەوتکردنی فرۆشتن"}
+          {saving ? "Ù¾Ø§Ø´Û•Ú©Û•ÙˆØª..." : "Ù¾Ø§Ø´Û•Ú©Û•ÙˆØªÚ©Ø±Ø¯Ù†ÛŒ ÙØ±Û†Ø´ØªÙ†"}
         </button>
       </div>
     </form>

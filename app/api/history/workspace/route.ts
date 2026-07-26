@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
-import type { Prisma } from "@/app/generated/prisma/client";
+import type { Prisma } from "@/lib/prisma/client";
 
 const putSchema = z.object({
   pathname: z.string().min(1).max(500),
@@ -56,7 +56,7 @@ export async function GET() {
   } catch (error) {
     console.error("GET WORKSPACE ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
       { status: 500 }
     );
   }
@@ -124,7 +124,7 @@ export async function PUT(req: NextRequest) {
   } catch (error) {
     console.error("PUT WORKSPACE ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: "Ù‡Û•ÚµÛ•ÛŒÛ•Ú© Ú•ÙˆÙˆÛŒØ¯Ø§." },
       { status: 500 }
     );
   }
