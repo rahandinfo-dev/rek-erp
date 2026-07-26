@@ -87,13 +87,6 @@ function repairMixed(s) {
   let i = 0;
   while (i < s.length) {
     const c = s.charCodeAt(i);
-    const isMoji =
-      c === 0xd8 ||
-      c === 0xd9 ||
-      c === 0xda ||
-      c === 0xdb ||
-      c > 0xff ||
-      (c >= 0x80 && c <= 0xff);
     // Start a run if we see Ø/Ù or â€
     if (
       c === 0xd8 ||

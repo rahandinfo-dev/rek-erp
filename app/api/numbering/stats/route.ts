@@ -16,45 +16,12 @@ export async function GET() {
     await ensureDefaultRules(user.companyId);
     const companyId = user.companyId;
 
-    const [rulesEnabled, counters, recentSales, recentPurchases, recentProducts] =
-      await Promise.all([
-        db.numberingRule.count({ where: { companyId, enabled: true } }),
-        db.numberingCounter.findMany({
-          where: { companyId },
-          select: { moduleKey: true, periodKey: true, nextValue: true },
-        }),
-        db.sale.findMany({
-          where: { companyId },
-          orderBy: { createdAt: "desc" },
-          take: 6,
-          select: {
-            id: true,
-            invoiceNo: true,
-            createdAt: true,
-            total: true,
-          },
-        }),
-        db.purchase.findMany({
-          where: { companyId },
-          orderBy: { createdAt: "desc" },
-          take: 6,
-          select: {
-            id: true,
-            invoiceNo: true,
-            createdAt: true,
-            total: true,
-          },
-        }),
-        db.product.findMany({
-          where: { companyId },
-          orderBy: { createdAt: "desc" },
-          take: 6,
-          select: { id: true, name: true, sku: true, barcode: true, createdAt: true },
-        }),
-      ]);
-
-    // Duplicate detection alerts (same company)
-    const [dupSkus, dupBarcodes] = await Promise.all([
+    const [rulesEnabled, counters, dupSkus, dupBarcodes] = await Promise.all([
+      db.numberingRule.count({ where: { companyId, enabled: true } }),
+      db.numberingCounter.findMany({
+        where: { companyId },
+        select: { moduleKey: true, periodKey: true, nextValue: true },
+      }),
       db.$queryRaw<Array<{ sku: string; c: bigint }>>`
         SELECT sku, COUNT(*)::bigint AS c
         FROM "Product"
@@ -73,35 +40,6 @@ export async function GET() {
       `.catch(() => [] as Array<{ barcode: string; c: bigint }>),
     ]);
 
-    const recentDocuments = [
-      ...recentSales.map((s) => ({
-        id: s.id,
-        module: "sales",
-        number: s.invoiceNo,
-        label: s.invoiceNo,
-        href: `/dashboard/sales/${s.id}`,
-        createdAt: s.createdAt.getTime(),
-      })),
-      ...recentPurchases.map((p) => ({
-        id: p.id,
-        module: "purchases",
-        number: p.invoiceNo,
-        label: p.invoiceNo,
-        href: `/dashboard/purchases/${p.id}`,
-        createdAt: p.createdAt.getTime(),
-      })),
-      ...recentProducts.map((p) => ({
-        id: p.id,
-        module: "products",
-        number: p.sku,
-        label: `${p.name} (${p.sku})`,
-        href: `/dashboard/products/${p.id}`,
-        createdAt: p.createdAt.getTime(),
-      })),
-    ]
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .slice(0, 10);
-
     return NextResponse.json({
       success: true,
       data: {
@@ -115,7 +53,6 @@ export async function GET() {
           periodKey: c.periodKey,
           nextValue: c.nextValue,
         })),
-        recentDocuments,
         duplicateAlerts: [
           ...dupSkus.map((d) => ({
             type: "sku" as const,

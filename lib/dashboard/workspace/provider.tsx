@@ -11,11 +11,10 @@ import {
   type ReactNode,
 } from "react";
 import {
-  WIDGET_CATALOG,
   buildDefaultDashboard,
-  buildDefaultWidgets,
   emptyBundle,
   newDashId,
+  pruneUnknownWidgets,
   type DashboardLayout,
   type DashboardWorkspaceBundle,
   type WidgetInstance,
@@ -47,7 +46,6 @@ type Ctx = {
   setWidgetSettings: (id: string, settings: Partial<WidgetSettings>) => void;
   duplicateWidget: (id: string) => void;
   removeWidget: (id: string) => void;
-  restoreWidget: (widgetKey: string) => void;
   restoreDefaultLayout: () => void;
   createDashboard: (name: string) => void;
   renameDashboard: (id: string, name: string) => void;
@@ -55,7 +53,6 @@ type Ctx = {
   deleteDashboard: (id: string) => void;
   switchDashboard: (id: string) => void;
   setDefaultDashboard: (id: string) => void;
-  recommendations: string[];
   refresh: () => Promise<void>;
 };
 
@@ -73,12 +70,10 @@ export function DashboardWorkspaceProvider({
   userId,
   companyId,
   children,
-  recommendModules = [],
 }: {
   userId: string;
   companyId: string;
   children: ReactNode;
-  recommendModules?: string[];
 }) {
   const [ready, setReady] = useState(false);
   const [bundle, setBundle] = useState<DashboardWorkspaceBundle>(() =>
@@ -89,7 +84,12 @@ export function DashboardWorkspaceProvider({
 
   const persist = useCallback(
     (next: DashboardWorkspaceBundle, sync = true) => {
-      const stamped = { ...next, userId, companyId, updatedAt: Date.now() };
+      const stamped = pruneUnknownWidgets({
+        ...next,
+        userId,
+        companyId,
+        updatedAt: Date.now(),
+      });
       setBundle(stamped);
       writeLocalDashboardWorkspace(stamped);
       if (!sync) return;
@@ -97,8 +97,9 @@ export function DashboardWorkspaceProvider({
       syncTimer.current = window.setTimeout(() => {
         void syncDashboardWorkspace(stamped).then((remote) => {
           if (remote) {
-            writeLocalDashboardWorkspace(remote);
-            setBundle(remote);
+            const cleaned = pruneUnknownWidgets(remote);
+            writeLocalDashboardWorkspace(cleaned);
+            setBundle(cleaned);
           }
         });
       }, 400);
@@ -116,7 +117,7 @@ export function DashboardWorkspaceProvider({
       remote && (!local || remote.updatedAt >= local.updatedAt)
         ? remote
         : local || emptyBundle(userId, companyId);
-    persist(best, false);
+    persist(pruneUnknownWidgets(best), false);
   }, [userId, companyId, persist]);
 
   useEffect(() => {
@@ -251,37 +252,6 @@ export function DashboardWorkspaceProvider({
     [updateWidget]
   );
 
-  const restoreWidget = useCallback(
-    (widgetKey: string) => {
-      patchActive((dash) => {
-        const existing = dash.widgets.find((w) => w.widgetKey === widgetKey);
-        if (existing) {
-          return {
-            ...dash,
-            widgets: dash.widgets.map((w) =>
-              w.widgetKey === widgetKey ? { ...w, hidden: false } : w
-            ),
-          };
-        }
-        const cat = WIDGET_CATALOG.find((c) => c.key === widgetKey);
-        if (!cat) return dash;
-        const inst: WidgetInstance = {
-          id: `w_${widgetKey}_${Date.now()}`,
-          widgetKey,
-          size: cat.defaultSize,
-          pinned: false,
-          favorite: false,
-          hidden: false,
-          collapsed: false,
-          order: dash.widgets.length,
-          settings: buildDefaultWidgets()[0]!.settings,
-        };
-        return { ...dash, widgets: [...dash.widgets, inst] };
-      });
-    },
-    [patchActive]
-  );
-
   const restoreDefaultLayout = useCallback(() => {
     if (!active) return;
     const fresh = buildDefaultDashboard(userId, companyId, active.name, active.id);
@@ -387,17 +357,6 @@ export function DashboardWorkspaceProvider({
     [bundle, persist]
   );
 
-  const recommendations = useMemo(() => {
-    const mods = new Set(recommendModules);
-    return WIDGET_CATALOG.filter(
-      (c) =>
-        c.recommendModules?.some((m) => mods.has(m)) &&
-        active?.widgets.some((w) => w.widgetKey === c.key && w.hidden)
-    )
-      .slice(0, 5)
-      .map((c) => c.key);
-  }, [recommendModules, active]);
-
   const value = useMemo<Ctx>(
     () => ({
       ready,
@@ -415,7 +374,6 @@ export function DashboardWorkspaceProvider({
       setWidgetSettings,
       duplicateWidget,
       removeWidget,
-      restoreWidget,
       restoreDefaultLayout,
       createDashboard,
       renameDashboard,
@@ -423,7 +381,6 @@ export function DashboardWorkspaceProvider({
       deleteDashboard,
       switchDashboard,
       setDefaultDashboard,
-      recommendations,
       refresh,
     }),
     [
@@ -441,7 +398,6 @@ export function DashboardWorkspaceProvider({
       setWidgetSettings,
       duplicateWidget,
       removeWidget,
-      restoreWidget,
       restoreDefaultLayout,
       createDashboard,
       renameDashboard,
@@ -449,7 +405,6 @@ export function DashboardWorkspaceProvider({
       deleteDashboard,
       switchDashboard,
       setDefaultDashboard,
-      recommendations,
       refresh,
     ]
   );
@@ -480,7 +435,6 @@ export function useDashboardWorkspace() {
       setWidgetSettings: () => undefined,
       duplicateWidget: () => undefined,
       removeWidget: () => undefined,
-      restoreWidget: () => undefined,
       restoreDefaultLayout: () => undefined,
       createDashboard: () => undefined,
       renameDashboard: () => undefined,
@@ -488,7 +442,6 @@ export function useDashboardWorkspace() {
       deleteDashboard: () => undefined,
       switchDashboard: () => undefined,
       setDefaultDashboard: () => undefined,
-      recommendations: [] as string[],
       refresh: async () => undefined,
     };
   }

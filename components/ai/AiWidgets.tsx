@@ -2,27 +2,14 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
-import {
-  Activity,
-  AlertTriangle,
-  Lightbulb,
-  Sparkles,
-} from "lucide-react";
-import type {
-  AiAlertView,
-  AiInsightView,
-  AiRecommendation,
-  BusinessHealth,
-} from "@/lib/ai/types";
+import { AlertTriangle } from "lucide-react";
+import type { AiAlertView } from "@/lib/ai/types";
 
 type Bundle = {
-  insights: AiInsightView[];
   alerts: AiAlertView[];
-  recommendations: AiRecommendation[];
-  health: BusinessHealth;
 };
 
-function useAiBundle() {
+function useAiAlerts() {
   const [bundle, setBundle] = useState<Bundle | null>(null);
   useEffect(() => {
     let cancelled = false;
@@ -49,7 +36,7 @@ function Shell({
   empty,
 }: {
   title: string;
-  icon: typeof Sparkles;
+  icon: typeof AlertTriangle;
   children: ReactNode;
   empty?: boolean;
 }) {
@@ -76,84 +63,8 @@ function Shell({
   );
 }
 
-export function AiInsightsWidget() {
-  const bundle = useAiBundle();
-  const items = bundle?.insights || [];
-  return (
-    <Shell title="AI Insights" icon={Sparkles} empty={!bundle}>
-      <ul className="space-y-2">
-        {items.slice(0, 5).map((i) => (
-          <li
-            key={i.id}
-            className="rounded-xl border border-border/70 px-3 py-2 text-xs"
-          >
-            <p className="font-bold">{i.title}</p>
-            <p className="text-muted-foreground">{i.summary}</p>
-          </li>
-        ))}
-      </ul>
-    </Shell>
-  );
-}
-
-export function BusinessHealthWidget() {
-  const bundle = useAiBundle();
-  const health = bundle?.health;
-  return (
-    <Shell title="تەندروستی کار" icon={Activity} empty={!health}>
-      {health ? (
-        <div>
-          <p className="text-2xl font-black tabular-nums">
-            {health.score}{" "}
-            <span className="text-sm font-bold text-muted-foreground">
-              {health.label}
-            </span>
-          </p>
-          <ul className="mt-2 space-y-1.5">
-            {health.factors.slice(0, 4).map((f) => (
-              <li
-                key={f.key}
-                className="flex justify-between gap-2 text-xs text-muted-foreground"
-              >
-                <span>{f.label}</span>
-                <span className="font-bold tabular-nums text-foreground">
-                  {Math.round(f.score)}
-                </span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-    </Shell>
-  );
-}
-
-export function SmartRecommendationsWidget() {
-  const bundle = useAiBundle();
-  const items = bundle?.recommendations || [];
-  return (
-    <Shell title="Smart Recommendations" icon={Lightbulb} empty={!bundle}>
-      <ul className="space-y-2">
-        {items.slice(0, 5).map((r) => (
-          <li key={r.id}>
-            <Link
-              href={r.href}
-              className="block rounded-xl border border-border/70 px-3 py-2 text-xs hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/35"
-            >
-              <span className="font-bold">{r.title}</span>
-              <span className="mt-0.5 block text-muted-foreground">
-                {r.reason}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </Shell>
-  );
-}
-
 export function ActiveAiAlertsWidget() {
-  const bundle = useAiBundle();
+  const bundle = useAiAlerts();
   const items = bundle?.alerts || [];
   return (
     <Shell title="Active Alerts" icon={AlertTriangle} empty={!bundle}>

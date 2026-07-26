@@ -10,11 +10,9 @@ import {
   RecentSalesList,
 } from "@/components/dashboard/RecentLists";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
-import InventoryAlertsPanel from "@/components/dashboard/InventoryAlertsPanel";
 import FavoritePagesWidget from "@/components/favorites/FavoritePagesWidget";
 import RecentlyViewedWidget from "@/components/history/RecentlyViewedWidget";
 import HistoryActionListWidget from "@/components/history/HistoryActionListWidget";
-import QuickResumeWidget from "@/components/history/QuickResumeWidget";
 import SimpleListCard from "@/components/dashboard/workspace/SimpleListCard";
 import { useSessionRecovery } from "@/lib/recovery/provider";
 import type { loadDashboardHome } from "@/lib/dashboard/home";
@@ -164,33 +162,9 @@ const NumberingStatisticsWidget = dynamic(
     ),
   { loading: widgetFallback, ssr: false }
 );
-const RecentDocumentsWidget = dynamic(
-  () =>
-    import("@/components/numbering/NumberingWidgets").then(
-      (m) => m.RecentDocumentsWidget
-    ),
-  { loading: widgetFallback, ssr: false }
-);
-
 const ActiveAiAlertsWidget = dynamic(
   () =>
     import("@/components/ai/AiWidgets").then((m) => m.ActiveAiAlertsWidget),
-  { loading: widgetFallback, ssr: false }
-);
-const AiInsightsWidget = dynamic(
-  () => import("@/components/ai/AiWidgets").then((m) => m.AiInsightsWidget),
-  { loading: widgetFallback, ssr: false }
-);
-const BusinessHealthWidget = dynamic(
-  () =>
-    import("@/components/ai/AiWidgets").then((m) => m.BusinessHealthWidget),
-  { loading: widgetFallback, ssr: false }
-);
-const SmartRecommendationsWidget = dynamic(
-  () =>
-    import("@/components/ai/AiWidgets").then(
-      (m) => m.SmartRecommendationsWidget
-    ),
   { loading: widgetFallback, ssr: false }
 );
 
@@ -283,8 +257,6 @@ export default function WidgetRenderer({
       return <DraftStatisticsWidget />;
     case "recovery-status":
       return <RecoveryStatusWidget />;
-    case "quick-resume":
-      return <QuickResumeWidget />;
     case "history-edited":
       return <HistoryActionListWidget action="edited" title="دوایین دەستکاریکراوەکان" />;
     case "history-created":
@@ -334,12 +306,6 @@ export default function WidgetRenderer({
     case "notifications":
       return (
         <ActivityFeed initialItems={data.activityItems.slice(0, count)} />
-      );
-    case "warehouse-status":
-      return (
-        <InventoryAlertsPanel
-          initialItems={data.warehouseAlerts.slice(0, count)}
-        />
       );
     case "quick-analytics":
     case "sales-chart":
@@ -403,8 +369,6 @@ export default function WidgetRenderer({
       return <RecentBulkOperationsWidget />;
     case "bulk-stats":
       return <BulkStatisticsWidget />;
-    case "recent-documents":
-      return <RecentDocumentsWidget />;
     case "numbering-stats":
       return <NumberingStatisticsWidget />;
     case "duplicate-detection":
@@ -415,12 +379,6 @@ export default function WidgetRenderer({
       return <MostEditedRecordsWidget />;
     case "restore-history":
       return <RestoreHistoryWidget />;
-    case "ai-insights":
-      return <AiInsightsWidget />;
-    case "business-health":
-      return <BusinessHealthWidget />;
-    case "smart-recommendations":
-      return <SmartRecommendationsWidget />;
     case "active-alerts":
       return <ActiveAiAlertsWidget />;
     case "quick-actions":
@@ -484,10 +442,6 @@ export default function WidgetRenderer({
         </section>
       );
     default:
-      return (
-        <section className="rek-card p-5 text-sm text-muted-foreground">
-          Widget unavailable
-        </section>
-      );
+      return null;
   }
 }

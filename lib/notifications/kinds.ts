@@ -52,7 +52,3 @@ export function extractNotificationKind(
 export function isSyncToastKind(kind: string | null | undefined): boolean {
   return Boolean(kind && SYNC_TOAST_KINDS.has(kind));
 }
-
-export function isAlertsPanelKind(kind: string | null | undefined): boolean {
-  return isSyncToastKind(kind);
-}

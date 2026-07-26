@@ -4,7 +4,6 @@ import {
   getCachedInventorySummary,
 } from "@/lib/cache/company-reads";
 import { timeAgoKu } from "@/lib/notifications/create";
-import { isAlertsPanelKind } from "@/lib/notifications/kinds";
 
 export type DashboardSummary = {
   productsCount: number;
@@ -45,7 +44,6 @@ export async function loadDashboardHome(companyId: string) {
     recentSales,
     recentInvoices,
     recentActivities,
-    inventoryAlertRows,
     chartData,
     inventorySummary,
   ] = await Promise.all([
@@ -119,29 +117,6 @@ export async function loadDashboardHome(companyId: string) {
         metadata: true,
       },
     }),
-    db.notification.findMany({
-      where: {
-        companyId,
-        deletedAt: null,
-        OR: [
-          { category: { in: ["INVENTORY", "WAREHOUSE", "WARNING"] } },
-          { priority: { in: ["HIGH", "CRITICAL"] } },
-        ],
-      },
-      orderBy: { createdAt: "desc" },
-      take: 12,
-      select: {
-        id: true,
-        title: true,
-        message: true,
-        category: true,
-        priority: true,
-        isRead: true,
-        href: true,
-        createdAt: true,
-        metadata: true,
-      },
-    }),
     getCachedDashboardChartData(companyId),
     getCachedInventorySummary(companyId),
   ]);
@@ -185,41 +160,11 @@ export async function loadDashboardHome(companyId: string) {
     date: item.createdAt.toISOString(),
   }));
 
-  const warehouseAlerts = inventoryAlertRows
-    .filter((item) => {
-      const meta = item.metadata as { kind?: string } | null;
-      const kind = typeof meta?.kind === "string" ? meta.kind : null;
-      return (
-        isAlertsPanelKind(kind) ||
-        ((item.category === "INVENTORY" ||
-          item.category === "WAREHOUSE" ||
-          item.category === "WARNING") &&
-          (item.priority === "HIGH" || item.priority === "CRITICAL"))
-      );
-    })
-    .slice(0, 6)
-    .map((item) => {
-      const meta = item.metadata as { kind?: string } | null;
-      return {
-        id: item.id,
-        title: item.title,
-        message: item.message,
-        category: item.category,
-        priority: item.priority,
-        isRead: item.isRead,
-        href: item.href,
-        timeAgo: timeAgoKu(item.createdAt),
-        date: item.createdAt.toISOString(),
-        kind: typeof meta?.kind === "string" ? meta.kind : null,
-      };
-    });
-
   return {
     summary,
     sales,
     invoices,
     activityItems,
-    warehouseAlerts,
     chartData,
   };
 }

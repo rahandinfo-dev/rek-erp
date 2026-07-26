@@ -2,23 +2,11 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertTriangle, FileText, Hash } from "lucide-react";
-import { relativeTime } from "@/lib/drafts/centerMeta";
-import { MODULE_LABELS } from "@/lib/numbering/types";
-
-type Doc = {
-  id: string;
-  module: string;
-  number: string;
-  label: string;
-  href: string;
-  createdAt: number;
-};
+import { AlertTriangle, Hash } from "lucide-react";
 
 type Stats = {
   rulesEnabled: number;
   countersIssued: number;
-  recentDocuments: Doc[];
   duplicateAlerts: Array<{ type: string; value: string; count: number }>;
 };
 
@@ -40,46 +28,6 @@ function useStats() {
     };
   }, []);
   return stats;
-}
-
-export function RecentDocumentsWidget() {
-  const stats = useStats();
-  const items = stats?.recentDocuments || [];
-  return (
-    <section aria-label="Recent Documents" className="rek-card overflow-hidden p-0">
-      <div className="flex items-center justify-between border-b border-border px-5 py-4">
-        <div className="flex items-center gap-2">
-          <FileText size={18} className="text-primary" aria-hidden />
-          <h2 className="text-lg font-black">Recent Documents</h2>
-        </div>
-        <Link
-          href="/dashboard/settings/numbering"
-          className="text-xs font-bold text-primary hover:underline"
-        >
-          Numbering
-        </Link>
-      </div>
-      {items.length === 0 ? (
-        <p className="px-5 py-8 text-sm text-muted-foreground">
-          No recent numbered documents.
-        </p>
-      ) : (
-        <ul className="divide-y divide-border">
-          {items.map((d) => (
-            <li key={`${d.module}-${d.id}`} className="px-5 py-3">
-              <Link href={d.href} className="block hover:underline">
-                <p className="truncate text-sm font-bold">{d.label}</p>
-                <p className="text-xs text-muted-foreground">
-                  {MODULE_LABELS[d.module] || d.module} ·{" "}
-                  {relativeTime(d.createdAt)}
-                </p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
-    </section>
-  );
 }
 
 export function NumberingStatisticsWidget() {

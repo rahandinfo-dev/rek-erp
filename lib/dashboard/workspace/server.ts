@@ -2,6 +2,7 @@ import { db } from "@/lib/prisma/db";
 import {
   buildDefaultDashboard,
   emptyBundle,
+  pruneUnknownWidgets,
   type DashboardLayout,
   type DashboardWorkspaceBundle,
   type WidgetInstance,
@@ -49,13 +50,13 @@ export async function loadDashboardWorkspaceBundle(
     };
   });
 
-  return {
+  return pruneUnknownWidgets({
     version: 1,
     userId,
     companyId,
     dashboards,
     updatedAt: Math.max(...dashboards.map((d) => d.updatedAt), Date.now()),
-  };
+  });
 }
 
 export async function ensureDefaultDashboardWorkspace(
@@ -87,11 +88,12 @@ export async function saveDashboardWorkspaceBundle(
   companyId: string,
   bundle: DashboardWorkspaceBundle
 ) {
+  const cleaned = pruneUnknownWidgets(bundle);
   await db.$transaction(async (tx) => {
     await tx.dashboardWorkspace.deleteMany({ where: { userId } });
-    if (!bundle.dashboards.length) return;
+    if (!cleaned.dashboards.length) return;
     await tx.dashboardWorkspace.createMany({
-      data: bundle.dashboards.map((d, idx) => ({
+      data: cleaned.dashboards.map((d, idx) => ({
         id: d.id,
         companyId,
         userId,

@@ -19,7 +19,6 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useDraftOwner } from "@/lib/drafts/owner";
-import { useNavigationHistory } from "@/lib/history/provider";
 import { DashboardWorkspaceProvider, useDashboardWorkspace } from "@/lib/dashboard/workspace/provider";
 import type { WidgetInstance, WidgetSize } from "@/lib/dashboard/workspace/types";
 import DashboardToolbar from "@/components/dashboard/workspace/DashboardToolbar";
@@ -114,7 +113,6 @@ function WorkspaceGrid({
     const oldIndex = ids.indexOf(String(a.id));
     const newIndex = ids.indexOf(String(over.id));
     if (oldIndex < 0 || newIndex < 0) return;
-    // Don't allow dropping above pinned zone incorrectly — pinned stay first
     const next = arrayMove(ids, oldIndex, newIndex);
     reorderWidgets(next);
   }
@@ -183,23 +181,11 @@ export default function DashboardHomeWorkspace({
   userName: string;
 }) {
   const owner = useDraftOwner();
-  const history = useNavigationHistory();
-  const recommendModules = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const i of history.items.slice(0, 30)) {
-      counts.set(i.moduleKey, (counts.get(i.moduleKey) || 0) + 1);
-    }
-    return [...counts.entries()]
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([k]) => k);
-  }, [history.items]);
 
   return (
     <DashboardWorkspaceProvider
       userId={owner.userId}
       companyId={owner.companyId}
-      recommendModules={recommendModules}
     >
       <WorkspaceGrid data={data} userName={userName} />
     </DashboardWorkspaceProvider>
