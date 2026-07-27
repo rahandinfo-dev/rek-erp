@@ -33,6 +33,7 @@ type ProductEditDraft = {
   currentStock: number;
   reservedStock: number;
   minimumStock: number;
+  maximumStock: number;
   notes: string;
   image: string;
   active: boolean;
@@ -62,6 +63,7 @@ export default function EditProductForm({ id }: Props) {
   const [currentStock, setCurrentStock] = useState(0);
   const [reservedStock, setReservedStock] = useState(0);
   const [minimumStock, setMinimumStock] = useState(0);
+  const [maximumStock, setMaximumStock] = useState(0);
 
   const [notes, setNotes] = useState("");
   const [image, setImage] = useState("");
@@ -82,6 +84,7 @@ export default function EditProductForm({ id }: Props) {
       currentStock,
       reservedStock,
       minimumStock,
+      maximumStock,
       notes,
       image,
       active,
@@ -98,6 +101,7 @@ export default function EditProductForm({ id }: Props) {
       currentStock,
       reservedStock,
       minimumStock,
+      maximumStock,
       notes,
       image,
       active,
@@ -131,6 +135,7 @@ export default function EditProductForm({ id }: Props) {
     setCurrentStock(Number(data.currentStock) || 0);
     setReservedStock(Number(data.reservedStock) || 0);
     setMinimumStock(Number(data.minimumStock) || 0);
+    setMaximumStock(Number(data.maximumStock) || 0);
     setNotes(data.notes || "");
     setImage(data.image || "");
     setActive(Boolean(data.active));
@@ -184,6 +189,7 @@ export default function EditProductForm({ id }: Props) {
         setCurrentStock(Number(product.currentStock));
         setReservedStock(Number(product.reservedStock));
         setMinimumStock(Number(product.minimumStock));
+        setMaximumStock(Number(product.maximumStock));
 
         setNotes(product.notes ?? "");
         setImage(product.image ?? "");
@@ -222,6 +228,7 @@ export default function EditProductForm({ id }: Props) {
           currentStock,
           reservedStock,
           minimumStock,
+          maximumStock,
           notes: notes || undefined,
           image: image || undefined,
           active,
@@ -362,7 +369,7 @@ export default function EditProductForm({ id }: Props) {
         />
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-4">
         <input
           type="number"
           step="0.01"
@@ -385,6 +392,14 @@ export default function EditProductForm({ id }: Props) {
           value={minimumStock}
           onChange={(e) => setMinimumStock(Number(e.target.value))}
           placeholder={t("products.stockAlert")}
+          className="rounded-xl border border-border p-3"
+        />
+        <input
+          type="number"
+          step="0.01"
+          value={maximumStock}
+          onChange={(e) => setMaximumStock(Number(e.target.value))}
+          placeholder="زۆرترین کۆگا"
           className="rounded-xl border border-border p-3"
         />
       </div>

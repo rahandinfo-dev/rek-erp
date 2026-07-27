@@ -229,7 +229,7 @@ export async function POST(req: NextRequest) {
           currentStock: 0,
           reservedStock: 0,
           minimumStock: data.minimumStock,
-          maximumStock: 0,
+          maximumStock: data.maximumStock,
           notes: data.notes || null,
           active: data.active,
           image: data.image || null,

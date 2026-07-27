@@ -36,7 +36,8 @@ function isProductDraftEmpty(v: ProductCreateInput) {
     !String(v.unitId || "").trim() &&
     !String(v.warehouseId || "").trim() &&
     !String(v.notes || "").trim() &&
-    !String(v.image || "").trim()
+    !String(v.image || "").trim() &&
+    !String(v.barcode || "").trim()
   );
 }
 
@@ -145,7 +146,7 @@ export default function ProductForm({
             Number(values.salePrice) || 0
           ),
           reservedStock: 0,
-          maximumStock: 0,
+          maximumStock: Number(values.maximumStock) || 0,
         }),
       });
       const data = await response.json();
@@ -311,6 +312,18 @@ export default function ProductForm({
               <p className="mt-1 text-xs text-muted-foreground">
                 {t("products.stockAlertHint")}
               </p>
+            </div>
+            <div>
+              <label className="mb-1.5 block text-sm font-bold">
+                زۆرترین کۆگا
+              </label>
+              <input
+                type="number"
+                min={0}
+                step="0.01"
+                {...form.register("maximumStock", { valueAsNumber: true })}
+                className={inputClass}
+              />
             </div>
           </div>
         </section>
