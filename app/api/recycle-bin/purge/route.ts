@@ -27,7 +27,11 @@ async function purgeOne(
     where: { id: entryId, companyId, status: "deleted" },
   });
   if (!entry) {
-    return { ok: false, id: entryId, message: "Not found or not deleted" };
+    return {
+      ok: false,
+      id: entryId,
+      message: tServer.t("api.recycleNotFound"),
+    };
   }
 
   const related = await relatedForEntity(
@@ -39,7 +43,7 @@ async function purgeOne(
     return {
       ok: false,
       id: entryId,
-      message: "Permanent delete blocked by related records",
+      message: tServer.t("api.purgeBlocked"),
       related,
     };
   }
@@ -49,7 +53,7 @@ async function purgeOne(
     return {
       ok: false,
       id: entryId,
-      message: "Permanent delete is not supported for this module",
+      message: tServer.t("api.purgeUnsupported"),
       related,
     };
   }
@@ -74,7 +78,7 @@ async function purgeOne(
     action: "DELETE",
     entityType: entry.entityType,
     entityId: entry.entityId,
-    summary: `Permanently deleted from Recycle Bin: ${entry.name}`,
+    summary: tServer.t("api.recyclePurgedAudit", { name: entry.name }),
     status: res.ok && json.success !== false ? "success" : "failed",
     metadata: {
       recycleBinId: entry.id,
@@ -88,7 +92,7 @@ async function purgeOne(
     return {
       ok: false,
       id: entryId,
-      message: json.message || "Purge failed",
+      message: json.message || tServer.t("api.purgeFailed"),
       related,
     };
   }
@@ -118,7 +122,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: "Confirmation required (confirm: true)",
+          message: tServer.t("api.confirmRequired"),
         },
         { status: 400 }
       );
@@ -130,7 +134,7 @@ export async function POST(req: NextRequest) {
     ];
     if (ids.length === 0) {
       return NextResponse.json(
-        { success: false, message: "No ids" },
+        { success: false, message: tServer.t("api.noIds") },
         { status: 400 }
       );
     }
@@ -144,12 +148,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: ok,
       data: { results },
-      message: ok ? "Purged" : "Some purges failed",
+      message: ok ? tServer.t("api.purged") : tServer.t("api.somePurgesFailed"),
     });
   } catch (error) {
     console.error("RECYCLE PURGE ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: tServer.t("common.error") },
       { status: 500 }
     );
   }

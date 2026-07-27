@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useFavorites } from "@/lib/favorites/provider";
 import { moduleFromPath } from "@/lib/history/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   href?: string;
@@ -29,6 +30,7 @@ export default function FavoriteStarButton({
   className = "",
   iconOnly = false,
 }: Props) {
+  const { t } = useT();
   const pathname = usePathname() || "/dashboard";
   const targetHref = href || pathname;
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -53,8 +55,8 @@ export default function FavoriteStarButton({
       type="button"
       onClick={onClick}
       aria-pressed={active}
-      aria-label={active ? "Remove from Favorites" : "زیادکردن بۆ دڵخوازەکان"}
-      title={active ? "Remove from Favorites" : "زیادکردن بۆ دڵخوازەکان"}
+      aria-label={active ? t("favorites.removeFrom") : t("favorites.add")}
+      title={active ? t("favorites.removeFrom") : t("favorites.add")}
       className={cn(
         "inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-border bg-card px-3 text-sm font-bold transition hover:bg-muted",
         active && "border-amber-300 bg-amber-50 text-amber-700",
@@ -68,7 +70,7 @@ export default function FavoriteStarButton({
         aria-hidden
       />
       {!iconOnly ? (
-        <span>{active ? "Favorited" : "دڵخواز"}</span>
+        <span>{active ? t("favorites.favorited") : t("favorites.favorite")}</span>
       ) : null}
     </button>
   );

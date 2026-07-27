@@ -45,6 +45,7 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
 
   return (
     <aside
+      aria-label={t("nav.sidebar")}
       className={cn(
         "rek-sidebar hidden h-full shrink-0 flex-col transition-[width] duration-300 ease-out md:flex",
         collapsed
@@ -60,7 +61,7 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
         >
           <Image
             src={user.company.logo || BRAND.logo}
-            alt={BRAND.nameEn}
+            alt={t("nav.sidebarLogo", { name: user.company.name })}
             width={36}
             height={36}
             className="size-9 shrink-0 rounded-xl border border-border object-contain"
@@ -197,6 +198,7 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
           variant="ghost"
           size="sm"
           onClick={handleLogout}
+          aria-label={t("common.logout")}
           className="h-9 w-full justify-center text-destructive hover:bg-destructive/8 hover:text-destructive"
         >
           <LogOut size={16} aria-hidden />

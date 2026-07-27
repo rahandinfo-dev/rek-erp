@@ -198,7 +198,7 @@ export default function EditProductForm({ id }: Props) {
     }
 
     void loadData();
-  }, [id]);
+  }, [id, t]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

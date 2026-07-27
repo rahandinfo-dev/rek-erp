@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     const b = req.nextUrl.searchParams.get("b");
     if (!a || !b) {
       return NextResponse.json(
-        { success: false, message: "Provide a and b version ids" },
+        { success: false, message: tServer.t("api.provideVersionIds") },
         { status: 400 }
       );
     }
@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
     if (!left || !right) {
       return NextResponse.json(
-        { success: false, message: "Version not found" },
+        { success: false, message: tServer.t("api.versionNotFound") },
         { status: 404 }
       );
     }
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       left.entityId !== right.entityId
     ) {
       return NextResponse.json(
-        { success: false, message: "Versions must belong to the same record" },
+        { success: false, message: tServer.t("api.versionsSameRecord") },
         { status: 400 }
       );
     }
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
   } catch (error) {
     console.error("COMPARE VERSIONS ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: tServer.t("common.error") },
       { status: 500 }
     );
   }

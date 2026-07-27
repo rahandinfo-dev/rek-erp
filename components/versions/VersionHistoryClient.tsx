@@ -91,7 +91,7 @@ export default function VersionHistoryClient() {
     } finally {
       setLoading(false);
     }
-  }, [queryString]);
+  }, [queryString, t]);
 
   useEffect(() => {
     const t = window.setTimeout(() => {

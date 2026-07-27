@@ -7,6 +7,7 @@ import Link from "next/link";
 import { History } from "lucide-react";
 import type { InventoryMovementRow } from "@/lib/inventory/types";
 import { movementTypeLabel } from "@/lib/inventory/movementLabels";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 function InventoryMovements({
   movements,
@@ -15,10 +16,12 @@ function InventoryMovements({
   movements: InventoryMovementRow[];
   loading?: boolean;
 }) {
+  const { t } = useT();
+
   if (loading) {
     return (
       <div className="rounded-3xl border border-border bg-card p-6 text-center text-sm text-muted-foreground">
-        چاوەڕێ بکە...
+        {t("common.loading")}
       </div>
     );
   }

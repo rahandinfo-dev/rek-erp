@@ -119,7 +119,7 @@ export default function DashboardShell({
         companyId={user.companyId}
       >
       <PwaProvider>
-      <div className="rek-shell flex overflow-hidden bg-background text-foreground">
+      <div className="rek-shell flex min-w-0 overflow-hidden bg-background text-foreground">
         <NotificationSync />
         <DashboardRail
           user={user}

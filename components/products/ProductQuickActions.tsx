@@ -654,7 +654,7 @@ function QuickHistoryPanel({
       setError(t("errors.generic"));
       setRows([]);
     }
-  }, [product.id]);
+  }, [product.id, t]);
 
   useEffect(() => {
     const id = window.setTimeout(() => {

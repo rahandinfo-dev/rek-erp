@@ -2,6 +2,7 @@
 
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   open: boolean;
@@ -18,12 +19,16 @@ export default function ConfirmDialog({
   open,
   title,
   description,
-  confirmText = "سڕینەوە",
-  cancelText = "هەڵوەشاندنەوە",
+  confirmText,
+  cancelText,
   loading = false,
   onConfirm,
   onCancel,
 }: Props) {
+  const { t } = useT();
+  const resolvedConfirm = confirmText ?? t("common.delete");
+  const resolvedCancel = cancelText ?? t("common.cancel");
+
   return (
     <AlertDialog.Root
       open={open}
@@ -46,7 +51,7 @@ export default function ConfirmDialog({
           <div className="mt-8 flex justify-end gap-3">
             <AlertDialog.Cancel asChild>
               <Button type="button" variant="outline">
-                {cancelText}
+                {resolvedCancel}
               </Button>
             </AlertDialog.Cancel>
 
@@ -56,7 +61,7 @@ export default function ConfirmDialog({
               disabled={loading}
               onClick={onConfirm}
             >
-              {loading ? "چاوەڕوانبە..." : confirmText}
+              {loading ? t("common.pleaseWait") : resolvedConfirm}
             </Button>
           </div>
         </AlertDialog.Content>

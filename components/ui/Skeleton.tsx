@@ -1,4 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type SkeletonProps = React.ComponentProps<"div"> & {
   /** Soft shimmer vs plain pulse */
@@ -130,8 +133,13 @@ export function FormSkeleton() {
 }
 
 export function DashboardPageSkeleton() {
+  const { t } = useT();
   return (
-    <div className="rek-page-enter space-y-6" aria-busy="true" aria-label="چاوەڕێی بارکردن">
+    <div
+      className="rek-page-enter space-y-6"
+      aria-busy="true"
+      aria-label={t("common.loading")}
+    >
       <PageHeaderSkeleton />
       <StatGridSkeleton />
       <div className="grid gap-4 xl:grid-cols-3">
@@ -147,8 +155,13 @@ export function ListPageSkeleton({
 }: {
   variant?: "table" | "cards" | "form";
 }) {
+  const { t } = useT();
   return (
-    <div className="rek-page-enter space-y-6" aria-busy="true" aria-label="چاوەڕێی بارکردن">
+    <div
+      className="rek-page-enter space-y-6"
+      aria-busy="true"
+      aria-label={t("common.loading")}
+    >
       <PageHeaderSkeleton />
       {variant === "table" ? <TableSkeleton /> : null}
       {variant === "cards" ? <CardGridSkeleton /> : null}

@@ -14,6 +14,7 @@ import {
   relativeTime,
   type SessionRecord,
 } from "@/lib/recovery/types";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   open: boolean;
@@ -28,59 +29,85 @@ export default function SessionDetailsDialog({
   onClose,
   onContinue,
 }: Props) {
+  const { t } = useT();
   if (!session) return null;
   const s = session.summary;
   const label =
     session.title || s.moduleLabel || MODULE_LABELS[session.moduleKey];
 
+  const draftStatusLabel =
+    s.draftStatus === "draft"
+      ? t("recovery.statusDraft")
+      : s.draftStatus === "partial"
+        ? t("recovery.statusPartial")
+        : s.draftStatus === "empty"
+          ? t("recovery.statusEmpty")
+          : s.draftStatus;
+
   const bullets: string[] = [];
   if (s.fieldsChanged)
     bullets.push(
-      `${s.fieldsChanged} field${s.fieldsChanged === 1 ? "" : "s"} changed`
+      s.fieldsChanged === 1
+        ? t("recovery.fieldsChangedOne")
+        : t("recovery.fieldsChanged", { count: s.fieldsChanged })
     );
-  if (s.hasWarehouse) bullets.push("Warehouse selected");
-  if (s.hasCustomer) bullets.push("Customer selected");
-  if (s.hasSupplier) bullets.push("Supplier selected");
-  if (s.hasEmployee) bullets.push("Employee selected");
-  if (s.hasImage) bullets.push("Image uploaded");
-  if (s.itemCount) bullets.push(`${s.itemCount} line item(s)`);
+  if (s.hasWarehouse) bullets.push(t("recovery.warehouseSelected"));
+  if (s.hasCustomer) bullets.push(t("recovery.customerSelected"));
+  if (s.hasSupplier) bullets.push(t("recovery.supplierSelected"));
+  if (s.hasEmployee) bullets.push(t("recovery.employeeSelected"));
+  if (s.hasImage) bullets.push(t("recovery.imageUploaded"));
+  if (s.itemCount)
+    bullets.push(t("recovery.lineItems", { count: s.itemCount }));
   bullets.push(...(s.notes || []));
 
   return (
     <Dialog open={open} onOpenChange={(v) => !v && onClose()}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Session Details</DialogTitle>
+          <DialogTitle>{t("recovery.sessionDetails")}</DialogTitle>
           <DialogDescription>
-            Snapshot of unfinished work ready to restore.
+            {t("recovery.sessionDetailsDesc")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-3 text-sm">
           <p>
-            <span className="font-bold text-foreground">Module:</span> {label}
+            <span className="font-bold text-foreground">
+              {t("recovery.module")}:
+            </span>{" "}
+            {label}
           </p>
           <p>
-            <span className="font-bold text-foreground">Last edited:</span>{" "}
+            <span className="font-bold text-foreground">
+              {t("recovery.lastEdited")}:
+            </span>{" "}
             {relativeTime(session.lastEditedAt)}
           </p>
           <p>
-            <span className="font-bold text-foreground">Last saved:</span>{" "}
+            <span className="font-bold text-foreground">
+              {t("recovery.lastSaved")}:
+            </span>{" "}
             {relativeTime(session.lastSavedAt)}
           </p>
           <p>
-            <span className="font-bold text-foreground">Draft status:</span>{" "}
-            {s.draftStatus}
+            <span className="font-bold text-foreground">
+              {t("recovery.draftStatus")}:
+            </span>{" "}
+            {draftStatusLabel}
           </p>
           <p>
-            <span className="font-bold text-foreground">Size:</span>{" "}
+            <span className="font-bold text-foreground">
+              {t("recovery.size")}:
+            </span>{" "}
             {formatBytes(session.sizeBytes)}
           </p>
           <p>
             <span className="font-bold text-foreground">
-              Estimated recovery:
+              {t("recovery.estimatedRecovery")}:
             </span>{" "}
-            ~{Math.max(1, Math.round(s.estimatedMs / 1000))}s
+            {t("recovery.estimatedSeconds", {
+              count: Math.max(1, Math.round(s.estimatedMs / 1000)),
+            })}
           </p>
           {bullets.length ? (
             <ul className="list-disc space-y-1 ps-5 text-muted-foreground">
@@ -90,7 +117,7 @@ export default function SessionDetailsDialog({
             </ul>
           ) : null}
           <p className="text-xs text-muted-foreground">
-            Path: {session.pathname}
+            {t("recovery.path")}: {session.pathname}
             {session.search}
           </p>
         </div>
@@ -101,14 +128,14 @@ export default function SessionDetailsDialog({
             onClick={onContinue}
             className="inline-flex h-11 items-center justify-center rounded-2xl bg-primary px-5 text-sm font-bold text-primary-foreground"
           >
-            Continue Editing
+            {t("recovery.continueEditing")}
           </button>
           <button
             type="button"
             onClick={onClose}
             className="inline-flex h-11 items-center justify-center rounded-2xl border border-border bg-card px-5 text-sm font-bold text-foreground"
           >
-            Close
+            {t("common.close")}
           </button>
         </DialogFooter>
       </DialogContent>

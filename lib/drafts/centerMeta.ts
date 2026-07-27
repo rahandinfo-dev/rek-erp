@@ -232,7 +232,7 @@ export const ARCHIVE_AFTER_MS = 90 * 24 * 60 * 60 * 1000;
 export function relativeTime(ts: number) {
   const sec = Math.max(0, Math.floor((Date.now() - ts) / 1000));
   if (sec < 45) return "ئێستا";
-  if (sec < 3600) return `${Math.floor(sec / 60)}m ago`;
-  if (sec < 86400) return `${Math.floor(sec / 3600)}h ago`;
-  return `${Math.floor(sec / 86400)}d ago`;
+  if (sec < 3600) return `${Math.floor(sec / 60)} خولەک پێش ئێستا`;
+  if (sec < 86400) return `${Math.floor(sec / 3600)} کاتژمێر پێش ئێستا`;
+  return `${Math.floor(sec / 86400)} ڕۆژ پێش ئێستا`;
 }

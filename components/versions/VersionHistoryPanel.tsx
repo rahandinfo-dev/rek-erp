@@ -64,7 +64,7 @@ export default function VersionHistoryPanel({
     } finally {
       setLoading(false);
     }
-  }, [entityType, entityId]);
+  }, [entityType, entityId, t]);
 
   useEffect(() => {
     const t = window.setTimeout(() => {

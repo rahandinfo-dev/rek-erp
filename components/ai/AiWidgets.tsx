@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 import type { AiAlertView } from "@/lib/ai/types";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Bundle = {
   alerts: AiAlertView[];
@@ -40,6 +41,7 @@ function Shell({
   children: ReactNode;
   empty?: boolean;
 }) {
+  const { t } = useT();
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
@@ -51,11 +53,11 @@ function Shell({
           href="/dashboard/ai-assistant"
           className="text-xs font-bold text-primary hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/35"
         >
-          AI
+          {t("ai.shortLink")}
         </Link>
       </div>
       {empty ? (
-        <p className="text-xs text-muted-foreground">بارکردن…</p>
+        <p className="text-xs text-muted-foreground">{t("common.loading")}</p>
       ) : (
         children
       )}
@@ -64,12 +66,13 @@ function Shell({
 }
 
 export function ActiveAiAlertsWidget() {
+  const { t } = useT();
   const bundle = useAiAlerts();
   const items = bundle?.alerts || [];
   return (
-    <Shell title="Active Alerts" icon={AlertTriangle} empty={!bundle}>
+    <Shell title={t("ai.activeAlerts")} icon={AlertTriangle} empty={!bundle}>
       {items.length === 0 ? (
-        <p className="text-xs text-muted-foreground">No open AI alerts.</p>
+        <p className="text-xs text-muted-foreground">{t("ai.noOpenAlerts")}</p>
       ) : (
         <ul className="space-y-2">
           {items.slice(0, 5).map((a) => (

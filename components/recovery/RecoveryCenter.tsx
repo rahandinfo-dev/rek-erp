@@ -12,8 +12,10 @@ import {
 import SessionDetailsDialog from "@/components/recovery/SessionDetailsDialog";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import ConnectionStatusBadge from "@/components/recovery/ConnectionStatus";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function RecoveryCenter() {
+  const { t } = useT();
   const {
     sessions,
     connection,
@@ -35,16 +37,22 @@ export default function RecoveryCenter() {
     void refreshSessions();
   }, [refreshSessions]);
 
+  function draftStatusLabel(status: string) {
+    if (status === "draft") return t("recovery.statusDraft");
+    if (status === "partial") return t("recovery.statusPartial");
+    if (status === "empty") return t("recovery.statusEmpty");
+    return status;
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h1 className="text-2xl font-black text-foreground">
-            Recovery Center
+            {t("recovery.title")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Unfinished sessions saved automatically — continue exactly where you
-            left off.
+            {t("recovery.subtitle")}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -55,7 +63,7 @@ export default function RecoveryCenter() {
               onClick={() => setConfirmAll(true)}
               className="inline-flex h-10 items-center rounded-xl border border-destructive/30 px-4 text-sm font-bold text-destructive"
             >
-              Delete All
+              {t("recovery.deleteAll")}
             </button>
           ) : null}
         </div>
@@ -63,8 +71,7 @@ export default function RecoveryCenter() {
 
       {sessions.length === 0 ? (
         <div className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
-          No unfinished sessions. Keep working — recovery snapshots appear here
-          automatically.
+          {t("recovery.empty")}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -92,26 +99,26 @@ export default function RecoveryCenter() {
                       {s.moduleKey}
                     </p>
                   </div>
-                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                    {s.summary.draftStatus}
+                  <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold tracking-wide text-muted-foreground">
+                    {draftStatusLabel(s.summary.draftStatus)}
                   </span>
                 </div>
 
                 <dl className="mb-4 space-y-1 text-xs text-muted-foreground">
                   <div className="flex justify-between gap-2">
-                    <dt>Created</dt>
+                    <dt>{t("recovery.created")}</dt>
                     <dd className="font-semibold text-foreground">
                       {relativeTime(s.createdAt)}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-2">
-                    <dt>Last edited</dt>
+                    <dt>{t("recovery.lastEdited")}</dt>
                     <dd className="font-semibold text-foreground">
                       {relativeTime(s.lastEditedAt)}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-2">
-                    <dt>Size</dt>
+                    <dt>{t("recovery.size")}</dt>
                     <dd className="font-semibold text-foreground">
                       {formatBytes(s.sizeBytes)}
                     </dd>
@@ -120,7 +127,7 @@ export default function RecoveryCenter() {
 
                 <div className="mb-4">
                   <div className="mb-1 flex justify-between text-[10px] font-bold text-muted-foreground">
-                    <span>Progress</span>
+                    <span>{t("recovery.progress")}</span>
                     <span>{progress}%</span>
                   </div>
                   <div className="h-1.5 overflow-hidden rounded-full bg-muted">
@@ -144,14 +151,14 @@ export default function RecoveryCenter() {
                       value={renameValue}
                       onChange={(e) => setRenameValue(e.target.value)}
                       className="h-9 flex-1 rounded-xl border border-border bg-background px-3 text-sm"
-                      placeholder="ناوگۆڕینی دانیشتن"
+                      placeholder={t("common.rename")}
                       autoFocus
                     />
                     <button
                       type="submit"
                       className="h-9 rounded-xl bg-primary px-3 text-xs font-bold text-primary-foreground"
                     >
-                      Save
+                      {t("common.save")}
                     </button>
                   </form>
                 ) : null}
@@ -163,7 +170,7 @@ export default function RecoveryCenter() {
                     className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-3 text-sm font-bold text-primary-foreground"
                   >
                     <Play size={14} />
-                    Continue
+                    {t("recovery.continue")}
                   </button>
                   <button
                     type="button"
@@ -172,7 +179,7 @@ export default function RecoveryCenter() {
                       setDetailsOpen(true);
                     }}
                     className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-border px-3 text-sm font-bold"
-                    title="Preview"
+                    title={t("recovery.preview")}
                   >
                     <Eye size={14} />
                   </button>
@@ -183,7 +190,7 @@ export default function RecoveryCenter() {
                       setRenameValue(s.title || label);
                     }}
                     className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-border px-3 text-sm font-bold"
-                    title="ناوگۆڕین"
+                    title={t("common.rename")}
                   >
                     <Pencil size={14} />
                   </button>
@@ -191,7 +198,7 @@ export default function RecoveryCenter() {
                     type="button"
                     onClick={() => setDeleteKey(s.moduleKey)}
                     className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-destructive/30 px-3 text-sm font-bold text-destructive"
-                    title="سڕینەوە"
+                    title={t("common.delete")}
                   >
                     <Trash2 size={14} />
                   </button>
@@ -213,9 +220,9 @@ export default function RecoveryCenter() {
 
       <ConfirmDialog
         open={Boolean(deleteKey)}
-        title="سڕینەوەی دانیشتن"
-        description="Remove this recovery snapshot? Form drafts for the module may remain until discarded separately."
-        confirmText="سڕینەوە"
+        title={t("recovery.deleteSession")}
+        description={t("recovery.deleteSessionDesc")}
+        confirmText={t("common.delete")}
         onCancel={() => setDeleteKey(null)}
         onConfirm={async () => {
           if (deleteKey) await discardSession(deleteKey);
@@ -225,9 +232,9 @@ export default function RecoveryCenter() {
 
       <ConfirmDialog
         open={confirmAll}
-        title="سڕینەوەی هەموو دانیشتنەکان"
-        description="Remove every unfinished recovery snapshot for your account?"
-        confirmText="Delete All"
+        title={t("recovery.deleteAllTitle")}
+        description={t("recovery.deleteAllDesc")}
+        confirmText={t("recovery.deleteAll")}
         onCancel={() => setConfirmAll(false)}
         onConfirm={async () => {
           await discardAll();

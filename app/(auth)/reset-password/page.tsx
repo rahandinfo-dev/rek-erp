@@ -7,12 +7,13 @@ import { getPasswordStrength } from "@/lib/utils/passwordStrength";
 import { passwordRequirements } from "@/lib/utils/passwordRequirements";
 import { useT } from "@/components/i18n/LocaleProvider";
 
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/solid";
 import {
-  EyeIcon,
-  EyeSlashIcon,
-  ShieldCheckIcon,
-} from "@heroicons/react/24/outline";
+  CheckCircle,
+  XCircle,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+} from "lucide-react";
 
 function ResetPasswordForm() {
   const searchParams = useSearchParams();
@@ -137,9 +138,9 @@ function ResetPasswordForm() {
             className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500"
           >
             {showPassword ? (
-              <EyeSlashIcon className="h-5 w-5" />
+              <EyeOff className="h-5 w-5" />
             ) : (
-              <EyeIcon className="h-5 w-5" />
+              <Eye className="h-5 w-5" />
             )}
           </button>
         </div>
@@ -147,7 +148,7 @@ function ResetPasswordForm() {
         <div className="mt-3">
           <div className="mb-2 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <ShieldCheckIcon className="h-5 w-5 text-[#FFAE42]" />
+              <ShieldCheck className="h-5 w-5 text-[#FFAE42]" />
 
               <span className="text-sm font-medium">
                 {t("auth.passwordStrengthAlt")}
@@ -186,9 +187,9 @@ function ResetPasswordForm() {
                 }`}
               >
                 {req.valid ? (
-                  <CheckCircleIcon className="h-5 w-5 text-green-500" />
+                  <CheckCircle className="h-5 w-5 text-green-500" />
                 ) : (
-                  <XCircleIcon className="h-5 w-5 text-red-500" />
+                  <XCircle className="h-5 w-5 text-red-500" />
                 )}
                 <span>{req.text}</span>
               </div>
@@ -242,9 +243,9 @@ function ResetPasswordForm() {
             className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500 transition-colors hover:text-[#FFAE42]"
           >
             {showConfirmPassword ? (
-              <EyeSlashIcon className="h-5 w-5" />
+              <EyeOff className="h-5 w-5" />
             ) : (
-              <EyeIcon className="h-5 w-5" />
+              <Eye className="h-5 w-5" />
             )}
           </button>
         </div>

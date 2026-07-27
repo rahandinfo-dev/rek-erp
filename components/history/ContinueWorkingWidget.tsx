@@ -4,8 +4,10 @@ import Link from "next/link";
 import { PlayCircle } from "lucide-react";
 import { useSessionRecovery } from "@/lib/recovery/provider";
 import { MODULE_LABELS, relativeTime } from "@/lib/recovery/types";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function ContinueWorkingWidget() {
+  const { t } = useT();
   const { sessions, restoreSession } = useSessionRecovery();
   const unfinished = sessions
     .filter((s) => s.summary.draftStatus !== "empty")
@@ -14,27 +16,27 @@ export default function ContinueWorkingWidget() {
 
   return (
     <section
-      aria-label="Continue Working"
+      aria-label={t("recovery.continueWorking")}
       className="rek-card overflow-hidden p-0"
     >
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <div className="flex items-center gap-2">
           <PlayCircle size={18} className="text-primary" aria-hidden />
           <h2 className="text-lg font-black text-foreground">
-            Continue Working
+            {t("recovery.continueWorking")}
           </h2>
         </div>
         <Link
           href="/dashboard/drafts"
           className="text-xs font-bold text-primary hover:underline"
         >
-          Draft Center
+          {t("drafts.title")}
         </Link>
       </div>
 
       {unfinished.length === 0 ? (
         <p className="px-5 py-8 text-sm text-muted-foreground">
-          No unfinished work — you are all caught up.
+          {t("drafts.noUnfinished")}
         </p>
       ) : (
         <ul className="divide-y divide-border">
@@ -74,7 +76,7 @@ export default function ContinueWorkingWidget() {
                   className="shrink-0 rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground"
                   onClick={() => void restoreSession(s)}
                 >
-                  Resume
+                  {t("drafts.resume")}
                 </button>
               </li>
             );

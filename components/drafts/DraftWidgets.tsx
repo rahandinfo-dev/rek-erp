@@ -16,6 +16,7 @@ import {
 import { useSessionRecovery } from "@/lib/recovery/provider";
 import { MODULE_LABELS } from "@/lib/recovery/types";
 import { useRouter } from "next/navigation";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 function useMergedDrafts(limit = 5) {
   const { userId } = useDraftOwner();
@@ -55,6 +56,7 @@ function useMergedDrafts(limit = 5) {
 
 /** Enhanced Continue Working — last draft + sessions */
 export function ContinueWorkingDraftWidget() {
+  const { t } = useT();
   const router = useRouter();
   const drafts = useMergedDrafts(4);
   const { sessions, restoreSession } = useSessionRecovery();
@@ -64,23 +66,28 @@ export function ContinueWorkingDraftWidget() {
   const last = drafts[0];
 
   return (
-    <section aria-label="Continue Working" className="rek-card overflow-hidden p-0">
+    <section
+      aria-label={t("drafts.continueWorking")}
+      className="rek-card overflow-hidden p-0"
+    >
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <div className="flex items-center gap-2">
           <PlayCircle size={18} className="text-primary" aria-hidden />
-          <h2 className="text-lg font-black text-foreground">Continue Working</h2>
+          <h2 className="text-lg font-black text-foreground">
+            {t("drafts.continueWorking")}
+          </h2>
         </div>
         <Link
           href="/dashboard/drafts"
           className="text-xs font-bold text-primary hover:underline"
         >
-          Draft Center
+          {t("drafts.title")}
         </Link>
       </div>
 
       {!last && !topSession ? (
         <p className="px-5 py-8 text-sm text-muted-foreground">
-          No unfinished work — you are all caught up.
+          {t("drafts.noUnfinished")}
         </p>
       ) : (
         <ul className="divide-y divide-border">
@@ -106,7 +113,7 @@ export function ContinueWorkingDraftWidget() {
                   router.push(last.resumeHref || resumeHrefForKey(last.key))
                 }
               >
-                Resume
+                {t("drafts.resume")}
               </button>
             </li>
           ) : null}
@@ -125,7 +132,7 @@ export function ContinueWorkingDraftWidget() {
                   router.push(d.resumeHref || resumeHrefForKey(d.key))
                 }
               >
-                Resume
+                {t("drafts.resume")}
               </button>
             </li>
           ))}
@@ -137,14 +144,16 @@ export function ContinueWorkingDraftWidget() {
                     MODULE_LABELS[topSession.moduleKey] ||
                     topSession.moduleKey}
                 </p>
-                <p className="text-xs text-muted-foreground">Session recovery</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("drafts.sessionRecovery")}
+                </p>
               </div>
               <button
                 type="button"
                 className="shrink-0 rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground"
                 onClick={() => void restoreSession(topSession)}
               >
-                Resume
+                {t("drafts.resume")}
               </button>
             </li>
           ) : null}
@@ -155,21 +164,27 @@ export function ContinueWorkingDraftWidget() {
 }
 
 export function RecentDraftsWidget() {
+  const { t } = useT();
   const router = useRouter();
   const drafts = useMergedDrafts(6);
   return (
-    <section aria-label="Recent Drafts" className="rek-card overflow-hidden p-0">
+    <section
+      aria-label={t("drafts.recentDrafts")}
+      className="rek-card overflow-hidden p-0"
+    >
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <div className="flex items-center gap-2">
           <FileStack size={18} className="text-primary" />
-          <h2 className="text-lg font-black">Recent Drafts</h2>
+          <h2 className="text-lg font-black">{t("drafts.recentDrafts")}</h2>
         </div>
         <Link href="/dashboard/drafts" className="text-xs font-bold text-primary">
-          View all
+          {t("history.viewAll")}
         </Link>
       </div>
       {drafts.length === 0 ? (
-        <p className="px-5 py-8 text-sm text-muted-foreground">No recent drafts</p>
+        <p className="px-5 py-8 text-sm text-muted-foreground">
+          {t("drafts.noRecentDrafts")}
+        </p>
       ) : (
         <ul className="divide-y divide-border">
           {drafts.map((d) => (
@@ -187,7 +202,7 @@ export function RecentDraftsWidget() {
                   router.push(d.resumeHref || resumeHrefForKey(d.key))
                 }
               >
-                Open
+                {t("drafts.open")}
               </button>
             </li>
           ))}
@@ -198,17 +213,21 @@ export function RecentDraftsWidget() {
 }
 
 export function PinnedDraftsWidget() {
+  const { t } = useT();
   const router = useRouter();
   const drafts = useMergedDrafts(20).filter((d) => d.pinned).slice(0, 5);
   return (
-    <section aria-label="Pinned Drafts" className="rek-card overflow-hidden p-0">
+    <section
+      aria-label={t("drafts.pinnedDrafts")}
+      className="rek-card overflow-hidden p-0"
+    >
       <div className="flex items-center gap-2 border-b border-border px-5 py-4">
         <Pin size={18} className="text-primary" />
-        <h2 className="text-lg font-black">Pinned Drafts</h2>
+        <h2 className="text-lg font-black">{t("drafts.pinnedDrafts")}</h2>
       </div>
       {drafts.length === 0 ? (
         <p className="px-5 py-8 text-sm text-muted-foreground">
-          Pin drafts in Draft Center to keep them here.
+          {t("drafts.pinHint")}
         </p>
       ) : (
         <ul className="divide-y divide-border">
@@ -225,7 +244,7 @@ export function PinnedDraftsWidget() {
                   router.push(d.resumeHref || resumeHrefForKey(d.key))
                 }
               >
-                Resume
+                {t("drafts.resume")}
               </button>
             </li>
           ))}
@@ -236,6 +255,7 @@ export function PinnedDraftsWidget() {
 }
 
 export function DraftStatisticsWidget() {
+  const { t } = useT();
   const [stats, setStats] = useState<{
     total: number;
     recovered: number;
@@ -258,22 +278,22 @@ export function DraftStatisticsWidget() {
 
   const rows = stats
     ? [
-        ["Total", stats.total],
-        ["Recovered", stats.recovered],
-        ["Completed", stats.completed],
-        ["Archived", stats.archived],
-        ["سەرنەکەوت", stats.failed],
+        [t("drafts.total"), stats.total],
+        [t("drafts.recovered"), stats.recovered],
+        [t("drafts.completed"), stats.completed],
+        [t("drafts.archived"), stats.archived],
+        [t("drafts.failed"), stats.failed],
       ]
     : [];
 
   return (
-    <section aria-label="Draft Statistics" className="rek-card p-5">
+    <section aria-label={t("drafts.statistics")} className="rek-card p-5">
       <div className="mb-3 flex items-center gap-2">
         <Archive size={18} className="text-primary" />
-        <h2 className="text-lg font-black">Draft Statistics</h2>
+        <h2 className="text-lg font-black">{t("drafts.statistics")}</h2>
       </div>
       {!stats ? (
-        <p className="text-sm text-muted-foreground">بارکردن…</p>
+        <p className="text-sm text-muted-foreground">{t("common.loading")}</p>
       ) : (
         <dl className="grid grid-cols-2 gap-3">
           {rows.map(([k, v]) => (
@@ -291,25 +311,32 @@ export function DraftStatisticsWidget() {
 }
 
 export function RecoveryStatusWidget() {
+  const { t } = useT();
   const { connection, sessions } = useSessionRecovery();
+  const connectionLabel =
+    connection === "online"
+      ? t("recovery.online")
+      : connection === "syncing"
+        ? t("recovery.syncing")
+        : t("recovery.offline");
+
   return (
-    <section aria-label="Recovery Status" className="rek-card p-5">
+    <section aria-label={t("drafts.recoveryStatus")} className="rek-card p-5">
       <div className="mb-3 flex items-center gap-2">
         <RefreshCw size={18} className="text-primary" />
-        <h2 className="text-lg font-black">Recovery Status</h2>
+        <h2 className="text-lg font-black">{t("drafts.recoveryStatus")}</h2>
       </div>
-      <p className="text-sm font-bold capitalize text-foreground">
-        {connection}
-      </p>
+      <p className="text-sm font-bold text-foreground">{connectionLabel}</p>
       <p className="mt-1 text-xs text-muted-foreground">
-        {sessions.length} unfinished session
-        {sessions.length === 1 ? "" : "s"}
+        {sessions.length === 1
+          ? t("drafts.unfinishedSessionOne")
+          : t("drafts.unfinishedSessions", { count: sessions.length })}
       </p>
       <Link
         href="/dashboard/recovery"
         className="mt-3 inline-block text-xs font-bold text-primary"
       >
-        Open Recovery Center
+        {t("drafts.openRecoveryCenter")}
       </Link>
     </section>
   );

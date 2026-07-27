@@ -22,6 +22,7 @@ import {
 import type { QuickActionRecord } from "@/lib/quick-actions/types";
 import SelectionQuickActions from "@/components/quick-actions/SelectionQuickActions";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type DataTableColumn<T> = {
   id: string;
@@ -72,16 +73,20 @@ function DataTableInner<T>({
   data,
   columns,
   getRowId,
-  searchPlaceholder = "گەڕان...",
+  searchPlaceholder,
   searchFilter,
   pageSizeOptions = [10, 25, 50],
   actions,
-  emptyMessage = "هیچ داتایەک نەدۆزرایەوە.",
+  emptyMessage,
   toolbar,
   selection,
   onIdsMeta,
   quickActions,
 }: DataTableProps<T>) {
+  const { t } = useT();
+  const resolvedSearchPlaceholder =
+    searchPlaceholder ?? t("table.searchPlaceholder");
+  const resolvedEmptyMessage = emptyMessage ?? t("common.empty");
   const qa = useQuickActionsOptional();
   const [search, setSearch] = useState("");
   const debouncedSearch = useDebouncedValue(search, 200);
@@ -249,8 +254,8 @@ function DataTableInner<T>({
               setSearch(e.target.value);
               setPage(1);
             }}
-            placeholder={searchPlaceholder}
-            aria-label={searchPlaceholder}
+            placeholder={resolvedSearchPlaceholder}
+            aria-label={t("table.searchAria")}
             className="h-11 w-full rounded-2xl border border-border bg-card py-2 pr-4 pl-10 text-sm text-foreground shadow-[var(--shadow-xs)] outline-none transition focus:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/35"
           />
         </div>
@@ -265,10 +270,11 @@ function DataTableInner<T>({
               onClick={() => setColumnsOpen((v) => !v)}
               aria-expanded={columnsOpen}
               aria-haspopup="listbox"
+              aria-label={t("table.columnsToggle")}
               className="shadow-none"
             >
               <Columns3 size={16} aria-hidden />
-              ستوونەکان
+              {t("table.columns")}
             </Button>
             {columnsOpen ? (
               <div
@@ -299,8 +305,8 @@ function DataTableInner<T>({
         </div>
       </div>
 
-      <div className="rek-table-shell">
-        <div className="rek-table-wrap max-h-[min(70vh,640px)]">
+      <div className="rek-table-shell min-w-0">
+        <div className="rek-table-wrap max-h-[min(70vh,640px)] overflow-x-auto">
           <table className="w-full min-w-[520px] border-separate border-spacing-0 sm:min-w-[640px] md:min-w-[720px]">
             <thead className="sticky top-0 z-10 bg-muted/95 backdrop-blur-sm">
               <tr className="text-right text-[13px] text-muted-foreground">
@@ -313,7 +319,7 @@ function DataTableInner<T>({
                       type="checkbox"
                       checked={pageAllSelected}
                       onChange={togglePage}
-                      aria-label="Select current page"
+                      aria-label={t("table.selectCurrentPage")}
                       className="focus-visible:ring-[3px] focus-visible:ring-ring/35"
                     />
                   </th>
@@ -369,8 +375,8 @@ function DataTableInner<T>({
                     className="px-4 py-10 text-center"
                   >
                     <EmptyState
-                      title={emptyMessage}
-                      description="هەوڵ بدە فلتەر یان گەڕان بگۆڕیت."
+                      title={resolvedEmptyMessage}
+                      description={t("table.emptyFilterHint")}
                       className="border-0 bg-transparent py-8"
                     />
                   </td>
@@ -399,7 +405,7 @@ function DataTableInner<T>({
                           type="checkbox"
                           checked={selectedSet.has(getRowId(row))}
                           onChange={() => toggleRow(getRowId(row))}
-                          aria-label={`Select row ${getRowId(row)}`}
+                          aria-label={t("table.selectRow", { id: getRowId(row) })}
                           className="focus-visible:ring-[3px] focus-visible:ring-ring/35"
                         />
                       </td>
@@ -440,7 +446,7 @@ function DataTableInner<T>({
 
         <div className="flex flex-wrap items-center gap-2">
           <label className="sr-only" htmlFor="rek-table-page-size">
-            ژمارەی ڕیز لە پەڕە
+            {t("table.rowsPerPage")}
           </label>
           <select
             id="rek-table-page-size"

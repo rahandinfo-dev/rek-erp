@@ -104,31 +104,38 @@ export async function listNumberingRules(
   });
 
   const now = new Date();
-  return Promise.all(
-    rows.map(async (row) => {
-      const rule = ruleFromDb(row);
-      const periodKey = periodKeyFor(
-        rule.resetPolicy,
-        now,
-        rule.fiscalYearStartMonth
-      );
-      const counter = await db.numberingCounter.findUnique({
-        where: {
-          companyId_moduleKey_periodKey: {
+  const periodKeys = rows.map((row) => {
+    const rule = ruleFromDb(row);
+    return periodKeyFor(rule.resetPolicy, now, rule.fiscalYearStartMonth);
+  });
+  const uniquePeriodKeys = [...new Set(periodKeys)];
+
+  const counters =
+    rows.length === 0
+      ? []
+      : await db.numberingCounter.findMany({
+          where: {
             companyId,
-            moduleKey: rule.moduleKey,
-            periodKey,
+            moduleKey: { in: rows.map((r) => r.moduleKey) },
+            periodKey: { in: uniquePeriodKeys },
           },
-        },
-      });
-      const next = counter?.nextValue ?? rule.startFrom;
-      return {
-        ...rule,
-        nextValue: next,
-        preview: renderFormat(rule, next, { companyCode, now }),
-      };
-    })
+        });
+
+  const counterByKey = new Map(
+    counters.map((c) => [`${c.moduleKey}\0${c.periodKey}`, c])
   );
+
+  return rows.map((row, i) => {
+    const rule = ruleFromDb(row);
+    const periodKey = periodKeys[i];
+    const counter = counterByKey.get(`${rule.moduleKey}\0${periodKey}`);
+    const next = counter?.nextValue ?? rule.startFrom;
+    return {
+      ...rule,
+      nextValue: next,
+      preview: renderFormat(rule, next, { companyCode, now }),
+    };
+  });
 }
 
 async function allocateSequence(

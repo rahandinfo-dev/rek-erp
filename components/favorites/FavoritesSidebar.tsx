@@ -28,6 +28,7 @@ import {
 } from "@/lib/favorites/types";
 import { appToast } from "@/lib/toast";
 import RecentHistorySidebar from "@/components/history/RecentHistorySidebar";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 function ColorDot({ color }: { color: FavoriteColor | null }) {
   if (!color) return null;
@@ -46,6 +47,7 @@ function FavoriteRow({
   item: FavoriteItem;
   collapsed: boolean;
 }) {
+  const { t } = useT();
   const {
     togglePin,
     removeFavorite,
@@ -65,9 +67,9 @@ function FavoriteRow({
       await navigator.clipboard.writeText(
         `${window.location.origin}${item.href}`
       );
-      appToast.success("بەستەر کۆپی کرا");
+      appToast.success(t("favorites.linkCopied"));
     } catch {
-      appToast.error("کۆپیکردن سەرنەکەوت");
+      appToast.error(t("favorites.copyFailed"));
     }
     setMenu(false);
   }
@@ -116,7 +118,7 @@ function FavoriteRow({
         <button
           type="button"
           className="rounded-lg bg-card p-1 text-muted-foreground shadow-sm ring-1 ring-border"
-          aria-label="Favorite actions"
+          aria-label={t("favorites.actions")}
           onClick={(e) => {
             e.preventDefault();
             setMenu((v) => !v);
@@ -131,7 +133,7 @@ function FavoriteRow({
               className="block rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
               onClick={() => setMenu(false)}
             >
-              Open
+              {t("favorites.open")}
             </Link>
             <a
               href={item.href}
@@ -140,7 +142,7 @@ function FavoriteRow({
               className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
               onClick={() => setMenu(false)}
             >
-              <ExternalLink size={12} /> Open in New Tab
+              <ExternalLink size={12} /> {t("favorites.openNewTab")}
             </a>
             <button
               type="button"
@@ -150,7 +152,7 @@ function FavoriteRow({
                 setMenu(false);
               }}
             >
-              Rename Alias
+              {t("favorites.renameAlias")}
             </button>
             <button
               type="button"
@@ -161,10 +163,10 @@ function FavoriteRow({
               }}
             >
               {item.pinned ? <PinOff size={12} /> : <Pin size={12} />}
-              {item.pinned ? "لابردنی هەڵواسین" : "هەڵواسین"}
+              {item.pinned ? t("favorites.unpin") : t("favorites.pin")}
             </button>
             <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground">
-              Color
+              {t("favorites.color")}
             </div>
             <div className="mb-1 flex flex-wrap gap-1 px-2">
               {FAVORITE_COLORS.map((c) => (
@@ -190,13 +192,13 @@ function FavoriteRow({
                   setColor(item.href, null);
                   setMenu(false);
                 }}
-                aria-label="Clear color"
+                aria-label={t("favorites.clearColor")}
               />
             </div>
             {activeGroups.length ? (
               <>
                 <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground">
-                  Move to Group
+                  {t("favorites.moveToGroup")}
                 </div>
                 <button
                   type="button"
@@ -206,7 +208,7 @@ function FavoriteRow({
                     setMenu(false);
                   }}
                 >
-                  Ungrouped
+                  {t("favorites.ungrouped")}
                 </button>
                 {activeGroups.map((g) => (
                   <button
@@ -228,7 +230,7 @@ function FavoriteRow({
               className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
               onClick={() => void copyLink()}
             >
-              <Copy size={12} /> Copy Link
+              <Copy size={12} /> {t("favorites.copyLink")}
             </button>
             <button
               type="button"
@@ -238,7 +240,7 @@ function FavoriteRow({
                 setMenu(false);
               }}
             >
-              <Trash2 size={12} /> Remove
+              <Trash2 size={12} /> {t("favorites.remove")}
             </button>
           </div>
         ) : null}
@@ -274,6 +276,7 @@ export default function FavoritesSidebar({
 }: {
   collapsed: boolean;
 }) {
+  const { t } = useT();
   const {
     ui,
     setSection,
@@ -377,7 +380,7 @@ export default function FavoritesSidebar({
               : "bg-muted text-muted-foreground"
           )}
         >
-          Favorites
+          {t("favorites.title")}
         </button>
         <button
           type="button"
@@ -389,7 +392,7 @@ export default function FavoritesSidebar({
               : "bg-muted text-muted-foreground"
           )}
         >
-          Recent
+          {t("favorites.recent")}
         </button>
       </div>
 
@@ -403,7 +406,7 @@ export default function FavoritesSidebar({
             onClick={() => setCollapsed(!ui.collapsed)}
           >
             {ui.collapsed ? <ChevronRight size={12} /> : <ChevronDown size={12} />}
-            Favorites
+            {t("favorites.title")}
             <Star size={11} className="ms-auto fill-amber-400 text-amber-400" />
           </button>
 
@@ -414,7 +417,7 @@ export default function FavoritesSidebar({
                   className="h-7 flex-1 rounded-lg border-0 bg-muted/70 px-2 text-[11px] font-semibold"
                   value={activeWorkspace?.id || ""}
                   onChange={(e) => switchWorkspace(e.target.value)}
-                  aria-label="Favorite workspace"
+                  aria-label={t("favorites.workspace")}
                 >
                   {bundle.workspaces.map((w) => (
                     <option key={w.id} value={w.id}>
@@ -424,10 +427,10 @@ export default function FavoritesSidebar({
                 </select>
                 <button
                   type="button"
-                  title="New workspace"
+                  title={t("favorites.newWorkspace")}
                   className="rounded-lg bg-muted p-1.5 text-muted-foreground hover:text-foreground"
                   onClick={() => {
-                    const name = window.prompt("Workspace name");
+                    const name = window.prompt(t("favorites.workspaceName"));
                     if (name) createWorkspace(name);
                   }}
                 >
@@ -436,10 +439,10 @@ export default function FavoritesSidebar({
                 {bundle.workspaces.length > 1 && activeWorkspace ? (
                   <button
                     type="button"
-                    title="Delete workspace"
+                    title={t("favorites.deleteWorkspace")}
                     className="rounded-lg bg-muted p-1.5 text-destructive"
                     onClick={() => {
-                      if (window.confirm("Delete this workspace?")) {
+                      if (window.confirm(t("favorites.deleteWorkspaceConfirm"))) {
                         deleteWorkspace(activeWorkspace.id);
                       }
                     }}
@@ -454,7 +457,7 @@ export default function FavoritesSidebar({
                   type="search"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  placeholder="گەڕان لە دڵخوازەکان…"
+                  placeholder={t("favorites.searchPlaceholder")}
                   className="h-8 w-full rounded-xl border-0 bg-muted/70 px-2.5 text-xs outline-none focus:ring-2 focus:ring-ring/30"
                 />
               </div>
@@ -465,12 +468,12 @@ export default function FavoritesSidebar({
                   className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-lg bg-muted text-[10px] font-bold"
                   onClick={() => setNewGroup(true)}
                 >
-                  <FolderPlus size={12} /> Group
+                  <FolderPlus size={12} /> {t("favorites.group")}
                 </button>
                 <button
                   type="button"
                   className="inline-flex h-7 items-center justify-center rounded-lg bg-muted px-2 text-muted-foreground"
-                  title="هەناردەکردن"
+                  title={t("favorites.export")}
                   onClick={() => {
                     const blob = new Blob([exportFavorites()], {
                       type: "application/json",
@@ -487,7 +490,7 @@ export default function FavoritesSidebar({
                 </button>
                 <label
                   className="inline-flex h-7 cursor-pointer items-center justify-center rounded-lg bg-muted px-2 text-muted-foreground"
-                  title="Import"
+                  title={t("favorites.import")}
                 >
                   <Upload size={12} />
                   <input
@@ -500,7 +503,9 @@ export default function FavoritesSidebar({
                       const text = await file.text();
                       const ok = importFavorites(text);
                       appToast[ok ? "success" : "error"](
-                        ok ? "Favorites imported" : "Import failed"
+                        ok
+                          ? t("favorites.importSuccess")
+                          : t("favorites.importFailed")
                       );
                       e.target.value = "";
                     }}
@@ -522,7 +527,7 @@ export default function FavoritesSidebar({
                     autoFocus
                     value={groupName}
                     onChange={(e) => setGroupName(e.target.value)}
-                    placeholder="ناوی گرووپ"
+                    placeholder={t("favorites.groupName")}
                     className="h-8 w-full rounded-xl border border-border bg-background px-2 text-xs"
                   />
                 </form>
@@ -531,7 +536,7 @@ export default function FavoritesSidebar({
               {pinned.length ? (
                 <div>
                   <p className="mb-1 px-3 text-[10px] font-bold text-muted-foreground">
-                    Pinned
+                    {t("favorites.pinned")}
                   </p>
                   <ul className="space-y-0.5">
                     {pinned.map((item) => (
@@ -565,20 +570,29 @@ export default function FavoritesSidebar({
                       <button
                         type="button"
                         className="rounded p-0.5 hover:bg-muted hover:text-foreground"
-                        title="Rename group"
+                        title={t("favorites.renameGroup")}
                         onClick={() => {
-                          const name = window.prompt("Rename group", group.name);
+                          const name = window.prompt(
+                            t("favorites.renameGroup"),
+                            group.name
+                          );
                           if (name?.trim()) renameGroup(group.id, name.trim());
                         }}
                       >
-                        Rename
+                        {t("common.rename")}
                       </button>
                       <button
                         type="button"
                         className="rounded p-0.5 text-destructive hover:bg-destructive/10"
-                        title="Delete group"
+                        title={t("favorites.deleteGroup")}
                         onClick={() => {
-                          if (window.confirm(`Delete group “${group.name}”?`)) {
+                          if (
+                            window.confirm(
+                              t("favorites.deleteGroupConfirm", {
+                                name: group.name,
+                              })
+                            )
+                          ) {
                             deleteGroup(group.id);
                           }
                         }}
@@ -605,7 +619,7 @@ export default function FavoritesSidebar({
                 <div>
                   {activeGroups.length ? (
                     <p className="mb-1 px-3 text-[10px] font-bold text-muted-foreground">
-                      Ungrouped
+                      {t("favorites.ungrouped")}
                     </p>
                   ) : null}
                   <ul className="space-y-0.5">
@@ -624,7 +638,7 @@ export default function FavoritesSidebar({
 
               {!filtered.length ? (
                 <p className="px-3 py-2 text-[11px] text-muted-foreground">
-                  No favorites yet. Tap the star on any page.
+                  {t("favorites.empty")}
                 </p>
               ) : null}
             </div>

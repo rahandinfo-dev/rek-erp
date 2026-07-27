@@ -21,7 +21,11 @@ async function restoreOne(
     where: { id: entryId, companyId, status: "deleted" },
   });
   if (!entry) {
-    return { ok: false, id: entryId, message: "Not found or not deleted" };
+    return {
+      ok: false,
+      id: entryId,
+      message: tServer.t("api.recycleNotFound"),
+    };
   }
 
   const api = restoreUrlFor(entry.moduleKey, entry.entityId);
@@ -29,7 +33,7 @@ async function restoreOne(
     return {
       ok: false,
       id: entryId,
-      message: "Restore is not supported for this module",
+      message: tServer.t("api.restoreUnsupported"),
     };
   }
 
@@ -53,7 +57,7 @@ async function restoreOne(
     action: "RESTORE",
     entityType: entry.entityType,
     entityId: entry.entityId,
-    summary: `Restored from Recycle Bin: ${entry.name}`,
+    summary: tServer.t("api.recycleRestoredAudit", { name: entry.name }),
     status: res.ok && json.success !== false ? "success" : "failed",
     metadata: { recycleBinId: entry.id, moduleKey: entry.moduleKey },
     req,
@@ -63,7 +67,7 @@ async function restoreOne(
     return {
       ok: false,
       id: entryId,
-      message: json.message || "گەڕاندنەوە سەرنەکەوت",
+      message: json.message || tServer.t("api.restoreFailed"),
     };
   }
 
@@ -101,7 +105,7 @@ export async function POST(req: NextRequest) {
     ];
     if (ids.length === 0) {
       return NextResponse.json(
-        { success: false, message: "No ids" },
+        { success: false, message: tServer.t("api.noIds") },
         { status: 400 }
       );
     }
@@ -115,12 +119,14 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: ok,
       data: { results },
-      message: ok ? "گەڕێندرایەوە" : "Some restores failed",
+      message: ok
+        ? tServer.t("api.restored")
+        : tServer.t("api.someRestoresFailed"),
     });
   } catch (error) {
     console.error("RECYCLE RESTORE ERROR:", error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
+      { success: false, message: tServer.t("common.error") },
       { status: 500 }
     );
   }

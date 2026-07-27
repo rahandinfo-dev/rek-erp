@@ -159,11 +159,11 @@ export function formatBytes(n: number) {
 export function relativeTime(ts: number) {
   const diff = Math.max(0, Date.now() - ts);
   const sec = Math.floor(diff / 1000);
-  if (sec < 60) return `${sec}s ago`;
+  if (sec < 60) return `${sec} چرکە پێش ئێستا`;
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} minute${min === 1 ? "" : "s"} ago`;
+  if (min < 60) return `${min} خولەک پێش ئێستا`;
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} hour${hr === 1 ? "" : "s"} ago`;
+  if (hr < 24) return `${hr} کاتژمێر پێش ئێستا`;
   const d = Math.floor(hr / 24);
-  return `${d} day${d === 1 ? "" : "s"} ago`;
+  return `${d} ڕۆژ پێش ئێستا`;
 }

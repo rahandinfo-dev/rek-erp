@@ -165,6 +165,7 @@ export default function ActivityTimeline({
       cursor,
       userId,
       viewerId,
+      t,
     ]
   );
 

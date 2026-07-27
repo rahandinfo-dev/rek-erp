@@ -453,6 +453,7 @@ export function CommandPaletteHost() {
     staticCommands,
     keyboard,
     pathname,
+    t,
   ]);
 
   const localGroups = useMemo(() => {
@@ -486,7 +487,7 @@ export function CommandPaletteHost() {
       groups.push({ key: "navigate", label: t("command.pages"), items: navigate });
     }
     return groups;
-  }, [query, buildEmptyGroups, mode, staticCommands]);
+  }, [query, buildEmptyGroups, mode, staticCommands, t]);
 
   const resultGroups = useMemo(
     () => searchGroupsToCommands(apiGroups),

@@ -1,8 +1,19 @@
+import dynamic from "next/dynamic";
 import { Barcode } from "lucide-react";
 import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import BarcodeWorkbench from "@/components/barcode/BarcodeWorkbench";
 import { tServer } from "@/lib/i18n";
+
+const BarcodeWorkbench = dynamic(
+  () => import("@/components/barcode/BarcodeWorkbench"),
+  {
+    loading: () => (
+      <div className="rounded-3xl bg-muted px-6 py-16 text-center text-slate-500">
+        بارکردن…
+      </div>
+    ),
+  }
+);
 
 export default async function BarcodePage() {
   const user = await getCurrentUser();
