@@ -321,7 +321,7 @@ export async function DELETE(req: NextRequest) {
     const href = req.nextUrl.searchParams.get("href");
     if (!href) {
       return NextResponse.json(
-        { success: false, message: "href required" },
+        { success: false, message: tServer.t("api.hrefRequired") },
         { status: 400 }
       );
     }

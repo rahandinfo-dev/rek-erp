@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Type EMPTY and confirm: true to empty the bin',
+          message: tServer.t("api.recycleEmptyConfirm"),
         },
         { status: 400 }
       );

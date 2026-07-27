@@ -180,7 +180,7 @@ export async function DELETE(req: NextRequest) {
       });
     } else {
       return NextResponse.json(
-        { success: false, message: "moduleKey required" },
+        { success: false, message: tServer.t("api.moduleKeyRequired") },
         { status: 400 }
       );
     }

@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
     });
     if (!ver) {
       return NextResponse.json(
-        { success: false, message: "Version not found" },
+        { success: false, message: tServer.t("api.versionNotFound") },
         { status: 404 }
       );
     }
