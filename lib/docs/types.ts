@@ -16,24 +16,25 @@ export type DocCategory = {
   order: number;
 };
 
+/** Official Learning Center manual sections (order matters). */
 export type DocSectionKey =
   | "overview"
   | "purpose"
-  | "whyExists"
   | "whenToUse"
   | "steps"
   | "workflow"
   | "bestPractices"
   | "commonMistakes"
+  | "troubleshooting"
   | "tips"
   | "faq"
-  | "troubleshooting"
-  | "related";
+  | "related"
+  | "summary";
 
 export type DocSection = {
   id: DocSectionKey;
   title: string;
-  /** Paragraphs or bullet lines */
+  /** Paragraphs, bullets, or special lines (STEP:, WARN:, TIP:, NOTE:, TABLE:) */
   body: string[];
 };
 
@@ -43,9 +44,7 @@ export type DocModule = {
   shortDescription: string;
   categoryId: DocCategoryId;
   icon: LucideIcon;
-  /** In-app route when the module exists */
   appRoute?: string;
-  /** Feature is partial or not yet a standalone module */
   underDevelopment?: boolean;
   developmentNote?: string;
   keywords: string[];
@@ -53,31 +52,50 @@ export type DocModule = {
 };
 
 export const DOC_SECTION_LABELS: Record<DocSectionKey, string> = {
-  overview: "پوختەی مۆدیول",
-  purpose: "ئامانج",
-  whyExists: "بۆچی پێویستە",
-  whenToUse: "کەی بەکاری بهێنیت",
-  steps: "هەنگاو بە هەنگاو",
-  workflow: "نموونەی کارکردنی ڕاستەقینە",
-  bestPractices: "باشترین ڕێکارەکان",
+  overview: "دەربارەی ئەم بەشە",
+  purpose: "ئامانجی ئەم بەشە",
+  whenToUse: "کەی بەکاری دەهێنیت؟",
+  steps: "چۆن بەکاریبهێنم؟",
+  workflow: "نموونەی ڕاستەقینە",
+  bestPractices: "باشترین ڕێگاکانی بەکارهێنان",
   commonMistakes: "هەڵە باوەکان",
-  tips: "ئامۆژگاری و پێشنیار",
-  faq: "پرسیارە باوەکان",
   troubleshooting: "چارەسەری کێشەکان",
-  related: "مۆدیولە پەیوەندیدارەکان",
+  tips: "ئامۆژگارییەکان",
+  faq: "پرسیارە باوەکان",
+  related: "پەیوەندی بەشەکان",
+  summary: "کورتە پوختە",
 };
 
 export const DOC_SECTION_ORDER: DocSectionKey[] = [
   "overview",
   "purpose",
-  "whyExists",
   "whenToUse",
   "steps",
   "workflow",
   "bestPractices",
   "commonMistakes",
+  "troubleshooting",
   "tips",
   "faq",
-  "troubleshooting",
   "related",
+  "summary",
 ];
+
+/** Visual presentation hint for DocsModuleView */
+export const DOC_SECTION_VARIANT: Record<
+  DocSectionKey,
+  "default" | "info" | "steps" | "example" | "success" | "warning" | "danger" | "tip" | "faq" | "related" | "summary"
+> = {
+  overview: "info",
+  purpose: "info",
+  whenToUse: "default",
+  steps: "steps",
+  workflow: "example",
+  bestPractices: "success",
+  commonMistakes: "danger",
+  troubleshooting: "warning",
+  tips: "tip",
+  faq: "faq",
+  related: "related",
+  summary: "summary",
+};
