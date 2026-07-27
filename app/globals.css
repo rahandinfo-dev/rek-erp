@@ -1496,10 +1496,20 @@ html:not(.dark) .border-zinc-200 {
   --academy-ink: #070b14;
   --academy-panel: #0b1220;
   --academy-brand: #ffae42;
-  background:
-    radial-gradient(120% 80% at 100% 0%, rgba(255, 174, 66, 0.18), transparent 55%),
-    radial-gradient(90% 70% at 0% 100%, rgba(255, 174, 66, 0.08), transparent 50%),
-    linear-gradient(145deg, #070b14 0%, #101827 48%, #0a101c 100%);
+  /* Auto-loads public/images/background-tutorial.png when present;
+     soft gradient fallback if the file is missing or still loading. */
+  background-color: #070b14;
+  background-image:
+    linear-gradient(
+      145deg,
+      rgba(7, 11, 20, 0.72) 0%,
+      rgba(16, 24, 39, 0.55) 48%,
+      rgba(10, 16, 28, 0.78) 100%
+    ),
+    url("/images/background-tutorial.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   color: #f8fafc;
   min-height: 280px;
 }

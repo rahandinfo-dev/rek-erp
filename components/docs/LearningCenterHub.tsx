@@ -36,7 +36,11 @@ export default function LearningCenterHub() {
     return ALL_DOC_MODULES.filter((m) => m.categoryId === activeCategory);
   }, [query, searchResults, activeCategory]);
 
-  const sortedCategories = [...DOC_CATEGORIES].sort((a, b) => a.order - b.order);
+  const sortedCategories = [...DOC_CATEGORIES]
+    .sort((a, b) => a.order - b.order)
+    .filter(
+      (cat) => ALL_DOC_MODULES.some((m) => m.categoryId === cat.id)
+    );
 
   return (
     <div className="space-y-8">
@@ -214,9 +218,9 @@ export default function LearningCenterHub() {
         </div>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {[
-            "سەرەتا «داشبۆرد» و «کۆمپانیا» بخوێنەرەوە.",
-            "پێش فرۆشتن «کاڵاکان» و «کۆگا» ڕێکبخە.",
-            "بۆ پرسیاری خێرا «یاریدەدەری زیرەک» بەکاربهێنە.",
+            "سەرەتا «داشبۆرد» و «دەربارەی کۆمپانیا» بخوێنەرەوە.",
+            "پێش فرۆشتن «بەرهەمەکان» و «کۆگاکان» ڕێکبخە.",
+            "بۆ پرسیاری خێرا «یاریدەدەری زیرەکی سیستەمی ڕێک» بەکاربهێنە.",
           ].map((tip) => (
             <li
               key={tip}

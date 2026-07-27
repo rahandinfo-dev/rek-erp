@@ -6,9 +6,10 @@ import { peopleModules } from "@/lib/docs/modules/people";
 import { insightsModules } from "@/lib/docs/modules/insights";
 import { aiModules } from "@/lib/docs/modules/ai";
 import { systemModules } from "@/lib/docs/modules/system";
+import { OFFICIAL_DOC_SLUGS } from "@/lib/docs/official";
 import type { DocModule } from "@/lib/docs/types";
 
-export const ALL_DOC_MODULES: DocModule[] = [
+const RAW_DOC_MODULES: DocModule[] = [
   ...startModules,
   ...inventoryModules,
   ...tradingModules,
@@ -18,6 +19,16 @@ export const ALL_DOC_MODULES: DocModule[] = [
   ...aiModules,
   ...systemModules,
 ];
+
+const officialOrder = new Map<string, number>(
+  OFFICIAL_DOC_SLUGS.map((slug, index) => [slug, index])
+);
+
+export const ALL_DOC_MODULES: DocModule[] = RAW_DOC_MODULES.filter((m) =>
+  officialOrder.has(m.slug)
+).sort(
+  (a, b) => (officialOrder.get(a.slug) ?? 0) - (officialOrder.get(b.slug) ?? 0)
+);
 
 const bySlug = new Map(ALL_DOC_MODULES.map((m) => [m.slug, m]));
 

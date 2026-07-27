@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Cropper, { type Area } from "react-easy-crop";
 import { Check, RotateCcw, RotateCw, X, ZoomIn, ZoomOut } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -91,6 +91,16 @@ export default function ImageCropDialog({
   const [croppedArea, setCroppedArea] = useState<Area | null>(null);
   const [busy, setBusy] = useState(false);
 
+  // Lock background scroll; dialog body scrolls instead so crop UI stays usable
+  // on short product-edit pages and mobile viewports.
+  useEffect(() => {
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, []);
+
   const onCropComplete = useCallback((_: Area, pixels: Area) => {
     setCroppedArea(pixels);
   }, []);
@@ -113,10 +123,15 @@ export default function ImageCropDialog({
       role="dialog"
       aria-modal="true"
       aria-label="بڕین و ڕێکخستنی وێنە"
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-3"
+      className="fixed inset-0 z-[120] flex items-end justify-center bg-black/70 p-0 sm:items-center sm:p-4"
     >
-      <div className="flex w-full max-w-lg flex-col border border-border bg-card shadow-[var(--shadow-lg)]">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+      <div
+        className={cn(
+          "flex w-full max-w-2xl flex-col border border-border bg-card shadow-[var(--shadow-lg)]",
+          "max-h-[100dvh] sm:max-h-[min(92dvh,900px)]"
+        )}
+      >
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
           <h2 className="text-sm font-black">بڕین · گەورەکردن · سوڕاندن</h2>
           <button
             type="button"
@@ -128,89 +143,89 @@ export default function ImageCropDialog({
           </button>
         </div>
 
-        <div className="relative h-[min(55vh,360px)] bg-muted">
-          <Cropper
-            image={imageSrc}
-            crop={crop}
-            zoom={zoom}
-            rotation={rotation}
-            aspect={aspect}
-            cropShape={shape}
-            showGrid
-            onCropChange={setCrop}
-            onZoomChange={setZoom}
-            onRotationChange={setRotation}
-            onCropComplete={onCropComplete}
-          />
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="relative h-[min(58dvh,520px)] min-h-[280px] bg-muted sm:h-[min(62dvh,560px)]">
+            <Cropper
+              image={imageSrc}
+              crop={crop}
+              zoom={zoom}
+              rotation={rotation}
+              aspect={aspect}
+              cropShape={shape}
+              showGrid
+              onCropChange={setCrop}
+              onZoomChange={setZoom}
+              onRotationChange={setRotation}
+              onCropComplete={onCropComplete}
+            />
+          </div>
+
+          <div className="space-y-3 border-t border-border p-4 pb-28 sm:pb-4">
+            <label className="flex items-center gap-3 text-xs font-bold">
+              <ZoomOut size={14} aria-hidden />
+              <input
+                type="range"
+                min={1}
+                max={3}
+                step={0.05}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="flex-1 accent-primary"
+                aria-label="گەورەکردن"
+              />
+              <ZoomIn size={14} aria-hidden />
+            </label>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 border border-border px-3 py-2 text-xs font-bold hover:bg-muted"
+                onClick={() => setRotation((r) => r - 90)}
+              >
+                <RotateCcw size={14} aria-hidden />
+                سوڕاندنی چەپ
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 border border-border px-3 py-2 text-xs font-bold hover:bg-muted"
+                onClick={() => setRotation((r) => r + 90)}
+              >
+                <RotateCw size={14} aria-hidden />
+                سوڕاندنی ڕاست
+              </button>
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 border border-border px-3 py-2 text-xs font-bold hover:bg-muted"
+                onClick={() => {
+                  setZoom(1);
+                  setRotation(0);
+                  setCrop({ x: 0, y: 0 });
+                }}
+              >
+                ڕیسێت
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="space-y-3 border-t border-border p-4">
-          <label className="flex items-center gap-3 text-xs font-bold">
-            <ZoomOut size={14} aria-hidden />
-            <input
-              type="range"
-              min={1}
-              max={3}
-              step={0.05}
-              value={zoom}
-              onChange={(e) => setZoom(Number(e.target.value))}
-              className="flex-1 accent-primary"
-              aria-label="گەورەکردن"
-            />
-            <ZoomIn size={14} aria-hidden />
-          </label>
-
-          <div className="flex flex-wrap gap-2">
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 border border-border px-3 py-2 text-xs font-bold hover:bg-muted"
-              onClick={() => setRotation((r) => r - 90)}
-            >
-              <RotateCcw size={14} aria-hidden />
-              سوڕاندنی چەپ
-            </button>
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 border border-border px-3 py-2 text-xs font-bold hover:bg-muted"
-              onClick={() => setRotation((r) => r + 90)}
-            >
-              <RotateCw size={14} aria-hidden />
-              سوڕاندنی ڕاست
-            </button>
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 border border-border px-3 py-2 text-xs font-bold hover:bg-muted"
-              onClick={() => {
-                setZoom(1);
-                setRotation(0);
-                setCrop({ x: 0, y: 0 });
-              }}
-            >
-              ڕیسێت
-            </button>
-          </div>
-
-          <div className="flex justify-end gap-2">
-            <button
-              type="button"
-              onClick={onCancel}
-              disabled={busy}
-              className="border border-border px-4 py-2 text-xs font-bold"
-            >
-              هەڵوەشاندنەوە
-            </button>
-            <button
-              type="button"
-              onClick={() => void confirm()}
-              disabled={busy || !croppedArea}
-              className={cn(
-                "inline-flex items-center gap-1.5 bg-primary px-4 py-2 text-xs font-bold text-primary-foreground disabled:opacity-50"
-              )}
-            >
-              <Check size={14} aria-hidden />
-              {busy ? "چاوەڕێ بکە…" : "پەسەندکردن و بارکردن"}
-            </button>
-          </div>
+        <div className="sticky bottom-0 z-10 flex shrink-0 justify-end gap-2 border-t border-border bg-card px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={busy}
+            className="min-h-11 border border-border px-5 py-2.5 text-sm font-bold disabled:opacity-50"
+          >
+            هەڵوەشاندنەوە
+          </button>
+          <button
+            type="button"
+            onClick={() => void confirm()}
+            disabled={busy || !croppedArea}
+            className="inline-flex min-h-11 items-center gap-1.5 bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground disabled:opacity-50"
+          >
+            <Check size={16} aria-hidden />
+            {busy ? "چاوەڕێ بکە…" : "پەسەندکردن و بارکردن"}
+          </button>
         </div>
       </div>
     </div>

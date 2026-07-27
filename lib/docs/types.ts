@@ -4,7 +4,6 @@ export type DocCategoryId =
   | "start"
   | "inventory"
   | "trading"
-  | "finance"
   | "people"
   | "insights"
   | "ai"
