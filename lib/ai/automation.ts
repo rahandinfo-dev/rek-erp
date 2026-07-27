@@ -119,7 +119,7 @@ export async function runDueAutomations(companyId: string) {
             }),
             category: "SYSTEM",
             href: "/dashboard/reports",
-            metadata: { kind: "AI_AUTOMATION", ruleId: rule.id },
+            metadata: { kind: "AI_ALERTS", ruleId: rule.id },
           });
           break;
         }
@@ -134,7 +134,7 @@ export async function runDueAutomations(companyId: string) {
               category: "INVENTORY",
               priority: "HIGH",
               href: "/dashboard/inventory",
-              metadata: { kind: "AI_AUTOMATION", ruleId: rule.id },
+              metadata: { kind: "AI_ALERTS", ruleId: rule.id },
             });
           }
           break;

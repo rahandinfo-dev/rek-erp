@@ -25,6 +25,7 @@ import {
 import InstallPrompt from "@/components/pwa/InstallPrompt";
 import UpdatePrompt from "@/components/pwa/UpdatePrompt";
 import OfflineIndicator from "@/components/pwa/OfflineIndicator";
+import NotificationPermissionPrompt from "@/components/pwa/NotificationPermissionPrompt";
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -259,6 +260,7 @@ export default function PwaProvider({ children }: { children: ReactNode }) {
       {showUpdate && updateReady ? (
         <UpdatePrompt onUpdate={applyUpdate} onLater={deferUpdatePrompt} />
       ) : null}
+      <NotificationPermissionPrompt />
     </PwaContext.Provider>
   );
 }

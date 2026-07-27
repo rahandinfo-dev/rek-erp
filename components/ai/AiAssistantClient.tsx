@@ -1,274 +1,128 @@
 "use client";
-import { formatDateTime } from "@/lib/utils/datetime";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
+import { Bot, Loader2, Sparkles } from "lucide-react";
 import {
-  Activity,
-  AlertTriangle,
-  Bot,
-  Lightbulb,
-  Sparkles,
-} from "lucide-react";
-import { openAiAssistant } from "@/lib/ai/bus";
-import { AI_SUGGESTED_PROMPTS } from "@/lib/ai/types";
-import type {
-  AiAlertView,
-  AiInsightView,
-  AiRecommendation,
-  BusinessHealth,
-} from "@/lib/ai/types";
-import { Button } from "@/components/ui/button";
+  AI_PREDEFINED_QUESTIONS,
+  type PredefinedAiIntent,
+} from "@/lib/ai/predefined";
+import type { AiChatResponse } from "@/lib/ai/types";
 import { cn } from "@/lib/utils";
-import { useT } from "@/components/i18n/LocaleProvider";
 
-type Bundle = {
-  insights: AiInsightView[];
-  alerts: AiAlertView[];
-  recommendations: AiRecommendation[];
-  health: BusinessHealth;
-  nextActions: Array<{ title: string; href: string; reason: string }>;
-};
+type AnswerState = {
+  intent: PredefinedAiIntent;
+  question: string;
+  response: AiChatResponse;
+} | null;
 
 export default function AiAssistantClient() {
-  const { t } = useT();
-  const [bundle, setBundle] = useState<Bundle | null>(null);
-  const [rules, setRules] = useState<
-    Array<{
-      id: string;
-      name: string;
-      kind: string;
-      schedule: string;
-      enabled: boolean;
-      lastRunAt: string | null;
-    }>
-  >([]);
-  const [loading, setLoading] = useState(true);
+  const [busy, setBusy] = useState<PredefinedAiIntent | null>(null);
+  const [answer, setAnswer] = useState<AnswerState>(null);
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const t = window.setTimeout(() => {
-      void Promise.all([
-        fetch("/api/ai/insights?refresh=1", { cache: "no-store" }).then((r) =>
-          r.json()
-        ),
-        fetch("/api/ai/automations?run=1", { cache: "no-store" }).then((r) =>
-          r.json()
-        ),
-      ])
-        .then(([insightsJson, autoJson]) => {
-          if (insightsJson.success) setBundle(insightsJson.data);
-          if (autoJson.success) setRules(autoJson.data.rules || []);
-        })
-        .finally(() => setLoading(false));
-    }, 0);
-    return () => window.clearTimeout(t);
-  }, []);
-
-  async function toggleRule(id: string, enabled: boolean) {
-    const res = await fetch("/api/ai/automations", {
-      method: "PATCH",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ id, enabled }),
-    });
-    const json = await res.json();
-    if (json.success) {
-      setRules((prev) =>
-        prev.map((r) => (r.id === id ? { ...r, enabled } : r))
-      );
+  async function ask(intent: PredefinedAiIntent, question: string) {
+    if (busy) return;
+    setBusy(intent);
+    setError("");
+    try {
+      const res = await fetch("/api/ai/ask", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ intent }),
+      });
+      const json = await res.json();
+      if (!json.success) {
+        setError(json.message || "هەڵەیەک ڕوویدا. دووبارە هەوڵ بدەرەوە.");
+        return;
+      }
+      setAnswer({
+        intent,
+        question,
+        response: json.data.response,
+      });
+    } catch {
+      setError("هەڵەی تۆڕ — دووبارە هەوڵ بدەرەوە.");
+    } finally {
+      setBusy(null);
     }
   }
 
   return (
     <div className="space-y-6">
-      <header className="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-          <h1 className="flex items-center gap-2 text-3xl font-black text-primary">
-            <Sparkles aria-hidden />
-            یاریدەدەری زیرەک
-          </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            وەڵام تەنها لەسەر داتای ڕاستەقینەی کۆمپانیاکەت — هیچ ژمارەیەکی خەیاڵی
-            یان خەملێنراو نییە.
-          </p>
-        </div>
-        <Button type="button" onClick={() => openAiAssistant()}>
-          <Bot size={16} aria-hidden />
-          کردنەوەی گفتوگۆ
-        </Button>
+      <header>
+        <h1 className="flex items-center gap-2 text-3xl font-black text-primary">
+          <Sparkles aria-hidden />
+          یاریدەدەری زیرەک
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          پرسیارێک هەڵبژێرە — وەڵام تەنها لە داتای ڕاستەقینەی کۆمپانیاکەت
+          دەخوێنرێتەوە. هیچ ژمارەیەکی خەیاڵی یان خەملێنراو دروست ناکرێت.
+        </p>
       </header>
 
-      <div className="flex flex-wrap gap-2">
-        {AI_SUGGESTED_PROMPTS.slice(0, 8).map((p) => (
+      <div className="grid gap-3 sm:grid-cols-2">
+        {AI_PREDEFINED_QUESTIONS.map((q) => (
           <button
-            key={p}
+            key={q.id}
             type="button"
-            className="rounded-full border border-border bg-card px-3 py-1.5 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
-            onClick={() => openAiAssistant()}
+            disabled={Boolean(busy)}
+            onClick={() => void ask(q.id, q.label)}
+            className={cn(
+              "rek-card flex min-h-[5.5rem] items-start gap-3 p-4 text-start transition hover:border-primary/40 focus-visible:ring-[3px] focus-visible:ring-ring/35",
+              answer?.intent === q.id && "border-primary/50 bg-primary/5",
+              busy === q.id && "opacity-80"
+            )}
           >
-            {p}
+            <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center bg-primary/10 text-primary">
+              {busy === q.id ? (
+                <Loader2 size={18} className="animate-spin" aria-hidden />
+              ) : (
+                <Bot size={18} aria-hidden />
+              )}
+            </span>
+            <span className="text-sm font-bold leading-relaxed">{q.label}</span>
           </button>
         ))}
       </div>
 
-      {loading || !bundle ? (
-        <p className="text-sm text-muted-foreground">{t("ai.loadingInsights")}</p>
+      {error ? (
+        <p className="border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+          {error}
+        </p>
+      ) : null}
+
+      {answer ? (
+        <section
+          className="rek-card space-y-3 p-5"
+          aria-live="polite"
+          aria-atomic="true"
+        >
+          <p className="text-xs font-bold text-muted-foreground">پرسیار</p>
+          <p className="text-sm font-black">{answer.question}</p>
+          <p className="text-xs font-bold text-muted-foreground">وەڵام</p>
+          <p className="whitespace-pre-wrap text-sm leading-relaxed">
+            {answer.response.reply}
+          </p>
+          {answer.response.links?.length ? (
+            <div className="flex flex-wrap gap-2 pt-1">
+              {answer.response.links.map((l) => (
+                <Link
+                  key={l.href + l.label}
+                  href={l.href}
+                  className="inline-flex h-8 items-center border border-border bg-background px-3 text-xs font-bold hover:bg-muted"
+                >
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          ) : null}
+        </section>
       ) : (
-        <div className="grid gap-4 xl:grid-cols-2">
-          <section className="rek-card space-y-3 p-4">
-            <h2 className="flex items-center gap-2 text-sm font-black">
-              <Activity size={16} className="text-primary" aria-hidden />
-              {t("ai.businessHealth")}
-            </h2>
-            <p className="text-3xl font-black tabular-nums">
-              {bundle.health.score}
-              <span className="ms-2 text-base font-bold text-muted-foreground">
-                {bundle.health.label}
-              </span>
-            </p>
-            <ul className="space-y-2">
-              {bundle.health.factors.map((f) => (
-                <li
-                  key={f.key}
-                  className="flex items-center justify-between gap-2 rounded-xl border border-border/70 px-3 py-2 text-xs"
-                >
-                  <span>
-                    <span className="font-bold">{f.label}</span>
-                    <span className="mt-0.5 block text-muted-foreground">
-                      {f.note}
-                    </span>
-                  </span>
-                  <span className="font-black tabular-nums">
-                    {Math.round(f.score)}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="rek-card space-y-3 p-4">
-            <h2 className="flex items-center gap-2 text-sm font-black">
-              <AlertTriangle size={16} className="text-primary" aria-hidden />
-              {t("ai.activeAlerts")}
-            </h2>
-            {bundle.alerts.length === 0 ? (
-              <p className="text-xs text-muted-foreground">{t("empty.noAlerts")}</p>
-            ) : (
-              <ul className="space-y-2">
-                {bundle.alerts.map((a) => (
-                  <li
-                    key={a.id}
-                    className={cn(
-                      "rounded-xl border px-3 py-2 text-xs",
-                      a.severity === "critical" && "border-destructive/40 bg-destructive/5",
-                      a.severity === "warning" && "border-amber-300/50 bg-amber-50/50",
-                      a.severity === "info" && "border-border"
-                    )}
-                  >
-                    <p className="font-bold">{a.title}</p>
-                    <p className="text-muted-foreground">{a.message}</p>
-                    {a.href ? (
-                      <Link
-                        href={a.href}
-                        className="mt-1 inline-block font-bold text-primary hover:underline"
-                      >
-                        {t("common.view")}
-                      </Link>
-                    ) : null}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </section>
-
-          <section className="rek-card space-y-3 p-4">
-            <h2 className="flex items-center gap-2 text-sm font-black">
-              <Sparkles size={16} className="text-primary" aria-hidden />
-              {t("ai.title")}
-            </h2>
-            <ul className="space-y-2">
-              {bundle.insights.slice(0, 8).map((i) => (
-                <li
-                  key={i.id}
-                  className="rounded-xl border border-border/70 px-3 py-2 text-xs"
-                >
-                  <p className="font-bold">{i.title}</p>
-                  <p className="text-muted-foreground">{i.summary}</p>
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <section className="rek-card space-y-3 p-4">
-            <h2 className="flex items-center gap-2 text-sm font-black">
-              <Lightbulb size={16} className="text-primary" aria-hidden />
-              {t("ai.recommendations")}
-            </h2>
-            <ul className="space-y-2">
-              {bundle.recommendations.slice(0, 8).map((r) => (
-                <li key={r.id}>
-                  <Link
-                    href={r.href}
-                    className="block rounded-xl border border-border/70 px-3 py-2 text-xs hover:bg-muted/50 focus-visible:ring-[3px] focus-visible:ring-ring/35"
-                  >
-                    <span className="font-bold">{r.title}</span>
-                    <span className="mt-0.5 block text-muted-foreground">
-                      {r.reason}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </section>
-        </div>
+        <p className="text-sm text-muted-foreground">
+          یەکێک لە کارتی سەرەوە بکەرەوە بۆ وەرگرتنی وەڵامی داتای ڕاستەقینە.
+        </p>
       )}
-
-      <section className="rek-card space-y-3 p-4">
-        <h2 className="text-sm font-black">کردارە پێشنیارکراوەکانی دواتر</h2>
-        <div className="flex flex-wrap gap-2">
-          {(bundle?.nextActions || []).map((a) => (
-            <Link
-              key={a.title + a.href}
-              href={a.href}
-              className="rounded-xl border border-border bg-card px-3 py-2 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
-              title={a.reason}
-            >
-              {a.title}
-            </Link>
-          ))}
-        </div>
-      </section>
-
-      <section className="rek-card space-y-3 p-4">
-        <h2 className="text-sm font-black">ئۆتۆماتیککردنی ڕێڕەوی کار</h2>
-        <ul className="space-y-2">
-          {rules.map((rule) => (
-            <li
-              key={rule.id}
-              className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/70 px-3 py-2 text-xs"
-            >
-              <div>
-                <p className="font-bold">{rule.name}</p>
-                <p className="text-muted-foreground">
-                  {rule.kind} · {rule.schedule}
-                  {rule.lastRunAt
-                    ? ` · دوایین ${formatDateTime(rule.lastRunAt, true)}`
-                    : ""}
-                </p>
-              </div>
-              <label className="inline-flex items-center gap-2 font-bold">
-                <input
-                  type="checkbox"
-                  checked={rule.enabled}
-                  onChange={(e) => void toggleRule(rule.id, e.target.checked)}
-                  className="focus-visible:ring-[3px] focus-visible:ring-ring/35"
-                />
-                {t("common.active")}
-              </label>
-            </li>
-          ))}
-        </ul>
-      </section>
-
     </div>
   );
 }

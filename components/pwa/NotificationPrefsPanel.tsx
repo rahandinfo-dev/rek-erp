@@ -17,6 +17,7 @@ import {
 import { cn } from "@/lib/utils";
 import { appToast } from "@/lib/toast";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { permissionLabelKu } from "@/components/pwa/NotificationPermissionPrompt";
 
 type PrefsState = {
   enabled: boolean;
@@ -225,7 +226,9 @@ export default function NotificationPrefsPanel({
         <div className="rounded-2xl border border-border px-4 py-3 text-xs text-muted-foreground">
           <p>
             {t("pwa.permission")}:{" "}
-            <span className="font-bold text-foreground">{permission}</span>
+            <span className="font-bold text-foreground">
+              {permissionLabelKu(permission)}
+            </span>
             {" · "}
             {t("pwa.devices")}:{" "}
             <span className="font-bold text-foreground">

@@ -108,7 +108,7 @@
   --chart-3: #ffc574;
   --chart-4: #fff4e5;
   --chart-5: #6b645c;
-  --radius: 0.875rem;
+  --radius: 0;
   --sidebar: #ffffff;
   --sidebar-foreground: #171412;
   --sidebar-primary: #ffae42;
@@ -1474,4 +1474,15 @@ html:not(.dark) .border-zinc-200 {
 
 .dark table tbody tr:hover {
   background-color: var(--accent);
+}
+
+/* ─── Sharp-corner design system ─── */
+.rounded-sm,
+.rounded-md,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl,
+.rounded-\[var\(--radius\)\] {
+  border-radius: 0 !important;
 }

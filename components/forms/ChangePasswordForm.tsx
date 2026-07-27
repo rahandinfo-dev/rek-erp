@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { passwordRequirements } from "@/lib/utils/passwordRequirements";
 import { appToast } from "@/lib/toast";
+import EmailCodePasswordReset from "@/components/forms/EmailCodePasswordReset";
 
 export default function ChangePasswordForm() {
   const [form, setForm] = useState({
@@ -52,9 +53,9 @@ export default function ChangePasswordForm() {
       pushUndoable({
         module: "settings",
         kind: "password",
-        label: "Password changed",
-        title: "Password changed",
-        message: "Confirmation only — password values are never restored.",
+        label: "وشەی نهێنی گۆڕدرا",
+        title: "وشەی نهێنی گۆڕدرا",
+        message: "تەنها پشتڕاستکردنەوە — وشەی نهێنی هەرگیز گەڕێنرایەوە.",
         toastOnly: true,
         undo: () => undefined,
         redo: () => undefined,
@@ -69,59 +70,68 @@ export default function ChangePasswordForm() {
   return (
     <form
       onSubmit={onSubmit}
-      className="space-y-5 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-8"
+      className="space-y-5 border border-border bg-card p-5 shadow-sm sm:p-8"
     >
       <div>
         <h2 className="text-xl font-black text-primary">گۆڕینی وشەی نهێنی</h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          وشەی نهێنی ئێستا و نوێ بە پارێزراوی پڕ بکەرەوە.
+          وشەی نهێنی ئێستا و نوێ بە پارێزراوی پڕ بکەرەوە، یان بە کۆدی ئیمەیڵ
+          گۆڕی بدە.
         </p>
       </div>
 
-      {error ? (
-        <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{error}</p>
-      ) : null}
+      <EmailCodePasswordReset />
 
-      <Field
-        label="وشەی نهێنی ئێستا"
-        type="password"
-        value={form.currentPassword}
-        onChange={(v) => setForm((p) => ({ ...p, currentPassword: v }))}
-        autoComplete="current-password"
-      />
-      <Field
-        label="وشەی نهێنی نوێ"
-        type="password"
-        value={form.newPassword}
-        onChange={(v) => setForm((p) => ({ ...p, newPassword: v }))}
-        autoComplete="new-password"
-      />
-      <Field
-        label="دووپاتکردنەوەی وشەی نهێنی"
-        type="password"
-        value={form.confirmPassword}
-        onChange={(v) => setForm((p) => ({ ...p, confirmPassword: v }))}
-        autoComplete="new-password"
-      />
+      <div className="space-y-5 border-t border-border pt-5">
+        <p className="text-sm text-muted-foreground">
+          یان وشەی نهێنی ئێستا بنووسە بۆ گۆڕین:
+        </p>
 
-      <ul className="grid gap-1 text-xs sm:grid-cols-2">
-        {Object.values(reqs).map((r) => (
-          <li
-            key={r.text}
-            className={r.valid ? "text-emerald-700" : "text-muted-foreground"}
-          >
-            {r.valid ? "✓" : "○"} {r.text}
-          </li>
-        ))}
-      </ul>
+        {error ? (
+          <p className="bg-red-50 p-3 text-sm text-red-700">{error}</p>
+        ) : null}
 
-      <button
-        type="submit"
-        disabled={saving}
-        className="rounded-2xl bg-primary px-6 py-3 font-bold text-primary-foreground disabled:opacity-50"
-      >
-        {saving ? "چاوەڕێ بکە..." : "گۆڕینی وشەی نهێنی"}
-      </button>
+        <Field
+          label="وشەی نهێنی ئێستا"
+          type="password"
+          value={form.currentPassword}
+          onChange={(v) => setForm((p) => ({ ...p, currentPassword: v }))}
+          autoComplete="current-password"
+        />
+        <Field
+          label="وشەی نهێنی نوێ"
+          type="password"
+          value={form.newPassword}
+          onChange={(v) => setForm((p) => ({ ...p, newPassword: v }))}
+          autoComplete="new-password"
+        />
+        <Field
+          label="دووپاتکردنەوەی وشەی نهێنی"
+          type="password"
+          value={form.confirmPassword}
+          onChange={(v) => setForm((p) => ({ ...p, confirmPassword: v }))}
+          autoComplete="new-password"
+        />
+
+        <ul className="grid gap-1 text-xs sm:grid-cols-2">
+          {Object.values(reqs).map((r) => (
+            <li
+              key={r.text}
+              className={r.valid ? "text-emerald-700" : "text-muted-foreground"}
+            >
+              {r.valid ? "✓" : "○"} {r.text}
+            </li>
+          ))}
+        </ul>
+
+        <button
+          type="submit"
+          disabled={saving}
+          className="bg-primary px-6 py-3 font-bold text-primary-foreground disabled:opacity-50"
+        >
+          {saving ? "چاوەڕێ بکە..." : "گۆڕینی وشەی نهێنی"}
+        </button>
+      </div>
     </form>
   );
 }
@@ -147,7 +157,7 @@ function Field({
         value={value}
         autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
-        className="h-11 w-full rounded-xl border border-border px-3 outline-none focus:border-primary/50"
+        className="h-11 w-full border border-border px-3 outline-none focus:border-primary/50"
       />
     </label>
   );

@@ -3,6 +3,10 @@ import type { Prisma } from "@/lib/prisma/client";
 import { auditSafe } from "@/lib/audit/log";
 import { parseAiIntent } from "@/lib/ai/parse";
 import { executeAiIntent } from "@/lib/ai/execute";
+import {
+  AI_PREDEFINED_QUESTIONS,
+  type PredefinedAiIntent,
+} from "@/lib/ai/predefined";
 import type { AiChatResponse, AiIntentId } from "@/lib/ai/types";
 import type { MetricPeriod } from "@/lib/ai/metrics";
 
@@ -137,6 +141,77 @@ export async function askAiAssistant(input: {
   return {
     conversationId: convo.id,
     userMessageId: userMsg.id,
+    assistantMessageId: assistantMsg.id,
+    response,
+  };
+}
+
+/** Execute a predefined intent only — no free-text parsing. */
+export async function askAiByIntent(input: {
+  companyId: string;
+  userId: string;
+  intent: PredefinedAiIntent;
+  req?: Request | null;
+}): Promise<{
+  conversationId: string;
+  assistantMessageId: string;
+  response: AiChatResponse;
+}> {
+  const label =
+    AI_PREDEFINED_QUESTIONS.find((q) => q.id === input.intent)?.label ||
+    input.intent;
+
+  const convo = await getOrCreateConversation(input.companyId, input.userId);
+  const response = await executeAiIntent(input.companyId, {
+    intent: input.intent,
+    confidence: 1,
+    period: input.intent.includes("month") ? "month" : undefined,
+  });
+
+  await db.aiMessage.create({
+    data: {
+      conversationId: convo.id,
+      role: "user",
+      content: label,
+      intent: input.intent,
+      metadata: toJson({ predefined: true }),
+    },
+  });
+
+  const assistantMsg = await db.aiMessage.create({
+    data: {
+      conversationId: convo.id,
+      role: "assistant",
+      content: response.reply,
+      intent: response.intent,
+      metadata: toJson({
+        links: response.links || [],
+        data: response.data || null,
+        period: response.period || "month",
+        predefined: true,
+      }),
+    },
+  });
+
+  await db.aiConversation.update({
+    where: { id: convo.id },
+    data: { title: label.slice(0, 60), updatedAt: new Date() },
+  });
+
+  await auditSafe({
+    companyId: input.companyId,
+    userId: input.userId,
+    module: "SYSTEM",
+    action: "OTHER",
+    entityType: "AiConversation",
+    entityId: convo.id,
+    summary: `یاریدەدەری زیرەک: ${input.intent}`,
+    metadata: { ai: true, intent: input.intent, predefined: true },
+    req: input.req,
+  });
+
+  return {
+    conversationId: convo.id,
     assistantMessageId: assistantMsg.id,
     response,
   };

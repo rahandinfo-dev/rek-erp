@@ -2,48 +2,39 @@
 
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import { Bot, Send, Sparkles, X } from "lucide-react";
+import { Bot, Loader2, Sparkles, X } from "lucide-react";
 import {
   closeAiAssistant,
   subscribeAiAssistant,
 } from "@/lib/ai/bus";
-import { AI_SUGGESTED_PROMPTS, AI_WELCOME_KU } from "@/lib/ai/types";
+import {
+  AI_PREDEFINED_QUESTIONS,
+  type PredefinedAiIntent,
+} from "@/lib/ai/predefined";
+import type { AiChatResponse } from "@/lib/ai/types";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 
-type ChatLine = {
+type AnswerLine = {
   id: string;
-  role: "user" | "assistant";
-  content: string;
-  links?: Array<{ label: string; href: string }>;
-  suggestions?: string[];
+  question: string;
+  response: AiChatResponse;
 };
 
 export default function AiAssistantPanel() {
   const titleId = useId();
   const [open, setOpen] = useState(false);
-  const [input, setInput] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
-  const [lines, setLines] = useState<ChatLine[]>([
-    {
-      id: "welcome",
-      role: "assistant",
-      content: AI_WELCOME_KU,
-      suggestions: AI_SUGGESTED_PROMPTS.slice(0, 6),
-    },
-  ]);
+  const [busy, setBusy] = useState<PredefinedAiIntent | null>(null);
+  const [answers, setAnswers] = useState<AnswerLine[]>([]);
+  const [error, setError] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
   const idSeq = useRef(0);
-  function nextLineId(prefix: string) {
+
+  function nextId() {
     idSeq.current += 1;
-    return `${prefix}-${idSeq.current}`;
+    return `a-${idSeq.current}`;
   }
 
-  useEffect(() => {
-    return subscribeAiAssistant(setOpen);
-  }, []);
+  useEffect(() => subscribeAiAssistant(setOpen), []);
 
   useEffect(() => {
     function onOpen() {
@@ -70,116 +61,39 @@ export default function AiAssistantPanel() {
   }, [open]);
 
   useEffect(() => {
-    if (!open) return;
-    const t = window.setTimeout(() => inputRef.current?.focus(), 50);
-    return () => window.clearTimeout(t);
-  }, [open]);
-
-  useEffect(() => {
-    if (!open || hydrated) return;
-    let cancelled = false;
-    void fetch("/api/ai/chat", { cache: "no-store" })
-      .then((r) => r.json())
-      .then((json) => {
-        if (cancelled || !json.success || !Array.isArray(json.data?.messages)) {
-          return;
-        }
-        const history: ChatLine[] = json.data.messages.map(
-          (m: {
-            id: string;
-            role: string;
-            content: string;
-            metadata?: {
-              links?: Array<{ label: string; href: string }>;
-              suggestions?: string[];
-            };
-          }) => ({
-            id: m.id,
-            role: m.role === "user" ? "user" : "assistant",
-            content: m.content,
-            links: m.metadata?.links,
-            suggestions: m.metadata?.suggestions,
-          })
-        );
-        if (history.length) {
-          setLines([
-            {
-              id: "welcome",
-              role: "assistant",
-              content: AI_WELCOME_KU,
-              suggestions: AI_SUGGESTED_PROMPTS.slice(0, 4),
-            },
-            ...history,
-          ]);
-        }
-      })
-      .catch(() => undefined)
-      .finally(() => {
-        if (!cancelled) setHydrated(true);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [open, hydrated]);
-
-  useEffect(() => {
     listRef.current?.scrollTo({
       top: listRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [lines, open]);
+  }, [answers, open]);
 
-  async function send(text: string) {
-    const message = text.trim();
-    if (!message || busy) return;
-    setInput("");
-    setBusy(true);
-    const userLine: ChatLine = {
-      id: nextLineId("u"),
-      role: "user",
-      content: message,
-    };
-    setLines((prev) => [...prev, userLine]);
+  async function ask(intent: PredefinedAiIntent, question: string) {
+    if (busy) return;
+    setBusy(intent);
+    setError("");
     try {
-      const res = await fetch("/api/ai/chat", {
+      const res = await fetch("/api/ai/ask", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ message }),
+        body: JSON.stringify({ intent }),
       });
       const json = await res.json();
       if (!json.success) {
-        setLines((prev) => [
-          ...prev,
-          {
-            id: nextLineId("e"),
-            role: "assistant",
-            content: json.message || "هەڵەیەک ڕوویدا. دووبارە هەوڵ بدەرەوە.",
-          },
-        ]);
+        setError(json.message || "هەڵەیەک ڕوویدا.");
         return;
       }
-      const r = json.data.response;
-      setLines((prev) => [
+      setAnswers((prev) => [
         ...prev,
         {
-          id: json.data.assistantMessageId || nextLineId("a"),
-          role: "assistant",
-          content: r.reply,
-          links: r.links,
-          suggestions: r.suggestions,
+          id: nextId(),
+          question,
+          response: json.data.response,
         },
       ]);
     } catch {
-      setLines((prev) => [
-        ...prev,
-        {
-          id: nextLineId("e"),
-          role: "assistant",
-          content: "هەڵەی تۆڕ — دووبارە هەوڵ بدەرەوە.",
-        },
-      ]);
+      setError("هەڵەی تۆڕ — دووبارە هەوڵ بدەرەوە.");
     } finally {
-      setBusy(false);
+      setBusy(null);
     }
   }
 
@@ -190,7 +104,7 @@ export default function AiAssistantPanel() {
       role="dialog"
       aria-modal="true"
       aria-labelledby={titleId}
-      className="fixed end-3 bottom-3 z-[85] flex w-[min(100vw-1.5rem,380px)] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-[var(--shadow-md)] sm:end-5 sm:bottom-5"
+      className="fixed end-3 bottom-3 z-[85] flex w-[min(100vw-1.5rem,380px)] flex-col overflow-hidden border border-border bg-card shadow-[var(--shadow-md)] sm:end-5 sm:bottom-5"
     >
       <div className="flex items-center justify-between gap-2 border-b border-border bg-primary/5 px-3 py-2.5">
         <div className="flex min-w-0 items-center gap-2">
@@ -207,7 +121,7 @@ export default function AiAssistantPanel() {
         <div className="flex items-center gap-1">
           <Link
             href="/dashboard/ai-assistant"
-            className="rounded-lg px-2 py-1 text-[11px] font-bold text-primary hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
+            className="px-2 py-1 text-[11px] font-bold text-primary hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
             onClick={() => {
               setOpen(false);
               closeAiAssistant();
@@ -217,7 +131,7 @@ export default function AiAssistantPanel() {
           </Link>
           <button
             type="button"
-            className="rounded-lg p-1.5 hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
+            className="p-1.5 hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
             aria-label="داخستنی یاریدەدەری زیرەک"
             onClick={() => {
               setOpen(false);
@@ -229,86 +143,73 @@ export default function AiAssistantPanel() {
         </div>
       </div>
 
+      <div className="space-y-2 border-b border-border p-3">
+        <p className="text-[11px] font-bold text-muted-foreground">
+          پرسیارێک هەڵبژێرە
+        </p>
+        <div className="grid gap-1.5">
+          {AI_PREDEFINED_QUESTIONS.map((q) => (
+            <button
+              key={q.id}
+              type="button"
+              disabled={Boolean(busy)}
+              onClick={() => void ask(q.id, q.label)}
+              className={cn(
+                "flex items-center gap-2 border border-border bg-background px-2.5 py-2 text-start text-[11px] font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35",
+                busy === q.id && "opacity-70"
+              )}
+            >
+              {busy === q.id ? (
+                <Loader2 size={12} className="shrink-0 animate-spin" />
+              ) : (
+                <Bot size={12} className="shrink-0 text-primary" />
+              )}
+              <span>{q.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div
         ref={listRef}
-        className="max-h-[min(55vh,420px)] space-y-2.5 overflow-y-auto px-3 py-3"
+        className="max-h-[min(45vh,360px)] space-y-2.5 overflow-y-auto px-3 py-3"
         aria-live="polite"
       >
-        {lines.map((line) => (
+        {answers.length === 0 && !error ? (
+          <p className="text-xs text-muted-foreground">
+            کارتی پرسیار بکەرەوە بۆ وەرگرتنی وەڵام لە داتابەیس.
+          </p>
+        ) : null}
+        {error ? (
+          <p className="border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+            {error}
+          </p>
+        ) : null}
+        {answers.map((line) => (
           <div
             key={line.id}
-            className={cn(
-              "rounded-xl px-3 py-2 text-sm",
-              line.role === "user"
-                ? "ms-8 bg-primary text-primary-foreground"
-                : "me-4 border border-border bg-background"
-            )}
+            className="space-y-2 border border-border bg-background px-3 py-2 text-sm"
           >
-            {line.role === "assistant" ? (
-              <p className="mb-1 flex items-center gap-1 text-[10px] font-bold text-muted-foreground">
-                <Bot size={12} aria-hidden /> یاریدەدەر
-              </p>
-            ) : null}
-            <p className="whitespace-pre-wrap">{line.content}</p>
-            {line.links?.length ? (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {line.links.map((l) => (
+            <p className="text-[10px] font-bold text-muted-foreground">
+              {line.question}
+            </p>
+            <p className="whitespace-pre-wrap text-xs">{line.response.reply}</p>
+            {line.response.links?.length ? (
+              <div className="flex flex-wrap gap-1.5">
+                {line.response.links.map((l) => (
                   <Link
                     key={l.href + l.label}
                     href={l.href}
-                    className="rounded-lg border border-border bg-card px-2 py-1 text-[11px] font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
+                    className="border border-border bg-card px-2 py-1 text-[11px] font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
                   >
                     {l.label}
                   </Link>
                 ))}
               </div>
             ) : null}
-            {line.suggestions?.length ? (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                {line.suggestions.map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    className="rounded-full border border-border px-2 py-0.5 text-[11px] font-semibold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
-                    onClick={() => void send(s)}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            ) : null}
           </div>
         ))}
       </div>
-
-      <form
-        className="flex items-center gap-2 border-t border-border p-2.5"
-        onSubmit={(e) => {
-          e.preventDefault();
-          void send(input);
-        }}
-      >
-        <label className="sr-only" htmlFor="rek-ai-input">
-          پرسیار لە یاریدەدەری زیرەک
-        </label>
-        <input
-          id="rek-ai-input"
-          ref={inputRef}
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="پرسیارێک بنووسە…"
-          disabled={busy}
-          className="h-10 flex-1 rounded-xl border border-border bg-background px-3 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
-        />
-        <Button
-          type="submit"
-          size="sm"
-          disabled={busy || !input.trim()}
-          aria-label="ناردن"
-        >
-          <Send size={16} aria-hidden />
-        </Button>
-      </form>
     </div>
   );
 }

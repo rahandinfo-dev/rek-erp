@@ -5,6 +5,7 @@ export const PWA_STORAGE = {
   installNever: "rek-pwa-install-never",
   updateLaterAt: "rek-pwa-update-later-at",
   interactionSeen: "rek-pwa-user-interacted",
+  notificationPrompted: "rek-pwa-notification-prompted",
 } as const;
 
 const DISMISS_COOLDOWN_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
@@ -65,5 +66,21 @@ export function canShowUpdatePrompt(): boolean {
     return Date.now() - ts > UPDATE_LATER_MS;
   } catch {
     return true;
+  }
+}
+
+export function markNotificationPrompted() {
+  try {
+    localStorage.setItem(PWA_STORAGE.notificationPrompted, "1");
+  } catch {
+    /* ignore */
+  }
+}
+
+export function hasNotificationBeenPrompted(): boolean {
+  try {
+    return localStorage.getItem(PWA_STORAGE.notificationPrompted) === "1";
+  } catch {
+    return false;
   }
 }

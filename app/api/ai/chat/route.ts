@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
-import { askAiAssistant, listMessages } from "@/lib/ai/chat";
+import { listMessages } from "@/lib/ai/chat";
 import { clientKey, rateLimit, RATE_PRESETS } from "@/lib/security/rate-limit";
 import { apiRateLimited } from "@/lib/api/response";
 import { monitorError } from "@/lib/production/monitor";
@@ -55,14 +55,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await askAiAssistant({
-      companyId: user.companyId,
-      userId: user.id,
-      message: parsed.data.message,
-      req,
-    });
-
-    return NextResponse.json({ success: true, data: result });
+    return NextResponse.json(
+      {
+        success: false,
+        message:
+          "تەنها پرسیارە پێشوەختەکان ڕێگەپێدراون. لە لاپەڕەی یاریدەدەری زیرەک کارتی پرسیار هەڵبژێرە.",
+      },
+      { status: 403 }
+    );
   } catch (error) {
     monitorError("api.ai.chat.post", error);
     return NextResponse.json(

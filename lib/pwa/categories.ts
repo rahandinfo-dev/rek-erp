@@ -10,9 +10,11 @@ export const PUSH_CATEGORIES = [
   "NEW_PURCHASES",
   "INVOICE_DUE",
   "PAYMENT_RECEIVED",
+  "SUPPLIER_PAYMENT",
   "EMPLOYEE_ALERTS",
   "SYSTEM_ALERTS",
   "SECURITY_ALERTS",
+  "AI_ALERTS",
   "BACKUP_STATUS",
   "REPORTS_READY",
   "GENERAL",
@@ -32,9 +34,11 @@ export const PUSH_CATEGORY_LABELS: Record<
   NEW_PURCHASES: { en: "New Purchases", ku: "کڕینی نوێ" },
   INVOICE_DUE: { en: "Invoice Due", ku: "پسوولەی بەسەرچوو" },
   PAYMENT_RECEIVED: { en: "Payment Received", ku: "پارە وەرگیرا" },
+  SUPPLIER_PAYMENT: { en: "Supplier Payment", ku: "پارەدانی دابینکەر" },
   EMPLOYEE_ALERTS: { en: "Employee Alerts", ku: "ئاگاداری کارمەند" },
   SYSTEM_ALERTS: { en: "System Alerts", ku: "ئاگاداری سیستەم" },
   SECURITY_ALERTS: { en: "Security Alerts", ku: "ئاگاداری ئاسایش" },
+  AI_ALERTS: { en: "AI Alerts", ku: "ئاگاداری زیرەک" },
   BACKUP_STATUS: { en: "Backup Status", ku: "دۆخی باکئەپ" },
   REPORTS_READY: { en: "Reports Ready", ku: "ڕاپۆرت ئامادەیە" },
   GENERAL: { en: "General Announcements", ku: "ئاگاداری گشتی" },
@@ -47,9 +51,11 @@ export const DEFAULT_PUSH_CATEGORIES: PushCategoryMap = {
   NEW_PURCHASES: true,
   INVOICE_DUE: true,
   PAYMENT_RECEIVED: true,
+  SUPPLIER_PAYMENT: true,
   EMPLOYEE_ALERTS: true,
   SYSTEM_ALERTS: true,
   SECURITY_ALERTS: true,
+  AI_ALERTS: true,
   BACKUP_STATUS: true,
   REPORTS_READY: true,
   GENERAL: true,
@@ -84,6 +90,8 @@ export function resolvePushCategory(input: {
   if (kind === "REPORT" || kind === "REPORTS_READY") return "REPORTS_READY";
   if (kind === "SECURITY" || kind === "SECURITY_ALERT") return "SECURITY_ALERTS";
   if (kind === "PAYMENT" || kind === "PAYMENT_RECEIVED") return "PAYMENT_RECEIVED";
+  if (kind === "SUPPLIER_PAYMENT") return "SUPPLIER_PAYMENT";
+  if (kind === "AI_ALERT" || kind === "AI_ALERTS") return "AI_ALERTS";
   if (kind === "INVOICE_DUE") return "INVOICE_DUE";
   if (kind === "NEW_ORDER" || kind === "NEW_ORDERS") return "NEW_ORDERS";
 
