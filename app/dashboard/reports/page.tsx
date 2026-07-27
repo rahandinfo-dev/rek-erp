@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { buildReports } from "@/lib/reports/buildReports";
 import RecordVersionHistorySection from "@/components/versions/RecordVersionHistorySection";
+import { tServer } from "@/lib/i18n";
 
 const ReportsClient = dynamic(
   () => import("@/components/reports/ReportsClient"),
@@ -23,6 +24,7 @@ const ReportsClient = dynamic(
 export default async function ReportsPage() {
   const user = await getCurrentUser();
   if (!user) return null;
+  const t = tServer.t;
 
   const data = await buildReports(user.companyId, {
     preset: "month",
@@ -35,12 +37,12 @@ export default async function ReportsPage() {
       <RecordVersionHistorySection
         entityType="Report"
         entityId={user.companyId}
-        recordLabel="ڕاپۆرتەکان"
+        recordLabel={t("reports.title")}
       />
       <RecordVersionHistorySection
         entityType="Expense"
         entityId={user.companyId}
-        recordLabel="خەرجییەکان"
+        recordLabel={t("reports.expensesLabel")}
       />
     </div>
   );

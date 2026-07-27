@@ -3,14 +3,16 @@
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import { ProductFormValues } from "@/lib/validators/product";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 /** Legacy section — prefer ProductForm warehouse block on create. */
 export default function ProductInventory() {
+  const { t } = useT();
   const {
     register,
     formState: { errors },
   } = useFormContext<ProductFormValues>();
-  const [warehouseName, setWarehouseName] = useState("کۆگا");
+  const [warehouseName, setWarehouseName] = useState(() => t("nav.warehouse"));
 
   useEffect(() => {
     async function loadWarehouse() {
@@ -32,16 +34,22 @@ export default function ProductInventory() {
 
   return (
     <div className="rek-card p-4 sm:p-6">
-      <h2 className="mb-4 text-lg font-black text-foreground">کۆگا</h2>
+      <h2 className="mb-4 text-lg font-black text-foreground">
+        {t("products.warehouse")}
+      </h2>
 
       <div className="mb-4 rounded-2xl border border-border bg-muted/40 px-4 py-3 text-sm">
-        <span className="font-bold text-foreground">کۆگا: </span>
+        <span className="font-bold text-foreground">
+          {t("products.warehouseLabel")}
+        </span>
         <span className="text-muted-foreground">{warehouseName}</span>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div>
-          <label className="mb-1.5 block text-sm font-bold">بڕی ئێستا</label>
+          <label className="mb-1.5 block text-sm font-bold">
+            {t("products.currentStock")}
+          </label>
           <input
             type="number"
             step="0.01"
@@ -56,7 +64,9 @@ export default function ProductInventory() {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-bold">ئاگاداری کۆگا</label>
+          <label className="mb-1.5 block text-sm font-bold">
+            {t("products.stockAlert")}
+          </label>
           <input
             type="number"
             step="0.01"
@@ -69,13 +79,19 @@ export default function ProductInventory() {
             </p>
           ) : null}
           <p className="mt-1 text-xs text-muted-foreground">
-            کاتێک بڕ کەمتر لەم ژمارەیە بێت، ئاگاداری دەردەچێت.
+            {t("products.stockAlertHint")}
           </p>
         </div>
       </div>
 
-      <input type="hidden" {...register("maximumStock", { valueAsNumber: true })} />
-      <input type="hidden" {...register("reservedStock", { valueAsNumber: true })} />
+      <input
+        type="hidden"
+        {...register("maximumStock", { valueAsNumber: true })}
+      />
+      <input
+        type="hidden"
+        {...register("reservedStock", { valueAsNumber: true })}
+      />
     </div>
   );
 }

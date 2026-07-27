@@ -6,10 +6,12 @@ import { appToast } from "@/lib/toast";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar } from "@/components/ui/AutoSaveStatus";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type UnitDraft = { name: string; symbol: string; active: boolean };
 
 export default function UnitForm() {
+  const { t } = useT();
   const router = useRouter();
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
@@ -48,16 +50,16 @@ export default function UnitForm() {
       const data = await response.json();
 
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
 
       clearDraft();
-      appToast.success("یەکە زیادکرا", data.message);
+      appToast.success(t("units.created"), data.message);
       router.push("/dashboard/units");
       router.refresh();
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -84,24 +86,24 @@ export default function UnitForm() {
       />
 
       <div>
-        <label className="mb-2 block font-bold">ناوی یەکە</label>
+        <label className="mb-2 block font-bold">{t("units.nameLabel")}</label>
         <input
           type="text"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="بۆ نموونە: Kilogram / دانە / بۆکس"
+          placeholder={t("units.namePlaceholder")}
           className="w-full rounded-xl border border-border bg-background p-3 outline-none focus:border-primary"
           required
         />
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">کورتکراوە</label>
+        <label className="mb-2 block font-bold">{t("units.symbolLabel")}</label>
         <input
           type="text"
           value={symbol}
           onChange={(e) => setSymbol(e.target.value)}
-          placeholder="بۆ نموونە: kg / pcs / L"
+          placeholder={t("units.symbolPlaceholder")}
           className="w-full rounded-xl border border-border bg-background p-3 outline-none focus:border-primary"
           required
         />
@@ -114,7 +116,7 @@ export default function UnitForm() {
           onChange={(e) => setActive(e.target.checked)}
           className="size-5"
         />
-        یەکە چالاک بێت
+        {t("units.activeLabel")}
       </label>
 
       <button
@@ -122,7 +124,7 @@ export default function UnitForm() {
         disabled={loading}
         className="rounded-2xl bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-[var(--brand-hover)] disabled:opacity-50"
       >
-        {loading ? "چاوەڕێ بکە..." : "زیادکردنی یەکە"}
+        {loading ? t("common.wait") : t("units.add")}
       </button>
     </form>
   );

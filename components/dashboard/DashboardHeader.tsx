@@ -12,6 +12,7 @@ import HeaderSaveStatus from "@/components/unsaved/HeaderSaveStatus";
 import FavoriteStarButton from "@/components/favorites/FavoriteStarButton";
 import InstallAppButton from "@/components/pwa/InstallAppButton";
 import { toggleAiAssistant } from "@/lib/ai/bus";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const GlobalSearch = dynamic(
   () => import("@/components/search/GlobalSearch"),
@@ -46,6 +47,8 @@ type DashboardHeaderProps = {
 };
 
 function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
+  const { t } = useT();
+
   return (
     <header className="rek-header w-full shrink-0 px-3 sm:px-4 md:px-6 lg:px-8">
       <div className="flex h-14 max-w-full items-center justify-between gap-2 md:h-15 lg:h-16">
@@ -54,11 +57,13 @@ function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
             type="button"
             variant="outline"
             onClick={onOpenLauncher}
-            aria-label="کردنەوەی مێنیوی ئەپەکان"
+            aria-label={t("nav.openAppsMenu")}
             className="h-10 shrink-0 gap-2 rounded-xl border-border bg-card px-3 shadow-none"
           >
             <LayoutGrid size={18} aria-hidden />
-            <span className="hidden text-sm font-bold sm:inline">ئەپەکان</span>
+            <span className="hidden text-sm font-bold sm:inline">
+              {t("nav.apps")}
+            </span>
           </Button>
 
           <GlobalSearch className="hidden min-w-0 flex-1 md:block md:max-w-[min(100%,340px)] lg:max-w-[min(100%,440px)] xl:max-w-[520px]" />
@@ -75,8 +80,8 @@ function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
             variant="outline"
             size="icon"
             onClick={() => toggleAiAssistant()}
-            aria-label="کردنەوەی یاریدەدەری زیرەک"
-            title="یاریدەدەری زیرەک"
+            aria-label={t("nav.openAiAssistant")}
+            title={t("nav.aiAssistant")}
             className="size-10 shrink-0 rounded-xl border-border bg-card shadow-none"
           >
             <Sparkles size={18} aria-hidden />
@@ -106,7 +111,7 @@ function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
             ) : (
               <Image
                 src={user.company.logo || BRAND.logo}
-                alt={`لۆگۆی ${user.company.name}`}
+                alt={t("nav.companyLogo", { name: user.company.name })}
                 width={36}
                 height={36}
                 className="size-9 shrink-0 rounded-xl border border-border object-contain"

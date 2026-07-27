@@ -8,8 +8,10 @@ import {
 } from "@/lib/numbering/types";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function NumberingSettings() {
+  const { t } = useT();
   const [rules, setRules] = useState<NumberingRuleView[]>([]);
   const [companyCode, setCompanyCode] = useState("CO");
   const [loading, setLoading] = useState(true);
@@ -29,7 +31,7 @@ export default function NumberingSettings() {
             setSelected(first);
           }
         })
-        .catch(() => appToast.error("Could not load numbering settings"))
+        .catch(() => appToast.error("نەتوانرا ڕێکخستنی ژمارەکردنەوە بار بکرێت"))
         .finally(() => setLoading(false));
     }, 0);
     return () => window.clearTimeout(id);
@@ -93,7 +95,9 @@ export default function NumberingSettings() {
       }
       setRules(json.data.rules || rules);
       appToast.success(
-        resetNow ? "Counter reset & settings saved" : "Numbering settings saved"
+        resetNow
+          ? "ژمارەکار گەڕێندرایەوە و ڕێکخستنەکان پاشەکەوتکران"
+          : "ڕێکخستنی ژمارەکردنەوە پاشەکەوتکرا"
       );
     } catch {
       appToast.error("پاشەکەوت سەرنەکەوت");
@@ -105,7 +109,7 @@ export default function NumberingSettings() {
   if (loading) {
     return (
       <p className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
-        Loading numbering settings…
+        بارکردنی ڕێکخستنی ژمارەکردنەوە…
       </p>
     );
   }
@@ -115,10 +119,10 @@ export default function NumberingSettings() {
       <header className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-black text-foreground sm:text-3xl">
-            Smart Auto Numbering
+            ژمارەکردنەوەی زیرەکی خۆکار
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Configurable, collision-free document numbers for every module
+            ژمارەی بەڵگەنامەی گونجاو و بێ ناکۆکی بۆ هەموو مۆدیولەکان
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -128,7 +132,7 @@ export default function NumberingSettings() {
             onClick={() => void save(false)}
             className="rounded-2xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35 disabled:opacity-50"
           >
-            {saving ? "Saving…" : "Save settings"}
+            {saving ? t("numbering.saving") : t("numbering.saveSettings")}
           </button>
           <button
             type="button"
@@ -136,18 +140,18 @@ export default function NumberingSettings() {
             onClick={() => void save(true)}
             className="rounded-2xl border border-border px-5 py-2.5 text-sm font-bold focus-visible:ring-[3px] focus-visible:ring-ring/35"
           >
-            Reset period counter
+            گەڕاندنەوەی ژمارەی خول
           </button>
         </div>
       </header>
 
       <label className="block max-w-xs text-sm font-bold">
-        Company code
+        کۆدی کۆمپانیا
         <input
           value={companyCode}
           onChange={(e) => setCompanyCode(e.target.value.toUpperCase())}
           className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 font-mono text-sm focus-visible:ring-[3px] focus-visible:ring-ring/35"
-          aria-label="Company code for numbering"
+          aria-label={t("numbering.companyCodeAria")}
           maxLength={16}
         />
       </label>
@@ -155,7 +159,7 @@ export default function NumberingSettings() {
       <div className="grid gap-4 lg:grid-cols-[220px_1fr]">
         <nav
           className="rek-card max-h-[70vh] overflow-auto p-2"
-          aria-label="Numbering modules"
+          aria-label={t("numbering.modulesAria")}
         >
           {rules.map((r) => (
             <button
@@ -178,7 +182,7 @@ export default function NumberingSettings() {
                     : "text-muted-foreground"
                 )}
               >
-                {r.enabled ? "ON" : "OFF"}
+                {r.enabled ? "چالاک" : "ناچالاک"}
               </span>
             </button>
           ))}
@@ -187,7 +191,7 @@ export default function NumberingSettings() {
         {current && (
           <section
             className="rek-card space-y-4 p-5"
-            aria-label={`${MODULE_LABELS[current.moduleKey]} settings`}
+            aria-label={t("numbering.settingsAria", { module: MODULE_LABELS[current.moduleKey] })}
           >
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-xl font-black">
@@ -199,24 +203,24 @@ export default function NumberingSettings() {
                   checked={current.enabled}
                   onChange={(e) => patch({ enabled: e.target.checked })}
                 />
-                Enable auto numbering
+                {t("numbering.enableAuto")}
               </label>
             </div>
 
             <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 px-4 py-3">
               <p className="text-xs font-bold uppercase text-muted-foreground">
-                Preview
+                پێشبینین
               </p>
               <p className="mt-1 font-mono text-lg font-black tracking-wide">
                 {preview || current.preview || "—"}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                Next sequence: {current.nextValue ?? current.startFrom}
+                ژمارەی داهاتوو: {current.nextValue ?? current.startFrom}
               </p>
             </div>
 
             <label className="block text-sm font-bold">
-              Format
+              فۆرمات
               <input
                 value={current.format}
                 onChange={(e) => patch({ format: e.target.value })}
@@ -224,28 +228,28 @@ export default function NumberingSettings() {
                 spellCheck={false}
               />
               <span className="mt-1 block text-xs font-normal text-muted-foreground">
-                Tokens: {"{PREFIX} {SUFFIX} {YYYY} {MM} {DD} {FY} {COMPANY} {WAREHOUSE} {MODULE} {SEQ} {SEQ:6}"}
+                نیشانەکان: {"{PREFIX} {SUFFIX} {YYYY} {MM} {DD} {FY} {COMPANY} {WAREHOUSE} {MODULE} {SEQ} {SEQ:6}"}
               </span>
             </label>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <Field
-                label="Prefix"
+                label="پێشگر"
                 value={current.prefix}
                 onChange={(v) => patch({ prefix: v })}
               />
               <Field
-                label="Suffix"
+                label="پاشگر"
                 value={current.suffix}
                 onChange={(v) => patch({ suffix: v })}
               />
               <Field
-                label="Module code"
+                label="کۆدی مۆدیول"
                 value={current.moduleCode}
                 onChange={(v) => patch({ moduleCode: v })}
               />
               <label className="block text-sm font-bold">
-                Pad length
+                درێژی پڕکردنەوە
                 <input
                   type="number"
                   min={1}
@@ -258,7 +262,7 @@ export default function NumberingSettings() {
                 />
               </label>
               <label className="block text-sm font-bold">
-                Starting number
+                ژمارەی دەستپێک
                 <input
                   type="number"
                   min={1}
@@ -270,7 +274,7 @@ export default function NumberingSettings() {
                 />
               </label>
               <label className="block text-sm font-bold">
-                Reset policy
+                سیاسەتی گەڕاندنەوە
                 <select
                   value={current.resetPolicy}
                   onChange={(e) =>
@@ -278,13 +282,13 @@ export default function NumberingSettings() {
                   }
                   className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm focus-visible:ring-[3px] focus-visible:ring-ring/35"
                 >
-                  <option value="none">Never (continuous)</option>
-                  <option value="yearly">Yearly / Fiscal year</option>
-                  <option value="monthly">Monthly</option>
+                  <option value="none">هەرگیز (بەردەوام)</option>
+                  <option value="yearly">ساڵانە / ساڵی دارایی</option>
+                  <option value="monthly">مانگانە</option>
                 </select>
               </label>
               <label className="block text-sm font-bold">
-                Fiscal year start month
+                مانگی دەستپێکی ساڵی دارایی
                 <input
                   type="number"
                   min={1}
@@ -306,7 +310,7 @@ export default function NumberingSettings() {
                     patch({ allowManualOverride: e.target.checked })
                   }
                 />
-                Allow manual override
+                ڕێگەدان بە دەستکاری دەستی
               </label>
             </div>
           </section>

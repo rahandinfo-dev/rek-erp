@@ -5,10 +5,13 @@ import { getCurrentCompanyId } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { redirect } from "next/navigation";
+import { tServer } from "@/lib/i18n";
 
 export default async function SalesPage() {
   const companyId = await getCurrentCompanyId();
   if (!companyId) redirect("/login");
+
+  const t = tServer.t.bind(tServer);
 
   const sales = await db.sale.findMany({
     where: { companyId },
@@ -40,11 +43,11 @@ export default async function SalesPage() {
   return (
     <div className="space-y-6 sm:space-y-8">
       <PageHeader
-        title="فرۆشتن"
-        description="هەر فرۆشتنێکی تەواو خۆکار پسوولە دروست دەکات."
+        title={t("sales.title")}
+        description={t("sales.description")}
         breadcrumb={[
-          { label: "داشبۆرد", href: "/dashboard" },
-          { label: "فرۆشتن" },
+          { label: t("nav.dashboard"), href: "/dashboard" },
+          { label: t("nav.sales") },
         ]}
         actions={
           <Link
@@ -52,7 +55,7 @@ export default async function SalesPage() {
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-primary px-5 font-bold text-primary-foreground transition hover:bg-[var(--brand-hover)] active:scale-[0.98]"
           >
             <Plus size={20} aria-hidden />
-            فرۆشتنی نوێ
+            {t("sales.new")}
           </Link>
         }
       />

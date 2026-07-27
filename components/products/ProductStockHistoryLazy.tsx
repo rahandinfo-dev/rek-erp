@@ -5,6 +5,7 @@ import { Loader2 } from "lucide-react";
 import ProductStockHistory, {
   type StockHistoryItem,
 } from "@/components/products/ProductStockHistory";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 /**
  * Loads product stock history only when the History tab is mounted.
@@ -15,6 +16,7 @@ export default function ProductStockHistoryLazy({
 }: {
   productId: string;
 }) {
+  const { t } = useT();
   const [items, setItems] = useState<StockHistoryItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,7 +34,7 @@ export default function ProductStockHistoryLazy({
         const json = await res.json();
         if (cancelled) return;
         if (!json.success) {
-          setError(json.message || "بارکردنی مێژوو سەرنەکەوت.");
+          setError(json.message || t("products.historyLoadFailed"));
           setItems([]);
           return;
         }
@@ -70,10 +72,13 @@ export default function ProductStockHistoryLazy({
           )
         );
       } catch (err) {
-        if (cancelled || (err instanceof DOMException && err.name === "AbortError")) {
+        if (
+          cancelled ||
+          (err instanceof DOMException && err.name === "AbortError")
+        ) {
           return;
         }
-        setError("هەڵەیەک ڕوویدا.");
+        setError(t("errors.generic"));
         setItems([]);
       }
     })();
@@ -82,13 +87,13 @@ export default function ProductStockHistoryLazy({
       cancelled = true;
       controller.abort();
     };
-  }, [productId]);
+  }, [productId, t]);
 
   if (items === null) {
     return (
       <div className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border py-16 text-muted-foreground">
         <Loader2 size={18} className="animate-spin" aria-hidden />
-        بارکردنی مێژوو…
+        {t("products.historyLoading")}
       </div>
     );
   }

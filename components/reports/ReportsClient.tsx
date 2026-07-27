@@ -35,8 +35,6 @@ import { useNavigationHistory } from "@/lib/history/provider";
 import StatCard from "@/components/dashboard/StatCard";
 import type { ReportsPayload } from "@/lib/reports/buildReports";
 import {
-  DATE_RANGE_OPTIONS,
-  GRANULARITY_OPTIONS,
   type ChartGranularity,
   type DateRangePreset,
 } from "@/lib/reports/dateRange";
@@ -45,6 +43,7 @@ import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import ContextMenuSurface from "@/components/quick-actions/ContextMenuSurface";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const SALES_COLOR = DS.color.chart.sales;
 const PURCHASES_COLOR = DS.color.chart.purchases;
@@ -61,7 +60,24 @@ type Props = {
   initialData: ReportsPayload;
 };
 
+const DATE_RANGE_IDS: DateRangePreset[] = [
+  "today",
+  "yesterday",
+  "week",
+  "month",
+  "year",
+  "custom",
+];
+
+const GRANULARITY_IDS: ChartGranularity[] = [
+  "daily",
+  "weekly",
+  "monthly",
+  "yearly",
+];
+
 export default function ReportsClient({ companyName, initialData }: Props) {
+  const { t } = useT();
   const printRef = useRef<HTMLDivElement>(null);
   const { markDownloaded } = useNavigationHistory();
   const [data, setData] = useState(initialData);
@@ -111,15 +127,15 @@ export default function ReportsClient({ companyName, initialData }: Props) {
         });
         const json = await res.json();
         if (!json.success) {
-          appToast.error(json.message || "هەڵەیەک ڕوویدا.");
+          appToast.error(json.message || t("errors.generic"));
           return;
         }
         startTransition(() => setData(json.data as ReportsPayload));
       } catch {
-        appToast.error("هەڵەیەک ڕوویدا.");
+        appToast.error(t("errors.generic"));
       }
     },
-    [customFrom, customTo]
+    [customFrom, customTo, t]
   );
 
   const skipFirst = useRef(true);
@@ -135,27 +151,27 @@ export default function ReportsClient({ companyName, initialData }: Props) {
     return [
       {
         Section: "Summary",
-        Label: "Revenue",
+        Label: t("reports.exportRevenue"),
         Value: data.summary.revenue,
       },
       {
         Section: "Summary",
-        Label: "خەرجییەکان",
+        Label: t("reports.exportExpenses"),
         Value: data.summary.expenses,
       },
       {
         Section: "Summary",
-        Label: "Profit",
+        Label: t("reports.exportProfit"),
         Value: data.summary.profit,
       },
       {
         Section: "Summary",
-        Label: "Average Sale",
+        Label: t("reports.exportAvgSale"),
         Value: data.summary.averageSale,
       },
       {
         Section: "Summary",
-        Label: "Average Purchase",
+        Label: t("reports.exportAvgPurchase"),
         Value: data.summary.averagePurchase,
       },
       ...data.chart.map((c) => ({
@@ -194,7 +210,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
         record={{
           id: "reports-current",
           moduleKey: "reports",
-          label: "ڕاپۆرتەکان",
+          label: t("reports.title"),
           href: "/dashboard/reports",
           entityType: "Report",
         }}
@@ -202,10 +218,10 @@ export default function ReportsClient({ companyName, initialData }: Props) {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-3xl font-black text-primary sm:text-4xl">
-            ڕاپۆرتەکان
+            {t("reports.title")}
           </h1>
           <p className="mt-2 text-muted-foreground">
-            فرۆشتن · کڕین · قازانج — {companyName}
+            {t("reports.subtitle", { name: companyName })}
           </p>
         </div>
 
@@ -214,15 +230,15 @@ export default function ReportsClient({ companyName, initialData }: Props) {
             href="/dashboard/analytics"
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-border px-4 text-sm font-semibold text-primary"
           >
-            شیکاری تەواو
+            {t("reports.fullAnalytics")}
           </Link>
           <button
             type="button"
             onClick={() => {
               if (!printRef.current) return;
               void exportElementToPdf(printRef.current, "reports.pdf");
-              markDownloaded("/dashboard/reports", "Reports PDF", "reports");
-              appToast.pdfGenerated("ڕاپۆرت وەک PDF داگیرا.");
+              markDownloaded("/dashboard/reports", t("reports.pdfLabel"), "reports");
+              appToast.pdfGenerated(t("reports.pdfDownloaded"));
             }}
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-primary/30 px-4 text-sm font-semibold text-primary"
           >
@@ -232,9 +248,9 @@ export default function ReportsClient({ companyName, initialData }: Props) {
           <button
             type="button"
             onClick={() => {
-              void exportToExcel("reports.xlsx", "ڕاپۆرتەکان", exportRows());
-              markDownloaded("/dashboard/reports", "Reports Excel", "reports");
-              appToast.success("Excel داگیرا.");
+              void exportToExcel("reports.xlsx", t("reports.title"), exportRows());
+              markDownloaded("/dashboard/reports", t("reports.excelLabel"), "reports");
+              appToast.success(t("reports.excelDownloaded"));
             }}
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-border px-4 text-sm font-semibold"
           >
@@ -245,7 +261,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
             type="button"
             onClick={() => {
               exportToCsv("reports.csv", exportRows());
-              appToast.success("CSV داگیرا.");
+              appToast.success(t("reports.csvDownloaded"));
             }}
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-border px-4 text-sm font-semibold"
           >
@@ -261,33 +277,43 @@ export default function ReportsClient({ companyName, initialData }: Props) {
         record={{
           id: "expenses-summary",
           moduleKey: "expenses",
-          label: "خەرجییەکان",
+          label: t("reports.expensesLabel"),
           href: "/dashboard/reports",
           entityType: "Expense",
         }}
       >
       <div className="rek-card space-y-3 p-4">
         <div className="flex flex-wrap gap-1.5">
-          {DATE_RANGE_OPTIONS.map((opt) => (
+          {DATE_RANGE_IDS.map((opt) => {
+            const labels: Record<DateRangePreset, string> = {
+              today: t("common.today"),
+              yesterday: t("reports.yesterday"),
+              week: t("common.thisWeek"),
+              month: t("common.thisMonth"),
+              year: t("reports.year"),
+              custom: t("reports.customRange"),
+            };
+            return (
             <button
-              key={opt.id}
+              key={opt}
               type="button"
-              onClick={() => setPreset(opt.id)}
+              onClick={() => setPreset(opt)}
               className={`rounded-full px-3 py-1.5 text-xs font-bold ${
-                preset === opt.id
+                preset === opt
                   ? "bg-primary text-primary-foreground"
                   : "border border-border bg-card text-muted-foreground"
               }`}
             >
-              {opt.label}
+              {labels[opt]}
             </button>
-          ))}
+            );
+          })}
         </div>
 
         {preset === "custom" ? (
           <div className="flex flex-wrap items-end gap-3">
             <label className="text-sm">
-              <span className="mb-1 block font-bold">لە</span>
+              <span className="mb-1 block font-bold">{t("reports.from")}</span>
               <input
                 type="date"
                 value={customFrom}
@@ -296,7 +322,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
               />
             </label>
             <label className="text-sm">
-              <span className="mb-1 block font-bold">تا</span>
+              <span className="mb-1 block font-bold">{t("reports.to")}</span>
               <input
                 type="date"
                 value={customTo}
@@ -310,32 +336,40 @@ export default function ReportsClient({ companyName, initialData }: Props) {
               onClick={() => void load("custom", granularity)}
               className="h-10 rounded-xl bg-primary px-4 text-sm font-bold text-primary-foreground disabled:opacity-50"
             >
-              جێبەجێکردن
+              {t("reports.apply")}
             </button>
           </div>
         ) : null}
 
         <div className="flex flex-wrap gap-1.5 border-t border-border pt-3">
           <span className="me-2 self-center text-xs font-bold text-muted-foreground">
-            چارتی فرۆشتن / کڕین:
+            {t("reports.chartSalesPurchases")}
           </span>
-          {GRANULARITY_OPTIONS.map((opt) => (
+          {GRANULARITY_IDS.map((opt) => {
+            const labels: Record<ChartGranularity, string> = {
+              daily: t("reports.daily"),
+              weekly: t("reports.weekly"),
+              monthly: t("reports.monthly"),
+              yearly: t("reports.yearly"),
+            };
+            return (
             <button
-              key={opt.id}
+              key={opt}
               type="button"
-              onClick={() => setGranularity(opt.id)}
+              onClick={() => setGranularity(opt)}
               className={`rounded-full px-3 py-1.5 text-xs font-bold ${
-                granularity === opt.id
+                granularity === opt
                   ? "bg-[color-mix(in_srgb,var(--info)_18%,white)] text-[var(--info)]"
                   : "border border-border bg-card text-muted-foreground"
               }`}
             >
-              {opt.label}
+              {labels[opt]}
             </button>
-          ))}
+            );
+          })}
           {pending ? (
             <span className="ms-auto self-center text-xs text-muted-foreground">
-              نوێکردنەوە…
+              {t("reports.refreshing")}
             </span>
           ) : (
             <span className="ms-auto self-center">
@@ -349,36 +383,36 @@ export default function ReportsClient({ companyName, initialData }: Props) {
       <div ref={printRef} className="space-y-6">
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
-            title="داهات"
+            title={t("reports.revenue")}
             value={`${formatMoney(summary.revenue)} IQD`}
-            description={`${summary.salesCount} فرۆشتن`}
+            description={t("reports.salesCount", { count: summary.salesCount })}
             icon={DollarSign}
             accent="sales"
           />
           <StatCard
-            title="خەرجی"
+            title={t("reports.expenses")}
             value={`${formatMoney(summary.expenses)} IQD`}
-            description={`${summary.purchasesCount} کڕین`}
+            description={t("reports.purchasesCount", { count: summary.purchasesCount })}
             icon={ShoppingBasket}
             accent="purchases"
           />
           <StatCard
-            title="قازانج"
+            title={t("reports.profit")}
             value={`${formatMoney(summary.profit)} IQD`}
-            description="داهات − خەرجی"
+            description={t("reports.profitFormula")}
             icon={TrendingUp}
           />
           <StatCard
-            title="ناوەندی فرۆشتن / کڕین"
+            title={t("reports.avgSalePurchase")}
             value={`${formatMoney(summary.averageSale)} / ${formatMoney(summary.averagePurchase)}`}
-            description="IQD"
+            description={t("common.currencyCode")}
             icon={ShoppingCart}
           />
         </div>
 
         <div className="rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-6">
           <h2 className="mb-4 text-xl font-bold text-primary">
-            فرۆشتن بەرامبەر کڕین
+            {t("reports.salesVsPurchases")}
           </h2>
           <div className="mb-3 flex flex-wrap gap-3 text-xs font-bold">
             <span className="inline-flex items-center gap-1.5">
@@ -386,14 +420,14 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                 className="size-3 rounded-sm"
                 style={{ background: SALES_COLOR }}
               />
-              فرۆشتن
+              {t("reports.sales")}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span
                 className="size-3 rounded-sm"
                 style={{ background: PURCHASES_COLOR }}
               />
-              کڕین
+              {t("reports.purchases")}
             </span>
           </div>
           <div className="h-80 w-full">
@@ -416,13 +450,13 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                 <Legend />
                 <Bar
                   dataKey="sales"
-                  name="فرۆشتن"
+                  name={t("reports.sales")}
                   fill={SALES_COLOR}
                   radius={[8, 8, 0, 0]}
                 />
                 <Bar
                   dataKey="purchases"
-                  name="کڕین"
+                  name={t("reports.purchases")}
                   fill={PURCHASES_COLOR}
                   radius={[8, 8, 0, 0]}
                 />
@@ -432,7 +466,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
         </div>
 
         <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
-          <ListCard title="دوایین فرۆشتن" icon={ShoppingCart}>
+          <ListCard title={t("reports.latestSales")} icon={ShoppingCart}>
             {data.latestSales.length === 0 ? (
               <Empty />
             ) : (
@@ -448,7 +482,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
             )}
           </ListCard>
 
-          <ListCard title="دوایین کڕین" icon={ShoppingBasket}>
+          <ListCard title={t("reports.latestPurchases")} icon={ShoppingBasket}>
             {data.latestPurchases.length === 0 ? (
               <Empty />
             ) : (
@@ -464,7 +498,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
             )}
           </ListCard>
 
-          <ListCard title="باشترین بەرهەمەکان" icon={Package}>
+          <ListCard title={t("reports.topProducts")} icon={Package}>
             {data.topProducts.length === 0 ? (
               <Empty />
             ) : (
@@ -472,7 +506,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                 <Row
                   key={p.id}
                   title={p.name}
-                  subtitle={`${p.sku} · ${formatMoney(p.quantity)} دانە`}
+                  subtitle={t("reports.productMeta", { sku: p.sku, qty: formatMoney(p.quantity) })}
                   value={`${formatMoney(p.revenue)} IQD`}
                   href={`/dashboard/products/${p.id}`}
                 />
@@ -480,7 +514,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
             )}
           </ListCard>
 
-          <ListCard title="باشترین کڕیاران" icon={Users}>
+          <ListCard title={t("reports.topCustomers")} icon={Users}>
             {data.topCustomers.length === 0 ? (
               <Empty />
             ) : (
@@ -488,7 +522,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                 <Row
                   key={c.id}
                   title={c.name}
-                  subtitle={`${c.orders} داواکاری`}
+                  subtitle={t("reports.ordersCount", { count: c.orders })}
                   value={`${formatMoney(c.revenue)} IQD`}
                   href={`/dashboard/customers/${c.id}/edit`}
                 />
@@ -496,7 +530,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
             )}
           </ListCard>
 
-          <ListCard title="باشترین دابینکەران" icon={Truck}>
+          <ListCard title={t("reports.topSuppliers")} icon={Truck}>
             {data.topSuppliers.length === 0 ? (
               <Empty />
             ) : (
@@ -504,7 +538,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                 <Row
                   key={s.id}
                   title={s.name}
-                  subtitle={`${s.orders} کڕین`}
+                  subtitle={t("reports.purchaseOrders", { count: s.orders })}
                   value={`${formatMoney(s.spent)} IQD`}
                   href={`/dashboard/suppliers/${s.id}/edit`}
                 />
@@ -518,7 +552,8 @@ export default function ReportsClient({ companyName, initialData }: Props) {
 }
 
 function Empty() {
-  return <p className="text-sm text-muted-foreground">هیچ داتایەک نییە.</p>;
+  const { t } = useT();
+  return <p className="text-sm text-muted-foreground">{t("common.empty")}</p>;
 }
 
 function ListCard({

@@ -6,6 +6,7 @@ import { Pencil } from "lucide-react";
 import DeleteWerehouseButton from "@/components/werehouse/DeleteWerehouseButton";
 import BulkListShell from "@/components/bulk/BulkListShell";
 import ContextMenuSurface from "@/components/quick-actions/ContextMenuSurface";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type WarehouseRow = {
   id: string;
@@ -33,6 +34,9 @@ type Props = {
 };
 
 export default function WerehouseTable({ werehouses }: Props) {
+  const { t } = useT();
+  const entityType = t("warehouses.entityType");
+
   return (
     <BulkListShell
       moduleKey="warehouses"
@@ -52,7 +56,7 @@ export default function WerehouseTable({ werehouses }: Props) {
               moduleKey: "warehouses",
               label: item.name,
               href: `/dashboard/werehouse/${item.id}`,
-              entityType: "کۆگا",
+              entityType,
             }}
           >
             <div className="flex items-start justify-between gap-3">
@@ -62,20 +66,22 @@ export default function WerehouseTable({ werehouses }: Props) {
                     type="checkbox"
                     checked={isSelected(item.id)}
                     onChange={() => toggle(item.id)}
-                    aria-label={`Select ${item.name}`}
+                    aria-label={t("common.selectNamed", { name: item.name })}
                   />
-                  Select
+                  {t("common.select")}
                 </label>
                 <p className="font-black text-foreground">{item.name}</p>
                 {item.isMain ? (
-                  <p className="text-xs font-semibold text-primary">سەرەکی</p>
+                  <p className="text-xs font-semibold text-primary">
+                    {t("common.main")}
+                  </p>
                 ) : null}
               </div>
               <div className="flex gap-1.5">
                 <Link
                   href={`/dashboard/werehouse/${item.id}`}
                   className="inline-flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"
-                  aria-label="دەستکاری"
+                  aria-label={t("common.edit")}
                 >
                   <Pencil size={16} />
                 </Link>
@@ -87,13 +93,13 @@ export default function WerehouseTable({ werehouses }: Props) {
               </div>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
-              <Stat label="بەرهەم" value={String(item.productsCount)} />
+              <Stat label={t("common.productSingular")} value={String(item.productsCount)} />
               <Stat
-                label="کۆگا"
+                label={t("warehouses.colStock")}
                 value={formatNumber(item.availableStock)}
               />
-              <Stat label="کەم" value={String(item.lowStockCount)} />
-              <Stat label="تەواو" value={String(item.outOfStockCount)} />
+              <Stat label={t("warehouses.colLow")} value={String(item.lowStockCount)} />
+              <Stat label={t("warehouses.colOut")} value={String(item.outOfStockCount)} />
             </div>
           </ContextMenuSurface>
         ))}
@@ -105,12 +111,12 @@ export default function WerehouseTable({ werehouses }: Props) {
             <thead className="bg-muted/80 text-right">
               <tr>
                 <th className="px-4 py-3 font-bold">{headerCheckbox}</th>
-                <th className="px-4 py-3 font-bold">ناوی کۆگا</th>
-                <th className="px-4 py-3 font-bold">بەرهەمەکان</th>
-                <th className="px-4 py-3 font-bold">کۆگای ئێستا</th>
-                <th className="px-4 py-3 font-bold">کۆگای کەم</th>
-                <th className="px-4 py-3 font-bold">تەواو</th>
-                <th className="px-4 py-3 text-center font-bold">کردار</th>
+                <th className="px-4 py-3 font-bold">{t("warehouses.colName")}</th>
+                <th className="px-4 py-3 font-bold">{t("warehouses.colProducts")}</th>
+                <th className="px-4 py-3 font-bold">{t("warehouses.colCurrentStock")}</th>
+                <th className="px-4 py-3 font-bold">{t("warehouses.colLowStock")}</th>
+                <th className="px-4 py-3 font-bold">{t("warehouses.colOut")}</th>
+                <th className="px-4 py-3 text-center font-bold">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -124,7 +130,7 @@ export default function WerehouseTable({ werehouses }: Props) {
                     moduleKey: "warehouses",
                     label: item.name,
                     href: `/dashboard/werehouse/${item.id}`,
-                    entityType: "کۆگا",
+                    entityType,
                   }}
                 >
                   <td className="px-4 py-3">
@@ -132,14 +138,14 @@ export default function WerehouseTable({ werehouses }: Props) {
                       type="checkbox"
                       checked={isSelected(item.id)}
                       onChange={() => toggle(item.id)}
-                      aria-label={`Select ${item.name}`}
+                      aria-label={t("common.selectNamed", { name: item.name })}
                     />
                   </td>
                   <td className="px-4 py-3">
                     <p className="font-bold text-foreground">{item.name}</p>
                     {item.isMain ? (
                       <span className="text-[11px] font-semibold text-primary">
-                        سەرەکی
+                        {t("common.main")}
                       </span>
                     ) : null}
                   </td>
@@ -160,7 +166,7 @@ export default function WerehouseTable({ werehouses }: Props) {
                       <Link
                         href={`/dashboard/werehouse/${item.id}`}
                         className="inline-flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"
-                        aria-label="دەستکاری"
+                        aria-label={t("common.edit")}
                       >
                         <Pencil size={16} />
                       </Link>

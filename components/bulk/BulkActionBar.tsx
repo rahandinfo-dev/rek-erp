@@ -36,6 +36,7 @@ import {
 import { exportToCsv, exportToExcel } from "@/lib/export";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   moduleKey: BulkModule;
@@ -64,6 +65,7 @@ export default function BulkActionBar({
   onComplete,
   className,
 }: Props) {
+  const { t } = useT();
   const actions = MODULE_ACTIONS[moduleKey] || [];
   const [pendingAction, setPendingAction] = useState<BulkAction | null>(null);
   const [payload, setPayload] = useState<BulkPayload>({});
@@ -125,14 +127,20 @@ export default function BulkActionBar({
       }
 
       appToast.success(
-        `Bulk ${BULK_ACTION_LABELS[action] || action}`,
-        `${finished.successCount} ok · ${finished.failedCount} failed · ${finished.skippedCount} skipped`
+        t("bulk.successTitle", {
+          action: BULK_ACTION_LABELS[action] || action,
+        }),
+        t("bulk.successBody", {
+          ok: finished.successCount,
+          failed: finished.failedCount,
+          skipped: finished.skippedCount,
+        })
       );
       onDeselectAll();
       onComplete?.();
     } catch (error) {
       appToast.error(
-        error instanceof Error ? error.message : "Bulk action failed"
+        error instanceof Error ? error.message : t("bulk.failed")
       );
       setProgressOpen(false);
     } finally {
@@ -160,29 +168,31 @@ export default function BulkActionBar({
           className
         )}
         role="region"
-        aria-label="Bulk selection helpers"
+        aria-label={t("bulk.selectionHelpers")}
       >
-        <span className="font-bold">Bulk:</span>
+        <span className="font-bold">{t("bulk.label")}:</span>
         <button
           type="button"
           className="inline-flex items-center gap-1 rounded-lg px-2 py-1 font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
           onClick={onSelectPage}
         >
-          <CheckSquare size={14} aria-hidden /> Select page ({pageIds.length})
+          <CheckSquare size={14} aria-hidden />{" "}
+          {t("bulk.selectPage", { count: pageIds.length })}
         </button>
         <button
           type="button"
           className="inline-flex items-center gap-1 rounded-lg px-2 py-1 font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
           onClick={onSelectFiltered}
         >
-          <Filter size={14} aria-hidden /> Select filtered ({filteredIds.length})
+          <Filter size={14} aria-hidden />{" "}
+          {t("bulk.selectFiltered", { count: filteredIds.length })}
         </button>
         <button
           type="button"
           className="inline-flex items-center gap-1 rounded-lg px-2 py-1 font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
           onClick={onSelectAll}
         >
-          Select all ({allIds.length})
+          {t("bulk.selectAll", { count: allIds.length })}
         </button>
       </div>
     );
@@ -196,37 +206,39 @@ export default function BulkActionBar({
           className
         )}
         role="toolbar"
-        aria-label="کردارە کۆمەڵایەتییەکان"
+        aria-label={t("nav.bulk")}
       >
         <div className="flex flex-wrap items-center gap-2 text-sm">
-          <span className="font-black">{selectedIds.length} selected</span>
+          <span className="font-black">
+            {t("bulk.selected", { count: selectedIds.length })}
+          </span>
           <button
             type="button"
             className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
             onClick={onSelectPage}
           >
-            <CheckSquare size={14} /> Page
+            <CheckSquare size={14} /> {t("bulk.page")}
           </button>
           <button
             type="button"
             className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
             onClick={onSelectFiltered}
           >
-            <Filter size={14} /> Filtered
+            <Filter size={14} /> {t("bulk.filtered")}
           </button>
           <button
             type="button"
             className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
             onClick={onSelectAll}
           >
-            All
+            {t("bulk.all")}
           </button>
           <button
             type="button"
             className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
             onClick={onDeselectAll}
           >
-            <Square size={14} /> Deselect
+            <Square size={14} /> {t("bulk.deselect")}
           </button>
         </div>
 
@@ -298,21 +310,21 @@ export default function BulkActionBar({
           {actions.includes("assign_category") && (
             <ActionBtn
               icon={FolderTree}
-              label="Category"
+              label={t("bulk.category")}
               onClick={() => requestAction("assign_category")}
             />
           )}
           {actions.includes("assign_warehouse") && (
             <ActionBtn
               icon={Warehouse}
-              label="کۆگا"
+              label={t("nav.warehouses")}
               onClick={() => requestAction("assign_warehouse")}
             />
           )}
           {actions.includes("add_tags") && (
             <ActionBtn
               icon={Tags}
-              label="Tags"
+              label={t("bulk.tags")}
               onClick={() => requestAction("add_tags")}
             />
           )}
@@ -321,14 +333,14 @@ export default function BulkActionBar({
 
       <ConfirmDialog
         open={Boolean(pendingAction) && !needsExtra}
-        title={`${BULK_ACTION_LABELS[pendingAction || ""] || "Bulk action"}?`}
+        title={`${BULK_ACTION_LABELS[pendingAction || ""] || t("bulk.actionFallback")}؟`}
         description={
           destructive
-            ? `This will affect ${selectedIds.length} record(s). Soft-deleted items go to the Recycle Bin when supported. Continue?`
-            : `Apply to ${selectedIds.length} selected record(s)?`
+            ? t("bulk.confirmDestructive", { count: selectedIds.length })
+            : t("bulk.confirmApply", { count: selectedIds.length })
         }
-        confirmText="بەردەوامبوون"
-        cancelText="هەڵوەشاندنەوە"
+        confirmText={t("common.confirm")}
+        cancelText={t("common.cancel")}
         loading={busy}
         onConfirm={confirmPending}
         onCancel={() => setPendingAction(null)}
@@ -346,12 +358,12 @@ export default function BulkActionBar({
               {BULK_ACTION_LABELS[pendingAction]}
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              {selectedIds.length} record(s)
+              {t("bulk.records", { count: selectedIds.length })}
             </p>
             <div className="mt-4 space-y-3">
               {pendingAction === "edit" && (
                 <label className="block text-sm font-bold">
-                  Notes
+                  {t("bulk.notes")}
                   <textarea
                     className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm font-normal focus-visible:ring-[3px] focus-visible:ring-ring/35"
                     rows={3}
@@ -366,7 +378,7 @@ export default function BulkActionBar({
               )}
               {pendingAction === "change_status" && (
                 <label className="block text-sm font-bold">
-                  Status
+                  {t("bulk.status")}
                   <select
                     className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm font-normal focus-visible:ring-[3px] focus-visible:ring-ring/35"
                     value={
@@ -382,8 +394,8 @@ export default function BulkActionBar({
                       }
                     }}
                   >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="active">{t("bulk.active")}</option>
+                    <option value="inactive">{t("bulk.inactive")}</option>
                     <option value="ACTIVE">ACTIVE</option>
                     <option value="INACTIVE">INACTIVE</option>
                     <option value="SUSPENDED">SUSPENDED</option>
@@ -397,33 +409,31 @@ export default function BulkActionBar({
               {(pendingAction === "assign_category" ||
                 pendingAction === "move") && (
                 <label className="block text-sm font-bold">
-                  Category ID
+                  {t("bulk.categoryId")}
                   <input
                     className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm font-normal focus-visible:ring-[3px] focus-visible:ring-ring/35"
                     value={payload.categoryId || ""}
                     onChange={(e) =>
                       setPayload({ categoryId: e.target.value || null })
                     }
-                    placeholder="category cuid"
                   />
                 </label>
               )}
               {pendingAction === "assign_warehouse" && (
                 <label className="block text-sm font-bold">
-                  Warehouse ID
+                  {t("bulk.warehouseId")}
                   <input
                     className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm font-normal focus-visible:ring-[3px] focus-visible:ring-ring/35"
                     value={payload.warehouseId || ""}
                     onChange={(e) =>
                       setPayload({ warehouseId: e.target.value || null })
                     }
-                    placeholder="warehouse cuid"
                   />
                 </label>
               )}
               {pendingAction === "add_tags" && (
                 <label className="block text-sm font-bold">
-                  Tags (comma-separated)
+                  {t("bulk.tagsHint")}
                   <input
                     className="mt-1 w-full rounded-xl border border-border bg-background px-3 py-2 text-sm font-normal focus-visible:ring-[3px] focus-visible:ring-ring/35"
                     value={(payload.tags || []).join(", ")}
@@ -431,11 +441,10 @@ export default function BulkActionBar({
                       setPayload({
                         tags: e.target.value
                           .split(",")
-                          .map((t) => t.trim())
+                          .map((tag) => tag.trim())
                           .filter(Boolean),
                       })
                     }
-                    placeholder="vip, wholesale"
                   />
                 </label>
               )}
@@ -446,7 +455,7 @@ export default function BulkActionBar({
                 className="rounded-xl border border-border px-4 py-2 text-sm font-bold focus-visible:ring-[3px] focus-visible:ring-ring/35"
                 onClick={() => setPendingAction(null)}
               >
-                Cancel
+                {t("common.cancel")}
               </button>
               <button
                 type="button"
@@ -454,7 +463,7 @@ export default function BulkActionBar({
                 disabled={busy}
                 onClick={confirmPending}
               >
-                Apply to {selectedIds.length}
+                {t("bulk.applyTo", { count: selectedIds.length })}
               </button>
             </div>
           </div>
@@ -474,11 +483,13 @@ export default function BulkActionBar({
           setUndoing(true);
           void undoBulkJob(job.id)
             .then(() => {
-              appToast.success("Bulk undo completed");
+              appToast.success(t("bulk.undoDone"));
               onComplete?.();
             })
             .catch((e) =>
-              appToast.error(e instanceof Error ? e.message : "پاشگەزبوونەوە سەرنەکەوت")
+              appToast.error(
+                e instanceof Error ? e.message : t("bulk.failed")
+              )
             )
             .finally(() => setUndoing(false));
         }}

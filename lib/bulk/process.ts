@@ -3,6 +3,9 @@ import type { Prisma } from "@/lib/prisma/client";
 import { entityTypeFor } from "@/lib/bulk/modules";
 import { upsertEntityMeta, getEntityMeta } from "@/lib/bulk/meta";
 import type { BulkPayload } from "@/lib/bulk/types";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 export type ProcessCtx = {
   companyId: string;
@@ -41,56 +44,56 @@ async function assertOwned(
           unitId: true,
         },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return { ok: true, label: row.name, row: row as unknown as Record<string, unknown> };
     }
     case "customers": {
       const row = await db.customer.findFirst({
         where: { id: entityId, companyId },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return { ok: true, label: row.name, row: row as unknown as Record<string, unknown> };
     }
     case "suppliers": {
       const row = await db.supplier.findFirst({
         where: { id: entityId, companyId },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return { ok: true, label: row.name, row: row as unknown as Record<string, unknown> };
     }
     case "warehouses": {
       const row = await db.warehouse.findFirst({
         where: { id: entityId, companyId },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return { ok: true, label: row.name, row: row as unknown as Record<string, unknown> };
     }
     case "categories": {
       const row = await db.category.findFirst({
         where: { id: entityId, companyId },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return { ok: true, label: row.name, row: row as unknown as Record<string, unknown> };
     }
     case "brands": {
       const row = await db.brand.findFirst({
         where: { id: entityId, companyId },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return { ok: true, label: row.name, row: row as unknown as Record<string, unknown> };
     }
     case "units": {
       const row = await db.unit.findFirst({
         where: { id: entityId, companyId },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return { ok: true, label: row.name, row: row as unknown as Record<string, unknown> };
     }
     case "employees": {
       const row = await db.employee.findFirst({
         where: { id: entityId, companyId },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return {
         ok: true,
         label: row.fullName,
@@ -102,7 +105,7 @@ async function assertOwned(
         where: { id: entityId, companyId },
         include: { customer: { select: { name: true } } },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return {
         ok: true,
         label: row.invoiceNo,
@@ -114,7 +117,7 @@ async function assertOwned(
         where: { id: entityId, companyId },
         include: { supplier: { select: { name: true } } },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return {
         ok: true,
         label: row.invoiceNo,
@@ -125,7 +128,7 @@ async function assertOwned(
       const row = await db.invoice.findFirst({
         where: { id: entityId, companyId },
       });
-      if (!row) return { ok: false, message: "Unauthorized or not found" };
+      if (!row) return { ok: false, message: t('errors.unauthorizedOrMissing') };
       return {
         ok: true,
         label: row.invoiceNo,
@@ -133,7 +136,7 @@ async function assertOwned(
       };
     }
     default:
-      return { ok: false, message: `Module ${moduleKey} is not supported` };
+      return { ok: false, message: t('bulk.moduleUnsupported', { module: moduleKey }) };
   }
 }
 
@@ -217,13 +220,13 @@ export async function processBulkItem(
     if (action === "add_tags") {
       const tags = payload.tags || [];
       if (tags.length === 0) {
-        return { status: "skipped", message: "No tags provided" };
+        return { status: "skipped", message: t('bulk.noTags') };
       }
       const before = await getEntityMeta(ctx.companyId, entityType, entityId);
       await upsertEntityMeta(ctx.companyId, entityType, entityId, { tags });
       return {
         status: "success",
-        message: `Tags added to ${label}`,
+        message: t('bulk.tagsAdded', { label }),
         before: { tags: before?.tags },
         after: { tags },
         undo: { tags: before?.tags ?? [] },
@@ -236,7 +239,7 @@ export async function processBulkItem(
       await upsertEntityMeta(ctx.companyId, entityType, entityId, { archived });
       return {
         status: "success",
-        message: archived ? `Archived ${label}` : `Unarchived ${label}`,
+        message: archived ? t('bulk.archived', { label }) : t('bulk.unarchived', { label }),
         before: { archived: before?.archived ?? false },
         after: { archived },
         undo: { archived: before?.archived ?? false },
@@ -257,10 +260,10 @@ export async function processBulkItem(
 
     if (action === "assign_category") {
       if (ctx.moduleKey !== "suppliers") {
-        return { status: "skipped", message: "Category assign not supported" };
+        return { status: "skipped", message: t('bulk.categoryUnsupported') };
       }
       if (payload.categoryId === undefined) {
-        return { status: "skipped", message: "categoryId required" };
+        return { status: "skipped", message: t('bulk.categoryIdRequired') };
       }
       const before = { categoryId: row.categoryId ?? null };
       await db.supplier.update({
@@ -269,7 +272,7 @@ export async function processBulkItem(
       });
       return {
         status: "success",
-        message: `Category assigned on ${label}`,
+        message: t('bulk.categoryAssigned', { label }),
         before,
         after: { categoryId: payload.categoryId },
         undo: before,
@@ -284,18 +287,18 @@ export async function processBulkItem(
           entityId
         );
       }
-      return { status: "skipped", message: "Move not supported for module" };
+      return { status: "skipped", message: t('bulk.moveUnsupported') };
     }
 
     if (action === "assign_warehouse") {
       if (ctx.moduleKey === "purchases") {
         if (!payload.warehouseId) {
-          return { status: "skipped", message: "warehouseId required" };
+          return { status: "skipped", message: t('bulk.warehouseIdRequired') };
         }
         if (row.status === "COMPLETED") {
           return {
             status: "skipped",
-            message: "Cannot move completed purchase warehouse",
+            message: t('bulk.cannotMoveCompleted'),
           };
         }
         const before = { warehouseId: row.warehouseId };
@@ -305,7 +308,7 @@ export async function processBulkItem(
         });
         return {
           status: "success",
-          message: `Warehouse updated on ${label}`,
+          message: t('bulk.warehouseUpdated', { label }),
           before,
           after: { warehouseId: payload.warehouseId },
           undo: before,
@@ -320,11 +323,11 @@ export async function processBulkItem(
         });
         return {
           status: "success",
-          message: `Preferred warehouse tagged on ${label}`,
+          message: t('bulk.warehouseTagged', { label }),
           after: { warehouseId: payload.warehouseId },
         };
       }
-      return { status: "skipped", message: "Warehouse assign not supported" };
+      return { status: "skipped", message: t('bulk.warehouseUnsupported') };
     }
 
     if (action === "edit") {
@@ -335,12 +338,12 @@ export async function processBulkItem(
       return await duplicateOne(ctx, entityId, label, row);
     }
 
-    return { status: "skipped", message: `Unknown action ${action}` };
+    return { status: "skipped", message: t('bulk.unknownAction', { action }) };
   } catch (error) {
     console.error("BULK ITEM ERROR:", error);
     return {
       status: "failed",
-      message: error instanceof Error ? error.message : "Processing failed",
+      message: error instanceof Error ? error.message : t('bulk.processingFailed'),
     };
   }
 }
@@ -360,10 +363,10 @@ async function softDeleteOne(
     case "brands":
     case "units": {
       if (row.active === false) {
-        return { status: "skipped", message: "Already deleted" };
+        return { status: "skipped", message: t('bulk.alreadyDeleted') };
       }
       if (ctx.moduleKey === "warehouses" && row.isMain) {
-        return { status: "skipped", message: "Cannot delete main warehouse" };
+        return { status: "skipped", message: t('bulk.cannotDeleteMain') };
       }
       const model = ctx.moduleKey;
       if (model === "products") {
@@ -404,7 +407,7 @@ async function softDeleteOne(
       }
       return {
         status: "success",
-        message: `Soft-deleted ${label}`,
+        message: t('bulk.softDeleted', { label }),
         before: { active: true },
         after: { active: false },
         undo: { action: "restore" },
@@ -412,7 +415,7 @@ async function softDeleteOne(
     }
     case "employees": {
       if (row.status === "INACTIVE") {
-        return { status: "skipped", message: "Already inactive" };
+        return { status: "skipped", message: t('bulk.alreadyInactive') };
       }
       await db.employee.update({
         where: { id: entityId },
@@ -420,7 +423,7 @@ async function softDeleteOne(
       });
       return {
         status: "success",
-        message: `Deactivated ${label}`,
+        message: t('bulk.deactivated', { label }),
         before: { status: row.status },
         after: { status: "INACTIVE" },
         undo: { status: row.status },
@@ -428,7 +431,7 @@ async function softDeleteOne(
     }
     case "sales": {
       if (row.status === "CANCELLED") {
-        return { status: "skipped", message: "Already cancelled" };
+        return { status: "skipped", message: t('bulk.alreadyCancelled') };
       }
       await db.sale.update({
         where: { id: entityId },
@@ -440,7 +443,7 @@ async function softDeleteOne(
       });
       return {
         status: "success",
-        message: `Cancelled ${label}`,
+        message: t('bulk.cancelledItem', { label }),
         before: { status: row.status },
         after: { status: "CANCELLED" },
         undo: { status: row.status },
@@ -448,7 +451,7 @@ async function softDeleteOne(
     }
     case "purchases": {
       if (row.status === "CANCELLED") {
-        return { status: "skipped", message: "Already cancelled" };
+        return { status: "skipped", message: t('bulk.alreadyCancelled') };
       }
       await db.purchase.update({
         where: { id: entityId },
@@ -456,7 +459,7 @@ async function softDeleteOne(
       });
       return {
         status: "success",
-        message: `Cancelled ${label}`,
+        message: t('bulk.cancelledItem', { label }),
         before: { status: row.status },
         after: { status: "CANCELLED" },
         undo: { status: row.status },
@@ -464,7 +467,7 @@ async function softDeleteOne(
     }
     case "invoices": {
       if (row.status === "VOID") {
-        return { status: "skipped", message: "Already void" };
+        return { status: "skipped", message: t('bulk.alreadyVoid') };
       }
       await db.invoice.update({
         where: { id: entityId },
@@ -479,14 +482,14 @@ async function softDeleteOne(
       }
       return {
         status: "success",
-        message: `Voided ${label}`,
+        message: t('bulk.voided', { label }),
         before: { status: row.status },
         after: { status: "VOID" },
         undo: { status: row.status, saleId },
       };
     }
     default:
-      return { status: "skipped", message: "سڕینەوە پشتگیری ناکرێت" };
+      return { status: "skipped", message: t('bulk.deleteUnsupported') };
   }
 }
 
@@ -505,7 +508,7 @@ async function restoreOne(
     case "brands":
     case "units": {
       if (row.active === true) {
-        return { status: "skipped", message: "Already active" };
+        return { status: "skipped", message: t('bulk.alreadyActive') };
       }
       const data = { active: true };
       if (ctx.moduleKey === "products")
@@ -524,14 +527,14 @@ async function restoreOne(
         await db.unit.update({ where: { id: entityId }, data });
       return {
         status: "success",
-        message: `Restored ${label}`,
+        message: t('bulk.restoredItem', { label }),
         before: { active: false },
         after: { active: true },
       };
     }
     case "employees": {
       if (row.status === "ACTIVE") {
-        return { status: "skipped", message: "Already active" };
+        return { status: "skipped", message: t('bulk.alreadyActive') };
       }
       await db.employee.update({
         where: { id: entityId },
@@ -539,14 +542,14 @@ async function restoreOne(
       });
       return {
         status: "success",
-        message: `Restored ${label}`,
+        message: t('bulk.restoredItem', { label }),
         before: { status: row.status },
         after: { status: "ACTIVE" },
       };
     }
     case "sales": {
       if (row.status !== "CANCELLED") {
-        return { status: "skipped", message: "Not cancelled" };
+        return { status: "skipped", message: t('bulk.notCancelled') };
       }
       await db.sale.update({
         where: { id: entityId },
@@ -558,14 +561,14 @@ async function restoreOne(
       });
       return {
         status: "success",
-        message: `Restored ${label}`,
+        message: t('bulk.restoredItem', { label }),
         before: { status: "CANCELLED" },
         after: { status: "COMPLETED" },
       };
     }
     case "purchases": {
       if (row.status !== "CANCELLED") {
-        return { status: "skipped", message: "Not cancelled" };
+        return { status: "skipped", message: t('bulk.notCancelled') };
       }
       await db.purchase.update({
         where: { id: entityId },
@@ -573,14 +576,14 @@ async function restoreOne(
       });
       return {
         status: "success",
-        message: `Restored ${label}`,
+        message: t('bulk.restoredItem', { label }),
         before: { status: "CANCELLED" },
         after: { status: "COMPLETED" },
       };
     }
     case "invoices": {
       if (row.status !== "VOID") {
-        return { status: "skipped", message: "Not void" };
+        return { status: "skipped", message: t('bulk.notVoid') };
       }
       await db.invoice.update({
         where: { id: entityId },
@@ -595,13 +598,13 @@ async function restoreOne(
       }
       return {
         status: "success",
-        message: `Restored ${label}`,
+        message: t('bulk.restoredItem', { label }),
         before: { status: "VOID" },
         after: { status: "ACTIVE" },
       };
     }
     default:
-      return { status: "skipped", message: "Restore not supported" };
+      return { status: "skipped", message: t('bulk.restoreUnsupported') };
   }
 }
 
@@ -618,7 +621,7 @@ async function changeStatusOne(
     )
   ) {
     if (payload.active === undefined && payload.status === undefined) {
-      return { status: "skipped", message: "active/status required" };
+      return { status: "skipped", message: t('bulk.statusRequired') };
     }
     const active =
       payload.active !== undefined
@@ -642,7 +645,7 @@ async function changeStatusOne(
       await db.unit.update({ where: { id: entityId }, data });
     return {
       status: "success",
-      message: `Status updated on ${label}`,
+      message: t('bulk.statusUpdated', { label }),
       before,
       after: data,
       undo: before,
@@ -652,7 +655,7 @@ async function changeStatusOne(
   if (ctx.moduleKey === "employees") {
     const status = payload.status;
     if (!status || !["ACTIVE", "INACTIVE", "SUSPENDED"].includes(status)) {
-      return { status: "skipped", message: "Invalid employee status" };
+      return { status: "skipped", message: t('bulk.invalidEmployeeStatus') };
     }
     const before = { status: row.status };
     await db.employee.update({
@@ -661,7 +664,7 @@ async function changeStatusOne(
     });
     return {
       status: "success",
-      message: `Status â†’ ${status}`,
+      message: t('bulk.statusSet', { status }),
       before,
       after: { status },
       undo: before,
@@ -671,7 +674,7 @@ async function changeStatusOne(
   if (ctx.moduleKey === "sales") {
     const status = payload.status;
     if (!status || !["DRAFT", "COMPLETED", "CANCELLED"].includes(status)) {
-      return { status: "skipped", message: "Invalid sale status" };
+      return { status: "skipped", message: t('bulk.invalidSaleStatus') };
     }
     const before = { status: row.status };
     await db.sale.update({
@@ -680,7 +683,7 @@ async function changeStatusOne(
     });
     return {
       status: "success",
-      message: `Status â†’ ${status}`,
+      message: t('bulk.statusSet', { status }),
       before,
       after: { status },
       undo: before,
@@ -690,7 +693,7 @@ async function changeStatusOne(
   if (ctx.moduleKey === "purchases") {
     const status = payload.status;
     if (!status || !["DRAFT", "COMPLETED", "CANCELLED"].includes(status)) {
-      return { status: "skipped", message: "Invalid purchase status" };
+      return { status: "skipped", message: t('bulk.invalidPurchaseStatus') };
     }
     const before = { status: row.status };
     await db.purchase.update({
@@ -699,7 +702,7 @@ async function changeStatusOne(
     });
     return {
       status: "success",
-      message: `Status â†’ ${status}`,
+      message: t('bulk.statusSet', { status }),
       before,
       after: { status },
       undo: before,
@@ -709,7 +712,7 @@ async function changeStatusOne(
   if (ctx.moduleKey === "invoices") {
     const status = payload.status;
     if (!status || !["ACTIVE", "VOID"].includes(status)) {
-      return { status: "skipped", message: "Invalid invoice status" };
+      return { status: "skipped", message: t('bulk.invalidInvoiceStatus') };
     }
     const before = { status: row.status };
     await db.invoice.update({
@@ -718,14 +721,14 @@ async function changeStatusOne(
     });
     return {
       status: "success",
-      message: `Status â†’ ${status}`,
+      message: t('bulk.statusSet', { status }),
       before,
       after: { status },
       undo: before,
     };
   }
 
-  return { status: "skipped", message: "Status change not supported" };
+  return { status: "skipped", message: t('bulk.statusUnsupported') };
 }
 
 async function editOne(
@@ -737,7 +740,7 @@ async function editOne(
 ): Promise<ProcessResult> {
   const fields = payload.fields || {};
   if (Object.keys(fields).length === 0) {
-    return { status: "skipped", message: "No fields to edit" };
+    return { status: "skipped", message: t('bulk.noFieldsToEdit') };
   }
 
   // Only allow safe string/number patches
@@ -749,7 +752,7 @@ async function editOne(
     }
   }
   if (Object.keys(data).length === 0) {
-    return { status: "skipped", message: "No editable fields provided" };
+    return { status: "skipped", message: t('bulk.noEditableFields') };
   }
 
   const before: Record<string, unknown> = {};
@@ -786,12 +789,12 @@ async function editOne(
       data: data as Prisma.EmployeeUpdateInput,
     });
   } else {
-    return { status: "skipped", message: "Edit not supported" };
+    return { status: "skipped", message: t('bulk.editUnsupported') };
   }
 
   return {
     status: "success",
-    message: `Updated ${label}`,
+    message: t('bulk.updatedItem', { label }),
     before,
     after: data,
     undo: before,
@@ -822,7 +825,7 @@ async function duplicateOne(
     });
     return {
       status: "success",
-      message: `Duplicated ${label}`,
+      message: t('bulk.duplicatedItem', { label }),
       after: { id: created.id, code },
     };
   }
@@ -844,7 +847,7 @@ async function duplicateOne(
     });
     return {
       status: "success",
-      message: `Duplicated ${label}`,
+      message: t('bulk.duplicatedItem', { label }),
       after: { id: created.id, code },
     };
   }
@@ -860,7 +863,7 @@ async function duplicateOne(
     });
     return {
       status: "success",
-      message: `Duplicated ${label}`,
+      message: t('bulk.duplicatedItem', { label }),
       after: { id: created.id },
     };
   }
@@ -875,7 +878,7 @@ async function duplicateOne(
     });
     return {
       status: "success",
-      message: `Duplicated ${label}`,
+      message: t('bulk.duplicatedItem', { label }),
       after: { id: created.id },
     };
   }
@@ -891,7 +894,7 @@ async function duplicateOne(
     });
     return {
       status: "success",
-      message: `Duplicated ${label}`,
+      message: t('bulk.duplicatedItem', { label }),
       after: { id: created.id },
     };
   }
@@ -912,7 +915,7 @@ async function duplicateOne(
     });
     return {
       status: "success",
-      message: `Duplicated ${label}`,
+      message: t('bulk.duplicatedItem', { label }),
       after: { id: created.id, sku },
     };
   }
@@ -920,10 +923,10 @@ async function duplicateOne(
   if (ctx.moduleKey === "invoices") {
     return {
       status: "success",
-      message: "Open duplicate from invoice â†’ new sale",
+      message: t('bulk.duplicateViaInvoice'),
       after: { duplicateHref: `/dashboard/sales/new?duplicate=${entityId}` },
     };
   }
 
-  return { status: "skipped", message: "Duplicate not supported" };
+  return { status: "skipped", message: t('bulk.duplicateUnsupported') };
 }

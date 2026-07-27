@@ -10,6 +10,7 @@ import { formatStockQty, getStockStatus } from "@/lib/inventory/stock";
 import { StockStatusBadge } from "@/components/inventory/StockStatusBadge";
 import { useQuickActionsOptional } from "@/lib/quick-actions/provider";
 import type { QuickActionRecord } from "@/lib/quick-actions/types";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const ProductQuickActions = dynamic(
   () => import("@/components/products/ProductQuickActions"),
@@ -45,6 +46,7 @@ type Props = {
 };
 
 function ProductCard({ product, onUpdated, onDeleted }: Props) {
+  const { t } = useT();
   const unit = product.unit.symbol || product.unit.name;
   const status = getStockStatus(product.currentStock, product.minimumStock);
   const [actionsReady, setActionsReady] = useState(false);
@@ -131,7 +133,7 @@ function ProductCard({ product, onUpdated, onDeleted }: Props) {
           <p className="font-black tabular-nums text-foreground">
             {formatMoney(product.salePrice)}
             <span className="ms-0.5 text-[10px] font-bold text-muted-foreground">
-              IQD
+              {t("common.currencyCode")}
             </span>
           </p>
         </div>

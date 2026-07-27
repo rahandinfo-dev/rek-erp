@@ -3,8 +3,9 @@ import { formatDateTime } from "@/lib/utils/datetime";
 
 import { History } from "lucide-react";
 import type { TimelineItem } from "@/components/products/ProductInventoryTimeline";
-import { formatMoney , formatNumber} from "@/lib/utils/format";
+import { formatMoney, formatNumber } from "@/lib/utils/format";
 import { movementTypeLabel } from "@/lib/inventory/movementLabels";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type StockHistoryItem = TimelineItem & {
   unitCost: number | null;
@@ -15,10 +16,12 @@ export default function ProductStockHistory({
 }: {
   items: StockHistoryItem[];
 }) {
+  const { t } = useT();
+
   if (items.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-12 text-center text-muted-foreground">
-        هیچ مێژوویەکی کۆگا تۆمار نەکراوە.
+        {t("products.stockHistoryEmpty")}
       </div>
     );
   }
@@ -28,13 +31,15 @@ export default function ProductStockHistory({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <History className="text-primary" size={18} />
-          <h3 className="text-lg font-black text-foreground">مێژووی کۆگا</h3>
+          <h3 className="text-lg font-black text-foreground">
+            {t("products.stockHistoryTitle")}
+          </h3>
         </div>
         <a
           href="/dashboard/inventory/history"
           className="text-xs font-bold text-primary hover:underline"
         >
-          مێژووی تەواو →
+          {t("products.fullHistory")}
         </a>
       </div>
 
@@ -43,14 +48,14 @@ export default function ProductStockHistory({
           <table className="w-full min-w-[720px] text-sm">
             <thead className="bg-muted/70 text-right">
               <tr>
-                <th className="px-3 py-3 font-bold">جۆر</th>
-                <th className="px-3 py-3 font-bold">بڕ</th>
-                <th className="px-3 py-3 font-bold">پێشوو</th>
-                <th className="px-3 py-3 font-bold">نوێ</th>
-                <th className="px-3 py-3 font-bold">کۆگا</th>
-                <th className="px-3 py-3 font-bold">تێچوون</th>
-                <th className="px-3 py-3 font-bold">بەکارهێنەر</th>
-                <th className="px-3 py-3 font-bold">کات</th>
+                <th className="px-3 py-3 font-bold">{t("products.colType")}</th>
+                <th className="px-3 py-3 font-bold">{t("products.colQty")}</th>
+                <th className="px-3 py-3 font-bold">{t("products.colPrev")}</th>
+                <th className="px-3 py-3 font-bold">{t("products.colNew")}</th>
+                <th className="px-3 py-3 font-bold">{t("products.warehouse")}</th>
+                <th className="px-3 py-3 font-bold">{t("products.colCost")}</th>
+                <th className="px-3 py-3 font-bold">{t("products.colUser")}</th>
+                <th className="px-3 py-3 font-bold">{t("products.colTime")}</th>
               </tr>
             </thead>
             <tbody>
@@ -88,7 +93,7 @@ export default function ProductStockHistory({
                     <td className="px-3 py-3">{item.warehouse.name}</td>
                     <td className="px-3 py-3 whitespace-nowrap text-muted-foreground">
                       {item.unitCost != null
-                        ? `${formatMoney(item.unitCost)} IQD`
+                        ? `${formatMoney(item.unitCost)} ${t("common.currencyCode")}`
                         : "—"}
                     </td>
                     <td className="px-3 py-3 text-muted-foreground">

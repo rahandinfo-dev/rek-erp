@@ -1,4 +1,7 @@
 import { appToast } from "@/lib/toast";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 export async function reportClientNotification(input: {
   type: "INVOICE_PRINTED" | "PDF_GENERATED" | "ERROR" | "WARNING";
@@ -24,9 +27,9 @@ export async function reportClientNotification(input: {
     } else if (input.type === "PDF_GENERATED") {
       appToast.pdfGenerated(input.message);
     } else if (input.type === "ERROR") {
-      appToast.error(input.title || "هەڵە", input.message);
+      appToast.error(input.title || t("toast.error"), input.message);
     } else if (input.type === "WARNING") {
-      appToast.warning(input.title || "ئاگاداری", input.message);
+      appToast.warning(input.title || t("toast.warning"), input.message);
     }
   } catch (error) {
     console.error("CLIENT NOTIFICATION ERROR:", error);

@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { softDeleteWithUndo } from "@/lib/delete/withUndo";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   id: string;
@@ -12,6 +13,7 @@ type Props = {
 };
 
 export default function DeleteProductButton({ id, name }: Props) {
+  const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -23,11 +25,11 @@ export default function DeleteProductButton({ id, name }: Props) {
         deleteUrl: `/api/products/${id}`,
         restoreUrl: `/api/products/${id}/restore`,
         module: "products",
-        title: "Product deleted",
+        title: t("products.deletedTitle"),
         message: name
-          ? `«${name}» — Undo for 30 seconds`
-          : "Undo available for 30 seconds",
-        entityType: "Product",
+          ? t("products.deletedMessageNamed", { name })
+          : t("products.deletedMessage"),
+        entityType: t("products.entityType"),
         entityId: id,
         onSoftDeleted: () => {
           setOpen(false);
@@ -51,20 +53,20 @@ export default function DeleteProductButton({ id, name }: Props) {
         type="button"
         onClick={() => setOpen(true)}
         className="text-red-600 hover:text-red-700"
-        aria-label="سڕینەوەی بەرهەم"
+        aria-label={t("products.deleteAria")}
       >
         <Trash2 size={18} />
       </button>
 
       <ConfirmDialog
         open={open}
-        title="سڕینەوەی بەرهەم"
+        title={t("products.deleteTitle")}
         description={
           name
-            ? `دڵنیایت لە سڕینەوەی «${name}»؟ Soft delete دەبێت — Undo بۆ چەند چرکەیەک، مێژوو دەمێنێتەوە.`
-            : "Soft delete دەبێت — Undo · مێژووی جوڵە هەرگیز ناسڕدرێتەوە."
+            ? t("products.softDeleteDescNamed", { name })
+            : t("products.softDeleteDesc")
         }
-        confirmText={loading ? "سڕینەوە..." : "سڕینەوە"}
+        confirmText={loading ? t("products.deleting") : t("common.delete")}
         loading={loading}
         onConfirm={() => void handleDelete()}
         onCancel={() => setOpen(false)}

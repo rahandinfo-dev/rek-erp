@@ -19,6 +19,7 @@ import { VERSION_ACTION_LABELS } from "@/lib/versions/types";
 import { versionPageHref } from "@/lib/versions/urls";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   entityType: string;
@@ -36,6 +37,7 @@ export default function VersionHistoryPanel({
   className,
   compact = false,
 }: Props) {
+  const { t } = useT();
   const [items, setItems] = useState<EntityVersionRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [selected, setSelected] = useState<string[]>([]);
@@ -58,7 +60,7 @@ export default function VersionHistoryPanel({
       const json = await res.json();
       if (json.success) setItems(json.data.items || []);
     } catch {
-      appToast.error("Failed to load version history");
+      appToast.error(t("versionsUi.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -81,7 +83,7 @@ export default function VersionHistoryPanel({
 
   async function runCompare() {
     if (selected.length !== 2) {
-      appToast.info("Select two versions to compare");
+      appToast.info(t("versionsUi.selectTwoCompare"));
       return;
     }
     const [a, b] = selected;
@@ -90,7 +92,7 @@ export default function VersionHistoryPanel({
     );
     const json = await res.json();
     if (!json.success) {
-      appToast.error(json.message || "Compare failed");
+      appToast.error(json.message || t("versionsUi.compareFailed"));
       return;
     }
     setCompareDiffs(json.data.diffs);
@@ -105,7 +107,7 @@ export default function VersionHistoryPanel({
       await navigator.clipboard.writeText(
         `${window.location.origin}${versionPageHref(id)}`
       );
-      appToast.success("Version link copied");
+      appToast.success(t("versionsUi.linkCopied"));
     } catch {
       appToast.error("کۆپیکردن سەرنەکەوت");
     }
@@ -139,13 +141,13 @@ export default function VersionHistoryPanel({
   return (
     <section
       className={cn("space-y-4", className)}
-      aria-label="Version history"
+      aria-label={t("versionsUi.ariaLabel")}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <History size={18} className="text-primary" aria-hidden />
           <h2 className="text-lg font-black text-foreground">
-            Version History
+            {t("versionsUi.title")}
             {recordLabel ? (
               <span className="ms-2 text-sm font-semibold text-muted-foreground">
                 · {recordLabel}
@@ -160,24 +162,23 @@ export default function VersionHistoryPanel({
             onClick={() => void runCompare()}
             disabled={selected.length !== 2}
           >
-            <GitCompare size={14} aria-hidden />
-            Compare
+            <GitCompare size={14} aria-hidden />{t("versionsUi.compare")}
           </button>
           <Link
             href={`/dashboard/version-history?entityType=${encodeURIComponent(entityType)}&entityId=${encodeURIComponent(entityId)}`}
             className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-border bg-card px-3 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
           >
             <ExternalLink size={14} aria-hidden />
-            Open full history
+            {t("versionsUi.openFullHistory")}
           </Link>
         </div>
       </div>
 
       {loading ? (
-        <p className="text-sm text-muted-foreground">Loading versions…</p>
+        <p className="text-sm text-muted-foreground">{t("versionsUi.loadingVersions")}</p>
       ) : items.length === 0 ? (
         <p className="rounded-xl border border-dashed border-border px-4 py-8 text-center text-sm text-muted-foreground">
-          No versions recorded yet. Edits will appear here automatically.
+          {t("versionsUi.noVersionsYet")}
         </p>
       ) : (
         <div className="rek-table-shell">
@@ -186,27 +187,27 @@ export default function VersionHistoryPanel({
               <thead className="bg-muted/80 text-right">
                 <tr>
                   <th className="px-3 py-2.5 font-bold" scope="col">
-                    <span className="sr-only">Select</span>
+                    <span className="sr-only">{t("versionsUi.select")}</span>
                   </th>
                   <th className="px-3 py-2.5 font-bold" scope="col">
-                    Ver
+                    {t("versionsUi.ver")}
                   </th>
                   <th className="px-3 py-2.5 font-bold" scope="col">
-                    Action
+                    {t("activity.action")}
                   </th>
                   {!compact ? (
                     <th className="px-3 py-2.5 font-bold" scope="col">
-                      User
+                      {t("versionsUi.user")}
                     </th>
                   ) : null}
                   <th className="px-3 py-2.5 font-bold" scope="col">
-                    When
+                    {t("versionsUi.when")}
                   </th>
                   <th className="px-3 py-2.5 font-bold" scope="col">
-                    Changes
+                    {t("versionsUi.fields")}
                   </th>
                   <th className="px-3 py-2.5 text-center font-bold" scope="col">
-                    Actions
+                    {t("common.actions")}
                   </th>
                 </tr>
               </thead>
@@ -224,7 +225,7 @@ export default function VersionHistoryPanel({
                         type="checkbox"
                         checked={selected.includes(row.id)}
                         onChange={() => toggleSelect(row.id)}
-                        aria-label={`Select version ${row.versionNumber}`}
+                        aria-label={t("versionsUi.select") + ` ${row.versionNumber}`}
                         className="focus-visible:ring-[3px] focus-visible:ring-ring/35"
                       />
                     </td>
@@ -258,7 +259,7 @@ export default function VersionHistoryPanel({
                         <button
                           type="button"
                           className="rounded-lg p-1.5 hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
-                          aria-label={`View version ${row.versionNumber}`}
+                          aria-label={t("versionsUi.viewVersion")}
                           onClick={() => setViewId(row.id)}
                         >
                           <Eye size={15} />
@@ -266,7 +267,7 @@ export default function VersionHistoryPanel({
                         <button
                           type="button"
                           className="rounded-lg p-1.5 hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
-                          aria-label="Copy version link"
+                          aria-label={t("versionsUi.copyLink")}
                           onClick={() => void copyLink(row.id)}
                         >
                           <Copy size={15} />
@@ -291,7 +292,7 @@ export default function VersionHistoryPanel({
 
       {compareDiffs ? (
         <div className="space-y-2">
-          <h3 className="text-sm font-black">Comparison</h3>
+          <h3 className="text-sm font-black">{t("versionsUi.comparison")}</h3>
           <VersionCompare
             leftLabel={compareLabels.left}
             rightLabel={compareLabels.right}
@@ -323,9 +324,7 @@ export default function VersionHistoryPanel({
               type="button"
               className="rounded-lg px-2 py-1 text-xs font-bold hover:bg-muted"
               onClick={() => setViewId(null)}
-            >
-              Close
-            </button>
+            >{t("common.close")}</button>
           </div>
           <VersionCompare
             leftLabel="پێش"
@@ -348,7 +347,7 @@ export default function VersionHistoryPanel({
       <ConfirmDialog
         open={Boolean(restoreId)}
         title="ئەم وەشانە بگەڕێنرێتەوە؟"
-        description="The live record will be updated to match this version snapshot. A new version entry will be created. This cannot be undone except by restoring another version."
+        description={t("versionsUi.restoreDescPanel")}
         confirmText="گەڕاندنەوە"
         cancelText="هەڵوەشاندنەوە"
         loading={restoring}

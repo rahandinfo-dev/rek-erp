@@ -5,6 +5,7 @@ import {
   queryAuditLogs,
 } from "@/lib/audit/query";
 import ActivityTimeline from "@/components/activity/ActivityTimeline";
+import { tServer } from "@/lib/i18n";
 
 export default async function ActivityTimelinePage() {
   const user = await getCurrentUser();
@@ -23,7 +24,7 @@ export default async function ActivityTimelinePage() {
     <Suspense
       fallback={
         <div className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
-          Loading activity…
+          {tServer.t("activity.loading")}
         </div>
       }
     >

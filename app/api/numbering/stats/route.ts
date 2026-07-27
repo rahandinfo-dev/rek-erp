@@ -2,13 +2,14 @@ import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import { ensureDefaultRules } from "@/lib/numbering/engine";
+import { tServer } from "@/lib/i18n";
 
 export async function GET() {
   try {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }

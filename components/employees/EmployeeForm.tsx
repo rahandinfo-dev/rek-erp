@@ -9,19 +9,17 @@ import {
   employeeStatuses,
   type EmployeeFormValues,
 } from "@/lib/validators/employee";
-import {
-  EMPLOYEE_ROLE_LABELS,
-  EMPLOYEE_STATUS_LABELS,
-} from "@/lib/employees/labels";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar } from "@/components/ui/AutoSaveStatus";
 import ImageUpload from "@/components/uploads/ImageUpload";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const inputClass =
   "w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 outline-none transition focus:border-[#FFAE42] focus:bg-white";
 
 export default function EmployeeForm() {
+  const { t } = useT();
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState<EmployeeFormValues>({
@@ -84,15 +82,15 @@ export default function EmployeeForm() {
       });
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
-      appToast.success("کارمەند زیادکرا", data.message);
+      appToast.success(t("employees.addedTitle"), data.message);
       clearDraft();
       router.push(`/dashboard/employees/${data.data.id}`);
       router.refresh();
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -116,12 +114,12 @@ export default function EmployeeForm() {
         kind="employee"
         value={form.photo || null}
         onChange={(url) => update("photo", url || "")}
-        label="وێنەی کارمەند"
+        label={t("employees.photoLabel")}
         shape="circle"
       />
 
       <div className="grid gap-4 md:grid-cols-2">
-        <Field label="ناوی تەواو">
+        <Field label={t("employees.fullName")}>
           <input
             required
             value={form.fullName}
@@ -129,7 +127,7 @@ export default function EmployeeForm() {
             className={inputClass}
           />
         </Field>
-        <Field label="ناوی بەکارهێنەر">
+        <Field label={t("employees.username")}>
           <input
             required
             value={form.username}
@@ -137,14 +135,14 @@ export default function EmployeeForm() {
             className={inputClass}
           />
         </Field>
-        <Field label="مۆبایل">
+        <Field label={t("common.phone")}>
           <input
             value={form.phone || ""}
             onChange={(e) => update("phone", e.target.value)}
             className={inputClass}
           />
         </Field>
-        <Field label="ئیمەیڵ">
+        <Field label={t("common.email")}>
           <input
             type="email"
             value={form.email || ""}
@@ -152,35 +150,35 @@ export default function EmployeeForm() {
             className={inputClass}
           />
         </Field>
-        <Field label="ناسنامەی نیشتمانی">
+        <Field label={t("employees.nationalId")}>
           <input
             value={form.nationalId || ""}
             onChange={(e) => update("nationalId", e.target.value)}
             className={inputClass}
           />
         </Field>
-        <Field label="ناونیشان">
+        <Field label={t("common.address")}>
           <input
             value={form.address || ""}
             onChange={(e) => update("address", e.target.value)}
             className={inputClass}
           />
         </Field>
-        <Field label="پۆست">
+        <Field label={t("employees.position")}>
           <input
             value={form.position || ""}
             onChange={(e) => update("position", e.target.value)}
             className={inputClass}
           />
         </Field>
-        <Field label="بەش">
+        <Field label={t("employees.department")}>
           <input
             value={form.department || ""}
             onChange={(e) => update("department", e.target.value)}
             className={inputClass}
           />
         </Field>
-        <Field label="ڕۆڵ">
+        <Field label={t("employees.role")}>
           <select
             value={form.role}
             onChange={(e) =>
@@ -190,12 +188,12 @@ export default function EmployeeForm() {
           >
             {employeeRoles.map((role) => (
               <option key={role} value={role}>
-                {EMPLOYEE_ROLE_LABELS[role]}
+                {t(`employees.roles.${role}`)}
               </option>
             ))}
           </select>
         </Field>
-        <Field label="دۆخ">
+        <Field label={t("common.status")}>
           <select
             value={form.status}
             onChange={(e) =>
@@ -205,12 +203,12 @@ export default function EmployeeForm() {
           >
             {employeeStatuses.map((status) => (
               <option key={status} value={status}>
-                {EMPLOYEE_STATUS_LABELS[status]}
+                {t(`employees.statuses.${status}`)}
               </option>
             ))}
           </select>
         </Field>
-        <Field label="مووچەی مانگانە">
+        <Field label={t("employees.monthlySalary")}>
           <input
             type="number"
             min={0}
@@ -219,7 +217,7 @@ export default function EmployeeForm() {
             className={inputClass}
           />
         </Field>
-        <Field label="بەرواری دامەزراندن">
+        <Field label={t("employees.dateJoined")}>
           <input
             type="date"
             value={form.dateJoined || ""}
@@ -227,7 +225,7 @@ export default function EmployeeForm() {
             className={inputClass}
           />
         </Field>
-        <Field label="بەرواری مووچەی داهاتوو">
+        <Field label={t("employees.nextSalaryDate")}>
           <input
             type="date"
             value={form.nextSalaryDate || ""}
@@ -237,7 +235,7 @@ export default function EmployeeForm() {
         </Field>
       </div>
 
-      <Field label="تێبینی">
+      <Field label={t("common.notes")}>
         <textarea
           rows={4}
           value={form.notes || ""}
@@ -251,7 +249,7 @@ export default function EmployeeForm() {
         disabled={saving}
         className="rounded-2xl bg-[#FFAE42] px-6 py-3 font-bold text-white disabled:opacity-50"
       >
-        {saving ? "پاشەکەوت..." : "زیادکردنی کارمەند"}
+        {saving ? t("common.savingShort") : t("employees.add")}
       </button>
     </form>
   );

@@ -9,6 +9,7 @@ import {
   AUDIT_MODULE_LABELS,
 } from "@/lib/audit/modules";
 import { relativeTime } from "@/lib/drafts/centerMeta";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 function useActivityFeed(params: string) {
   const [items, setItems] = useState<AuditLogRow[]>([]);
@@ -54,6 +55,7 @@ function ActivityListCard({
   items: AuditLogRow[];
   empty: string;
 }) {
+  const { t } = useT();
   return (
     <section aria-label={title} className="rek-card overflow-hidden p-0">
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -65,7 +67,7 @@ function ActivityListCard({
           href="/dashboard/activity"
           className="text-xs font-bold text-primary hover:underline"
         >
-          Timeline
+          {t("activityWidgets.timeline")}
         </Link>
       </div>
       {items.length === 0 ? (
@@ -92,49 +94,53 @@ function ActivityListCard({
 }
 
 export function RecentActivityWidget() {
+  const { t } = useT();
   const items = useActivityFeed("pageSize=6&sort=newest");
   return (
     <ActivityListCard
-      title="Recent Activity"
+      title={t("activityWidgets.recentActivity")}
       icon={Activity}
       items={items}
-      empty="No recent activity yet."
+      empty={t("activityWidgets.noRecent")}
     />
   );
 }
 
 export function MyActivityWidget() {
+  const { t } = useT();
   const items = useActivityFeed("pageSize=6&sort=newest&scope=mine");
   return (
     <ActivityListCard
-      title="My Activity"
+      title={t("activityWidgets.myActivity")}
       icon={User}
       items={items}
-      empty="Your actions will appear here."
+      empty={t("activityWidgets.yourActions")}
     />
   );
 }
 
 export function TeamActivityWidget() {
+  const { t } = useT();
   const items = useActivityFeed("pageSize=6&sort=newest");
   return (
     <ActivityListCard
-      title="Team Activity"
+      title={t("activityWidgets.teamActivity")}
       icon={Users}
       items={items}
-      empty="No team activity yet."
+      empty={t("activityWidgets.noTeam")}
     />
   );
 }
 
 export function FailedOperationsWidget() {
+  const { t } = useT();
   const items = useActivityFeed("pageSize=6&sort=newest&status=failed");
   return (
     <ActivityListCard
-      title="Failed Operations"
+      title={t("activityWidgets.failedOperations")}
       icon={AlertTriangle}
       items={items}
-      empty="No failed operations."
+      empty={t("activityWidgets.noFailed")}
     />
   );
 }

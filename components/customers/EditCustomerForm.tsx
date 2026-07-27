@@ -13,10 +13,12 @@ import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import { appToast } from "@/lib/toast";
 import ImageUpload from "@/components/uploads/ImageUpload";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = { id: string };
 
 export default function EditCustomerForm({ id }: Props) {
+  const { t } = useT();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [serverError, setServerError] = useState("");
@@ -85,14 +87,14 @@ export default function EditCustomerForm({ id }: Props) {
         });
         setHydrated(true);
       } catch {
-        setServerError("هەڵەیەک ڕوویدا.");
+        setServerError(t("errors.generic"));
       } finally {
         setLoading(false);
       }
     }
 
     void load();
-  }, [id, reset]);
+  }, [id, reset, t]);
 
   async function onSubmit(data: CustomerFormData) {
     try {
@@ -107,24 +109,25 @@ export default function EditCustomerForm({ id }: Props) {
       const result = await res.json();
 
       if (!res.ok) {
-        setServerError(result.message || "هەڵەیەک ڕوویدا.");
-        appToast.error(result.message || "هەڵەیەک ڕوویدا.");
+        const msg = result.message || t("errors.generic");
+        setServerError(msg);
+        appToast.error(msg);
         return;
       }
 
       clearDraft();
-      appToast.success("کڕیار نوێکرایەوە.");
+      appToast.success(t("customers.updated"));
       router.push("/dashboard/customers");
       router.refresh();
     } catch {
-      setServerError("هەڵەیەک ڕوویدا.");
+      setServerError(t("errors.generic"));
     }
   }
 
   if (loading) {
     return (
       <div className="rounded-3xl bg-white p-8 text-center text-slate-500">
-        چاوەڕێ بکە...
+        {t("common.pleaseWait")}
       </div>
     );
   }
@@ -154,13 +157,13 @@ export default function EditCustomerForm({ id }: Props) {
         kind="customer"
         value={imageValue || null}
         onChange={(url) => setValue("image", url || "", { shouldDirty: true })}
-        label="وێنەی کڕیار"
+        label={t("customers.imageLabel")}
         shape="circle"
       />
 
       <div className="grid gap-6 md:grid-cols-2">
         <div>
-          <label className="mb-2 block font-bold">ناوی کڕیار</label>
+          <label className="mb-2 block font-bold">{t("customers.nameLabel")}</label>
           <input {...register("name")} className="w-full rounded-xl border p-3" />
           {errors.name && (
             <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
@@ -168,7 +171,7 @@ export default function EditCustomerForm({ id }: Props) {
         </div>
 
         <div>
-          <label className="mb-2 block font-bold">کۆد</label>
+          <label className="mb-2 block font-bold">{t("common.code")}</label>
           <input {...register("code")} className="w-full rounded-xl border p-3" />
           {errors.code && (
             <p className="mt-1 text-sm text-red-500">{errors.code.message}</p>
@@ -178,23 +181,23 @@ export default function EditCustomerForm({ id }: Props) {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div>
-          <label className="mb-2 block font-bold">مۆبایل</label>
+          <label className="mb-2 block font-bold">{t("common.phone")}</label>
           <input {...register("phone")} className="w-full rounded-xl border p-3" />
         </div>
 
         <div>
-          <label className="mb-2 block font-bold">ئیمەیڵ</label>
+          <label className="mb-2 block font-bold">{t("common.email")}</label>
           <input {...register("email")} className="w-full rounded-xl border p-3" />
         </div>
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">ناونیشان</label>
+        <label className="mb-2 block font-bold">{t("common.address")}</label>
         <input {...register("address")} className="w-full rounded-xl border p-3" />
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">تێبینی</label>
+        <label className="mb-2 block font-bold">{t("common.notes")}</label>
         <textarea
           {...register("notes")}
           rows={3}
@@ -204,7 +207,7 @@ export default function EditCustomerForm({ id }: Props) {
 
       <div className="flex items-center gap-3">
         <input id="active" type="checkbox" {...register("active")} />
-        <label htmlFor="active">کڕیار چالاک بێت</label>
+        <label htmlFor="active">{t("customers.activeLabel")}</label>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -214,7 +217,7 @@ export default function EditCustomerForm({ id }: Props) {
           disabled={isSubmitting}
           className="rounded-2xl bg-[#FFAE42] px-6 py-3 font-bold text-white disabled:opacity-50"
         >
-          {isSubmitting ? "چاوەڕێ بکە..." : "پاشەکەوتکردن"}
+          {isSubmitting ? t("common.pleaseWait") : t("common.save")}
         </button>
       </div>
     </form>

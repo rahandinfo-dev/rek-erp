@@ -2,6 +2,7 @@
 
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   open: boolean;
@@ -20,6 +21,7 @@ export default function SaveGuardDialog({
   onDiscard,
   onCancel,
 }: Props) {
+  const { t } = useT();
   return (
     <AlertDialog.Root
       open={open}
@@ -37,10 +39,10 @@ export default function SaveGuardDialog({
           }}
         >
           <AlertDialog.Title className="text-2xl font-bold text-foreground">
-            Unsaved Changes
+            {t("unsaved.unsavedTitle")}
           </AlertDialog.Title>
           <AlertDialog.Description className="mt-3 text-muted-foreground">
-            You have unsaved changes. What would you like to do?
+            {t("unsaved.unsavedBody")}
           </AlertDialog.Description>
 
           {summary.length ? (
@@ -64,7 +66,7 @@ export default function SaveGuardDialog({
                 disabled={saving}
                 onClick={onCancel}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
             </AlertDialog.Cancel>
             <Button
@@ -74,14 +76,10 @@ export default function SaveGuardDialog({
               className="text-destructive hover:text-destructive"
               onClick={onDiscard}
             >
-              Discard Changes
+              {t("unsaved.discard")}
             </Button>
-            <Button
-              type="button"
-              disabled={saving}
-              onClick={onSaveContinue}
-            >
-              {saving ? "Saving…" : "Save & Continue"}
+            <Button type="button" disabled={saving} onClick={onSaveContinue}>
+              {saving ? t("common.saving") : t("unsaved.saveContinue")}
             </Button>
           </div>
         </AlertDialog.Content>

@@ -8,6 +8,7 @@ import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
 import { formatMoney } from "@/lib/utils/format";
 import BulkActionBar from "@/components/bulk/BulkActionBar";
 import { useBulkSelection } from "@/lib/bulk/useSelection";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type SaleRow = {
   id: string;
@@ -21,6 +22,7 @@ export type SaleRow = {
 };
 
 export default function SalesTable({ initialData }: { initialData: SaleRow[] }) {
+  const { t } = useT();
   const [sales, setSales] = useState(initialData);
   const [, startTransition] = useTransition();
   const selection = useBulkSelection();
@@ -41,15 +43,15 @@ export default function SalesTable({ initialData }: { initialData: SaleRow[] }) 
   );
 
   async function cancelSale(id: string) {
-    if (!confirm("دڵنیایت لە هەڵوەشاندنەوەی ئەم فرۆشتنە؟")) return;
+    if (!confirm(t("sales.cancelConfirm"))) return;
 
     const { softDeleteWithUndo } = await import("@/lib/delete/withUndo");
     const result = await softDeleteWithUndo({
       deleteUrl: `/api/sales/${id}`,
       restoreUrl: `/api/sales/${id}/restore`,
       module: "sales",
-      title: "Sale cancelled",
-      entityType: "Sale",
+      title: t("sales.cancelledTitle"),
+      entityType: t("sales.entityType"),
       entityId: id,
       onSoftDeleted: () => {
         startTransition(() => {
@@ -72,34 +74,34 @@ export default function SalesTable({ initialData }: { initialData: SaleRow[] }) 
   const columns: DataTableColumn<SaleRow>[] = [
     {
       id: "invoiceNo",
-      header: "پسوولە",
+      header: t("common.invoice"),
       accessor: (s) => s.invoiceNo,
       cell: (s) => <span className="font-medium">{s.invoiceNo}</span>,
     },
     {
       id: "customer",
-      header: "کڕیار",
+      header: t("sales.customerOptional"),
       accessor: (s) => s.customer.name,
     },
     {
       id: "warehouse",
-      header: "کۆگا",
+      header: t("common.warehouse"),
       accessor: (s) => s.warehouse.name,
     },
     {
       id: "saleDate",
-      header: "بەروار",
+      header: t("common.date"),
       accessor: (s) => formatDate(s.saleDate),
     },
     {
       id: "total",
-      header: "کۆی گشتی",
+      header: t("common.total"),
       accessor: (s) => Number(s.total),
-      cell: (s) => `${formatMoney(s.total)} IQD`,
+      cell: (s) => `${formatMoney(s.total)} ${t("common.currencyCode")}`,
     },
     {
       id: "status",
-      header: "دۆخ",
+      header: t("common.status"),
       accessor: (s) => s.status,
       cell: (s) => (
         <span
@@ -112,10 +114,10 @@ export default function SalesTable({ initialData }: { initialData: SaleRow[] }) 
           }`}
         >
           {s.status === "COMPLETED"
-            ? "تەواو"
+            ? t("common.statusCompleted")
             : s.status === "CANCELLED"
-              ? "هەڵوەشاوە"
-              : "ڕەشنووس"}
+              ? t("common.statusCancelled")
+              : t("common.statusDraft")}
         </span>
       ),
     },
@@ -138,12 +140,12 @@ export default function SalesTable({ initialData }: { initialData: SaleRow[] }) 
       data={sales}
       columns={columns}
       getRowId={(s) => s.id}
-      searchPlaceholder="گەڕان بە ژمارەی پسوولە یان کڕیار..."
+      searchPlaceholder={t("sales.searchPlaceholder")}
       searchFilter={(s, q) =>
         s.invoiceNo.toLowerCase().includes(q) ||
         s.customer.name.toLowerCase().includes(q)
       }
-      emptyMessage="هیچ فرۆشتنێک نەدۆزرایەوە."
+      emptyMessage={t("sales.notFound")}
       selection={{
         selectedIds: selection.selectedIds,
         onChange: selection.setIds,
@@ -161,7 +163,7 @@ export default function SalesTable({ initialData }: { initialData: SaleRow[] }) 
           className="inline-flex h-11 items-center gap-2 rounded-2xl border px-4 text-sm font-semibold text-[#FFAE42]"
         >
           <FileText size={16} />
-          پسوولەکان
+          {t("nav.invoices")}
         </Link>
       }
       actions={(sale) => (
@@ -170,7 +172,7 @@ export default function SalesTable({ initialData }: { initialData: SaleRow[] }) 
             <Link
               href={`/dashboard/invoices/${sale.invoiceId}`}
               className="text-[#FFAE42] hover:text-[#E8942A]"
-              title="پسوولە"
+              title={t("common.invoice")}
             >
               <FileText size={18} />
             </Link>

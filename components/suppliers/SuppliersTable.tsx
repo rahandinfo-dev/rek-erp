@@ -6,6 +6,7 @@ import { Pencil, Search } from "lucide-react";
 import DeleteSupplierButton from "./DeleteSupplierButton";
 import BulkListShell from "@/components/bulk/BulkListShell";
 import ContextMenuSurface from "@/components/quick-actions/ContextMenuSurface";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type SupplierRow = {
   id: string;
@@ -23,6 +24,7 @@ export default function SuppliersTable({
 }: {
   initialData: SupplierRow[];
 }) {
+  const { t } = useT();
   const [suppliers, setSuppliers] = useState(initialData);
   const [search, setSearch] = useState("");
 
@@ -42,7 +44,7 @@ export default function SuppliersTable({
 
         <input
           type="text"
-          placeholder="گەڕان بە ناوی دابینکەر..."
+          placeholder={t("suppliers.searchByName")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-2xl border border-slate-300 py-3 pl-12 pr-4 outline-none focus:border-[#FFAE42]"
@@ -63,12 +65,12 @@ export default function SuppliersTable({
           <thead className="bg-slate-100">
             <tr className="text-right">
               <th className="px-5 py-4">{headerCheckbox}</th>
-              <th className="px-5 py-4">ناو</th>
-              <th className="px-5 py-4">کۆد</th>
-              <th className="px-5 py-4">مۆبایل</th>
-              <th className="px-5 py-4">ئیمەیڵ</th>
-              <th className="px-5 py-4">دۆخ</th>
-              <th className="px-5 py-4 text-center">کردار</th>
+              <th className="px-5 py-4">{t("common.name")}</th>
+              <th className="px-5 py-4">{t("common.code")}</th>
+              <th className="px-5 py-4">{t("common.phone")}</th>
+              <th className="px-5 py-4">{t("common.email")}</th>
+              <th className="px-5 py-4">{t("common.status")}</th>
+              <th className="px-5 py-4 text-center">{t("common.action")}</th>
             </tr>
           </thead>
 
@@ -76,7 +78,7 @@ export default function SuppliersTable({
             {filteredSuppliers.length === 0 ? (
               <tr>
                 <td colSpan={7} className="py-10 text-center text-slate-500">
-                  هیچ دابینکەرێک نەدۆزرایەوە.
+                  {t("suppliers.notFound")}
                 </td>
               </tr>
             ) : (
@@ -91,7 +93,7 @@ export default function SuppliersTable({
                     label: supplier.name,
                     href: `/dashboard/suppliers/${supplier.id}/edit`,
                     editHref: `/dashboard/suppliers/${supplier.id}/edit`,
-                    entityType: "دابینکەر",
+                    entityType: t("suppliers.entityType"),
                     archived: !supplier.active,
                   }}
                 >
@@ -100,7 +102,7 @@ export default function SuppliersTable({
                       type="checkbox"
                       checked={isSelected(supplier.id)}
                       onChange={() => toggle(supplier.id)}
-                      aria-label={`Select ${supplier.name}`}
+                      aria-label={t("common.selectNamed", { name: supplier.name })}
                     />
                   </td>
                   <td className="px-5 py-4 font-medium">{supplier.name}</td>
@@ -115,7 +117,7 @@ export default function SuppliersTable({
                           : "bg-red-100 text-red-700"
                       }`}
                     >
-                      {supplier.active ? "چالاک" : "ناچالاک"}
+                      {supplier.active ? t("common.active") : t("common.inactive")}
                     </span>
                   </td>
                   <td className="px-5 py-4">

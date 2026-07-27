@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import EmployeeProfile from "@/components/employees/EmployeeProfile";
 import RecordVersionHistorySection from "@/components/versions/RecordVersionHistorySection";
+import { tServer } from "@/lib/i18n";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -12,6 +13,7 @@ export default async function EmployeeDetailsPage({ params }: Props) {
   const user = await getCurrentUser();
   if (!user) return null;
 
+  const t = tServer.t.bind(tServer);
   const { id } = await params;
 
   const employee = await db.employee.findFirst({
@@ -102,7 +104,7 @@ export default async function EmployeeDetailsPage({ params }: Props) {
       }))}
     />
     <RecordVersionHistorySection
-      entityType="کارمەند"
+      entityType={t("employees.entityType")}
       entityId={employee.id}
       recordLabel={employee.fullName}
     />

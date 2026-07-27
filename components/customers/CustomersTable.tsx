@@ -7,6 +7,7 @@ import DataTable, { type DataTableColumn } from "@/components/ui/DataTable";
 import DeleteCustomerButton from "./DeleteCustomerButton";
 import BulkActionBar from "@/components/bulk/BulkActionBar";
 import { useBulkSelection } from "@/lib/bulk/useSelection";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type CustomerRow = {
   id: string;
@@ -22,6 +23,7 @@ export default function CustomersTable({
 }: {
   initialData: CustomerRow[];
 }) {
+  const { t } = useT();
   const [customers, setCustomers] = useState(initialData);
   const selection = useBulkSelection();
   const [idsMeta, setIdsMeta] = useState({
@@ -44,17 +46,17 @@ export default function CustomersTable({
   const columns: DataTableColumn<CustomerRow>[] = [
     {
       id: "name",
-      header: "ناو",
+      header: t("common.name"),
       accessor: (r) => r.name,
       cell: (r) => <span className="font-medium">{r.name}</span>,
     },
-    { id: "code", header: "کۆد", accessor: (r) => r.code },
-    { id: "phone", header: "مۆبایل", accessor: (r) => r.phone || "-" },
-    { id: "email", header: "ئیمەیڵ", accessor: (r) => r.email || "-" },
+    { id: "code", header: t("common.code"), accessor: (r) => r.code },
+    { id: "phone", header: t("common.phone"), accessor: (r) => r.phone || "-" },
+    { id: "email", header: t("common.email"), accessor: (r) => r.email || "-" },
     {
       id: "active",
-      header: "دۆخ",
-      accessor: (r) => (r.active ? "چالاک" : "ناچالاک"),
+      header: t("common.status"),
+      accessor: (r) => (r.active ? t("common.active") : t("common.inactive")),
       cell: (r) => (
         <span
           className={`rounded-full px-3 py-1 text-sm font-medium ${
@@ -63,7 +65,7 @@ export default function CustomersTable({
               : "bg-red-100 text-red-700"
           }`}
         >
-          {r.active ? "چالاک" : "ناچالاک"}
+          {r.active ? t("common.active") : t("common.inactive")}
         </span>
       ),
     },
@@ -86,11 +88,11 @@ export default function CustomersTable({
         data={customers}
         columns={columns}
         getRowId={(r) => r.id}
-        searchPlaceholder="گەڕان بە ناو یان کۆد..."
+        searchPlaceholder={t("customers.searchTablePlaceholder")}
         searchFilter={(r, q) =>
           r.name.toLowerCase().includes(q) || r.code.toLowerCase().includes(q)
         }
-        emptyMessage="هیچ کڕیارێک نەدۆزرایەوە."
+        emptyMessage={t("customers.notFound")}
         selection={{
           selectedIds: selection.selectedIds,
           onChange: selection.setIds,

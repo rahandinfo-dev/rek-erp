@@ -20,6 +20,7 @@ import { appToast } from "@/lib/toast";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { Button } from "@/components/ui/button";
 import BulkListShell from "@/components/bulk/BulkListShell";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Pagination = {
   page: number;
@@ -37,6 +38,7 @@ function ProductsBrowser({
   initialProducts = [],
   initialPagination,
 }: Props) {
+  const { t } = useT();
   const [products, setProducts] = useState<ProductCardData[]>(initialProducts);
   const [loading, setLoading] = useState(initialProducts.length === 0);
   const [search, setSearch] = useState("");
@@ -95,7 +97,7 @@ function ProductsBrowser({
         });
       } catch (error) {
         if (controller.signal.aborted) return;
-        appToast.error("بارکردنی بەرهەم سەرنەکەوت", getErrorMessage(error));
+        appToast.error(t("products.loadFailed"), getErrorMessage(error));
       } finally {
         if (!controller.signal.aborted) setLoading(false);
       }
@@ -132,11 +134,11 @@ function ProductsBrowser({
   return (
     <div className="space-y-6 sm:space-y-8">
       <PageHeader
-        title="بەرهەمەکان"
-        description="وێنە، ناو، SKU، بڕ، کۆگا، نرخ و دۆخ."
+        title={t("products.title")}
+        description={t("products.description")}
         breadcrumb={[
-          { label: "داشبۆرد", href: "/dashboard" },
-          { label: "بەرهەمەکان" },
+          { label: t("nav.dashboard"), href: "/dashboard" },
+          { label: t("nav.products") },
         ]}
         actions={
           <Link
@@ -144,7 +146,7 @@ function ProductsBrowser({
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-primary px-5 font-bold text-primary-foreground shadow-[0_6px_16px_var(--shadow-brand)] transition hover:bg-[var(--brand-hover)] active:scale-[0.98]"
           >
             <Plus size={20} aria-hidden />
-            بەرهەمی نوێ
+            {t("products.new")}
           </Link>
         }
       />
@@ -157,22 +159,22 @@ function ProductsBrowser({
         />
         <input
           type="search"
-          placeholder="گەڕان بە ناو، SKU یان بارکۆد..."
+          placeholder={t("products.searchPlaceholder")}
           value={search}
           onChange={(e) => {
             const value = e.target.value;
             setSearch(value);
             setPage(1);
           }}
-          aria-label="گەڕان لە بەرهەمەکان"
+          aria-label={t("products.searchAria")}
           className="w-full rounded-2xl border border-border bg-card py-3 pr-12 pl-4 text-foreground shadow-[var(--shadow-xs)] outline-none transition focus:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/35"
         />
       </div>
 
       <p className="text-sm font-bold text-muted-foreground" aria-live="polite">
         <Package size={14} className="ml-1 inline text-primary" aria-hidden />
-        {pagination.total} بەرهەم
-        {loading && products.length > 0 ? " · نوێکردنەوە…" : ""}
+        {t("common.productsCount", { count: String(pagination.total) })}
+        {loading && products.length > 0 ? t("products.refreshing") : ""}
       </p>
 
       {showSkeleton ? (
@@ -181,12 +183,12 @@ function ProductsBrowser({
         <EmptyState
           icon={Package}
           title={
-            searching ? "هیچ بەرهەمێک نەدۆزرایەوە" : "هیچ بەرهەمێک نییە"
+            searching ? t("products.notFound") : t("products.empty")
           }
           description={
             searching
-              ? "گەڕانەکەت بگۆڕە یان فلتەر لاببە."
-              : "یەکەم بەرهەم زیاد بکە بۆ دەستپێکردنی بەڕێوەبردنی کۆگا."
+              ? t("products.emptySearchHint")
+              : t("products.emptyHint")
           }
           action={
             !searching ? (
@@ -195,7 +197,7 @@ function ProductsBrowser({
                 className="inline-flex h-11 items-center gap-2 rounded-2xl bg-primary px-6 font-bold text-primary-foreground transition hover:bg-[var(--brand-hover)]"
               >
                 <Plus size={20} aria-hidden />
-                بەرهەمی نوێ زیاد بکە
+                {t("products.addFirst")}
               </Link>
             ) : null
           }
@@ -225,8 +227,7 @@ function ProductsBrowser({
               </div>
               <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-xs)]">
                 <p className="text-sm text-muted-foreground" aria-live="polite">
-                  کۆی گشتی: {pagination.total} · لاپەڕە {pagination.page} /{" "}
-                  {pagination.totalPages}
+                  {t("common.pagination", { total: String(pagination.total), page: String(pagination.page), totalPages: String(pagination.totalPages) })}
                 </p>
                 <div className="flex gap-2">
                   <Button
@@ -236,9 +237,7 @@ function ProductsBrowser({
                     disabled={page <= 1 || loading}
                     onClick={() => setPage((p) => Math.max(1, p - 1))}
                     className="shadow-none"
-                  >
-                    پێشوو
-                  </Button>
+                  >{t("common.prevPage")}</Button>
                   <Button
                     type="button"
                     variant="outline"
@@ -246,9 +245,7 @@ function ProductsBrowser({
                     disabled={page >= pagination.totalPages || loading}
                     onClick={() => setPage((p) => p + 1)}
                     className="shadow-none"
-                  >
-                    داهاتوو
-                  </Button>
+                  >{t("common.nextPage")}</Button>
                 </div>
               </div>
             </>

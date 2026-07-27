@@ -1,4 +1,5 @@
 import type { MetricPeriod } from "@/lib/ai/metrics";
+import { tServer } from "@/lib/i18n";
 
 export type AiIntentId =
   | "today_sales"
@@ -83,7 +84,7 @@ export type AiRecommendation = {
 
 export type BusinessHealth = {
   score: number;
-  label: "Excellent" | "Good" | "Fair" | "At Risk" | "Critical";
+  label: string;
   factors: Array<{ key: string; label: string; score: number; note: string }>;
 };
 
@@ -97,20 +98,19 @@ export type AiDashboardBundle = {
 
 /** Suggested chips — Kurdish Sorani, real ERP questions only. */
 export const AI_SUGGESTED_PROMPTS = [
-  "قازانجی سافی ئەم مانگە چەندە؟",
-  "کۆی فرۆشتنی ئەم مانگە چەندە؟",
-  "کۆی خەرجییەکانی ئەم مانگا چەندە؟",
-  "قەرزی کڕیاران چەندە؟",
-  "قەرزی دابینکەران چەندە؟",
-  "کام کاڵا زۆرترین فرۆشتراوە؟",
-  "کام کاڵا کەمترین فرۆشتراوە؟",
-  "کام کاڵا نزیکە لە تەواوبوون؟",
-  "چەند کاڵا لە کۆگا ماوە؟",
-  "چەند پسووڵەی ئەمڕۆ تۆمارکراون؟",
-  "چەند بەکارهێنەر هەیە؟",
-  "ئەم هەفتە چەند مامەڵە کراوە؟",
-  "ئەم مانگە قازانج زیاد بووە یان کەم بووە؟",
+  tServer.t("ai.prompts.netProfit"),
+  tServer.t("ai.prompts.monthSales"),
+  tServer.t("ai.prompts.monthExpenses"),
+  tServer.t("ai.prompts.customerDebt"),
+  tServer.t("ai.prompts.supplierDebt"),
+  tServer.t("ai.prompts.topProduct"),
+  tServer.t("ai.prompts.leastProduct"),
+  tServer.t("ai.prompts.lowStock"),
+  tServer.t("ai.prompts.stockUnits"),
+  tServer.t("ai.prompts.todayInvoices"),
+  tServer.t("ai.prompts.userCount"),
+  tServer.t("ai.prompts.weekTx"),
+  tServer.t("ai.prompts.profitMom"),
 ];
 
-export const AI_WELCOME_KU =
-  "سڵاو — من یاریدەدەری ERPـی ڕێکم. تەنها لەسەر داتای ڕاستەقینەی کۆمپانیاکەت وەڵام دەدەمەوە. هیچ ژمارەیەک خەیاڵی یان خەملێنراو نییە. پرسیارێک بکە یان یەکێک لە پێشنیارەکان هەڵبژێرە.";
+export const AI_WELCOME_KU = tServer.t("ai.welcome");

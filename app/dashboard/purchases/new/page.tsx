@@ -1,8 +1,11 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import PurchaseForm from "@/components/purchases/PurchaseForm";
+import { tServer } from "@/lib/i18n";
 
 export default function NewPurchasePage() {
+  const t = tServer.t.bind(tServer);
+
   return (
     <div className="space-y-6 sm:space-y-8">
       <div className="flex items-center gap-4">
@@ -14,9 +17,9 @@ export default function NewPurchasePage() {
         </Link>
         <div>
           <h1 className="text-3xl font-black text-[#FFAE42] sm:text-4xl">
-            کڕینی نوێ
+            {t("purchases.new")}
           </h1>
-          <p className="mt-2 text-slate-500">پسوولەی کڕین تۆمار بکە.</p>
+          <p className="mt-2 text-slate-500">{t("purchases.newDescription")}</p>
         </div>
       </div>
 

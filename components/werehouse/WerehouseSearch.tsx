@@ -4,8 +4,10 @@ import { Search, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function WerehouseSearch() {
+  const { t } = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const initial = searchParams.get("search") ?? "";
@@ -33,20 +35,20 @@ export default function WerehouseSearch() {
       />
 
       <label htmlFor="warehouse-search" className="sr-only">
-        گەڕان لە کۆگاکان
+        {t("warehouses.searchLabel")}
       </label>
       <input
         id="warehouse-search"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
-        placeholder="گەڕان بە ناوی کۆگا یان کۆد..."
+        placeholder={t("warehouses.searchPlaceholder")}
         className="h-12 w-full rounded-2xl border border-slate-300 bg-white pr-12 pl-12 outline-none transition focus:border-[#FFAE42]"
       />
 
       {search ? (
         <button
           type="button"
-          aria-label="پاککردنەوەی گەڕان"
+          aria-label={t("common.clearSearch")}
           onClick={() => setSearch("")}
           className="absolute top-1/2 right-4 -translate-y-1/2 rounded-lg p-1 text-slate-500 hover:bg-slate-100"
         >

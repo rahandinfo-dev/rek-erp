@@ -3,17 +3,23 @@ import { BRAND } from "@/lib/brand";
 import RekToaster from "@/components/ui/RekToaster";
 import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import ThemeScript from "@/components/theme/ThemeScript";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
+import { DEFAULT_LOCALE, LOCALE_META } from "@/lib/i18n/config";
+import { tServer } from "@/lib/i18n";
 import "./globals.css";
+
+const meta = LOCALE_META[DEFAULT_LOCALE];
+const t = tServer.t.bind(tServer);
 
 export const metadata: Metadata = {
   title: {
     default: BRAND.productName,
-    template: `%s · ${BRAND.nameEn}`,
+    template: `%s · ${BRAND.nameKu}`,
   },
-  description: `${BRAND.productName} — ${BRAND.taglineEn}. ${BRAND.taglineKu}`,
+  description: `${BRAND.productName} — ${BRAND.taglineKu}`,
   applicationName: BRAND.productName,
-  keywords: [BRAND.nameEn, BRAND.nameKu, "ERP", "ئینڤێنتۆری", "فرۆشتن"],
-  authors: [{ name: BRAND.nameEn }],
+  keywords: [BRAND.nameKu, BRAND.nameEn, "ERP", "ئینڤێنتۆری", "فرۆشتن"],
+  authors: [{ name: BRAND.nameKu }],
   openGraph: {
     title: BRAND.productName,
     description: BRAND.taglineKu,
@@ -63,18 +69,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ckb" dir="rtl" suppressHydrationWarning>
+    <html lang={meta.htmlLang} dir={meta.dir} suppressHydrationWarning>
       <head>
         <ThemeScript />
       </head>
       <body className="max-w-full overflow-x-clip bg-background text-foreground antialiased">
         <a href="#main-content" className="rek-skip-link">
-          بازدان بۆ ناوەڕۆک
+          {t("common.skipToContent")}
         </a>
-        <ThemeProvider>
-          {children}
-          <RekToaster />
-        </ThemeProvider>
+        <LocaleProvider locale={DEFAULT_LOCALE}>
+          <ThemeProvider>
+            {children}
+            <RekToaster />
+          </ThemeProvider>
+        </LocaleProvider>
       </body>
     </html>
   );

@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import type { SaveHistoryEntry } from "@/lib/unsaved/types";
+import { tServer } from "@/lib/i18n";
 
 const schema = z.object({
   entries: z
@@ -25,7 +26,7 @@ export async function GET() {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -52,7 +53,7 @@ export async function PUT(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -61,7 +62,7 @@ export async function PUT(req: NextRequest) {
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Invalid history" },
+        { success: false, message: tServer.t("api.invalidHistory") },
         { status: 400 }
       );
     }

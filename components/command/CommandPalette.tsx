@@ -88,6 +88,8 @@ import SearchPreviewPanel from "@/components/search/SearchPreviewPanel";
 import SearchQuickActions from "@/components/search/SearchQuickActions";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
+import { tServer } from "@/lib/i18n";
 
 const ICONS: Record<CommandIconKey, typeof Search> = {
   dashboard: LayoutDashboard,
@@ -173,7 +175,7 @@ function offlineHitsToGroup(
   if (!hits.length) return null;
   return {
     key: "offline",
-    label: "Offline cache",
+    label: tServer.t("command.offlineCache"),
     items: hits.slice(0, 20).map((item) => ({
       id: `offline-${item.type}-${item.id}`,
       title: item.title,
@@ -224,6 +226,7 @@ function syncHistoryRemote(history: SearchHistoryEntry[]) {
 
 /** Global smart search + command palette — Ctrl+K / bus. */
 export function CommandPaletteHost() {
+  const { t } = useT();
   const router = useRouter();
   const pathname = usePathname() || "/dashboard";
   const { theme, toggleTheme } = useTheme();
@@ -329,7 +332,7 @@ export function CommandPaletteHost() {
       if (contextCmds.length) {
         groups.push({
           key: "context",
-          label: "Suggested for this page",
+          label: t("command.suggestedForPage"),
           items: contextCmds.slice(0, 8).map((c) => ({
             ...c,
             section: "context" as const,
@@ -420,7 +423,7 @@ export function CommandPaletteHost() {
 
     groups.push({
       key: "popular",
-      label: "Popular Pages",
+      label: t("command.popularPages"),
       items: SEARCH_QUICK_START.slice(0, 8).map((p) => ({
         id: `pop-${p.id}`,
         title: p.title,
@@ -436,7 +439,7 @@ export function CommandPaletteHost() {
 
     groups.push({
       key: "action",
-      label: "Actions",
+      label: t("command.actions"),
       items: staticCommands.filter((c) => c.section === "action").slice(0, 6),
     });
 
@@ -480,7 +483,7 @@ export function CommandPaletteHost() {
       groups.push({ key: "action", label: "فەرمانەکان", items: actions });
     }
     if (navigate.length) {
-      groups.push({ key: "navigate", label: "Pages", items: navigate });
+      groups.push({ key: "navigate", label: t("command.pages"), items: navigate });
     }
     return groups;
   }, [query, buildEmptyGroups, mode, staticCommands]);
@@ -807,7 +810,7 @@ export function CommandPaletteHost() {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window as any).webkitSpeechRecognition;
     if (!SR) {
-      appToast.error("Voice search is not supported in this browser");
+      appToast.error(t("command.voiceUnsupported"));
       return;
     }
     const recognition = new SR();
@@ -885,15 +888,15 @@ export function CommandPaletteHost() {
   async function handleDelete(item: CommandItem) {
     const url = deleteApiFor(item);
     if (!url) {
-      appToast.error("Delete is not available for this item");
+      appToast.error(t("command.deleteUnavailable"));
       return;
     }
-    if (!window.confirm(`Delete “${item.title}”?`)) return;
+    if (!window.confirm(t("command.deleteConfirm", { title: item.title }))) return;
     try {
       const res = await fetch(url, { method: "DELETE" });
       const json = await res.json();
       if (!res.ok || json.success === false) {
-        appToast.error(json.message || "Delete failed");
+        appToast.error(json.message || t("command.deleteFailed"));
         return;
       }
       appToast.success("سڕایەوە");
@@ -907,7 +910,7 @@ export function CommandPaletteHost() {
           .filter((g) => g.items.length)
       );
     } catch {
-      appToast.error("Delete failed");
+      appToast.error(t("command.deleteFailed"));
     }
   }
 
@@ -941,8 +944,8 @@ export function CommandPaletteHost() {
             onKeyDown={onKeyDown}
             placeholder={
               mode === "commands"
-                ? "Type a command… (fuzzy · prd · create)"
-                : "Search anything…  (> commands · barcode · SKU)"
+                ? t("command.commandPlaceholder")
+                : t("command.searchPlaceholder")
             }
             autoComplete="off"
             spellCheck={false}
@@ -967,14 +970,14 @@ export function CommandPaletteHost() {
                 "rounded-lg p-2 text-muted-foreground transition hover:bg-muted hover:text-foreground",
                 listening && "bg-destructive/10 text-destructive"
               )}
-              aria-label={listening ? "Stop voice search" : "Voice search"}
-              title="Voice search"
+              aria-label={listening ? t("command.stopVoice") : t("command.voiceSearch")}
+              title={t("command.voiceSearch")}
             >
               {listening ? <MicOff size={16} /> : <Mic size={16} />}
             </button>
           ) : (
             <span className="hidden text-[10px] font-bold tracking-wide text-muted-foreground uppercase sm:inline">
-              Commands
+              {t("command.commands")}
             </span>
           )}
           {loading ? (
@@ -1013,8 +1016,8 @@ export function CommandPaletteHost() {
           >
             {flatItems.length === 0 && !loading ? (
               <p className="px-4 py-10 text-center text-sm text-muted-foreground">
-                No results. Try another word
-                {offlineReady ? " (offline cache ready)" : ""}.
+                {t("command.noResults")}
+                {offlineReady ? t("command.offlineReadyHint") : ""}.
               </p>
             ) : null}
 
@@ -1035,7 +1038,7 @@ export function CommandPaletteHost() {
                         syncHistoryRemote([]);
                       }}
                     >
-                      Clear all
+                      {t("command.clearAll")}
                     </button>
                   ) : null}
                 </div>
@@ -1113,8 +1116,8 @@ export function CommandPaletteHost() {
                             )}
                             aria-label={
                               cmdFav
-                                ? "Unfavorite command"
-                                : "Favorite command"
+                                ? t("command.unfavoriteCommand")
+                                : t("command.favoriteCommand")
                             }
                             onClick={(e) => {
                               e.stopPropagation();
@@ -1132,7 +1135,7 @@ export function CommandPaletteHost() {
                           <button
                             type="button"
                             className="shrink-0 rounded-md p-1 opacity-70 hover:opacity-100"
-                            aria-label="Remove search"
+                            aria-label={t("command.removeSearch")}
                             onClick={(e) => {
                               e.stopPropagation();
                               if (!userId) return;
@@ -1229,20 +1232,20 @@ export function CommandPaletteHost() {
         <div className="flex items-center justify-between gap-3 border-t border-border bg-muted/40 px-4 py-2 text-[11px] text-muted-foreground">
           <div className="flex flex-wrap gap-3">
             <span>
-              <kbd className="rek-cmd-kbd">↑↓</kbd> navigate
+              <kbd className="rek-cmd-kbd">↑↓</kbd> {t("command.navigateHint")}
             </span>
             <span>
-              <kbd className="rek-cmd-kbd">↵</kbd> open
+              <kbd className="rek-cmd-kbd">↵</kbd> {t("command.openHint")}
             </span>
             <span>
-              <kbd className="rek-cmd-kbd">tab</kbd> next
+              <kbd className="rek-cmd-kbd">tab</kbd> {t("command.nextHint")}
             </span>
             <span>
-              <kbd className="rek-cmd-kbd">esc</kbd> close
+              <kbd className="rek-cmd-kbd">esc</kbd> {t("command.closeHint")}
             </span>
             {offlineReady ? (
               <span className="inline-flex items-center gap-1">
-                <Clock size={10} /> offline ready
+                <Clock size={10} /> {t("command.offlineReady")}
               </span>
             ) : null}
           </div>
@@ -1265,12 +1268,13 @@ export default function CommandPaletteTrigger({
   className?: string;
   mobile?: boolean;
 }) {
+  const { t } = useT();
   return (
     <button
       type="button"
       onClick={() => openCommandPalette()}
       className={`rek-cmd-trigger flex h-11 w-full items-center gap-2 rounded-2xl border border-border bg-secondary/70 px-3 text-right text-sm text-muted-foreground transition hover:border-primary/35 hover:bg-card sm:h-12 sm:px-4 ${className}`}
-      aria-label="Open smart search"
+      aria-label={t("command.openSmartSearch")}
     >
       <Search size={18} className="shrink-0 text-primary" aria-hidden />
       <span className="min-w-0 flex-1 truncate">

@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/utils/datetime";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import DeleteBrandButton from "./DeleteBrandButton";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Brand = {
   id: string;
@@ -12,6 +13,7 @@ type Brand = {
 };
 
 export default function BrandTable() {
+  const { t } = useT();
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -42,7 +44,7 @@ export default function BrandTable() {
   if (loading) {
     return (
       <div className="rounded-3xl bg-white p-8 text-center">
-        چاوەڕێ بکە...
+        {t("common.wait")}
       </div>
     );
   }
@@ -52,7 +54,7 @@ export default function BrandTable() {
       <div className="border-b border-border p-3 sm:p-4">
         <input
           type="text"
-          placeholder="گەڕان بە ناوی براند..."
+          placeholder={t("brands.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full max-w-full rounded-2xl border border-border bg-card p-3 outline-none focus:border-primary"
@@ -61,19 +63,21 @@ export default function BrandTable() {
 
       {filteredBrands.length === 0 ? (
         <div className="p-8 text-center text-muted-foreground">
-          هیچ براندێک نەدۆزرایەوە.
+          {t("brands.notFound")}
         </div>
       ) : (
         <div className="rek-table-wrap">
           <table className="w-full min-w-[420px]">
             <thead className="bg-primary text-primary-foreground">
               <tr>
-                <th className="p-3 text-right text-sm font-bold sm:p-4">ناو</th>
                 <th className="p-3 text-right text-sm font-bold sm:p-4">
-                  بەرواری دروستکردن
+                  {t("common.name")}
+                </th>
+                <th className="p-3 text-right text-sm font-bold sm:p-4">
+                  {t("common.createdAt")}
                 </th>
                 <th className="p-3 text-center text-sm font-bold sm:p-4">
-                  کردار
+                  {t("common.actions")}
                 </th>
               </tr>
             </thead>
@@ -95,7 +99,7 @@ export default function BrandTable() {
                         href={`/dashboard/brands/${brand.id}/edit`}
                         className="rounded-xl bg-primary px-3 py-2 text-sm font-bold text-primary-foreground hover:bg-[var(--brand-hover)] sm:px-4"
                       >
-                        دەستکاری
+                        {t("common.edit")}
                       </Link>
                       <DeleteBrandButton
                         id={brand.id}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { AlertTriangle, PackageX } from "lucide-react";
 import { formatStockQty } from "@/lib/inventory/stock";
 import type { StockAlertItem } from "@/lib/analytics/buildAnalytics";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   lowStock: StockAlertItem[];
@@ -15,6 +16,7 @@ export default function AnalyticsStockBanners({
   lowStock,
   outOfStock,
 }: Props) {
+  const { t } = useT();
   const outs = outOfStock.slice(0, 4);
   const lows = lowStock.slice(0, 4);
   if (outs.length === 0 && lows.length === 0) return null;
@@ -32,11 +34,14 @@ export default function AnalyticsStockBanners({
           </span>
           <div className="min-w-0 flex-1">
             <p className="font-black">
-              ❌ تەواوبوونی کۆگا — {item.name}
+              ❌ {t("analytics.outBanner", { name: item.name })}
             </p>
             <p className="mt-0.5 text-sm opacity-90">
-              کۆگا: {item.warehouseName || "—"} · ماوە:{" "}
-              {formatStockQty(item.availableStock)} {item.unit}
+              {t("analytics.bannerMeta", {
+                warehouse: item.warehouseName || "—",
+                qty: formatStockQty(item.availableStock),
+                unit: item.unit,
+              })}
             </p>
           </div>
         </Link>
@@ -52,11 +57,14 @@ export default function AnalyticsStockBanners({
           </span>
           <div className="min-w-0 flex-1">
             <p className="font-black">
-              ⚠️ کۆگای کەم — {item.name}
+              ⚠️ {t("analytics.lowBanner", { name: item.name })}
             </p>
             <p className="mt-0.5 text-sm opacity-90">
-              کۆگا: {item.warehouseName || "—"} · ماوە:{" "}
-              {formatStockQty(item.availableStock)} {item.unit}
+              {t("analytics.bannerMeta", {
+                warehouse: item.warehouseName || "—",
+                qty: formatStockQty(item.availableStock),
+                unit: item.unit,
+              })}
             </p>
           </div>
         </Link>

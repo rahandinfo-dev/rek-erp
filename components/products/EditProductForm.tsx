@@ -8,6 +8,7 @@ import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import { useNavigationHistory } from "@/lib/history/provider";
 import ImageUpload from "@/components/uploads/ImageUpload";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Unit = {
   id: string;
@@ -38,6 +39,7 @@ type ProductEditDraft = {
 };
 
 export default function EditProductForm({ id }: Props) {
+  const { t } = useT();
   const router = useRouter();
   const { markEdited } = useNavigationHistory();
 
@@ -64,7 +66,7 @@ export default function EditProductForm({ id }: Props) {
   const [notes, setNotes] = useState("");
   const [image, setImage] = useState("");
   const [active, setActive] = useState(true);
-  const [warehouseName, setWarehouseName] = useState("کۆگا");
+  const [warehouseName, setWarehouseName] = useState(() => t("nav.warehouse"));
   const [hydrated, setHydrated] = useState(false);
 
   const draftValue = useMemo<ProductEditDraft>(
@@ -146,7 +148,7 @@ export default function EditProductForm({ id }: Props) {
         const unitJson = await unitRes.json();
 
         if (!productJson.success) {
-          appToast.error(productJson.message || "بەرهەم نەدۆزرایەوە.");
+          appToast.error(productJson.message || t("products.notFoundToast"));
           return;
         }
 
@@ -166,7 +168,7 @@ export default function EditProductForm({ id }: Props) {
         }
 
         setUnits(loadedUnits);
-        setWarehouseName(productJson.warehouseName || "کۆگا");
+        setWarehouseName(productJson.warehouseName || t("nav.warehouse"));
 
         setName(product.name);
         setSku(product.sku ?? "");
@@ -189,7 +191,7 @@ export default function EditProductForm({ id }: Props) {
         setHydrated(true);
       } catch (error) {
         console.error(error);
-        appToast.error("هەڵەیەک ڕوویدا.");
+        appToast.error(t("errors.generic"));
       } finally {
         setLoading(false);
       }
@@ -229,19 +231,19 @@ export default function EditProductForm({ id }: Props) {
       const data = await response.json();
 
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
 
       clearDraft();
       markEdited(`/dashboard/products/${id}`, name);
-      appToast.productSaved("بەرهەم بە سەرکەوتوویی نوێکرایەوە.");
+      appToast.productSaved(t("products.updated"));
 
       router.push(`/dashboard/products/${id}`);
       router.refresh();
     } catch (error) {
       console.error(error);
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -250,7 +252,7 @@ export default function EditProductForm({ id }: Props) {
   if (loading) {
     return (
       <div className="rounded-2xl bg-card p-8 text-center text-muted-foreground">
-        چاوەڕێ بکە...
+        {t("common.wait")}
       </div>
     );
   }
@@ -271,7 +273,7 @@ export default function EditProductForm({ id }: Props) {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div>
-          <label className="mb-2 block font-bold">ناوی بەرهەم</label>
+          <label className="mb-2 block font-bold">{t("products.nameLabel")}</label>
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -293,7 +295,7 @@ export default function EditProductForm({ id }: Props) {
 
       <div className="grid gap-6 md:grid-cols-2">
         <div>
-          <label className="mb-2 block font-bold">Barcode</label>
+          <label className="mb-2 block font-bold">{t("nav.barcode")}</label>
           <input
             value={barcode}
             onChange={(e) => setBarcode(e.target.value)}
@@ -302,14 +304,14 @@ export default function EditProductForm({ id }: Props) {
         </div>
 
         <div>
-          <label className="mb-2 block font-bold">یەکە</label>
+          <label className="mb-2 block font-bold">{t("nav.units")}</label>
           <select
             value={unitId}
             onChange={(e) => setUnitId(e.target.value)}
             className="w-full rounded-xl border border-border bg-card p-3"
             required
           >
-            <option value="">هەڵبژێرە</option>
+            <option value="">{t("common.select")}</option>
             {units.map((unit) => (
               <option key={unit.id} value={unit.id}>
                 {unit.name}
@@ -321,7 +323,7 @@ export default function EditProductForm({ id }: Props) {
       </div>
 
       <div className="rounded-xl border border-border bg-secondary/40 px-4 py-3 text-sm">
-        <span className="font-bold text-primary">کۆگا: </span>
+        <span className="font-bold text-primary">{t("products.warehouseLabel")}</span>
         <span className="text-foreground">{warehouseName}</span>
       </div>
 
@@ -331,7 +333,7 @@ export default function EditProductForm({ id }: Props) {
           step="0.01"
           value={purchasePrice}
           onChange={(e) => setPurchasePrice(Number(e.target.value))}
-          placeholder="نرخی کڕین"
+          placeholder={t("products.purchasePrice")}
           className="rounded-xl border border-border p-3"
         />
         <input
@@ -339,7 +341,7 @@ export default function EditProductForm({ id }: Props) {
           step="0.01"
           value={costPrice}
           onChange={(e) => setCostPrice(Number(e.target.value))}
-          placeholder="تێچوون"
+          placeholder={t("products.cost")}
           className="rounded-xl border border-border p-3"
         />
         <input
@@ -347,7 +349,7 @@ export default function EditProductForm({ id }: Props) {
           step="0.01"
           value={salePrice}
           onChange={(e) => setSalePrice(Number(e.target.value))}
-          placeholder="نرخی فرۆشتن"
+          placeholder={t("products.salePrice")}
           className="rounded-xl border border-border p-3"
         />
         <input
@@ -355,7 +357,7 @@ export default function EditProductForm({ id }: Props) {
           step="0.01"
           value={profitMargin}
           onChange={(e) => setProfitMargin(Number(e.target.value))}
-          placeholder="ڕێژەی قازانج (%)"
+          placeholder={t("products.profitMargin")}
           className="rounded-xl border border-border p-3"
         />
       </div>
@@ -366,7 +368,7 @@ export default function EditProductForm({ id }: Props) {
           step="0.01"
           value={currentStock}
           onChange={(e) => setCurrentStock(Number(e.target.value))}
-          placeholder="بڕی ئێستا"
+          placeholder={t("products.currentStock")}
           className="rounded-xl border border-border p-3"
         />
         <input
@@ -374,7 +376,7 @@ export default function EditProductForm({ id }: Props) {
           step="0.01"
           value={reservedStock}
           onChange={(e) => setReservedStock(Number(e.target.value))}
-          placeholder="بڕی پارێزراو"
+          placeholder={t("products.reservedStock")}
           className="rounded-xl border border-border p-3"
         />
         <input
@@ -382,7 +384,7 @@ export default function EditProductForm({ id }: Props) {
           step="0.01"
           value={minimumStock}
           onChange={(e) => setMinimumStock(Number(e.target.value))}
-          placeholder="ئاگاداری کۆگا"
+          placeholder={t("products.stockAlert")}
           className="rounded-xl border border-border p-3"
         />
       </div>
@@ -391,12 +393,12 @@ export default function EditProductForm({ id }: Props) {
         kind="product"
         value={image || null}
         onChange={(url) => setImage(url || "")}
-        label="وێنەی بەرهەم"
+        label={t("products.imageLabel")}
         shape="square"
       />
 
       <div>
-        <label className="mb-2 block font-bold">تێبینی</label>
+        <label className="mb-2 block font-bold">{t("common.notes")}</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -412,7 +414,7 @@ export default function EditProductForm({ id }: Props) {
           checked={active}
           onChange={(e) => setActive(e.target.checked)}
         />
-        <label htmlFor="active">بەرهەم چالاک بێت</label>
+        <label htmlFor="active">{t("products.productActive")}</label>
       </div>
 
       <div className="flex flex-wrap items-center gap-3">
@@ -422,7 +424,7 @@ export default function EditProductForm({ id }: Props) {
           disabled={saving}
           className="rounded-2xl bg-primary px-6 py-3 font-bold text-primary-foreground disabled:opacity-50"
         >
-          {saving ? "چاوەڕێ بکە..." : "پاشەکەوتکردنی گۆڕانکاری"}
+          {saving ? t("common.wait") : t("common.saveChanges")}
         </button>
       </div>
     </form>

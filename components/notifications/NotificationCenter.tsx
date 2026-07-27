@@ -25,6 +25,7 @@ import type {
   NotificationCategory,
   NotificationPriority,
 } from "@/lib/prisma/client";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type NotificationItem = {
   id: string;
@@ -47,6 +48,7 @@ type Pagination = {
 };
 
 export default function NotificationCenter() {
+  const { t } = useT();
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
@@ -153,7 +155,7 @@ export default function NotificationCenter() {
   }
 
   async function deleteAll() {
-    if (!window.confirm("دڵنیایت لە شاردنەوەی هەموو ئاگادارییەکان؟")) return;
+    if (!window.confirm(t("notifications.deleteAllConfirm"))) return;
     setBusy(true);
     try {
       await fetch("/api/notifications", {
@@ -173,13 +175,13 @@ export default function NotificationCenter() {
         <div>
           <div className="mb-2 inline-flex items-center gap-2 rounded-2xl bg-[#FFF8EF] px-3 py-1 text-sm font-bold text-[#FFAE42]">
             <Bell size={16} />
-                {unreadCount} نەخوێندراو
+                {t("notifications.unreadCount", { count: unreadCount })}
           </div>
           <h1 className="text-4xl font-black text-[#FFAE42]">
-            ناوەندی ئاگاداری
+            {t("notifications.title")}
           </h1>
           <p className="mt-2 text-slate-500">
-            هەموو ئاگادارییەکان لە داتابەیسەوە — هەمیشە دەمێننەوە.
+            {t("notifications.subtitle")}
           </p>
         </div>
 
@@ -191,7 +193,7 @@ export default function NotificationCenter() {
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-[rgba(255, 174, 66,0.15)] px-4 font-semibold text-[#FFAE42] transition hover:bg-[#FFF8EF] disabled:opacity-50"
           >
             <CheckCheck size={16} />
-            خوێندنەوەی هەموو
+            {t("notifications.markAllRead")}
           </button>
           <button
             type="button"
@@ -200,7 +202,7 @@ export default function NotificationCenter() {
             className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#FFAE42] px-4 font-semibold text-white transition hover:bg-[#E8942A] disabled:opacity-50"
           >
             <Trash2 size={16} />
-            سڕینەوەی هەموو
+            {t("notifications.deleteAll")}
           </button>
         </div>
       </div>
@@ -214,7 +216,7 @@ export default function NotificationCenter() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="گەڕان لە ئاگاداری..."
+            placeholder={t("notifications.searchPlaceholder")}
             className="h-11 w-full rounded-2xl border border-[rgba(255, 174, 66,0.12)] bg-[#FFF8EF] pr-10 pl-4 outline-none focus:border-[#FFAE42] focus:bg-white"
           />
         </label>
@@ -226,11 +228,11 @@ export default function NotificationCenter() {
           }
           className="h-11 rounded-2xl border border-[rgba(255, 174, 66,0.12)] bg-[#FFF8EF] px-4 outline-none focus:border-[#FFAE42] focus:bg-white"
         >
-          <option value="active">چالاک</option>
-          <option value="unread">نەخوێندراو</option>
-          <option value="read">خوێندراو</option>
-          <option value="deleted">سڕاوە (مێژوو)</option>
-          <option value="all">هەموو</option>
+          <option value="active">{t("common.active")}</option>
+          <option value="unread">{t("notifications.statusUnread")}</option>
+          <option value="read">{t("notifications.statusRead")}</option>
+          <option value="deleted">{t("notifications.statusDeleted")}</option>
+          <option value="all">{t("common.all")}</option>
         </select>
 
         <select
@@ -254,7 +256,7 @@ export default function NotificationCenter() {
           }
           className="h-11 rounded-2xl border border-[rgba(255, 174, 66,0.12)] bg-[#FFF8EF] px-4 outline-none focus:border-[#FFAE42] focus:bg-white"
         >
-          <option value="">هەموو ئاستەکان</option>
+          <option value="">{t("notifications.allPriorities")}</option>
           {PRIORITY_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
               {opt.label}
@@ -265,15 +267,15 @@ export default function NotificationCenter() {
 
       <div className="overflow-hidden rounded-3xl border border-[rgba(255, 174, 66,0.1)] bg-white shadow-sm">
         {loading ? (
-          <p className="px-6 py-16 text-center text-slate-500">چاوەڕێ بکە...</p>
+          <p className="px-6 py-16 text-center text-slate-500">{t("common.wait")}</p>
         ) : items.length === 0 ? (
           <div className="px-6 py-16 text-center">
             <Bell className="mx-auto text-[#FFAE42]/40" size={36} />
             <h2 className="mt-4 text-xl font-bold text-slate-700">
-              هیچ ئاگادارییەک نەدۆزرایەوە
+              {t("notifications.emptyTitle")}
             </h2>
             <p className="mt-2 text-slate-500">
-              فلتەر یان گەڕان بگۆڕە بۆ بینینی ئەنجام.
+              {t("notifications.emptyBody")}
             </p>
           </div>
         ) : (
@@ -292,7 +294,7 @@ export default function NotificationCenter() {
                     </h3>
                     {!item.isRead && !item.deletedAt ? (
                       <span className="rounded-lg bg-[#FFAE42] px-2 py-0.5 text-[10px] font-bold text-white">
-                        نوێ
+                        {t("common.new")}
                       </span>
                     ) : null}
                     <span
@@ -318,7 +320,7 @@ export default function NotificationCenter() {
                       href={item.href}
                       className="inline-flex h-10 items-center gap-1 rounded-2xl border px-3 text-sm font-semibold text-[#FFAE42] hover:bg-[#FFF8EF]"
                     >
-                      کردنەوە
+                      {t("notifications.open")}
                       <ExternalLink size={14} />
                     </Link>
                   ) : null}
@@ -330,7 +332,7 @@ export default function NotificationCenter() {
                         onClick={() => void markRead(item.id, !item.isRead)}
                         className="inline-flex h-10 items-center rounded-2xl border px-3 text-sm font-semibold disabled:opacity-50"
                       >
-                        {item.isRead ? "نەخوێندراو" : "خوێندراو"}
+                        {item.isRead ? t("notifications.markUnread") : t("notifications.markRead")}
                       </button>
                       <button
                         type="button"
@@ -339,12 +341,12 @@ export default function NotificationCenter() {
                         className="inline-flex h-10 items-center gap-1 rounded-2xl border border-red-200 px-3 text-sm font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
                       >
                         <Trash2 size={14} />
-                        سڕینەوە
+                        {t("common.delete")}
                       </button>
                     </>
                   ) : (
                     <span className="inline-flex h-10 items-center rounded-2xl bg-slate-100 px-3 text-sm text-slate-500">
-                      مێژوو
+                      {t("notifications.history")}
                     </span>
                   )}
                 </div>
@@ -356,8 +358,11 @@ export default function NotificationCenter() {
 
       <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
         <p className="text-sm text-slate-500">
-          لاپەڕە {pagination.page} لە {pagination.totalPages} · کۆی{" "}
-          {pagination.total}
+          {t("notifications.pageOf", {
+            page: pagination.page,
+            totalPages: pagination.totalPages,
+            total: pagination.total,
+          })}
         </p>
         <div className="flex gap-2">
           <button
@@ -369,7 +374,7 @@ export default function NotificationCenter() {
             }}
             className="h-10 rounded-2xl border px-4 text-sm font-semibold disabled:opacity-40"
           >
-            پێشوو
+            {t("common.prevPage")}
           </button>
           <button
             type="button"
@@ -380,7 +385,7 @@ export default function NotificationCenter() {
             }}
             className="h-10 rounded-2xl border px-4 text-sm font-semibold disabled:opacity-40"
           >
-            دواتر
+            {t("common.next")}
           </button>
         </div>
       </div>

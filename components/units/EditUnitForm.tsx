@@ -6,12 +6,14 @@ import { appToast } from "@/lib/toast";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar } from "@/components/ui/AutoSaveStatus";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = { id: string };
 
 type UnitDraft = { name: string; symbol: string; active: boolean };
 
 export default function EditUnitForm({ id }: Props) {
+  const { t } = useT();
   const router = useRouter();
   const [name, setName] = useState("");
   const [symbol, setSymbol] = useState("");
@@ -26,7 +28,7 @@ export default function EditUnitForm({ id }: Props) {
         const response = await fetch(`/api/units/${id}`);
         const data = await response.json();
         if (!data.success) {
-          appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+          appToast.error(data.message || t("errors.generic"));
           return;
         }
         setName(data.data.name);
@@ -34,13 +36,13 @@ export default function EditUnitForm({ id }: Props) {
         setActive(data.data.active !== false);
         setHydrated(true);
       } catch {
-        appToast.error("هەڵەیەک ڕوویدا.");
+        appToast.error(t("errors.generic"));
       } finally {
         setLoading(false);
       }
     }
     void fetchUnit();
-  }, [id]);
+  }, [id, t]);
 
   const draftValue = useMemo<UnitDraft>(
     () => ({ name, symbol, active }),
@@ -73,15 +75,15 @@ export default function EditUnitForm({ id }: Props) {
       });
       const data = await response.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
       clearDraft();
-      appToast.success("یەکە نوێکرایەوە", data.message);
+      appToast.success(t("units.updated"), data.message);
       router.push("/dashboard/units");
       router.refresh();
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -90,7 +92,7 @@ export default function EditUnitForm({ id }: Props) {
   if (loading) {
     return (
       <div className="rounded-3xl border border-border bg-card p-8 text-center">
-        چاوەڕێ بکە...
+        {t("common.wait")}
       </div>
     );
   }
@@ -116,7 +118,7 @@ export default function EditUnitForm({ id }: Props) {
       />
 
       <div>
-        <label className="mb-2 block font-bold">ناوی یەکە</label>
+        <label className="mb-2 block font-bold">{t("units.nameLabel")}</label>
         <input
           type="text"
           value={name}
@@ -127,7 +129,7 @@ export default function EditUnitForm({ id }: Props) {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">کورتکراوە</label>
+        <label className="mb-2 block font-bold">{t("units.symbolLabel")}</label>
         <input
           type="text"
           value={symbol}
@@ -144,7 +146,7 @@ export default function EditUnitForm({ id }: Props) {
           onChange={(e) => setActive(e.target.checked)}
           className="size-5"
         />
-        یەکە چالاک بێت
+        {t("units.activeLabel")}
       </label>
 
       <button
@@ -152,7 +154,7 @@ export default function EditUnitForm({ id }: Props) {
         disabled={saving}
         className="rounded-2xl bg-primary px-6 py-3 font-bold text-primary-foreground transition hover:bg-[var(--brand-hover)] disabled:opacity-50"
       >
-        {saving ? "چاوەڕێ بکە..." : "پاشەکەوتکردنی گۆڕانکاری"}
+        {saving ? t("common.wait") : t("common.saveChanges")}
       </button>
     </form>
   );

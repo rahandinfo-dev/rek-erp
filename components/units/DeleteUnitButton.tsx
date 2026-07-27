@@ -3,6 +3,7 @@
 import { useState } from "react";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { softDeleteWithUndo } from "@/lib/delete/withUndo";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   id: string;
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export default function DeleteUnitButton({ id, onDeleted, name }: Props) {
+  const { t } = useT();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -21,9 +23,9 @@ export default function DeleteUnitButton({ id, onDeleted, name }: Props) {
         deleteUrl: `/api/units/${id}`,
         restoreUrl: `/api/units/${id}/restore`,
         module: "units",
-        title: "Unit deleted",
-        message: name ? `«${name}»` : undefined,
-        entityType: "Unit",
+        title: t("units.deletedTitle"),
+        message: name ? t("units.deletedMessage", { name }) : undefined,
+        entityType: t("units.entityType"),
         entityId: id,
         onSoftDeleted: () => {
           setOpen(false);
@@ -44,14 +46,14 @@ export default function DeleteUnitButton({ id, onDeleted, name }: Props) {
         disabled={loading}
         className="rounded-xl bg-destructive px-4 py-2 text-sm font-bold text-white transition hover:brightness-95 disabled:opacity-50"
       >
-        سڕینەوە
+        {t("common.delete")}
       </button>
 
       <ConfirmDialog
         open={open}
         loading={loading}
-        title="سڕینەوەی یەکە"
-        description="دڵنیایت لە سڕینەوەی ئەم یەکەیە؟"
+        title={t("units.deleteTitle")}
+        description={t("units.deleteConfirm")}
         onCancel={() => setOpen(false)}
         onConfirm={async () => {
           await handleDelete();

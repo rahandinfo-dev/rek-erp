@@ -2,10 +2,12 @@ import { db } from "@/lib/prisma/db";
 import { notifySafe } from "@/lib/notifications/create";
 import { auditSafe } from "@/lib/audit/log";
 import { buildReports } from "@/lib/reports/buildReports";
-import { formatMoney } from "@/lib/utils/format";
+import { formatMoneyLocalized, tServer } from "@/lib/i18n";
 import { refreshAiAlerts } from "@/lib/ai/alerts";
 import { refreshAiInsights } from "@/lib/ai/insights";
 import { buildRecommendations } from "@/lib/ai/recommendations";
+
+const t = tServer.t.bind(tServer);
 
 function nextRunFromSchedule(schedule: string, from = new Date()): Date {
   const d = new Date(from);
@@ -32,25 +34,25 @@ export async function ensureDefaultAutomations(companyId: string) {
 
   const defaults = [
     {
-      name: "Daily AI insights refresh",
+      name: t("ai.automation.dailyInsights"),
       kind: "notification",
       schedule: "daily",
       config: { action: "refresh_insights" },
     },
     {
-      name: "Daily alert scan",
+      name: t("ai.automation.dailyAlerts"),
       kind: "notification",
       schedule: "daily",
       config: { action: "refresh_alerts" },
     },
     {
-      name: "Weekly report summary",
+      name: t("ai.automation.weeklyReport"),
       kind: "report",
       schedule: "weekly",
       config: { action: "weekly_report" },
     },
     {
-      name: "Smart restock reminders",
+      name: t("ai.automation.restockReminders"),
       kind: "reminder",
       schedule: "daily",
       config: { action: "restock_reminders" },
@@ -110,8 +112,11 @@ export async function runDueAutomations(companyId: string) {
           });
           await notifySafe({
             companyId,
-            title: "Weekly report ready",
-            message: `Revenue ${formatMoney(report.summary.revenue)} · Profit ${formatMoney(report.summary.profit)} IQD`,
+            title: t("ai.automation.weeklyReadyTitle"),
+            message: t("ai.automation.weeklyReadyMessage", {
+              revenue: formatMoneyLocalized(report.summary.revenue),
+              profit: formatMoneyLocalized(report.summary.profit),
+            }),
             category: "SYSTEM",
             href: "/dashboard/reports",
             metadata: { kind: "AI_AUTOMATION", ruleId: rule.id },
@@ -124,7 +129,7 @@ export async function runDueAutomations(companyId: string) {
           if (restock.length) {
             await notifySafe({
               companyId,
-              title: "Restock reminders",
+              title: t("ai.automation.restockTitle"),
               message: restock.map((r) => r.title).join(" · "),
               category: "INVENTORY",
               priority: "HIGH",
@@ -152,7 +157,7 @@ export async function runDueAutomations(companyId: string) {
         action: "OTHER",
         entityType: "AiAutomationRule",
         entityId: rule.id,
-        summary: `AI automation ran: ${rule.name}`,
+        summary: t("ai.automation.ranSummary", { name: rule.name }),
         metadata: { ai: true, action: config.action || "unknown" },
       });
 
@@ -175,27 +180,27 @@ export async function suggestedNextActions(companyId: string) {
 
   if (alerts.some((a) => a.kind === "low_stock")) {
     actions.push({
-      title: "Review low stock",
+      title: t("ai.automation.reviewLowStock"),
       href: "/dashboard/inventory",
-      reason: "Active low-stock alert",
+      reason: t("ai.automation.reviewLowStockReason"),
     });
   }
   if (alerts.some((a) => a.kind === "unpaid_invoices" || a.kind === "late_payments")) {
     actions.push({
-      title: "Follow up credit sales",
+      title: t("ai.automation.followCredit"),
       href: "/dashboard/customers",
-      reason: "Outstanding credit exposure",
+      reason: t("ai.automation.followCreditReason"),
     });
   }
   actions.push({
-    title: "Create today's sale",
+    title: t("ai.automation.createSale"),
     href: "/dashboard/sales/new",
-    reason: "Suggested next action",
+    reason: t("ai.automation.createSaleReason"),
   });
   actions.push({
-    title: "Open monthly report",
+    title: t("ai.automation.openReport"),
     href: "/dashboard/reports",
-    reason: "Keep reporting cadence",
+    reason: t("ai.automation.openReportReason"),
   });
   if (recs[0]) {
     actions.push({

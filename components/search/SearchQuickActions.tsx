@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { CommandItem } from "@/lib/command/types";
 import { appToast } from "@/lib/toast";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   item: CommandItem;
@@ -30,6 +31,7 @@ export default function SearchQuickActions({
   onClose,
   isFavorite,
 }: Props) {
+  const { t } = useT();
   async function copyLink() {
     if (!item.href) return;
     try {
@@ -66,14 +68,14 @@ export default function SearchQuickActions({
         className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
         onClick={onOpen}
       >
-        Open
+        {t("common.view")}
       </button>
       <button
         type="button"
         className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
         onClick={openNewTab}
       >
-        <ExternalLink size={12} /> Open in New Tab
+        <ExternalLink size={12} /> کردنەوە لە تابێکی نوێ
       </button>
       {item.editHref ? (
         <button
@@ -81,7 +83,7 @@ export default function SearchQuickActions({
           className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
           onClick={onEdit}
         >
-          <Pencil size={12} /> Edit
+          <Pencil size={12} /> {t("common.edit")}
         </button>
       ) : null}
       <button
@@ -89,7 +91,7 @@ export default function SearchQuickActions({
         className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
         onClick={duplicate}
       >
-        <Files size={12} /> Duplicate
+        <Files size={12} /> {t("common.duplicate")}
       </button>
       <button
         type="button"
@@ -104,7 +106,7 @@ export default function SearchQuickActions({
         className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
         onClick={() => void copyLink()}
       >
-        <Copy size={12} /> Copy Link
+        <Copy size={12} /> {t("recycle.copyLink")}
       </button>
       {onDelete ? (
         <button
@@ -112,7 +114,7 @@ export default function SearchQuickActions({
           className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold text-destructive hover:bg-destructive/10"
           onClick={onDelete}
         >
-          <Trash2 size={12} /> Delete
+          <Trash2 size={12} /> {t("search.delete")}
         </button>
       ) : null}
     </div>

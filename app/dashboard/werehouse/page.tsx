@@ -9,6 +9,7 @@ import { buildAllWarehouseValuations } from "@/lib/inventory/valuation";
 import { getCachedInventorySummary } from "@/lib/cache/company-reads";
 import { LowStockWarningBanner } from "@/components/inventory/LowStockWarningBanner";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { tServer } from "@/lib/i18n";
 
 export default async function WarehousesPage({
   searchParams,
@@ -18,6 +19,7 @@ export default async function WarehousesPage({
     filter?: string;
   }>;
 }) {
+  const t = tServer.t;
   const user = await getCurrentUser();
   if (!user) return null;
 
@@ -83,11 +85,11 @@ export default async function WarehousesPage({
   return (
     <div className="space-y-6 sm:space-y-8">
       <PageHeader
-        title="کۆگاکان"
-        description="دروستکردن، دەستکاری و سڕینەوە — ژمارەکان خۆکار حیساب دەکرێن."
+        title={t("warehouses.title")}
+        description={t("warehouses.description")}
         breadcrumb={[
-          { label: "داشبۆرد", href: "/dashboard" },
-          { label: "کۆگاکان" },
+          { label: t("nav.dashboard"), href: "/dashboard" },
+          { label: t("warehouses.title") },
         ]}
         actions={
           <Link
@@ -95,7 +97,7 @@ export default async function WarehousesPage({
             className="inline-flex h-11 items-center gap-2 rounded-2xl bg-primary px-5 font-bold text-primary-foreground"
           >
             <Plus size={18} aria-hidden />
-            کۆگای نوێ
+            {t("warehouses.new")}
           </Link>
         }
       />
@@ -110,15 +112,15 @@ export default async function WarehousesPage({
 
       {rows.length === 0 ? (
         <div className="rek-card p-10 text-center">
-          <h2 className="text-xl font-black">هێشتا هیچ کۆگایەک نییە</h2>
+          <h2 className="text-xl font-black">{t("warehouses.emptyTitle")}</h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            یەکەم کۆگا دروست بکە بۆ دەستپێکردنی بەرهەمەکان.
+            {t("warehouses.emptyBody")}
           </p>
           <Link
             href="/dashboard/werehouse/new"
             className="mt-5 inline-flex h-11 items-center rounded-2xl bg-primary px-6 font-bold text-primary-foreground"
           >
-            دروستکردنی کۆگا
+            {t("warehouses.create")}
           </Link>
         </div>
       ) : (

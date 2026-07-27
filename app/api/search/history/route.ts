@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
+import { tServer } from "@/lib/i18n";
 
 const historySchema = z.array(
   z.object({
@@ -15,7 +16,7 @@ export async function GET() {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -39,7 +40,7 @@ export async function PUT(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -48,7 +49,7 @@ export async function PUT(req: NextRequest) {
     const parsed = historySchema.safeParse(body?.history ?? body);
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Invalid history" },
+        { success: false, message: tServer.t("api.invalidHistory") },
         { status: 400 }
       );
     }

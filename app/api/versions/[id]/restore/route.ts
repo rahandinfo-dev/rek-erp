@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { restoreEntityVersion } from "@/lib/versions/restore";
+import { tServer } from "@/lib/i18n";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest, { params }: Props) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }

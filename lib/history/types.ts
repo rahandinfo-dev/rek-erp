@@ -1,5 +1,7 @@
 /** Enterprise Navigation History / Recently Viewed */
 
+import { tServer } from "@/lib/i18n";
+
 export const HISTORY_LIMIT = 100;
 export const HISTORY_TTL_MS = 90 * 24 * 60 * 60 * 1000; // 90 days
 export const HISTORY_PREFIX = "rek-history:v1:";
@@ -130,15 +132,16 @@ export function freshHistoryExpiry(pinned: boolean) {
 }
 
 export function relativeOpened(ts: number) {
+  const t = tServer.t;
   const diff = Math.max(0, Date.now() - ts);
   const sec = Math.floor(diff / 1000);
   if (sec < 60) return "ئێستا";
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} minute${min === 1 ? "" : "s"} ago`;
+  if (min < 60) return t("history.minutesAgo", { count: min });
   const hr = Math.floor(min / 60);
-  if (hr < 24) return `${hr} hour${hr === 1 ? "" : "s"} ago`;
+  if (hr < 24) return t("history.hoursAgo", { count: hr });
   const d = Math.floor(hr / 24);
-  return `${d} day${d === 1 ? "" : "s"} ago`;
+  return t("history.daysAgo", { count: d });
 }
 
 function startOfDay(d = new Date()) {
@@ -158,8 +161,9 @@ export function groupHistoryItems(items: HistoryItem[]) {
   const groups: { id: HistoryGroupId; label: string; items: HistoryItem[] }[] =
     [];
 
+  const t = tServer.t;
   if (pinned.length) {
-    groups.push({ id: "pinned", label: "Pinned", items: pinned });
+    groups.push({ id: "pinned", label: t("history.pinned"), items: pinned });
   }
 
   const today = rest.filter((i) => i.openedAt >= todayStart);
@@ -174,25 +178,32 @@ export function groupHistoryItems(items: HistoryItem[]) {
   );
   const older = rest.filter((i) => i.openedAt < monthStart);
 
-  if (today.length) groups.push({ id: "today", label: "Today", items: today });
+  if (today.length)
+    groups.push({ id: "today", label: t("common.today"), items: today });
   if (yesterday.length)
-    groups.push({ id: "yesterday", label: "Yesterday", items: yesterday });
+    groups.push({
+      id: "yesterday",
+      label: t("history.yesterday"),
+      items: yesterday,
+    });
   if (week.length)
-    groups.push({ id: "week", label: "Last 7 Days", items: week });
+    groups.push({ id: "week", label: t("history.last7Days"), items: week });
   if (month.length)
-    groups.push({ id: "month", label: "Last 30 Days", items: month });
-  if (older.length) groups.push({ id: "older", label: "Older", items: older });
+    groups.push({ id: "month", label: t("history.last30Days"), items: month });
+  if (older.length)
+    groups.push({ id: "older", label: t("history.older"), items: older });
 
   return groups;
 }
 
 export function computeHistoryInsights(items: HistoryItem[]): HistoryInsight[] {
+  const t = tServer.t;
   const targets: Array<{ moduleKey: string; label: string }> = [
-    { moduleKey: "products", label: "Most Viewed Product" },
-    { moduleKey: "customers", label: "Most Viewed Customer" },
-    { moduleKey: "reports", label: "Most Viewed Report" },
-    { moduleKey: "warehouses", label: "Most Viewed Warehouse" },
-    { moduleKey: "employees", label: "Most Viewed Employee" },
+    { moduleKey: "products", label: t("history.mostViewedProduct") },
+    { moduleKey: "customers", label: t("history.mostViewedCustomer") },
+    { moduleKey: "reports", label: t("history.mostViewedReport") },
+    { moduleKey: "warehouses", label: t("history.mostViewedWarehouse") },
+    { moduleKey: "employees", label: t("history.mostViewedEmployee") },
   ];
 
   return targets

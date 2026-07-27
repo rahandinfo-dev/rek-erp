@@ -5,6 +5,9 @@ import {
   nameFromAuditValues,
 } from "@/lib/recycle/map";
 import { notifySafe } from "@/lib/notifications/create";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 export async function getRetentionDays(
   companyId: string,
@@ -92,8 +95,8 @@ export async function recordRecycleDelete(input: {
     void notifySafe({
       companyId: input.companyId,
       userId: input.userId,
-      title: "Moved to Recycle Bin",
-      message: `${name} can be restored for ${retention} days.`,
+      title: t("recycle.movedTitle"),
+      message: t("recycle.movedMessage", { name, days: retention }),
       category: "SYSTEM",
       href: "/dashboard/recycle-bin",
       entityType,
@@ -129,8 +132,8 @@ export async function recordRecycleRestore(input: {
     void notifySafe({
       companyId: input.companyId,
       userId: input.userId,
-      title: "Record Restored",
-      message: "An item was restored from the Recycle Bin.",
+      title: t("recycle.restoredTitle"),
+      message: t("recycle.restoredMessage"),
       category: "SYSTEM",
       href: "/dashboard/recycle-bin",
       entityType,

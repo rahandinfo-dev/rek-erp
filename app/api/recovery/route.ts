@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import { RECOVERY_TTL_MS } from "@/lib/recovery/types";
 import type { Prisma } from "@/lib/prisma/client";
+import { tServer } from "@/lib/i18n";
 
 const putSchema = z.object({
   id: z.string().optional(),
@@ -60,7 +61,7 @@ export async function GET() {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -92,7 +93,7 @@ export async function PUT(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -101,7 +102,7 @@ export async function PUT(req: NextRequest) {
     const parsed = putSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Invalid session" },
+        { success: false, message: tServer.t("api.invalidSession") },
         { status: 400 }
       );
     }
@@ -163,7 +164,7 @@ export async function DELETE(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }

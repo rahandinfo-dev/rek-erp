@@ -14,16 +14,10 @@ import {
   Wallet,
 } from "lucide-react";
 import type { EmployeeReportsData } from "@/lib/employees/reports";
-import {
-  ATTENDANCE_STATUS_LABELS,
-  EMPLOYEE_STATUS_LABELS,
-  LEAVE_STATUS_LABELS,
-  LEAVE_TYPE_LABELS,
-  SALARY_STATUS_LABELS,
-} from "@/lib/employees/labels";
 import { formatMoney } from "@/lib/utils/format";
 import { appToast } from "@/lib/toast";
 import SalaryAlertsWatcher from "@/components/employees/SalaryAlertsWatcher";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type SectionId =
   | "overview"
@@ -37,17 +31,17 @@ type SectionId =
   | "performance"
   | "manager";
 
-const SECTIONS: { id: SectionId; label: string }[] = [
-  { id: "overview", label: "گشتی" },
-  { id: "attendance", label: "ئامادەبوون" },
-  { id: "leave", label: "مۆڵەت" },
-  { id: "salary", label: "مووچە" },
-  { id: "active", label: "چالاک" },
-  { id: "inactive", label: "ناچالاک" },
-  { id: "late", label: "دواکەوتوو" },
-  { id: "absent", label: "غائیب" },
-  { id: "performance", label: "ئەدای کار" },
-  { id: "manager", label: "بەڕێوەبەر" },
+const SECTION_IDS: SectionId[] = [
+  "overview",
+  "attendance",
+  "leave",
+  "salary",
+  "active",
+  "inactive",
+  "late",
+  "absent",
+  "performance",
+  "manager",
 ];
 
 export default function EmployeeReportsClient({
@@ -55,6 +49,7 @@ export default function EmployeeReportsClient({
 }: {
   data: EmployeeReportsData;
 }) {
+  const { t } = useT();
   const [section, setSection] = useState<SectionId>("overview");
   const toasted = useMemo(
     () => data.salaryAlerts.filter((a) => a.created),
@@ -67,70 +62,105 @@ export default function EmployeeReportsClient({
       const a = toasted[0];
       appToast.salaryAlert(
         a.daysUntil < 0
-          ? `${a.fullName} · ${Math.abs(a.daysUntil)} ڕۆژ دواکەوتوو`
-          : `${a.fullName} · ${a.nextSalaryDate}`,
-        a.daysUntil < 0 ? "مووچە دواکەوتووە" : "مووچە نزیکە"
+          ? t("employees.salaryOverdueBody", {
+              name: a.fullName,
+              days: Math.abs(a.daysUntil),
+            })
+          : t("employees.salarySoonBody", {
+              name: a.fullName,
+              date: a.nextSalaryDate,
+            }),
+        a.daysUntil < 0
+          ? t("employees.salaryOverdueTitle")
+          : t("employees.salarySoonTitle")
       );
       return;
     }
     appToast.salaryAlert(
-      `${toasted.length} ئاگاداری مووچەی نوێ دروستکرا.`,
-      "ئاگاداری مووچە"
+      t("employees.salaryAlertsCreated", { count: toasted.length }),
+      t("toast.salaryAlertTitle")
     );
-  }, [toasted]);
+  }, [toasted, t]);
 
   const s = data.summary;
 
+  const sections = SECTION_IDS.map((id) => ({
+    id,
+    label: t(
+      id === "overview"
+        ? "employees.sectionOverview"
+        : id === "attendance"
+          ? "employees.sectionAttendance"
+          : id === "leave"
+            ? "employees.sectionLeave"
+            : id === "salary"
+              ? "employees.sectionSalary"
+              : id === "active"
+                ? "employees.sectionActive"
+                : id === "inactive"
+                  ? "employees.sectionInactive"
+                  : id === "late"
+                    ? "employees.sectionLate"
+                    : id === "absent"
+                      ? "employees.sectionAbsent"
+                      : id === "performance"
+                        ? "employees.sectionPerformance"
+                        : "employees.sectionManager"
+    ),
+  }));
+
   return (
     <div className="space-y-6 sm:space-y-8">
-      {/* Avoid double toast from watcher when alerts already created on SSR */}
       <SalaryAlertsWatcher toast={toasted.length === 0} />
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="mb-2 inline-flex items-center gap-2 rounded-2xl bg-[#FFF8EF] px-3 py-1 text-sm font-bold text-[#FFAE42]">
             <IdCard size={16} />
-            ڕاپۆرتی کارمەندان · {data.period.label}
+            {t("employees.reportsBadge", { period: data.period.label })}
           </div>
           <h1 className="text-3xl font-black text-[#FFAE42] sm:text-4xl">
-            ڕاپۆرتی کارمەندان
+            {t("employees.reportsTitle")}
           </h1>
           <p className="mt-2 text-slate-500">
-            ئامادەبوون، مۆڵەت، مووچە، ئەدا و ئاگادارییەکان — هەموو کۆمپانیا.
+            {t("employees.reportsDescription")}
           </p>
         </div>
         <Link
           href="/dashboard/employees"
           className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-3 font-bold text-slate-600 transition hover:border-[#FFAE42]/30 hover:text-[#FFAE42]"
         >
-          لیستی کارمەندان
+          {t("employees.listLink")}
         </Link>
       </div>
 
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4 xl:grid-cols-4">
         <Kpi
           icon={Users}
-          label="کارمەند"
+          label={t("employees.kpiEmployee")}
           value={String(s.totalEmployees)}
-          sub={`${s.activeEmployees} چالاک`}
+          sub={t("employees.kpiActiveSub", { count: s.activeEmployees })}
         />
         <Kpi
           icon={CalendarDays}
-          label="ئامادەبوون"
+          label={t("employees.kpiAttendance")}
           value={String(s.attendance.present)}
-          sub={`${s.attendance.late} دوا · ${s.attendance.absent} غائیب`}
+          sub={t("employees.kpiAttSub", {
+            late: s.attendance.late,
+            absent: s.attendance.absent,
+          })}
         />
         <Kpi
           icon={Wallet}
-          label="مووچەی مانگ"
+          label={t("employees.kpiSalaryMonth")}
           value={`${formatMoney(s.salaryPaidThisMonth)}`}
-          sub={`${s.upcomingSalaryCount} نزیکە`}
+          sub={t("employees.kpiUpcomingSub", { count: s.upcomingSalaryCount })}
         />
         <Kpi
           icon={TrendingUp}
-          label="ناوەندی ئەدا"
+          label={t("employees.kpiAvgPerf")}
           value={`${s.averagePerformance}%`}
-          sub={`${s.newSalaryAlerts} ئاگاداری نوێ`}
+          sub={t("employees.kpiAlertsSub", { count: s.newSalaryAlerts })}
         />
       </div>
 
@@ -138,7 +168,7 @@ export default function EmployeeReportsClient({
         <section className="rounded-[1.75rem] border border-amber-200 bg-amber-50/80 p-5">
           <div className="mb-3 flex items-center gap-2 font-black text-amber-900">
             <AlertTriangle size={18} />
-            مووچەکانی نزیک / چاوەڕوان
+            {t("employees.upcomingSalaries")}
           </div>
           <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
             {data.upcomingSalaries.map((e) => (
@@ -149,7 +179,8 @@ export default function EmployeeReportsClient({
               >
                 <p className="font-bold text-slate-800">{e.fullName}</p>
                 <p className="text-xs text-slate-500">
-                  {e.nextSalaryDate} · {formatMoney(e.monthlySalary)} IQD
+                  {e.nextSalaryDate} · {formatMoney(e.monthlySalary)}{" "}
+                  {t("common.currencyCode")}
                 </p>
               </Link>
             ))}
@@ -159,7 +190,7 @@ export default function EmployeeReportsClient({
 
       <div className="rek-tabs-scroll">
         <div className="inline-flex min-w-full gap-2 rounded-[1.5rem] border border-[rgba(255, 174, 66,0.08)] bg-white p-2 shadow-sm">
-          {SECTIONS.map((item) => (
+          {sections.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -179,142 +210,180 @@ export default function EmployeeReportsClient({
       <section className="rounded-[2rem] border border-[rgba(255, 174, 66,0.08)] bg-white p-5 shadow-sm sm:p-8">
         {section === "overview" && (
           <div className="space-y-6">
-            <h2 className="text-xl font-black text-[#FFAE42]">کورتەی گشتی</h2>
+            <h2 className="text-xl font-black text-[#FFAE42]">
+              {t("employees.overviewTitle")}
+            </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Mini
-                label="چالاک"
+                label={t("employees.miniActive")}
                 value={s.activeEmployees}
                 icon={UserPlus}
               />
               <Mini
-                label="ناچالاک / ڕاگیراو"
+                label={t("employees.miniInactive")}
                 value={s.inactiveEmployees}
                 icon={UserMinus}
               />
               <Mini
-                label="مۆڵەتی چاوەڕوان"
+                label={t("employees.miniLeavePending")}
                 value={s.leavePending}
                 icon={Clock3}
               />
               <Mini
-                label="مووچەی چاوەڕوان"
+                label={t("employees.miniSalaryPending")}
                 value={formatMoney(s.salaryPendingThisMonth)}
                 icon={Wallet}
               />
             </div>
             <p className="text-sm text-slate-500">
-              ئەم مانگە: {s.attendance.present} ئامادە · {s.attendance.late}{" "}
-              دواکەوتوو · {s.attendance.absent} غائیب · {s.attendance.leave}{" "}
-              مۆڵەت · {s.attendance.halfDay} نیوەڕۆژ.
+              {t("employees.monthSummary", {
+                present: s.attendance.present,
+                late: s.attendance.late,
+                absent: s.attendance.absent,
+                leave: s.attendance.leave,
+                halfDay: s.attendance.halfDay,
+              })}
             </p>
           </div>
         )}
 
         {section === "attendance" && (
           <ReportTable
-            title="ڕاپۆرتی ئامادەبوون (ئەم مانگە)"
-            empty="هیچ تۆماری ئامادەبوون نییە."
+            title={t("employees.attendanceReportTitle")}
+            empty={t("employees.attendanceReportEmpty")}
             rows={data.attendanceReport.map((r) => [
               r.employee.fullName,
               r.date,
-              ATTENDANCE_STATUS_LABELS[r.status] || r.status,
-              r.notes || "—",
+              t(`employees.attendance.${r.status}`) || r.status,
+              r.notes || t("common.emDash"),
             ])}
-            headers={["کارمەند", "بەروار", "دۆخ", "تێبینی"]}
+            headers={[
+              t("employees.colEmployee"),
+              t("employees.colDate"),
+              t("employees.colStatus"),
+              t("employees.colNotes"),
+            ]}
           />
         )}
 
         {section === "leave" && (
           <ReportTable
-            title="ڕاپۆرتی مۆڵەت (ئەم مانگە)"
-            empty="هیچ داواکاری مۆڵەت نییە."
+            title={t("employees.leaveReportTitle")}
+            empty={t("employees.leaveReportEmpty")}
             rows={data.leaveReport.map((r) => [
               r.employee.fullName,
-              LEAVE_TYPE_LABELS[r.leaveType] || r.leaveType,
+              t(`employees.leaveTypes.${r.leaveType}`) || r.leaveType,
               `${r.startDate} → ${r.endDate}`,
-              LEAVE_STATUS_LABELS[r.status] || r.status,
+              t(`employees.leaveStatuses.${r.status}`) || r.status,
             ])}
-            headers={["کارمەند", "جۆر", "ماوە", "دۆخ"]}
+            headers={[
+              t("employees.colEmployee"),
+              t("employees.colType"),
+              t("employees.colPeriod"),
+              t("employees.colStatus"),
+            ]}
           />
         )}
 
         {section === "salary" && (
           <div className="space-y-8">
             <ReportTable
-              title="ڕاپۆرتی مووچەی ئەم مانگە"
-              empty="هیچ مووچەیەک تۆمار نەکراوە."
+              title={t("employees.salaryReportTitle")}
+              empty={t("employees.salaryReportEmpty")}
               rows={data.salaryReport.map((r) => [
                 r.employee.fullName,
-                `${formatMoney(r.amount)} IQD`,
+                `${formatMoney(r.amount)} ${t("common.currencyCode")}`,
                 `${r.month}/${r.year}`,
-                r.paymentDate || "—",
-                SALARY_STATUS_LABELS[r.status] || r.status,
+                r.paymentDate || t("common.emDash"),
+                t(`employees.salaryStatuses.${r.status}`) || r.status,
               ])}
-              headers={["کارمەند", "بڕ", "مانگ", "پارەدان", "دۆخ"]}
+              headers={[
+                t("employees.colEmployee"),
+                t("employees.colAmount"),
+                t("employees.colMonth"),
+                t("employees.colPayment"),
+                t("employees.colStatus"),
+              ]}
             />
             <ReportTable
-              title="مێژووی مووچە (کۆمپانیا)"
-              empty="مێژوو بەتاڵە."
+              title={t("employees.salaryHistoryTitle")}
+              empty={t("employees.salaryHistoryEmptyShort")}
               rows={data.salaryHistory.map((r) => [
                 r.employee.fullName,
-                `${formatMoney(r.amount)} IQD`,
+                `${formatMoney(r.amount)} ${t("common.currencyCode")}`,
                 `${r.month}/${r.year}`,
-                r.nextSalaryDate || "—",
-                SALARY_STATUS_LABELS[r.status] || r.status,
+                r.nextSalaryDate || t("common.emDash"),
+                t(`employees.salaryStatuses.${r.status}`) || r.status,
               ])}
-              headers={["کارمەند", "بڕ", "مانگ", "داهاتوو", "دۆخ"]}
+              headers={[
+                t("employees.colEmployee"),
+                t("employees.colAmount"),
+                t("employees.colMonth"),
+                t("employees.colNext"),
+                t("employees.colStatus"),
+              ]}
             />
           </div>
         )}
 
         {section === "active" && (
           <EmployeeList
-            title="کارمەندانی چالاک"
+            title={t("employees.activeListTitle")}
             items={data.activeEmployees}
           />
         )}
 
         {section === "inactive" && (
           <EmployeeList
-            title="کارمەندانی ناچالاک / ڕاگیراو"
+            title={t("employees.inactiveListTitle")}
             items={data.inactiveEmployees}
           />
         )}
 
         {section === "late" && (
           <ReportTable
-            title="کارمەندانی دواکەوتوو (ئەم مانگە)"
-            empty="هیچ دواکەوتنێک نییە."
+            title={t("employees.lateReportTitle")}
+            empty={t("employees.lateReportEmpty")}
             rows={data.lateEmployees.map((r) => [
               r.fullName,
               String(r.late),
               String(r.present),
               `${r.score}%`,
             ])}
-            headers={["کارمەند", "دواکەوتن", "ئامادە", "ئەدا"]}
+            headers={[
+              t("employees.colEmployee"),
+              t("employees.colLate"),
+              t("employees.colPresent"),
+              t("employees.colPerf"),
+            ]}
             links={data.lateEmployees.map((r) => r.id)}
           />
         )}
 
         {section === "absent" && (
           <ReportTable
-            title="کارمەندانی غائیب (ئەم مانگە)"
-            empty="هیچ غەیبەتێک نییە."
+            title={t("employees.absentReportTitle")}
+            empty={t("employees.absentReportEmpty")}
             rows={data.absentEmployees.map((r) => [
               r.fullName,
               String(r.absent),
               String(r.present),
               `${r.score}%`,
             ])}
-            headers={["کارمەند", "غائیب", "ئامادە", "ئەدا"]}
+            headers={[
+              t("employees.colEmployee"),
+              t("employees.colAbsent"),
+              t("employees.colPresent"),
+              t("employees.colPerf"),
+            ]}
             links={data.absentEmployees.map((r) => r.id)}
           />
         )}
 
         {section === "performance" && (
           <ReportTable
-            title="کورتەی ئەدای کار"
-            empty="داتای ئەدا بەردەست نییە."
+            title={t("employees.performanceTitle")}
+            empty={t("employees.performanceEmpty")}
             rows={[...data.performance]
               .sort((a, b) => b.score - a.score)
               .map((r) => [
@@ -324,7 +393,13 @@ export default function EmployeeReportsClient({
                 String(r.absent),
                 `${r.score}%`,
               ])}
-            headers={["کارمەند", "ئامادە", "دوا", "غائیب", "ئەدا"]}
+            headers={[
+              t("employees.colEmployee"),
+              t("employees.colPresent"),
+              t("employees.colLateShort"),
+              t("employees.colAbsent"),
+              t("employees.colPerf"),
+            ]}
             links={[...data.performance]
               .sort((a, b) => b.score - a.score)
               .map((r) => r.id)}
@@ -334,39 +409,53 @@ export default function EmployeeReportsClient({
         {section === "manager" && (
           <div className="space-y-8">
             <h2 className="text-xl font-black text-[#FFAE42]">
-              بینینی بەڕێوەبەر — هەموو داتا
+              {t("employees.managerTitle")}
             </h2>
             <ReportTable
-              title="هەموو ئامادەبوون (دوایین ١٠٠)"
-              empty="—"
+              title={t("employees.allAttendanceTitle")}
+              empty={t("common.emDash")}
               rows={data.allAttendance.map((r) => [
                 r.employee.fullName,
                 r.date,
-                ATTENDANCE_STATUS_LABELS[r.status] || r.status,
+                t(`employees.attendance.${r.status}`) || r.status,
               ])}
-              headers={["کارمەند", "بەروار", "دۆخ"]}
+              headers={[
+                t("employees.colEmployee"),
+                t("employees.colDate"),
+                t("employees.colStatus"),
+              ]}
             />
             <ReportTable
-              title="هەموو داواکاری مۆڵەت"
-              empty="—"
+              title={t("employees.allLeavesTitle")}
+              empty={t("common.emDash")}
               rows={data.allLeaves.map((r) => [
                 r.employee.fullName,
-                LEAVE_TYPE_LABELS[r.leaveType] || r.leaveType,
+                t(`employees.leaveTypes.${r.leaveType}`) || r.leaveType,
                 `${r.startDate} → ${r.endDate}`,
-                LEAVE_STATUS_LABELS[r.status] || r.status,
+                t(`employees.leaveStatuses.${r.status}`) || r.status,
               ])}
-              headers={["کارمەند", "جۆر", "ماوە", "دۆخ"]}
+              headers={[
+                t("employees.colEmployee"),
+                t("employees.colType"),
+                t("employees.colPeriod"),
+                t("employees.colStatus"),
+              ]}
             />
             <ReportTable
-              title="مووچەکانی نزیک"
-              empty="هیچ مووچەیەکی نزیک نییە."
+              title={t("employees.upcomingSalariesTitle")}
+              empty={t("employees.upcomingSalariesEmpty")}
               rows={data.upcomingSalaries.map((r) => [
                 r.fullName,
-                r.nextSalaryDate || "—",
-                `${formatMoney(r.monthlySalary)} IQD`,
-                r.department || "—",
+                r.nextSalaryDate || t("common.emDash"),
+                `${formatMoney(r.monthlySalary)} ${t("common.currencyCode")}`,
+                r.department || t("common.emDash"),
               ])}
-              headers={["کارمەند", "بەروار", "بڕ", "بەش"]}
+              headers={[
+                t("employees.colEmployee"),
+                t("employees.colDate"),
+                t("employees.colAmount"),
+                t("employees.colDepartment"),
+              ]}
               links={data.upcomingSalaries.map((r) => r.id)}
             />
           </div>
@@ -498,12 +587,13 @@ function EmployeeList({
     monthlySalary: number;
   }>;
 }) {
+  const { t } = useT();
   return (
     <div className="space-y-4">
       <h2 className="text-xl font-black text-[#FFAE42]">{title}</h2>
       {items.length === 0 ? (
         <p className="rounded-2xl bg-slate-50 px-4 py-8 text-center text-slate-500">
-          لیست بەتاڵە.
+          {t("employees.listEmpty")}
         </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -520,10 +610,10 @@ function EmployeeList({
               </p>
               <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-bold">
                 <span className="rounded-full bg-white px-2 py-1 text-[#FFAE42]">
-                  {EMPLOYEE_STATUS_LABELS[e.status] || e.status}
+                  {t(`employees.statuses.${e.status}`) || e.status}
                 </span>
                 <span className="rounded-full bg-white px-2 py-1 text-slate-600">
-                  {formatMoney(e.monthlySalary)} IQD
+                  {formatMoney(e.monthlySalary)} {t("common.currencyCode")}
                 </span>
               </div>
             </Link>

@@ -1,6 +1,9 @@
 "use client";
 
 import type { BulkAction, BulkModule, BulkPayload, BulkJobSummary } from "@/lib/bulk/types";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 export async function startBulkJob(input: {
   moduleKey: BulkModule;
@@ -14,21 +17,21 @@ export async function startBulkJob(input: {
     body: JSON.stringify({ ...input, autostart: true }),
   });
   const json = await res.json();
-  if (!json.success) throw new Error(json.message || "Failed to start bulk job");
+  if (!json.success) throw new Error(json.message || t("bulk.failed"));
   return json.data as BulkJobSummary;
 }
 
 export async function processBulkJob(jobId: string): Promise<BulkJobSummary> {
   const res = await fetch(`/api/bulk/jobs/${jobId}/process`, { method: "POST" });
   const json = await res.json();
-  if (!json.success) throw new Error(json.message || "Process failed");
+  if (!json.success) throw new Error(json.message || t("bulk.processingFailed"));
   return json.data as BulkJobSummary;
 }
 
 export async function cancelBulkJob(jobId: string): Promise<BulkJobSummary> {
   const res = await fetch(`/api/bulk/jobs/${jobId}/cancel`, { method: "POST" });
   const json = await res.json();
-  if (!json.success) throw new Error(json.message || "Cancel failed");
+  if (!json.success) throw new Error(json.message || t("bulk.cancelled"));
   return json.data as BulkJobSummary;
 }
 

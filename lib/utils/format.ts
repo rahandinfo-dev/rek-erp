@@ -1,3 +1,6 @@
+import { formatMoneyLocalized, formatNumberLocalized } from "@/lib/i18n/format";
+import { DEFAULT_LOCALE } from "@/lib/i18n/config";
+
 type MoneyInput =
   | number
   | string
@@ -5,31 +8,14 @@ type MoneyInput =
   | undefined
   | { toString(): string };
 
+/** @deprecated Prefer formatMoneyLocalized — kept as thin wrapper for existing imports. */
 export function formatMoney(value: MoneyInput) {
-  const num = Number(value ?? 0);
-
-  if (Number.isNaN(num)) {
-    return "0";
-  }
-
-  return num.toLocaleString("en-US", {
-    maximumFractionDigits: 2,
-  });
+  return formatMoneyLocalized(value, DEFAULT_LOCALE);
 }
 
-/**
- * Grouped number with an explicit locale. A bare `toLocaleString()` resolves
- * against the runtime locale, so the Node server and the browser can render
- * different digits/separators for the same value and break hydration.
- */
+/** @deprecated Prefer formatNumberLocalized */
 export function formatNumber(value: MoneyInput, maximumFractionDigits = 2) {
-  const num = Number(value ?? 0);
-
-  if (Number.isNaN(num)) {
-    return "0";
-  }
-
-  return num.toLocaleString("en-US", { maximumFractionDigits });
+  return formatNumberLocalized(value, DEFAULT_LOCALE, maximumFractionDigits);
 }
 
 export function roundMoney(value: number) {

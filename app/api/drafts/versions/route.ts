@@ -3,13 +3,14 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import { DRAFT_TTL_MS } from "@/lib/drafts/types";
+import { tServer } from "@/lib/i18n";
 
 export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -17,7 +18,7 @@ export async function GET(req: NextRequest) {
     const key = req.nextUrl.searchParams.get("key");
     if (!key) {
       return NextResponse.json(
-        { success: false, message: "key required" },
+        { success: false, message: tServer.t("api.keyRequired") },
         { status: 400 }
       );
     }
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -84,7 +85,7 @@ export async function POST(req: NextRequest) {
       const parsed = deleteSchema.safeParse(body);
       if (!parsed.success) {
         return NextResponse.json(
-          { success: false, message: "Invalid" },
+          { success: false, message: tServer.t("api.invalid") },
           { status: 400 }
         );
       }
@@ -97,7 +98,7 @@ export async function POST(req: NextRequest) {
     const parsed = restoreSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Invalid" },
+        { success: false, message: tServer.t("api.invalid") },
         { status: 400 }
       );
     }

@@ -3,6 +3,9 @@
  */
 
 import { withRetry } from "@/lib/production/retry";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 export type ApiResult<T = unknown> = {
   success: boolean;
@@ -53,12 +56,7 @@ export async function apiFetch<T = unknown>(
   init?: ApiFetchOptions
 ): Promise<ApiResult<T>> {
   if (!isOnline()) {
-    throw new ApiClientError(
-      "دەرهێڵیت. پەیوەندی ئینتەرنێت بپشکنە.",
-      0,
-      null,
-      true
-    );
+    throw new ApiClientError(t("api.offline"), 0, null, true);
   }
 
   const method = (init?.method || "GET").toUpperCase();
@@ -86,12 +84,7 @@ export async function apiFetch<T = unknown>(
           },
         });
       } catch {
-        throw new ApiClientError(
-          "پەیوەندی بە سێرڤەر نەکرا. ئینتەرنێت بپشکنە.",
-          0,
-          null,
-          true
-        );
+        throw new ApiClientError(t("api.serverUnreachable"), 0, null, true);
       }
 
       const body = await parseBody<T>(res);
@@ -101,16 +94,16 @@ export async function apiFetch<T = unknown>(
         const message =
           body?.message ||
           (res.status === 401
-            ? "تکایە سەرەتا بچۆ ژوورەوە."
+            ? t("errors.unauthorized")
             : res.status === 403
-              ? "دەسەڵاتت نییە بۆ ئەم کردارە."
+              ? t("api.forbidden")
               : res.status === 404
-                ? "نەدۆزرایەوە."
+                ? t("errors.notFound")
                 : res.status === 429
-                  ? "هەوڵی زۆر درا. تکایە کەمێک چاوەڕێ بکە."
+                  ? t("api.tooMany")
                   : res.status >= 500
-                    ? "هەڵەیەکی ناوخۆیی ڕوویدا."
-                    : "هەڵەیەک ڕوویدا.");
+                    ? t("api.serverError")
+                    : t("errors.generic"));
         throw new ApiClientError(message, res.status, body, retryable);
       }
 
@@ -124,7 +117,7 @@ export async function apiFetch<T = unknown>(
   );
 }
 
-export function getErrorMessage(err: unknown, fallback = "هەڵەیەک ڕوویدا.") {
+export function getErrorMessage(err: unknown, fallback = t("errors.generic")) {
   if (err instanceof ApiClientError) return err.message;
   if (err instanceof Error && err.message) return err.message;
   return fallback;

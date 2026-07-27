@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { auditSafe } from "@/lib/audit/log";
+import { tServer } from "@/lib/i18n";
 
 type Params = {
   params: Promise<{
@@ -20,7 +21,7 @@ export async function GET(
       return NextResponse.json(
         {
           success: false,
-          message: "Unauthorized",
+          message: tServer.t("api.unauthorized"),
         },
         { status: 401 }
       );
@@ -55,7 +56,7 @@ export async function GET(
     return NextResponse.json(
       {
         success: false,
-        message: "Server Error",
+        message: tServer.t("api.serverError"),
       },
       { status: 500 }
     );
@@ -73,7 +74,7 @@ export async function PUT(
       return NextResponse.json(
         {
           success: false,
-          message: "Unauthorized",
+          message: tServer.t("api.unauthorized"),
         },
         { status: 401 }
       );
@@ -175,7 +176,7 @@ export async function PUT(
     return NextResponse.json(
       {
         success: false,
-        message: "Server Error",
+        message: tServer.t("api.serverError"),
       },
       { status: 500 }
     );
@@ -193,7 +194,7 @@ export async function DELETE(
       return NextResponse.json(
         {
           success: false,
-          message: "Unauthorized",
+          message: tServer.t("api.unauthorized"),
         },
         { status: 401 }
       );
@@ -291,7 +292,7 @@ export async function DELETE(
     return NextResponse.json(
       {
         success: false,
-        message: "Server Error",
+        message: tServer.t("api.serverError"),
       },
       { status: 500 }
     );

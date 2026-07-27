@@ -16,6 +16,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type ToastTone = "success" | "error" | "info" | "warning";
 
@@ -64,6 +65,7 @@ export default function RekToast({
   tone = "success",
   preset = "generic",
 }: RekToastProps) {
+  const { t } = useT();
   const Icon =
     preset !== "generic" ? PRESET_ICONS[preset] : TONE_ICONS[tone];
 
@@ -84,7 +86,7 @@ export default function RekToast({
       <button
         type="button"
         className="rek-toast-close"
-        aria-label="داخستن"
+        aria-label={t("toast.close")}
         onClick={() => toast.dismiss(id)}
       >
         <X size={16} />

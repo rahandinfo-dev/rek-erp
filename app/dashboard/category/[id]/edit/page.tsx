@@ -5,6 +5,7 @@ import { ArrowLeft } from "lucide-react";
 import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import CategoryForm from "@/components/category/CategoryForm";
+import { tServer } from "@/lib/i18n";
 
 type Props = {
   params: Promise<{
@@ -12,9 +13,8 @@ type Props = {
   }>;
 };
 
-export default async function EditCategoryPage({
-  params,
-}: Props) {
+export default async function EditCategoryPage({ params }: Props) {
+  const t = tServer.t;
   const user = await getCurrentUser();
 
   if (!user) {
@@ -36,17 +36,13 @@ export default async function EditCategoryPage({
 
   return (
     <div className="space-y-8">
-
       <div className="flex items-center justify-between">
-
         <div>
           <h1 className="text-4xl font-black text-[#FFAE42]">
-            دەستکاریکردنی پۆل
+            {t("categories.editTitle")}
           </h1>
 
-          <p className="mt-2 text-slate-500">
-            زانیاریی پۆلەکە نوێ بکەرەوە.
-          </p>
+          <p className="mt-2 text-slate-500">{t("categories.editDescription")}</p>
         </div>
 
         <Link
@@ -54,15 +50,11 @@ export default async function EditCategoryPage({
           className="flex items-center gap-2 rounded-xl border px-5 py-3 hover:bg-slate-100"
         >
           <ArrowLeft size={18} />
-          گەڕانەوە
+          {t("common.back")}
         </Link>
-
       </div>
 
-      <CategoryForm
-        category={category}
-      />
-
+      <CategoryForm category={category} />
     </div>
   );
 }

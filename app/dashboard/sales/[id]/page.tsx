@@ -6,6 +6,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { formatMoney } from "@/lib/utils/format";
 import { PAYMENT_METHOD_LABELS } from "@/lib/invoices/payment";
 import RecordVersionHistorySection from "@/components/versions/RecordVersionHistorySection";
+import { tServer } from "@/lib/i18n";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -15,6 +16,7 @@ export default async function SaleDetailPage({ params }: Props) {
   const user = await getCurrentUser();
   if (!user) return null;
 
+  const t = tServer.t.bind(tServer);
   const { id } = await params;
 
   const sale = await db.sale.findFirst({
@@ -51,7 +53,8 @@ export default async function SaleDetailPage({ params }: Props) {
             {sale.invoiceNo}
           </h1>
           <p className="mt-2 text-slate-500">
-            {sale.customer.name} · {formatMoney(sale.total)} IQD ·{" "}
+            {sale.customer.name} · {formatMoney(sale.total)}{" "}
+            {t("common.currencyCode")} ·{" "}
             {PAYMENT_METHOD_LABELS[sale.paymentMethod]}
           </p>
         </div>
@@ -60,16 +63,16 @@ export default async function SaleDetailPage({ params }: Props) {
       <div className="rek-card p-6 text-center">
         <FileText className="mx-auto text-[#FFAE42]/40" size={36} />
         <p className="mt-3 font-bold text-slate-700">
-          پسوولە بۆ ئەم فرۆشتنە نەدۆزرایەوە.
+          {t("sales.noInvoiceTitle")}
         </p>
         <p className="mt-1 text-sm text-slate-500">
-          فرۆشتنە نوێیەکان خۆکار پسوولە دروست دەکەن.
+          {t("sales.noInvoiceBody")}
         </p>
         <Link
           href="/dashboard/invoices"
           className="mt-5 inline-flex rounded-2xl bg-[#FFAE42] px-5 py-3 font-bold text-white"
         >
-          پسوولەکان
+          {t("nav.invoices")}
         </Link>
       </div>
 

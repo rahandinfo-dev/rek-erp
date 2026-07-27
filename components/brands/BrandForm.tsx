@@ -6,10 +6,12 @@ import { appToast } from "@/lib/toast";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar } from "@/components/ui/AutoSaveStatus";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type BrandDraft = { name: string };
 
 export default function BrandForm() {
+  const { t } = useT();
   const router = useRouter();
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -34,7 +36,7 @@ export default function BrandForm() {
     e.preventDefault();
 
     if (!name.trim()) {
-      appToast.error("تکایە ناوی براند بنووسە.");
+      appToast.error(t("brands.nameRequired"));
       return;
     }
 
@@ -48,17 +50,17 @@ export default function BrandForm() {
       const data = await response.json();
 
       if (!response.ok) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
 
       clearDraft();
-      appToast.success("براند بە سەرکەوتوویی زیادکرا.");
+      appToast.success(t("brands.created"));
       setName("");
       router.push("/dashboard/brands");
       router.refresh();
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -83,13 +85,13 @@ export default function BrandForm() {
           htmlFor="brand-name"
           className="mb-2 block text-sm font-bold text-foreground"
         >
-          ناوی براند
+          {t("brands.nameLabel")}
         </label>
         <input
           id="brand-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="ناوی براند"
+          placeholder={t("brands.nameLabel")}
           className="w-full rounded-2xl border border-border bg-card p-3 outline-none focus:border-primary focus-visible:ring-[3px] focus-visible:ring-ring/35"
         />
       </div>
@@ -100,7 +102,7 @@ export default function BrandForm() {
         aria-busy={loading}
         className="rounded-2xl bg-primary px-8 py-3 font-bold text-primary-foreground transition hover:bg-[var(--brand-hover)] disabled:opacity-50"
       >
-        {loading ? "چاوەڕێ بکە..." : "زیادکردنی براند"}
+        {loading ? t("common.wait") : t("brands.add")}
       </button>
     </form>
   );

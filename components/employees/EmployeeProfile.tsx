@@ -29,14 +29,7 @@ import {
   salaryStatuses,
   type EmployeeFormValues,
 } from "@/lib/validators/employee";
-import {
-  ATTENDANCE_STATUS_LABELS,
-  EMPLOYEE_ROLE_LABELS,
-  EMPLOYEE_STATUS_LABELS,
-  LEAVE_STATUS_LABELS,
-  LEAVE_TYPE_LABELS,
-  SALARY_STATUS_LABELS,
-} from "@/lib/employees/labels";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
@@ -122,6 +115,7 @@ export default function EmployeeProfile({
   salaries: SalaryItem[];
   history: HistoryItem[];
 }) {
+  const { t } = useT();
   const router = useRouter();
   const [, startTransition] = useTransition();
 
@@ -235,7 +229,7 @@ export default function EmployeeProfile({
       });
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
       const p = data.data;
@@ -259,10 +253,10 @@ export default function EmployeeProfile({
       });
       setEditing(false);
       clearDraft();
-      appToast.success("پاشەکەوتکرا", "زانیاری کارمەند نوێکرایەوە.");
+      appToast.success(t("employees.savedTitle"), t("employees.savedBody"));
       startTransition(() => router.refresh());
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -277,7 +271,7 @@ export default function EmployeeProfile({
       });
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
       setEmployee((e) => ({ ...e, status }));
@@ -286,16 +280,16 @@ export default function EmployeeProfile({
         {
           id: `local-${Date.now()}`,
           action: status,
-          message: `دۆخ بوو بە ${EMPLOYEE_STATUS_LABELS[status]}.`,
+          message: t("employees.statusBecame", { status: t(`employees.statuses.${status}`) }),
           createdAt: new Date().toISOString(),
           actor: null,
         },
         ...h,
       ]);
-      appToast.success("دۆخ نوێکرایەوە", EMPLOYEE_STATUS_LABELS[status]);
+      appToast.success(t("employees.statusUpdated"), t(`employees.statuses.${status}`));
       startTransition(() => router.refresh());
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     }
   }
 
@@ -307,9 +301,9 @@ export default function EmployeeProfile({
         deleteUrl: `/api/employees/${employee.id}`,
         restoreUrl: `/api/employees/${employee.id}/restore`,
         module: "employees",
-        title: "Employee archived",
+        title: t("employees.archivedTitle"),
         message: employee.fullName,
-        entityType: "کارمەند",
+        entityType: t("employees.entityType"),
         entityId: employee.id,
         onSoftDeleted: () => {
           setConfirmDelete(false);
@@ -342,7 +336,7 @@ export default function EmployeeProfile({
       });
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
       const item = {
@@ -357,9 +351,9 @@ export default function EmployeeProfile({
         );
         return [item, ...filtered];
       });
-      appToast.success("ئامادەبوون پاشەکەوتکرا");
+      appToast.success(t("employees.attendanceSaved"));
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setAttBusy(false);
     }
@@ -380,7 +374,7 @@ export default function EmployeeProfile({
       });
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
       setLeaves((prev) => [
@@ -396,9 +390,9 @@ export default function EmployeeProfile({
         ...prev,
       ]);
       setLeaveReason("");
-      appToast.success("داواکاری مۆڵەت نێردرا");
+      appToast.success(t("employees.leaveRequested"));
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setLeaveBusy(false);
     }
@@ -416,7 +410,7 @@ export default function EmployeeProfile({
       );
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
       setLeaves((prev) =>
@@ -430,9 +424,9 @@ export default function EmployeeProfile({
             : l
         )
       );
-      appToast.success("مۆڵەت یەکلا کرایەوە", LEAVE_STATUS_LABELS[status]);
+      appToast.success(t("employees.leaveResolved"), t(`employees.leaveStatuses.${status}`));
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     }
   }
 
@@ -454,7 +448,7 @@ export default function EmployeeProfile({
       });
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
       const item = {
@@ -480,20 +474,20 @@ export default function EmployeeProfile({
         monthlySalary: salaryAmount,
         nextSalaryDate: salaryNextDate || e.nextSalaryDate,
       }));
-      appToast.success("مووچە پاشەکەوتکرا");
+      appToast.success(t("employees.salarySaved"));
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setSalaryBusy(false);
     }
   }
 
   const tabs: { id: TabId; label: string; icon: typeof Pencil }[] = [
-    { id: "profile", label: "پرۆفایل", icon: Pencil },
-    { id: "attendance", label: "ئامادەبوون", icon: CalendarDays },
-    { id: "leave", label: "مۆڵەت", icon: Clock3 },
-    { id: "salary", label: "مووچە", icon: Wallet },
-    { id: "history", label: "مێژوو", icon: History },
+    { id: "profile", label: t("employees.tabProfile"), icon: Pencil },
+    { id: "attendance", label: t("employees.tabAttendance"), icon: CalendarDays },
+    { id: "leave", label: t("employees.tabLeave"), icon: Clock3 },
+    { id: "salary", label: t("employees.tabSalary"), icon: Wallet },
+    { id: "history", label: t("employees.tabHistory"), icon: History },
   ];
 
   const statusTone =
@@ -527,7 +521,7 @@ export default function EmployeeProfile({
           className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:border-[#FFAE42]/30 hover:text-[#FFAE42]"
         >
           <ArrowRight size={16} />
-          گەڕانەوە
+          {t("common.back")}
         </Link>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -539,7 +533,7 @@ export default function EmployeeProfile({
               className="inline-flex items-center gap-2 rounded-2xl bg-emerald-600 px-4 py-2.5 text-sm font-bold text-white"
             >
               <UserCheck size={16} />
-              چالاککردن
+              {t("employees.activate")}
             </button>
           ) : (
             <button
@@ -548,7 +542,7 @@ export default function EmployeeProfile({
               className="inline-flex items-center gap-2 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-bold text-amber-800"
             >
               <ShieldOff size={16} />
-              ڕاگرتن
+              {t("employees.suspend")}
             </button>
           )}
           {editing ? (
@@ -559,7 +553,7 @@ export default function EmployeeProfile({
               className="inline-flex items-center gap-2 rounded-2xl bg-[#FFAE42] px-4 py-2.5 text-sm font-bold text-white disabled:opacity-50"
             >
               <Save size={16} />
-              {saving ? "پاشەکەوت..." : "پاشەکەوتکردن"}
+              {saving ? t("common.savingShort") : t("employees.save")}
             </button>
           ) : (
             <button
@@ -571,7 +565,7 @@ export default function EmployeeProfile({
               className="inline-flex items-center gap-2 rounded-2xl bg-[#FFAE42] px-4 py-2.5 text-sm font-bold text-white"
             >
               <Pencil size={16} />
-              دەستکاری
+              {t("common.edit")}
             </button>
           )}
           <button
@@ -580,7 +574,7 @@ export default function EmployeeProfile({
             className="inline-flex items-center gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-sm font-bold text-rose-700"
           >
             <Trash2 size={16} />
-            سڕینەوە
+            {t("common.delete")}
           </button>
         </div>
       </div>
@@ -607,10 +601,10 @@ export default function EmployeeProfile({
               <span
                 className={`rounded-full px-3 py-1 text-xs font-bold text-white ${statusTone}`}
               >
-                {EMPLOYEE_STATUS_LABELS[employee.status]}
+                {t(`employees.statuses.${employee.status}`)}
               </span>
               <span className="rounded-full bg-[#FFAE42]/10 px-3 py-1 text-xs font-bold text-[#FFAE42]">
-                {EMPLOYEE_ROLE_LABELS[employee.role] || employee.role}
+                {t(`employees.roles.${employee.role}`) || employee.role}
               </span>
             </div>
             <h1 className="text-3xl font-black text-[#1f1218] sm:text-4xl">
@@ -622,19 +616,20 @@ export default function EmployeeProfile({
               {employee.department ? ` · ${employee.department}` : ""}
             </p>
             <p className="mt-2 text-sm text-slate-400">
-              دروستکراو لەلایەن{" "}
-              {employee.createdBy?.fullName || "—"} · دامەزراندن{" "}
-              {toInputDate(employee.dateJoined)}
+              {t("employees.createdBy", {
+                name: employee.createdBy?.fullName || t("common.emDash"),
+                date: toInputDate(employee.dateJoined),
+              })}
             </p>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:min-w-[240px]">
             <Stat
-              label="مووچە"
-              value={`${formatMoney(employee.monthlySalary)} IQD`}
+              label={t("employees.salary")}
+              value={`${formatMoney(employee.monthlySalary)} ${t("common.currencyCode")}`}
             />
             <Stat
-              label="مووچەی داهاتوو"
-              value={toInputDate(employee.nextSalaryDate) || "—"}
+              label={t("employees.nextSalary")}
+              value={toInputDate(employee.nextSalaryDate) || t("common.emDash")}
             />
           </div>
         </div>
@@ -664,7 +659,7 @@ export default function EmployeeProfile({
         {tab === "profile" && (
           <div className="space-y-6">
             <h2 className="text-xl font-black text-[#FFAE42]">
-              زانیاری کارمەند
+              {t("employees.infoTitle")}
             </h2>
 
             {editing && (
@@ -672,13 +667,13 @@ export default function EmployeeProfile({
                 kind="employee"
                 value={form.photo || null}
                 onChange={(url) => updateForm("photo", url || "")}
-                label="وێنەی کارمەند"
+                label={t("employees.photoLabel")}
                 shape="circle"
               />
             )}
 
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="ناوی تەواو">
+              <Field label={t("employees.fullName")}>
                 {editing ? (
                   <input
                     className={inputClass}
@@ -689,7 +684,7 @@ export default function EmployeeProfile({
                   <Value>{employee.fullName}</Value>
                 )}
               </Field>
-              <Field label="ناوی بەکارهێنەر">
+              <Field label={t("employees.username")}>
                 {editing ? (
                   <input
                     className={inputClass}
@@ -700,7 +695,7 @@ export default function EmployeeProfile({
                   <Value>@{employee.username}</Value>
                 )}
               </Field>
-              <Field label="مۆبایل">
+              <Field label={t("common.phone")}>
                 {editing ? (
                   <input
                     className={inputClass}
@@ -708,10 +703,10 @@ export default function EmployeeProfile({
                     onChange={(e) => updateForm("phone", e.target.value)}
                   />
                 ) : (
-                  <Value>{employee.phone || "—"}</Value>
+                  <Value>{employee.phone || t("common.emDash")}</Value>
                 )}
               </Field>
-              <Field label="ئیمەیڵ">
+              <Field label={t("common.email")}>
                 {editing ? (
                   <input
                     className={inputClass}
@@ -719,10 +714,10 @@ export default function EmployeeProfile({
                     onChange={(e) => updateForm("email", e.target.value)}
                   />
                 ) : (
-                  <Value>{employee.email || "—"}</Value>
+                  <Value>{employee.email || t("common.emDash")}</Value>
                 )}
               </Field>
-              <Field label="ناسنامە">
+              <Field label={t("employees.nationalIdShort")}>
                 {editing ? (
                   <input
                     className={inputClass}
@@ -730,10 +725,10 @@ export default function EmployeeProfile({
                     onChange={(e) => updateForm("nationalId", e.target.value)}
                   />
                 ) : (
-                  <Value>{employee.nationalId || "—"}</Value>
+                  <Value>{employee.nationalId || t("common.emDash")}</Value>
                 )}
               </Field>
-              <Field label="ناونیشان">
+              <Field label={t("common.address")}>
                 {editing ? (
                   <input
                     className={inputClass}
@@ -741,10 +736,10 @@ export default function EmployeeProfile({
                     onChange={(e) => updateForm("address", e.target.value)}
                   />
                 ) : (
-                  <Value>{employee.address || "—"}</Value>
+                  <Value>{employee.address || t("common.emDash")}</Value>
                 )}
               </Field>
-              <Field label="پۆست">
+              <Field label={t("employees.position")}>
                 {editing ? (
                   <input
                     className={inputClass}
@@ -752,10 +747,10 @@ export default function EmployeeProfile({
                     onChange={(e) => updateForm("position", e.target.value)}
                   />
                 ) : (
-                  <Value>{employee.position || "—"}</Value>
+                  <Value>{employee.position || t("common.emDash")}</Value>
                 )}
               </Field>
-              <Field label="بەش">
+              <Field label={t("employees.department")}>
                 {editing ? (
                   <input
                     className={inputClass}
@@ -763,10 +758,10 @@ export default function EmployeeProfile({
                     onChange={(e) => updateForm("department", e.target.value)}
                   />
                 ) : (
-                  <Value>{employee.department || "—"}</Value>
+                  <Value>{employee.department || t("common.emDash")}</Value>
                 )}
               </Field>
-              <Field label="ڕۆڵ">
+              <Field label={t("employees.role")}>
                 {editing ? (
                   <select
                     className={inputClass}
@@ -780,15 +775,15 @@ export default function EmployeeProfile({
                   >
                     {employeeRoles.map((role) => (
                       <option key={role} value={role}>
-                        {EMPLOYEE_ROLE_LABELS[role]}
+                        {t(`employees.roles.${role}`)}
                       </option>
                     ))}
                   </select>
                 ) : (
-                  <Value>{EMPLOYEE_ROLE_LABELS[employee.role]}</Value>
+                  <Value>{t(`employees.roles.${employee.role}`)}</Value>
                 )}
               </Field>
-              <Field label="دۆخ">
+              <Field label={t("common.status")}>
                 {editing ? (
                   <select
                     className={inputClass}
@@ -802,15 +797,15 @@ export default function EmployeeProfile({
                   >
                     {(["ACTIVE", "INACTIVE", "SUSPENDED"] as const).map((s) => (
                       <option key={s} value={s}>
-                        {EMPLOYEE_STATUS_LABELS[s]}
+                        {t(`employees.statuses.${s}`)}
                       </option>
                     ))}
                   </select>
                 ) : (
-                  <Value>{EMPLOYEE_STATUS_LABELS[employee.status]}</Value>
+                  <Value>{t(`employees.statuses.${employee.status}`)}</Value>
                 )}
               </Field>
-              <Field label="مووچەی مانگانە">
+              <Field label={t("employees.monthlySalary")}>
                 {editing ? (
                   <input
                     type="number"
@@ -822,11 +817,11 @@ export default function EmployeeProfile({
                   />
                 ) : (
                   <Value>
-                    {formatMoney(employee.monthlySalary)} IQD
+                    {formatMoney(employee.monthlySalary)} {t("common.currencyCode")}
                   </Value>
                 )}
               </Field>
-              <Field label="بەرواری دامەزراندن">
+              <Field label={t("employees.dateJoined")}>
                 {editing ? (
                   <input
                     type="date"
@@ -840,7 +835,7 @@ export default function EmployeeProfile({
               </Field>
             </div>
 
-            <Field label="تێبینی">
+            <Field label={t("common.notes")}>
               {editing ? (
                 <textarea
                   rows={4}
@@ -849,7 +844,7 @@ export default function EmployeeProfile({
                   onChange={(e) => updateForm("notes", e.target.value)}
                 />
               ) : (
-                <Value>{employee.notes || "—"}</Value>
+                <Value>{employee.notes || t("common.emDash")}</Value>
               )}
             </Field>
           </div>
@@ -859,7 +854,7 @@ export default function EmployeeProfile({
           <div className="space-y-6">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-xl font-black text-[#FFAE42]">
-                کالێندەری ئامادەبوون
+                {t("employees.attendanceCalendar")}
               </h2>
               <div className="flex items-center gap-2">
                 <button
@@ -871,7 +866,7 @@ export default function EmployeeProfile({
                     setCalMonth(d.getUTCMonth() + 1);
                   }}
                 >
-                  پێشوو
+                  {t("common.prevPage")}
                 </button>
                 <span className="min-w-[110px] text-center font-bold">
                   {calMonth} / {calYear}
@@ -885,7 +880,7 @@ export default function EmployeeProfile({
                     setCalMonth(d.getUTCMonth() + 1);
                   }}
                 >
-                  داهاتوو
+                  {t("common.nextPage")}
                 </button>
               </div>
             </div>
@@ -899,7 +894,7 @@ export default function EmployeeProfile({
             />
 
             <div className="grid gap-4 rounded-2xl bg-[#FFF8EF]/50 p-4 md:grid-cols-4">
-              <Field label="بەروار">
+              <Field label={t("common.date")}>
                 <input
                   type="date"
                   className={inputClass}
@@ -907,7 +902,7 @@ export default function EmployeeProfile({
                   onChange={(e) => setSelectedDate(e.target.value)}
                 />
               </Field>
-              <Field label="دۆخ">
+              <Field label={t("common.status")}>
                 <select
                   className={inputClass}
                   value={attStatus}
@@ -919,12 +914,12 @@ export default function EmployeeProfile({
                 >
                   {attendanceStatuses.map((s) => (
                     <option key={s} value={s}>
-                      {ATTENDANCE_STATUS_LABELS[s]}
+                      {t(`employees.attendance.${s}`)}
                     </option>
                   ))}
                 </select>
               </Field>
-              <Field label="تێبینی">
+              <Field label={t("common.notes")}>
                 <input
                   className={inputClass}
                   value={attNotes}
@@ -938,7 +933,7 @@ export default function EmployeeProfile({
                   onClick={() => void saveAttendance()}
                   className="w-full rounded-2xl bg-[#FFAE42] px-4 py-3 font-bold text-white disabled:opacity-50"
                 >
-                  {attBusy ? "..." : "تۆمارکردنی ڕۆژ"}
+                  {attBusy ? t("common.ellipsis") : t("employees.recordDay")}
                 </button>
               </div>
             </div>
@@ -948,11 +943,11 @@ export default function EmployeeProfile({
         {tab === "leave" && (
           <div className="space-y-6">
             <h2 className="text-xl font-black text-[#FFAE42]">
-              بەڕێوەبردنی مۆڵەت
+              {t("employees.leaveManage")}
             </h2>
 
             <div className="grid gap-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-4 md:grid-cols-2">
-              <Field label="جۆری مۆڵەت">
+              <Field label={t("employees.leaveType")}>
                 <select
                   className={inputClass}
                   value={leaveType}
@@ -960,21 +955,21 @@ export default function EmployeeProfile({
                     setLeaveType(e.target.value as (typeof leaveTypes)[number])
                   }
                 >
-                  {leaveTypes.map((t) => (
-                    <option key={t} value={t}>
-                      {LEAVE_TYPE_LABELS[t]}
+                  {leaveTypes.map((lt) => (
+                    <option key={lt} value={lt}>
+                      {t(`employees.leaveTypes.${lt}`)}
                     </option>
                   ))}
                 </select>
               </Field>
-              <Field label="هۆکار">
+              <Field label={t("employees.reason")}>
                 <input
                   className={inputClass}
                   value={leaveReason}
                   onChange={(e) => setLeaveReason(e.target.value)}
                 />
               </Field>
-              <Field label="دەستپێک">
+              <Field label={t("employees.start")}>
                 <input
                   type="date"
                   className={inputClass}
@@ -982,7 +977,7 @@ export default function EmployeeProfile({
                   onChange={(e) => setLeaveStart(e.target.value)}
                 />
               </Field>
-              <Field label="کۆتایی">
+              <Field label={t("employees.end")}>
                 <input
                   type="date"
                   className={inputClass}
@@ -997,7 +992,7 @@ export default function EmployeeProfile({
                   onClick={() => void requestLeave()}
                   className="rounded-2xl bg-[#FFAE42] px-5 py-3 font-bold text-white disabled:opacity-50"
                 >
-                  {leaveBusy ? "..." : "داواکردنی مۆڵەت"}
+                  {leaveBusy ? t("common.ellipsis") : t("employees.requestLeave")}
                 </button>
               </div>
             </div>
@@ -1005,7 +1000,7 @@ export default function EmployeeProfile({
             <div className="space-y-3">
               {leaves.length === 0 ? (
                 <p className="rounded-2xl bg-slate-50 px-4 py-8 text-center text-slate-500">
-                  هیچ داواکارییەک نییە.
+                  {t("employees.noLeaveRequests")}
                 </p>
               ) : (
                 leaves.map((leave) => (
@@ -1015,7 +1010,7 @@ export default function EmployeeProfile({
                   >
                     <div>
                       <p className="font-bold text-slate-800">
-                        {LEAVE_TYPE_LABELS[leave.leaveType] || leave.leaveType}
+                        {t(`employees.leaveTypes.${leave.leaveType}`) || leave.leaveType}
                       </p>
                       <p className="text-xs text-slate-500">
                         {toInputDate(leave.startDate)} →{" "}
@@ -1033,7 +1028,7 @@ export default function EmployeeProfile({
                               : "bg-amber-100 text-amber-700"
                         }`}
                       >
-                        {LEAVE_STATUS_LABELS[leave.status]}
+                        {t(`employees.leaveStatuses.${leave.status}`)}
                       </span>
                       {leave.status === "PENDING" && (
                         <>
@@ -1044,7 +1039,7 @@ export default function EmployeeProfile({
                             }
                             className="rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white"
                           >
-                            پەسەند
+                            {t("employees.approve")}
                           </button>
                           <button
                             type="button"
@@ -1053,7 +1048,7 @@ export default function EmployeeProfile({
                             }
                             className="rounded-xl bg-rose-600 px-3 py-1.5 text-xs font-bold text-white"
                           >
-                            ڕەتکردنەوە
+                            {t("employees.reject")}
                           </button>
                         </>
                       )}
@@ -1068,11 +1063,11 @@ export default function EmployeeProfile({
         {tab === "salary" && (
           <div className="space-y-6">
             <h2 className="text-xl font-black text-[#FFAE42]">
-              مووچە و مێژوو
+              {t("employees.salaryAndHistory")}
             </h2>
 
             <div className="grid gap-4 rounded-2xl border border-slate-100 bg-slate-50/70 p-4 md:grid-cols-3">
-              <Field label="بڕ">
+              <Field label={t("employees.amount")}>
                 <input
                   type="number"
                   className={inputClass}
@@ -1080,7 +1075,7 @@ export default function EmployeeProfile({
                   onChange={(e) => setSalaryAmount(Number(e.target.value))}
                 />
               </Field>
-              <Field label="مانگ">
+              <Field label={t("employees.month")}>
                 <input
                   type="number"
                   min={1}
@@ -1090,7 +1085,7 @@ export default function EmployeeProfile({
                   onChange={(e) => setSalaryMonth(Number(e.target.value))}
                 />
               </Field>
-              <Field label="ساڵ">
+              <Field label={t("employees.year")}>
                 <input
                   type="number"
                   className={inputClass}
@@ -1098,7 +1093,7 @@ export default function EmployeeProfile({
                   onChange={(e) => setSalaryYear(Number(e.target.value))}
                 />
               </Field>
-              <Field label="بەرواری پارەدان">
+              <Field label={t("employees.paymentDate")}>
                 <input
                   type="date"
                   className={inputClass}
@@ -1106,7 +1101,7 @@ export default function EmployeeProfile({
                   onChange={(e) => setSalaryPaymentDate(e.target.value)}
                 />
               </Field>
-              <Field label="مووچەی داهاتوو">
+              <Field label={t("employees.nextSalary")}>
                 <input
                   type="date"
                   className={inputClass}
@@ -1114,7 +1109,7 @@ export default function EmployeeProfile({
                   onChange={(e) => setSalaryNextDate(e.target.value)}
                 />
               </Field>
-              <Field label="دۆخ">
+              <Field label={t("common.status")}>
                 <select
                   className={inputClass}
                   value={salaryStatus}
@@ -1126,12 +1121,12 @@ export default function EmployeeProfile({
                 >
                   {salaryStatuses.map((s) => (
                     <option key={s} value={s}>
-                      {SALARY_STATUS_LABELS[s]}
+                      {t(`employees.salaryStatuses.${s}`)}
                     </option>
                   ))}
                 </select>
               </Field>
-              <Field label="تێبینی">
+              <Field label={t("common.notes")}>
                 <input
                   className={inputClass}
                   value={salaryNotes}
@@ -1145,7 +1140,7 @@ export default function EmployeeProfile({
                   onClick={() => void saveSalary()}
                   className="rounded-2xl bg-[#FFAE42] px-5 py-3 font-bold text-white disabled:opacity-50"
                 >
-                  {salaryBusy ? "..." : "تۆمارکردنی مووچە"}
+                  {salaryBusy ? t("common.ellipsis") : t("employees.recordSalary")}
                 </button>
               </div>
             </div>
@@ -1153,7 +1148,7 @@ export default function EmployeeProfile({
             <div className="space-y-3">
               {salaries.length === 0 ? (
                 <p className="rounded-2xl bg-slate-50 px-4 py-8 text-center text-slate-500">
-                  مێژووی مووچە بەتاڵە.
+                  {t("employees.salaryHistoryEmpty")}
                 </p>
               ) : (
                 salaries.map((s) => (
@@ -1163,11 +1158,13 @@ export default function EmployeeProfile({
                   >
                     <div>
                       <p className="font-bold text-slate-800">
-                        {s.month}/{s.year} · {formatMoney(s.amount)} IQD
+                        {s.month}/{s.year} · {formatMoney(s.amount)} {t("common.currencyCode")}
                       </p>
                       <p className="text-xs text-slate-500">
-                        پارەدان: {toInputDate(s.paymentDate) || "—"} · داهاتوو:{" "}
-                        {toInputDate(s.nextSalaryDate) || "—"}
+                        {t("employees.paymentLabel", {
+                          payment: toInputDate(s.paymentDate) || t("common.emDash"),
+                          next: toInputDate(s.nextSalaryDate) || t("common.emDash"),
+                        })}
                       </p>
                     </div>
                     <span
@@ -1179,7 +1176,7 @@ export default function EmployeeProfile({
                             : "bg-amber-100 text-amber-700"
                       }`}
                     >
-                      {SALARY_STATUS_LABELS[s.status]}
+                      {t(`employees.salaryStatuses.${s.status}`)}
                     </span>
                   </div>
                 ))
@@ -1191,11 +1188,11 @@ export default function EmployeeProfile({
         {tab === "history" && (
           <div className="space-y-4">
             <h2 className="text-xl font-black text-[#FFAE42]">
-              مێژووی کارمەند
+              {t("employees.historyTitle")}
             </h2>
             {history.length === 0 ? (
               <p className="rounded-2xl bg-slate-50 px-4 py-8 text-center text-slate-500">
-                هیچ ڕووداوێک نییە.
+                {t("employees.noEvents")}
               </p>
             ) : (
               history.map((item) => (
@@ -1205,7 +1202,7 @@ export default function EmployeeProfile({
                 >
                   <p className="font-bold text-slate-800">{item.message}</p>
                   <p className="mt-1 text-xs text-slate-400">
-                    {item.actor?.fullName || "سیستەم"} ·{" "}
+                    {item.actor?.fullName || t("common.system")} ·{" "}
                     {formatDateTime(item.createdAt, true)}
                   </p>
                 </div>
@@ -1217,10 +1214,10 @@ export default function EmployeeProfile({
 
       <ConfirmDialog
         open={confirmDelete}
-        title="سڕینەوەی کارمەند"
-        description={`دڵنیایت لە سڕینەوەی «${employee.fullName}»؟`}
+        title={t("employees.deleteTitle")}
+        description={t("employees.deleteConfirm", { name: employee.fullName })}
         loading={deleting}
-        confirmText={deleting ? "سڕینەوە..." : "سڕینەوە"}
+        confirmText={deleting ? t("common.deleting") : t("common.delete")}
         onConfirm={() => void handleDelete()}
         onCancel={() => setConfirmDelete(false)}
       />

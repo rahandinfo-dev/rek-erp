@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import { auditSafe } from "@/lib/audit/log";
+import { tServer } from "@/lib/i18n";
 
 const schema = z.object({
   draftKey: z.string().min(1).max(120),
@@ -16,7 +17,7 @@ export async function POST(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest) {
     const parsed = schema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Invalid" },
+        { success: false, message: tServer.t("api.invalid") },
         { status: 400 }
       );
     }
@@ -84,7 +85,7 @@ export async function GET(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }

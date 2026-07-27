@@ -7,6 +7,7 @@ import {
   BULK_ACTION_LABELS,
   BULK_MODULE_LABELS,
 } from "@/lib/bulk/types";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   open: boolean;
@@ -25,6 +26,7 @@ export default function BulkProgressDialog({
   onUndo,
   undoing,
 }: Props) {
+  const { t } = useT();
   if (!job) return null;
 
   const pct =
@@ -41,7 +43,7 @@ export default function BulkProgressDialog({
         <AlertDialog.Overlay className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-[2px]" />
         <AlertDialog.Content className="rek-dialog fixed top-1/2 left-1/2 z-50 w-[95%] max-w-lg -translate-x-1/2 -translate-y-1/2 p-6">
           <AlertDialog.Title className="text-xl font-black">
-            {done ? "Bulk operation summary" : "Processing bulk action…"}
+            {done ? t("bulk.summary") : t("bulk.processing")}
           </AlertDialog.Title>
           <AlertDialog.Description className="mt-2 text-sm text-muted-foreground">
             {BULK_ACTION_LABELS[job.action] || job.action} ·{" "}
@@ -63,10 +65,10 @@ export default function BulkProgressDialog({
               {job.processedCount} / {job.totalCount} · {pct}% · {job.status}
             </p>
             <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
-              <Stat label="Completed" value={job.successCount} />
-              <Stat label="سەرنەکەوت" value={job.failedCount} />
-              <Stat label="Skipped" value={job.skippedCount} />
-              <Stat label="Cancelled" value={job.cancelledCount} />
+              <Stat label={t("bulk.completed")} value={job.successCount} />
+              <Stat label={t("common.error")} value={job.failedCount} />
+              <Stat label={t("bulk.skipped")} value={job.skippedCount} />
+              <Stat label={t("bulk.cancelled")} value={job.cancelledCount} />
             </dl>
             {job.items && job.items.length > 0 && (
               <ul className="max-h-40 overflow-auto rounded-xl border border-border text-xs">
@@ -96,7 +98,7 @@ export default function BulkProgressDialog({
                 onClick={onCancelRemaining}
                 className="focus-visible:ring-[3px] focus-visible:ring-ring/35"
               >
-                Cancel Remaining
+                {t("bulk.cancelRemaining")}
               </Button>
             )}
             {done && job.canUndo && onUndo && (
@@ -106,12 +108,12 @@ export default function BulkProgressDialog({
                 disabled={undoing}
                 onClick={onUndo}
               >
-                {undoing ? "Undoing…" : "پاشگەزبوونەوە"}
+                {undoing ? t("bulk.undoing") : t("bulk.undo")}
               </Button>
             )}
             {done && (
               <Button type="button" onClick={onClose}>
-                Close
+                {t("common.close")}
               </Button>
             )}
           </div>

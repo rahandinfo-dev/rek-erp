@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import { createBulkJob, processBulkJobBatch, serializeJob } from "@/lib/bulk/job";
 import { BULK_ACTIONS, BULK_MODULES } from "@/lib/bulk/types";
+import { tServer } from "@/lib/i18n";
 
 const createSchema = z.object({
   moduleKey: z.enum(BULK_MODULES),
@@ -30,7 +31,7 @@ export async function GET(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -88,7 +89,7 @@ export async function POST(req: NextRequest) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -97,7 +98,7 @@ export async function POST(req: NextRequest) {
     const parsed = createSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
-        { success: false, message: "Invalid bulk job request" },
+        { success: false, message: tServer.t("api.invalidBulkJobRequest") },
         { status: 400 }
       );
     }

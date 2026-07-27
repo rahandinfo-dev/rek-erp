@@ -46,17 +46,12 @@ import { appToast } from "@/lib/toast";
 import { DS } from "@/lib/design-system";
 import { LowStockWarningBanner } from "@/components/inventory/LowStockWarningBanner";
 import AnalyticsStockBanners from "@/components/analytics/AnalyticsStockBanners";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const SALES = DS.color.chart.sales;
 const PURCHASES = DS.color.chart.purchases;
 const PROFIT = DS.color.chart.profit;
 const PIE = [SALES, PURCHASES, PROFIT];
-
-const HEALTH_LABELS = {
-  HEALTHY: "تەندروست",
-  ATTENTION: "پێویستی بە سەرنجدان",
-  CRITICAL: "مەترسیدار",
-} as const;
 
 type Props = {
   initialData: AnalyticsPayload;
@@ -64,6 +59,12 @@ type Props = {
 };
 
 export default function AnalyticsClient({ initialData, companyName }: Props) {
+  const { t } = useT();
+  const healthLabels = {
+    HEALTHY: t("analytics.healthy"),
+    ATTENTION: t("analytics.attention"),
+    CRITICAL: t("analytics.critical"),
+  } as const;
   const [data, setData] = useState(initialData);
   const [pending, startTransition] = useTransition();
   const [auto, setAuto] = useState(true);
@@ -87,7 +88,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
       const res = await fetch("/api/analytics", { cache: "no-store" });
       const json = await res.json();
       if (!json.success) {
-        if (!silent) appToast.error(json.message || "نوێکردنەوە سەرنەکەوت.");
+        if (!silent) appToast.error(json.message || t("analytics.refreshFailed"));
         return;
       }
       const next = json.data as AnalyticsPayload;
@@ -98,22 +99,32 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           const item = next.outOfStock[0];
           showPulse(
             item
-              ? `❌ ${item.name} · ${item.warehouseName || "کۆگا"} · ماوە ${formatStockQty(item.availableStock)}`
-              : "❌ بەرهەم تەواو بوو"
+              ? `❌ ${t("analytics.stockPulse", {
+                  name: item.name,
+                  warehouse:
+                    item.warehouseName || t("analytics.warehouseFallback"),
+                  qty: formatStockQty(item.availableStock),
+                })}`
+              : `❌ ${t("analytics.productOut")}`
           );
         } else if (next.summary.lowStockCount > prev.lowStock) {
           const item = next.lowStock[0];
           showPulse(
             item
-              ? `⚠️ ${item.name} · ${item.warehouseName || "کۆگا"} · ماوە ${formatStockQty(item.availableStock)}`
-              : "⚠️ کۆگای کەم"
+              ? `⚠️ ${t("analytics.stockPulse", {
+                  name: item.name,
+                  warehouse:
+                    item.warehouseName || t("analytics.warehouseFallback"),
+                  qty: formatStockQty(item.availableStock),
+                })}`
+              : `⚠️ ${t("analytics.lowStockPulse")}`
           );
         } else if (next.summary.salesCountThisMonth > prev.salesCount) {
-          showPulse("فرۆشتنی نوێ تۆمارکرا");
+          showPulse(t("analytics.newSale"));
         } else if (
           next.summary.purchasesCountThisMonth > prev.purchasesCount
         ) {
-          showPulse("کڕینی نوێ تۆمارکرا");
+          showPulse(t("analytics.newPurchase"));
         }
       }
 
@@ -125,9 +136,9 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
       };
       startTransition(() => setData(next));
     } catch {
-      if (!silent) appToast.error("نوێکردنەوە سەرنەکەوت.");
+      if (!silent) appToast.error(t("analytics.refreshFailed"));
     }
-  }, [showPulse]);
+  }, [showPulse, t]);
 
   useEffect(() => {
     if (!auto) return;
@@ -183,14 +194,14 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <h1 className="text-3xl font-black text-primary sm:text-4xl">
-            شیکاری
+            {t("analytics.title")}
           </h1>
           <p className="mt-2 text-muted-foreground">
-            داتای ڕاستەقینە لە داتابەیس — {companyName}
+            {t("analytics.subtitle", { name: companyName })}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            دوایین نوێکردنەوە: {updatedLabel}
-            {auto ? " · خۆکار هەر ٣٠ چرکە" : " · تەنها دەستی"}
+            {t("analytics.lastUpdated", { when: updatedLabel })}
+            {auto ? t("analytics.autoEvery30") : t("analytics.manualOnly")}
           </p>
         </div>
 
@@ -202,7 +213,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               onChange={(e) => setAuto(e.target.checked)}
               className="size-4"
             />
-            نوێکردنەوەی خۆکار
+            {t("analytics.autoRefresh")}
           </label>
           <button
             type="button"
@@ -211,70 +222,70 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
             className="inline-flex h-11 items-center gap-2 rounded-2xl bg-primary px-4 text-sm font-bold text-primary-foreground disabled:opacity-50"
           >
             <RefreshCw size={16} className={pending ? "animate-spin" : ""} />
-            نوێکردنەوە
+            {t("common.refresh")}
           </button>
           <Link
             href="/dashboard/reports"
             className="inline-flex h-11 items-center rounded-2xl border border-border bg-card px-4 text-sm font-bold text-primary"
           >
-            ڕاپۆرتەکان
+            {t("nav.reports")}
           </Link>
         </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          title="داهات (فرۆشتن)"
+          title={t("analytics.revenue")}
           value={`${formatMoney(summary.revenueTotal)} IQD`}
-          description={`ئەم مانگە: ${formatMoney(summary.revenueThisMonth)} · ئەمڕۆ: ${formatMoney(summary.revenueToday)}`}
+          description={t("analytics.thisMonthToday", { month: formatMoney(summary.revenueThisMonth), today: formatMoney(summary.revenueToday) })}
           icon={ShoppingCart}
           accent="sales"
         />
         <StatCard
-          title="خەرجی (کڕین)"
+          title={t("analytics.expenses")}
           value={`${formatMoney(summary.expensesTotal)} IQD`}
-          description={`ئەم مانگە: ${formatMoney(summary.expensesThisMonth)} · ئەمڕۆ: ${formatMoney(summary.expensesToday)}`}
+          description={t("analytics.thisMonthToday", { month: formatMoney(summary.expensesThisMonth), today: formatMoney(summary.expensesToday) })}
           icon={ShoppingBasket}
           accent="purchases"
         />
         <StatCard
-          title="قازانج"
+          title={t("analytics.profit")}
           value={`${formatMoney(summary.profitTotal)} IQD`}
-          description={`ئەم مانگە: ${formatMoney(summary.profitThisMonth)} · قازانجی کاڵا: ${formatMoney(summary.grossProfitThisMonth)}`}
+          description={t("analytics.profitDesc", { month: formatMoney(summary.profitThisMonth), gross: formatMoney(summary.grossProfitThisMonth) })}
           icon={TrendingUp}
           accent="sales"
         />
         <StatCard
-          title="زەرەر"
+          title={t("analytics.loss")}
           value={`${formatMoney(summary.lossTotal)} IQD`}
-          description={`ئەم مانگە: ${formatMoney(summary.lossThisMonth)} · ئەمڕۆ: ${formatMoney(summary.lossToday)}`}
+          description={t("analytics.thisMonthToday", { month: formatMoney(summary.lossThisMonth), today: formatMoney(summary.lossToday) })}
           icon={TrendingDown}
         />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          title="تەندروستی کۆگا"
+          title={t("analytics.inventoryHealth")}
           value={`${inventoryHealth.score}%`}
-          description={HEALTH_LABELS[inventoryHealth.label]}
+          description={healthLabels[inventoryHealth.label]}
           icon={HeartPulse}
         />
         <StatCard
-          title="کۆگای کەم"
+          title={t("analytics.lowStock")}
           value={summary.lowStockCount}
-          description={`${summary.atMinimumCount} لە کەمترین بڕ`}
+          description={t("analytics.atMinimum", { count: summary.atMinimumCount })}
           icon={AlertTriangle}
         />
         <StatCard
-          title="کۆگا تەواو"
+          title={t("analytics.outOfStock")}
           value={summary.outOfStockCount}
-          description={`${formatStockQty(inventoryHealth.totalAvailable)} بەردەست`}
+          description={t("analytics.availableUnits", { qty: formatStockQty(inventoryHealth.totalAvailable) })}
           icon={Package}
         />
         <StatCard
-          title="کۆی یەکە"
+          title={t("analytics.totalUnits")}
           value={formatStockQty(summary.inventoryUnits)}
-          description={`${summary.productsCount} بەرهەم · ${summary.warehousesCount} کۆگا`}
+          description={t("analytics.productsWarehouses", { products: summary.productsCount, warehouses: summary.warehousesCount })}
           icon={Warehouse}
         />
       </div>
@@ -289,8 +300,8 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           totalUnits: summary.inventoryUnits,
           productsCount: summary.productsCount,
         })}
-        title="بەهاکانی ئینڤێنتۆری"
-        subtitle="هەژمارکردنی خۆکار لە کۆگا × نرخ"
+        title={t("analytics.valuationTitle")}
+        subtitle={t("analytics.valuationSubtitle")}
       />
 
       <div className="grid gap-4 lg:grid-cols-2">
@@ -298,32 +309,32 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           <div className="mb-4 flex items-center gap-2">
             <TrendingUp size={18} className="text-primary" />
             <h2 className="text-lg font-bold text-primary sm:text-xl">
-              کارایی فرۆشتن
+              {t("analytics.salesPerformance")}
             </h2>
           </div>
           <dl className="grid gap-3 sm:grid-cols-2">
             <PerfRow
-              label="داهاتی ئەم مانگە"
+              label={t("analytics.revenueThisMonth")}
               value={`${formatMoney(salesPerformance.revenueThisMonth)} IQD`}
             />
             <PerfRow
-              label="گەشە vs مانگی پێشوو"
+              label={t("analytics.growthVsPrev")}
               value={growthLabel(salesPerformance.growthPct)}
             />
             <PerfRow
-              label="ژمارەی فرۆشتن"
+              label={t("analytics.salesCount")}
               value={String(salesPerformance.salesCountThisMonth)}
             />
             <PerfRow
-              label="ناوەندی پسوولە"
+              label={t("analytics.avgInvoice")}
               value={`${formatMoney(salesPerformance.avgOrderValueThisMonth)} IQD`}
             />
             <PerfRow
-              label="قازانجی کاڵا"
+              label={t("analytics.grossProfit")}
               value={`${formatMoney(salesPerformance.grossProfitThisMonth)} IQD`}
             />
             <PerfRow
-              label="داهاتی ئەمڕۆ"
+              label={t("analytics.revenueToday")}
               value={`${formatMoney(salesPerformance.revenueToday)} IQD`}
             />
           </dl>
@@ -333,32 +344,32 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           <div className="mb-4 flex items-center gap-2">
             <ShoppingBasket size={18} className="text-primary" />
             <h2 className="text-lg font-bold text-primary sm:text-xl">
-              کارایی کڕین
+              {t("analytics.purchasePerformance")}
             </h2>
           </div>
           <dl className="grid gap-3 sm:grid-cols-2">
             <PerfRow
-              label="خەرجی ئەم مانگە"
+              label={t("analytics.expensesThisMonth")}
               value={`${formatMoney(purchasePerformance.expensesThisMonth)} IQD`}
             />
             <PerfRow
-              label="گەشە vs مانگی پێشوو"
+              label={t("analytics.growthVsPrev")}
               value={growthLabel(purchasePerformance.growthPct)}
             />
             <PerfRow
-              label="ژمارەی کڕین"
+              label={t("analytics.purchasesCount")}
               value={String(purchasePerformance.purchasesCountThisMonth)}
             />
             <PerfRow
-              label="ناوەندی کڕین"
+              label={t("analytics.avgPurchase")}
               value={`${formatMoney(purchasePerformance.avgPurchaseValueThisMonth)} IQD`}
             />
             <PerfRow
-              label="کۆی خەرجی"
+              label={t("analytics.expensesTotal")}
               value={`${formatMoney(purchasePerformance.expensesTotal)} IQD`}
             />
             <PerfRow
-              label="خەرجی ئەمڕۆ"
+              label={t("analytics.expensesToday")}
               value={`${formatMoney(purchasePerformance.expensesToday)} IQD`}
             />
           </dl>
@@ -366,7 +377,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <ChartCard title="چارتی مانگانە (١٢ مانگ)" className="xl:col-span-2">
+        <ChartCard title={t("analytics.monthlyChart")} className="xl:col-span-2">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data.monthly}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -384,13 +395,13 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               <Legend />
               <Bar
                 dataKey="sales"
-                name="فرۆشتن"
+                name={t("analytics.sales")}
                 fill={SALES}
                 radius={[6, 6, 0, 0]}
               />
               <Bar
                 dataKey="purchases"
-                name="کڕین"
+                name={t("analytics.purchases")}
                 fill={PURCHASES}
                 radius={[6, 6, 0, 0]}
               />
@@ -398,14 +409,14 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="دابەشکردنی بەهای کۆگا">
+        <ChartCard title={t("analytics.warehouseValueDist")}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
                 data={
                   data.warehouseDistribution.length
                     ? data.warehouseDistribution
-                    : [{ name: "بەتاڵ", inventoryValue: 1 }]
+                    : [{ name: t("analytics.emptyWarehouse"), inventoryValue: 1 }]
                 }
                 dataKey="inventoryValue"
                 nameKey="name"
@@ -415,7 +426,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               >
                 {(data.warehouseDistribution.length
                   ? data.warehouseDistribution
-                  : [{ name: "بەتاڵ" }]
+                  : [{ name: t("analytics.emptyWarehouse") }]
                 ).map((_, i) => (
                   <Cell
                     key={i}
@@ -432,7 +443,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
                 formatter={(value) =>
                   data.warehouseDistribution.length
                     ? `${formatMoney(Number(value ?? 0))} IQD`
-                    : "هیچ داتایەک نییە"
+                    : t("common.empty")
                 }
               />
               <Legend />
@@ -442,65 +453,65 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <ChartCard title="ڕەوتی بەهای ئینڤێنتۆری">
+        <ChartCard title={t("analytics.inventoryValueTrend")}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChartLike
               data={data.inventoryTrend}
               dataKey="inventoryValue"
-              name="بەها"
+              name={t("analytics.value")}
               color={SALES}
               money
             />
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="ڕەوتی کۆگا (یەکە)">
+        <ChartCard title={t("analytics.stockUnitsTrend")}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChartLike
               data={data.stockTrend}
               dataKey="value"
-              name="یەکە"
+              name={t("analytics.units")}
               color={PURCHASES}
             />
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="ڕەوتی فرۆشتن">
+        <ChartCard title={t("analytics.salesTrend")}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChartLike
               data={data.salesTrend}
               dataKey="value"
-              name="فرۆشتن"
+              name={t("analytics.sales")}
               color={SALES}
               money
             />
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="ڕەوتی کڕین">
+        <ChartCard title={t("analytics.purchasesTrend")}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChartLike
               data={data.purchaseTrend}
               dataKey="value"
-              name="کڕین"
+              name={t("analytics.purchases")}
               color={PURCHASES}
               money
             />
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="ڕەوتی کۆگای کەم">
+        <ChartCard title={t("analytics.lowStockTrend")}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChartLike
               data={data.lowStockTrend}
               dataKey="value"
-              name="کۆگای کەم"
+              name={t("analytics.lowStock")}
               color="#dc2626"
             />
           </ResponsiveContainer>
         </ChartCard>
-        <ChartCard title="ڕەوتی تەندروستی ئینڤێنتۆری">
+        <ChartCard title={t("analytics.healthTrend")}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChartLike
               data={data.healthTrend}
               dataKey="value"
-              name="تەندروستی %"
+              name={t("analytics.healthPct")}
               color="#16a34a"
             />
           </ResponsiveContainer>
@@ -508,7 +519,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-3">
-        <ChartCard title="چارتی ساڵانە (٥ ساڵ)" className="xl:col-span-2">
+        <ChartCard title={t("analytics.yearlyChart")} className="xl:col-span-2">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data.yearly}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -527,7 +538,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               <Line
                 type="monotone"
                 dataKey="sales"
-                name="فرۆشتن"
+                name={t("analytics.sales")}
                 stroke={SALES}
                 strokeWidth={3}
                 dot
@@ -535,7 +546,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               <Line
                 type="monotone"
                 dataKey="purchases"
-                name="کڕین"
+                name={t("analytics.purchases")}
                 stroke={PURCHASES}
                 strokeWidth={3}
                 dot
@@ -543,7 +554,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               <Line
                 type="monotone"
                 dataKey="profit"
-                name="قازانج/زەرەر"
+                name={t("analytics.profitLoss")}
                 stroke={PROFIT}
                 strokeWidth={2}
                 dot
@@ -556,11 +567,11 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           <div className="mb-4 flex items-center gap-2">
             <Warehouse size={18} className="text-primary" />
             <h2 className="text-lg font-bold text-primary sm:text-xl">
-              دابەشکردنی کۆگا
+              {t("analytics.warehouseDist")}
             </h2>
           </div>
           {data.warehouseDistribution.length === 0 ? (
-            <p className="text-sm text-muted-foreground">هیچ کۆگایەک نییە.</p>
+            <p className="text-sm text-muted-foreground">{t("analytics.noWarehouses")}</p>
           ) : (
             <div className="space-y-2">
               {data.warehouseDistribution.map((w) => (
@@ -574,8 +585,13 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
                       {w.name}
                     </p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {formatStockQty(w.units)} یەکە · تەندروستی {w.healthScore}%
-                      {w.capacityPct != null ? ` · توانا ${w.capacityPct}%` : ""}
+                      {t("analytics.warehouseMeta", {
+                        units: formatStockQty(w.units),
+                        health: w.healthScore,
+                      })}
+                      {w.capacityPct != null
+                        ? t("analytics.capacityPct", { pct: w.capacityPct })
+                        : ""}
                     </p>
                   </div>
                   <span className="shrink-0 text-sm font-bold text-primary">
@@ -590,27 +606,27 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
 
       <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <RankCard
-          title="باشترین فرۆشراو"
+          title={t("analytics.topSold")}
           icon={Package}
-          empty="هیچ فرۆشتنێک نییە."
+          empty={t("analytics.emptySales")}
           rows={data.topProducts.map((p) => ({
             id: p.id,
             title: p.name,
             subtitle: p.sku,
-            meta: `${formatMoney(p.quantity)} دانە`,
+            meta: t("analytics.qtyPieces", { qty: formatMoney(p.quantity) }),
             value: `${formatMoney(p.revenue)} IQD`,
             href: `/dashboard/products/${p.id}`,
           }))}
         />
         <RankCard
-          title="هێواش جووڵاو"
+          title={t("analytics.slowMoving")}
           icon={TrendingDown}
-          empty="هیچ بەرهەمێکی هێواش نییە."
+          empty={t("analytics.emptySlow")}
           rows={data.slowMovingProducts.map((p) => ({
             id: p.id,
             title: p.name,
             subtitle: p.sku,
-            meta: `٩٠ ڕۆژ: ${formatMoney(p.quantity)}`,
+            meta: t("analytics.days90", { qty: formatMoney(p.quantity) }),
             value: `${formatMoney(p.revenue)} IQD`,
             href: `/dashboard/products/${p.id}`,
           }))}
@@ -619,7 +635,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           <div className="mb-4 flex items-center gap-2">
             <HeartPulse size={18} className="text-primary" />
             <h2 className="text-lg font-bold text-primary sm:text-xl">
-              تەندروستی ئینڤێنتۆری
+              {t("analytics.inventoryHealthTitle")}
             </h2>
           </div>
           <div className="mb-4">
@@ -628,24 +644,24 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               <span className="text-lg text-muted-foreground">/100</span>
             </p>
             <p className="mt-1 text-sm text-muted-foreground">
-              {HEALTH_LABELS[inventoryHealth.label]}
+              {healthLabels[inventoryHealth.label]}
             </p>
           </div>
           <dl className="grid gap-2 sm:grid-cols-2">
             <PerfRow
-              label="بەردەست"
+              label={t("analytics.available")}
               value={String(inventoryHealth.inStockCount)}
             />
             <PerfRow
-              label="کۆگای کەم"
+              label={t("analytics.lowStock")}
               value={String(inventoryHealth.lowStockCount)}
             />
             <PerfRow
-              label="تەواو"
+              label={t("analytics.out")}
               value={String(inventoryHealth.outOfStockCount)}
             />
             <PerfRow
-              label="کۆی یەکە"
+              label={t("analytics.totalUnits")}
               value={formatStockQty(inventoryHealth.totalCurrent)}
             />
           </dl>
@@ -654,23 +670,23 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
 
       <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
         <RankCard
-          title="کۆگای کەم"
+          title={t("analytics.lowStock")}
           icon={AlertTriangle}
-          empty="هیچ بەرهەمێکی کەم نییە."
+          empty={t("analytics.emptyLow")}
           rows={data.lowStock.map((p) => ({
             id: p.id,
             title: p.name,
             subtitle: p.sku,
-            meta: `بەردەست ${formatStockQty(p.availableStock, p.unit)} · کەمترین ${formatStockQty(p.minimumStock, p.unit)}`,
+            meta: t("analytics.stockMeta", { available: formatStockQty(p.availableStock, p.unit), minimum: formatStockQty(p.minimumStock, p.unit) }),
             value: formatStockQty(p.currentStock, p.unit),
             href: `/dashboard/products/${p.id}`,
             danger: true,
           }))}
         />
         <RankCard
-          title="کۆگا تەواو"
+          title={t("analytics.outOfStock")}
           icon={Boxes}
-          empty="هیچ بەرهەمێکی تەواو نییە."
+          empty={t("analytics.emptyOut")}
           rows={data.outOfStock.map((p) => ({
             id: p.id,
             title: p.name,
@@ -682,13 +698,13 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           }))}
         />
         <RankCard
-          title="باشترین کڕیارەکان"
+          title={t("analytics.bestCustomers")}
           icon={Users}
-          empty="هیچ کڕیارێک نییە."
+          empty={t("analytics.emptyCustomers")}
           rows={data.bestCustomers.map((c) => ({
             id: c.id,
             title: c.name,
-            subtitle: `${c.orders} پسوولە`,
+            subtitle: t("analytics.invoicesCount", { count: c.orders }),
             meta: "",
             value: `${formatMoney(c.revenue)} IQD`,
             href: `/dashboard/customers/${c.id}/edit`,
@@ -698,9 +714,9 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <RankCard
-          title="ئاگادارییەکانی کۆگا"
+          title={t("analytics.inventoryAlerts")}
           icon={AlertTriangle}
-          empty="هیچ ئاگادارییەکی کۆگا نییە."
+          empty={t("analytics.emptyAlerts")}
           rows={data.inventoryAlerts.map((a) => ({
             id: a.id,
             title: a.title,
@@ -713,9 +729,9 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
         />
         <div className="grid gap-6">
           <RankCard
-            title="دوایین فرۆشتنەکان"
+            title={t("analytics.recentSales")}
             icon={DollarSign}
-            empty="هیچ فرۆشتنێک نییە."
+            empty={t("analytics.emptySales")}
             rows={data.recentSales.map((s) => ({
               id: s.id,
               title: s.invoiceNo,
@@ -726,9 +742,9 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
             }))}
           />
           <RankCard
-            title="دوایین کڕینەکان"
+            title={t("analytics.recentPurchases")}
             icon={Truck}
-            empty="هیچ کڕینێک نییە."
+            empty={t("analytics.emptyPurchases")}
             rows={data.recentPurchases.map((p) => ({
               id: p.id,
               title: p.invoiceNo,

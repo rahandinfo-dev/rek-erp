@@ -5,14 +5,15 @@ import { Search } from "lucide-react";
 import EmployeeCard, {
   type EmployeeCardData,
 } from "@/components/employees/EmployeeCard";
-import { EMPLOYEE_STATUS_LABELS } from "@/lib/employees/labels";
 import BulkListShell from "@/components/bulk/BulkListShell";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   initialData: EmployeeCardData[];
 };
 
 export default function EmployeesBrowser({ initialData }: Props) {
+  const { t } = useT();
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<"all" | string>("all");
 
@@ -47,7 +48,7 @@ export default function EmployeesBrowser({ initialData }: Props) {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="گەڕان بە ناو، پۆست، مۆبایل…"
+            placeholder={t("employees.searchPlaceholder")}
             className="h-11 w-full rounded-2xl border border-border bg-card pr-9 pl-4 text-sm outline-none focus:border-primary/50"
           />
         </div>
@@ -61,7 +62,7 @@ export default function EmployeesBrowser({ initialData }: Props) {
                 : "border border-border bg-card text-muted-foreground"
             }`}
           >
-            هەموو
+            {t("common.all")}
           </button>
           {statuses.map((s) => (
             <button
@@ -74,7 +75,7 @@ export default function EmployeesBrowser({ initialData }: Props) {
                   : "border border-border bg-card text-muted-foreground"
               }`}
             >
-              {EMPLOYEE_STATUS_LABELS[s] || s}
+              {t(`employees.statuses.${s}`) || s}
             </button>
           ))}
         </div>
@@ -82,7 +83,7 @@ export default function EmployeesBrowser({ initialData }: Props) {
 
       {filtered.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground">
-          هیچ کارمەندێک نەدۆزرایەوە.
+          {t("employees.notFound")}
         </p>
       ) : (
         <BulkListShell
@@ -101,9 +102,9 @@ export default function EmployeesBrowser({ initialData }: Props) {
                       type="checkbox"
                       checked={isSelected(employee.id)}
                       onChange={() => toggle(employee.id)}
-                      aria-label={`Select ${employee.fullName}`}
+                      aria-label={t("common.selectNamed", { name: employee.fullName })}
                     />
-                    Select
+                    {t("employees.select")}
                   </label>
                   <EmployeeCard employee={employee} />
                 </div>

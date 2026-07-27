@@ -4,6 +4,7 @@ import { Component, type ErrorInfo, type ReactNode } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { monitorError } from "@/lib/production/monitor";
+import { tServer } from "@/lib/i18n";
 
 type Props = {
   children: ReactNode;
@@ -32,6 +33,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (!this.state.error) return this.props.children;
+    const t = tServer.t;
 
     return (
       <div
@@ -43,10 +45,10 @@ export default class ErrorBoundary extends Component<Props, State> {
         </div>
         <div>
           <h2 className="text-lg font-black">
-            {this.props.fallbackTitle || "هەڵەیەک ڕوویدا"}
+            {this.props.fallbackTitle || t("errorBoundary.title")}
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            پەڕەکە تێکچوو. زانیارییەکانت پارێزراون — دووبارە هەوڵبدەرەوە یان ئەم بەشە بار بکەرەوە.
+            {t("errorBoundary.body")}
           </p>
         </div>
         <div className="flex flex-wrap justify-center gap-2">
@@ -55,7 +57,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             variant="outline"
             onClick={() => this.setState({ error: null })}
           >
-            دووبارە هەوڵبدەرەوە
+            {t("errorBoundary.retry")}
           </Button>
           <Button
             type="button"
@@ -64,7 +66,7 @@ export default class ErrorBoundary extends Component<Props, State> {
             }}
           >
             <RefreshCw size={16} aria-hidden />
-            بارکردنەوە
+            {t("errorBoundary.reload")}
           </Button>
         </div>
       </div>

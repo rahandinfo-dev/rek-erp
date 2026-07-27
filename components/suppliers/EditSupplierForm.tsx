@@ -12,12 +12,14 @@ import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import { appToast } from "@/lib/toast";
 import ImageUpload from "@/components/uploads/ImageUpload";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   id: string;
 };
 
 export default function EditSupplierForm({ id }: Props) {
+  const { t } = useT();
   const router = useRouter();
 
   const [loading, setLoading] = useState(true);
@@ -74,14 +76,14 @@ export default function EditSupplierForm({ id }: Props) {
         }
       } catch (error) {
         console.error(error);
-        setServerError("هەڵەیەک ڕوویدا.");
+        setServerError(t("errors.generic"));
       } finally {
         setLoading(false);
       }
     }
 
     void loadSupplier();
-  }, [id]);
+  }, [id, t]);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -107,7 +109,7 @@ export default function EditSupplierForm({ id }: Props) {
       const validation = supplierSchema.safeParse(form);
 
       if (!validation.success) {
-        setServerError("تکایە هەموو زانیارییەکان بە دروستی پڕ بکەرەوە.");
+        setServerError(t("suppliers.validationError"));
         return;
       }
 
@@ -122,17 +124,17 @@ export default function EditSupplierForm({ id }: Props) {
       const result = await res.json();
 
       if (!res.ok) {
-        setServerError(result.message || "هەڵەیەک ڕوویدا.");
+        setServerError(result.message || t("errors.generic"));
         return;
       }
 
       clearDraft();
-      appToast.success("دابینکەر نوێکرایەوە.");
+      appToast.success(t("suppliers.updated"));
       router.push("/dashboard/suppliers");
       router.refresh();
     } catch (error) {
       console.error(error);
-      setServerError("هەڵەیەک ڕوویدا.");
+      setServerError(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -141,7 +143,7 @@ export default function EditSupplierForm({ id }: Props) {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <p className="text-slate-500">چاوەڕێ بکە...</p>
+        <p className="text-slate-500">{t("common.pleaseWait")}</p>
       </div>
     );
   }
@@ -169,12 +171,12 @@ export default function EditSupplierForm({ id }: Props) {
         onChange={(url) =>
           setForm((prev) => ({ ...prev, image: url || "" }))
         }
-        label="وێنەی دابینکەر"
+        label={t("suppliers.imageLabel")}
         shape="circle"
       />
 
       <div>
-        <label className="mb-2 block font-bold">ناوی دابینکەر</label>
+        <label className="mb-2 block font-bold">{t("suppliers.nameLabel")}</label>
         <input
           name="name"
           value={form.name}
@@ -184,7 +186,7 @@ export default function EditSupplierForm({ id }: Props) {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">کۆد</label>
+        <label className="mb-2 block font-bold">{t("common.code")}</label>
         <input
           name="code"
           value={form.code}
@@ -194,7 +196,7 @@ export default function EditSupplierForm({ id }: Props) {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">ژمارەی مۆبایل</label>
+        <label className="mb-2 block font-bold">{t("suppliers.phoneLabel")}</label>
         <input
           name="phone"
           value={form.phone}
@@ -204,7 +206,7 @@ export default function EditSupplierForm({ id }: Props) {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">ئیمەیڵ</label>
+        <label className="mb-2 block font-bold">{t("common.email")}</label>
         <input
           type="email"
           name="email"
@@ -215,7 +217,7 @@ export default function EditSupplierForm({ id }: Props) {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">ناونیشان</label>
+        <label className="mb-2 block font-bold">{t("common.address")}</label>
         <textarea
           name="address"
           rows={3}
@@ -226,7 +228,7 @@ export default function EditSupplierForm({ id }: Props) {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">تێبینی</label>
+        <label className="mb-2 block font-bold">{t("common.notes")}</label>
         <textarea
           name="notes"
           rows={4}
@@ -243,7 +245,7 @@ export default function EditSupplierForm({ id }: Props) {
           checked={form.active}
           onChange={handleChange}
         />
-        <span>چالاک</span>
+        <span>{t("common.active")}</span>
       </div>
 
       {serverError && (
@@ -259,7 +261,7 @@ export default function EditSupplierForm({ id }: Props) {
           disabled={saving}
           className="rounded-xl bg-[#FFAE42] px-6 py-3 font-bold text-white transition hover:bg-[#E8942A] disabled:opacity-50"
         >
-          {saving ? "چاوەڕێ بکە..." : "نوێکردنەوەی دابینکەر"}
+          {saving ? t("common.pleaseWait") : t("suppliers.update")}
         </button>
       </div>
     </form>

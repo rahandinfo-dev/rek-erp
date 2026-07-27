@@ -20,6 +20,7 @@ import type {
 } from "@/lib/ai/types";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Bundle = {
   insights: AiInsightView[];
@@ -30,6 +31,7 @@ type Bundle = {
 };
 
 export default function AiAssistantClient() {
+  const { t } = useT();
   const [bundle, setBundle] = useState<Bundle | null>(null);
   const [rules, setRules] = useState<
     Array<{
@@ -109,13 +111,13 @@ export default function AiAssistantClient() {
       </div>
 
       {loading || !bundle ? (
-        <p className="text-sm text-muted-foreground">Loading AI insights…</p>
+        <p className="text-sm text-muted-foreground">{t("ai.loadingInsights")}</p>
       ) : (
         <div className="grid gap-4 xl:grid-cols-2">
           <section className="rek-card space-y-3 p-4">
             <h2 className="flex items-center gap-2 text-sm font-black">
               <Activity size={16} className="text-primary" aria-hidden />
-              Business Health
+              {t("ai.businessHealth")}
             </h2>
             <p className="text-3xl font-black tabular-nums">
               {bundle.health.score}
@@ -146,10 +148,10 @@ export default function AiAssistantClient() {
           <section className="rek-card space-y-3 p-4">
             <h2 className="flex items-center gap-2 text-sm font-black">
               <AlertTriangle size={16} className="text-primary" aria-hidden />
-              Active Alerts
+              {t("ai.activeAlerts")}
             </h2>
             {bundle.alerts.length === 0 ? (
-              <p className="text-xs text-muted-foreground">No open alerts.</p>
+              <p className="text-xs text-muted-foreground">{t("empty.noAlerts")}</p>
             ) : (
               <ul className="space-y-2">
                 {bundle.alerts.map((a) => (
@@ -169,7 +171,7 @@ export default function AiAssistantClient() {
                         href={a.href}
                         className="mt-1 inline-block font-bold text-primary hover:underline"
                       >
-                        Open
+                        {t("common.view")}
                       </Link>
                     ) : null}
                   </li>
@@ -181,7 +183,7 @@ export default function AiAssistantClient() {
           <section className="rek-card space-y-3 p-4">
             <h2 className="flex items-center gap-2 text-sm font-black">
               <Sparkles size={16} className="text-primary" aria-hidden />
-              AI Insights
+              {t("ai.title")}
             </h2>
             <ul className="space-y-2">
               {bundle.insights.slice(0, 8).map((i) => (
@@ -199,7 +201,7 @@ export default function AiAssistantClient() {
           <section className="rek-card space-y-3 p-4">
             <h2 className="flex items-center gap-2 text-sm font-black">
               <Lightbulb size={16} className="text-primary" aria-hidden />
-              Smart Recommendations
+              {t("ai.recommendations")}
             </h2>
             <ul className="space-y-2">
               {bundle.recommendations.slice(0, 8).map((r) => (
@@ -221,7 +223,7 @@ export default function AiAssistantClient() {
       )}
 
       <section className="rek-card space-y-3 p-4">
-        <h2 className="text-sm font-black">Suggested next actions</h2>
+        <h2 className="text-sm font-black">کردارە پێشنیارکراوەکانی دواتر</h2>
         <div className="flex flex-wrap gap-2">
           {(bundle?.nextActions || []).map((a) => (
             <Link
@@ -237,7 +239,7 @@ export default function AiAssistantClient() {
       </section>
 
       <section className="rek-card space-y-3 p-4">
-        <h2 className="text-sm font-black">Workflow automation</h2>
+        <h2 className="text-sm font-black">ئۆتۆماتیککردنی ڕێڕەوی کار</h2>
         <ul className="space-y-2">
           {rules.map((rule) => (
             <li
@@ -249,7 +251,7 @@ export default function AiAssistantClient() {
                 <p className="text-muted-foreground">
                   {rule.kind} · {rule.schedule}
                   {rule.lastRunAt
-                    ? ` · last ${formatDateTime(rule.lastRunAt, true)}`
+                    ? ` · دوایین ${formatDateTime(rule.lastRunAt, true)}`
                     : ""}
                 </p>
               </div>
@@ -260,7 +262,7 @@ export default function AiAssistantClient() {
                   onChange={(e) => void toggleRule(rule.id, e.target.checked)}
                   className="focus-visible:ring-[3px] focus-visible:ring-ring/35"
                 />
-                Enabled
+                {t("common.active")}
               </label>
             </li>
           ))}

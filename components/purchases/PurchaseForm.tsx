@@ -15,6 +15,7 @@ import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import ProductPicker from "@/components/forms/ProductPicker";
 import { useNavigationHistory } from "@/lib/history/provider";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Option = { id: string; name: string };
 type Product = {
@@ -65,6 +66,7 @@ function blankLine(): LineItem {
 }
 
 export default function PurchaseForm() {
+  const { t } = useT();
   const router = useRouter();
   const { markCreated } = useNavigationHistory();
   const [suppliers, setSuppliers] = useState<Option[]>([]);
@@ -133,7 +135,7 @@ export default function PurchaseForm() {
     module: "purchases",
     value: draftValue,
     setValue: applyPurchaseDraft,
-    label: "Purchase draft edit",
+    label: t("purchases.draftEditLabel"),
     enabled: !hasPendingDraft,
   });
 
@@ -243,11 +245,11 @@ export default function PurchaseForm() {
     e.preventDefault();
     setError("");
     if (!warehouseId) {
-      setError("کۆگا پێویستە.");
+      setError(t("common.warehouseRequired"));
       return;
     }
     if (items.some((item) => !item.productId || item.quantity <= 0)) {
-      setError("هەموو بەرهەمەکان بە تەواوی پڕبکەرەوە.");
+      setError(t("common.fillAllProducts"));
       return;
     }
     try {
@@ -267,11 +269,11 @@ export default function PurchaseForm() {
       });
       const result = await res.json();
       if (!res.ok) {
-        setError(result.message || "هەڵەیەک ڕوویدا.");
-        appToast.error(result.message || "هەڵەیەک ڕوویدا.");
+        setError(result.message || t("errors.generic"));
+        appToast.error(result.message || t("errors.generic"));
         return;
       }
-      appToast.success("کڕین تۆمارکرا", result.data?.invoiceNo || "");
+      appToast.success(t("purchases.recordedTitle"), result.data?.invoiceNo || "");
       emitNotificationsChanged({ reason: "mutation" });
       clearDraft();
       const id = result.data?.id as string | undefined;
@@ -279,15 +281,15 @@ export default function PurchaseForm() {
       if (id) {
         markCreated(
           `/dashboard/purchases/${id}`,
-          invoiceNo ? `Purchase ${invoiceNo}` : "کڕینی نوێ",
+          invoiceNo ? t("purchases.historyPurchase", { no: invoiceNo }) : t("purchases.historyNewPurchase"),
           "purchases"
         );
       }
       router.push(`/dashboard/purchases/${id || ""}`);
       router.refresh();
     } catch {
-      setError("هەڵەیەک ڕوویدا.");
-      appToast.error("هەڵەیەک ڕوویدا.");
+      setError(t("errors.generic"));
+      appToast.error(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -319,9 +321,9 @@ export default function PurchaseForm() {
       <section className="rek-card grid gap-4 p-4 sm:grid-cols-3 sm:p-6">
         <div>
           <label className="mb-1.5 block text-sm font-bold">
-            دابینکەر{" "}
+            {t("purchases.supplierOptional")}{" "}
             <span className="font-normal text-muted-foreground">
-              (ئارەزوومەندانە)
+              {t("common.optionalHint")}
             </span>
           </label>
           <select
@@ -329,7 +331,7 @@ export default function PurchaseForm() {
             onChange={(e) => setSupplierId(e.target.value)}
             className={inputClass}
           >
-            <option value="">دابینکەری گشتی</option>
+            <option value="">{t("purchases.walkInSupplier")}</option>
             {suppliers.map((s) => (
               <option key={s.id} value={s.id}>
                 {s.name}
@@ -338,14 +340,14 @@ export default function PurchaseForm() {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">کۆگا *</label>
+          <label className="mb-1.5 block text-sm font-bold">{t("common.warehouseStar")}</label>
           <select
             value={warehouseId}
             onChange={(e) => setWarehouseId(e.target.value)}
             className={inputClass}
             required
           >
-            <option value="">هەڵبژێرە</option>
+            <option value="">{t("common.choose")}</option>
             {warehouses.map((w) => (
               <option key={w.id} value={w.id}>
                 {w.name}
@@ -354,7 +356,7 @@ export default function PurchaseForm() {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">بەرواری کڕین</label>
+          <label className="mb-1.5 block text-sm font-bold">{t("purchases.purchaseDate")}</label>
           <input
             type="date"
             value={purchaseDate}
@@ -367,14 +369,14 @@ export default function PurchaseForm() {
 
       <section className="rek-card space-y-4 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-lg font-black text-foreground">بەرهەمەکان</h3>
+          <h3 className="text-lg font-black text-foreground">{t("common.products")}</h3>
           <button
             type="button"
             onClick={() => setItems((prev) => [...prev, blankLine()])}
             className="inline-flex h-10 items-center gap-2 rounded-xl border border-border px-3 text-sm font-bold"
           >
             <Plus size={16} />
-            زیادکردنی بەرهەم
+            {t("common.addProduct")}
           </button>
         </div>
 
@@ -386,9 +388,9 @@ export default function PurchaseForm() {
             camera
             onProduct={addProductFromScan}
             onNotFound={(code) =>
-              appToast.warning("بەرهەم نەدۆزرایەوە", code)
+              appToast.warning(t("common.productNotFound"), code)
             }
-            placeholder="ناو، SKU یان بارکۆد…"
+            placeholder={t("common.barcodePlaceholder")}
           />
         </div>
 
@@ -415,7 +417,7 @@ export default function PurchaseForm() {
                   updateItem(index, { quantity: Number(e.target.value) })
                 }
                 className={inputClass}
-                placeholder="بڕ"
+                placeholder={t("common.quantity")}
               />
             </div>
             <div className="sm:col-span-2">
@@ -428,7 +430,7 @@ export default function PurchaseForm() {
                   updateItem(index, { unitPrice: Number(e.target.value) })
                 }
                 className={inputClass}
-                placeholder="تێچوو"
+                placeholder={t("common.cost")}
               />
             </div>
             <div className="sm:col-span-1">
@@ -482,7 +484,7 @@ export default function PurchaseForm() {
 
       <section className="rek-card grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
         <div>
-          <label className="mb-1.5 block text-sm font-bold">داشکاندن</label>
+          <label className="mb-1.5 block text-sm font-bold">{t("common.discount")}</label>
           <input
             type="number"
             min={0}
@@ -494,7 +496,7 @@ export default function PurchaseForm() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">باج</label>
+          <label className="mb-1.5 block text-sm font-bold">{t("common.tax")}</label>
           <input
             type="number"
             min={0}
@@ -504,19 +506,22 @@ export default function PurchaseForm() {
           />
         </div>
         <div className="rounded-2xl bg-muted/50 p-4 sm:col-span-2">
-          <p className="text-xs font-bold text-muted-foreground">کۆی گشتی</p>
+          <p className="text-xs font-bold text-muted-foreground">{t("common.total")}</p>
           <p className="text-2xl font-black tabular-nums">
             {formatNumber(total)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            ژێرکۆ {formatNumber(subtotal)} − داشکاندن {formatNumber(discount)}{" "}
-            + باج {formatNumber(tax)}
+            {t("common.totalsBreakdown", {
+              subtotal: formatNumber(subtotal),
+              discount: formatNumber(discount),
+              tax: formatNumber(tax),
+            })}
           </p>
         </div>
       </section>
 
       <section className="rek-card p-4 sm:p-6">
-        <label className="mb-1.5 block text-sm font-bold">تێبینی</label>
+        <label className="mb-1.5 block text-sm font-bold">{t("common.notes")}</label>
         <textarea
           value={notes}
           onChange={(e) => setNotes(e.target.value)}
@@ -532,7 +537,7 @@ export default function PurchaseForm() {
           disabled={saving}
           className="h-11 rounded-2xl bg-primary px-6 text-sm font-bold text-primary-foreground disabled:opacity-50"
         >
-          {saving ? "پاشەکەوت..." : "پاشەکەوتکردنی کڕین"}
+          {saving ? t("common.savingShort") : t("purchases.savePurchase")}
         </button>
       </div>
     </form>

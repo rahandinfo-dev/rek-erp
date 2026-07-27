@@ -13,6 +13,7 @@ import {
   Warehouse,
 } from "lucide-react";
 import { formatMoney , formatNumber} from "@/lib/utils/format";
+import { tServer } from "@/lib/i18n";
 
 type Props = {
   totalItems: number;
@@ -45,12 +46,14 @@ export default function WerehouseStats({
   capacity = null,
   capacityPct = null,
 }: Props) {
+  const t = tServer.t;
   const whValue = warehouseValue ?? inventoryValue;
   const assetValue = currentAssetValue ?? inventoryValue;
+  const iqd = t("common.currencyCode");
 
   const cards = [
     {
-      label: "توانای کۆگا",
+      label: t("warehouses.statCapacity"),
       value:
         capacity != null && capacity > 0
           ? capacityPct != null
@@ -60,57 +63,57 @@ export default function WerehouseStats({
       icon: Gauge,
     },
     {
-      label: "بەهای ئینڤێنتۆری",
-      value: `${formatMoney(inventoryValue)} IQD`,
+      label: t("warehouses.statInventoryValue"),
+      value: `${formatMoney(inventoryValue)} ${iqd}`,
       icon: Wallet,
     },
     {
-      label: "بەهای کۆگا",
-      value: `${formatMoney(whValue)} IQD`,
+      label: t("warehouses.statWarehouseValue"),
+      value: `${formatMoney(whValue)} ${iqd}`,
       icon: Warehouse,
     },
     {
-      label: "بەهای کڕین",
-      value: `${formatMoney(purchaseValue)} IQD`,
+      label: t("warehouses.statPurchaseValue"),
+      value: `${formatMoney(purchaseValue)} ${iqd}`,
       icon: ShoppingBasket,
     },
     {
-      label: "بەهای فرۆشتن",
-      value: `${formatMoney(salesValue)} IQD`,
+      label: t("warehouses.statSalesValue"),
+      value: `${formatMoney(salesValue)} ${iqd}`,
       icon: ShoppingCart,
     },
     {
-      label: "بەهای سەروەت",
-      value: `${formatMoney(assetValue)} IQD`,
+      label: t("warehouses.statAssetValue"),
+      value: `${formatMoney(assetValue)} ${iqd}`,
       icon: Landmark,
     },
     {
-      label: "تێکڕای تێچوو",
-      value: `${formatMoney(averageCost)} IQD`,
+      label: t("warehouses.statAvgCost"),
+      value: `${formatMoney(averageCost)} ${iqd}`,
       icon: Calculator,
     },
     {
-      label: "کۆگای بەردەست",
+      label: t("warehouses.statAvailable"),
       value: formatNumber(availableStock),
       icon: Boxes,
     },
     {
-      label: "کۆگای کەم",
+      label: t("warehouses.statLow"),
       value: formatNumber(lowStockCount),
       icon: AlertTriangle,
     },
     {
-      label: "تەواو",
+      label: t("warehouses.statOut"),
       value: formatNumber(emptyStockCount),
       icon: PackageX,
     },
     {
-      label: "تەندروستی کۆگا",
+      label: t("warehouses.statHealth"),
       value: `${inventoryHealthScore}%`,
       icon: HeartPulse,
     },
     {
-      label: "کۆی بەرهەمەکان",
+      label: t("warehouses.statTotalProducts"),
       value: formatNumber(totalItems),
       icon: Package,
     },

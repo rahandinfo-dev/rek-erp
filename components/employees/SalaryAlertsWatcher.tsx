@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { appToast } from "@/lib/toast";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 /**
  * Runs salary-due detection once per mount and surfaces new alerts as toasts.
@@ -12,6 +13,7 @@ export default function SalaryAlertsWatcher({
 }: {
   toast?: boolean;
 }) {
+  const { t } = useT();
   const ran = useRef(false);
 
   useEffect(() => {
@@ -33,25 +35,34 @@ export default function SalaryAlertsWatcher({
         if (created.length === 1) {
           const a = created[0];
           const title =
-            a.daysUntil < 0 ? "مووچە دواکەوتووە" : "مووچە نزیکە";
+            a.daysUntil < 0
+              ? t("employees.salaryOverdueTitle")
+              : t("employees.salarySoonTitle");
           appToast.salaryAlert(
             a.daysUntil < 0
-              ? `${a.fullName} · ${Math.abs(a.daysUntil)} ڕۆژ دواکەوتوو`
+              ? t("employees.salaryOverdueBody", {
+                  name: a.fullName,
+                  days: Math.abs(a.daysUntil),
+                })
               : a.daysUntil === 0
-                ? `${a.fullName} · ئەمڕۆ`
-                : `${a.fullName} · دوای ${a.daysUntil} ڕۆژ (${a.nextSalaryDate})`,
+                ? t("employees.salaryTodayBody", { name: a.fullName })
+                : t("employees.salaryInDaysBody", {
+                    name: a.fullName,
+                    days: a.daysUntil,
+                    date: a.nextSalaryDate,
+                  }),
             title
           );
           return;
         }
 
         appToast.salaryAlert(
-          `${created.length} کارمەند مووچەیان نزیکە یان دواکەوتووە.`,
-          "ئاگاداری مووچە"
+          t("employees.salaryAlertsMany", { count: created.length }),
+          t("toast.salaryAlertTitle")
         );
       })
       .catch(console.error);
-  }, [toast]);
+  }, [toast, t]);
 
   return null;
 }

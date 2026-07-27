@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { auditSafe } from "@/lib/audit/log";
+import { tServer } from "@/lib/i18n";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -10,7 +11,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     }
 
     if (brand.active) {
-      return NextResponse.json({ success: true, message: "Already active." });
+      return NextResponse.json({ success: true, message: tServer.t("api.alreadyActive") });
     }
 
     await db.brand.update({ where: { id }, data: { active: true } });

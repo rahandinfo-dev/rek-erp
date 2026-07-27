@@ -18,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useDashboardWorkspace } from "@/lib/dashboard/workspace/provider";
 import {
   catalogByKey,
@@ -45,6 +46,7 @@ export default function WidgetShell({
   onRefresh,
   children,
 }: Props) {
+  const { t } = useT();
   const {
     editMode,
     setWidgetSize,
@@ -139,7 +141,7 @@ export default function WidgetShell({
           <button
             type="button"
             className="cursor-grab rounded-lg p-1 text-muted-foreground hover:bg-muted active:cursor-grabbing"
-            aria-label="Drag widget"
+            aria-label={t("dashboard.dragWidget")}
             {...dragHandleProps}
           >
             <GripVertical size={14} />
@@ -170,7 +172,7 @@ export default function WidgetShell({
           <button
             type="button"
             className="rounded-lg p-1 text-muted-foreground opacity-0 transition hover:bg-muted hover:text-foreground group-hover/widget:opacity-100 focus:opacity-100"
-            aria-label="Widget menu"
+            aria-label={t("dashboard.widgetMenu")}
             onClick={() => setMenu((v) => !v)}
           >
             <MoreHorizontal size={14} />
@@ -185,7 +187,7 @@ export default function WidgetShell({
                   setMenu(false);
                 }}
               >
-                <RefreshCw size={12} /> Refresh
+                <RefreshCw size={12} /> {t("common.refresh")}
               </button>
               <button
                 type="button"
@@ -195,10 +197,10 @@ export default function WidgetShell({
                   setMenu(false);
                 }}
               >
-                <Copy size={12} /> Duplicate
+                <Copy size={12} /> {t("common.duplicate")}
               </button>
               <div className="px-2 py-1 text-[10px] font-bold text-muted-foreground">
-                Resize
+                {t("dashboard.resize")}
               </div>
               <div className="mb-1 flex flex-wrap gap-1 px-2">
                 {SIZES.map((s) => (
@@ -245,7 +247,7 @@ export default function WidgetShell({
                     instance.favorite ? "fill-amber-400 text-amber-500" : ""
                   }
                 />
-                Favorite
+                {t("dashboard.favorite")}
               </button>
               <button
                 type="button"
@@ -255,7 +257,7 @@ export default function WidgetShell({
                   setMenu(false);
                 }}
               >
-                <Maximize2 size={12} /> Full Screen
+                <Maximize2 size={12} /> {t("dashboard.fullScreen")}
               </button>
               <button
                 type="button"
@@ -265,21 +267,21 @@ export default function WidgetShell({
                   setMenu(false);
                 }}
               >
-                <Settings2 size={12} /> Settings
+                <Settings2 size={12} /> {t("common.settings")}
               </button>
               <button
                 type="button"
                 className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
                 onClick={() => void exportWidget("png")}
               >
-                <Download size={12} /> Export PNG
+                <Download size={12} /> {t("dashboard.exportPng")}
               </button>
               <button
                 type="button"
                 className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
                 onClick={() => void exportWidget("csv")}
               >
-                <Download size={12} /> Export CSV
+                <Download size={12} /> {t("dashboard.exportCsv")}
               </button>
               <button
                 type="button"
@@ -290,7 +292,7 @@ export default function WidgetShell({
                   appToast.success("ویجێت شاردرایەوە");
                 }}
               >
-                <X size={12} /> Hide
+                <X size={12} /> {t("dashboard.hide")}
               </button>
               <button
                 type="button"
@@ -300,7 +302,7 @@ export default function WidgetShell({
                   setMenu(false);
                 }}
               >
-                <Trash2 size={12} /> Remove
+                <Trash2 size={12} /> {t("dashboard.remove")}
               </button>
             </div>
           ) : null}
@@ -322,13 +324,13 @@ export default function WidgetShell({
         <div className="absolute inset-0 z-50 flex items-end rounded-2xl bg-black/30 p-3 sm:items-center sm:justify-center">
           <div className="w-full max-w-sm rounded-2xl border border-border bg-card p-4 shadow-xl">
             <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-black">Widget Settings</h3>
+              <h3 className="text-sm font-black">{t("dashboard.widgetSettings")}</h3>
               <button type="button" onClick={() => setSettingsOpen(false)}>
                 <X size={16} />
               </button>
             </div>
             <label className="mb-2 block text-xs font-bold">
-              Refresh interval
+              {t("dashboard.refreshInterval")}
               <select
                 className="mt-1 h-9 w-full rounded-xl border border-border bg-background px-2 text-sm"
                 value={instance.settings.refreshInterval}
@@ -346,7 +348,7 @@ export default function WidgetShell({
               </select>
             </label>
             <label className="mb-2 block text-xs font-bold">
-              Item count
+              {t("dashboard.itemCount")}
               <input
                 type="number"
                 min={1}
@@ -370,10 +372,10 @@ export default function WidgetShell({
                   })
                 }
               />
-              Compact mode
+              {t("dashboard.compactMode")}
             </label>
             <label className="mb-2 block text-xs font-bold">
-              Color theme
+              {t("dashboard.colorTheme")}
               <select
                 className="mt-1 h-9 w-full rounded-xl border border-border bg-background px-2 text-sm"
                 value={instance.settings.colorTheme}
@@ -397,7 +399,7 @@ export default function WidgetShell({
               className="mt-2 h-9 w-full rounded-xl bg-primary text-sm font-bold text-primary-foreground"
               onClick={() => setSettingsOpen(false)}
             >
-              Done
+              {t("common.done")}
             </button>
           </div>
         </div>

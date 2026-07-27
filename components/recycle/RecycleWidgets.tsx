@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Lightbulb, Trash2, BarChart3 } from "lucide-react";
 import type { RecycleBinItem } from "@/lib/recycle/types";
 import { relativeTime } from "@/lib/drafts/centerMeta";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Stats = {
   deleted: number;
@@ -60,33 +61,42 @@ function useRecentDeleted() {
 }
 
 export function RecentlyDeletedWidget() {
+  const { t } = useT();
   const items = useRecentDeleted();
   return (
-    <section aria-label="Recently Deleted" className="rek-card overflow-hidden p-0">
+    <section
+      aria-label={t("recycle.recentlyDeleted")}
+      className="rek-card overflow-hidden p-0"
+    >
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <div className="flex items-center gap-2">
           <Trash2 size={18} className="text-primary" aria-hidden />
-          <h2 className="text-lg font-black text-foreground">Recently Deleted</h2>
+          <h2 className="text-lg font-black text-foreground">
+            {t("recycle.recentlyDeleted")}
+          </h2>
         </div>
         <Link
           href="/dashboard/recycle-bin"
           className="text-xs font-bold text-primary hover:underline"
         >
-          Recycle Bin
+          {t("recycle.recycleBin")}
         </Link>
       </div>
       {items.length === 0 ? (
         <p className="px-5 py-8 text-sm text-muted-foreground">
-          No deleted records.
+          {t("recycle.noDeleted")}
         </p>
       ) : (
         <ul className="divide-y divide-border">
           {items.map((r) => (
             <li key={r.id} className="px-5 py-3">
-              <p className="truncate text-sm font-bold text-foreground">{r.name}</p>
+              <p className="truncate text-sm font-bold text-foreground">
+                {r.name}
+              </p>
               <p className="truncate text-xs text-muted-foreground">
                 {r.moduleLabel} · {r.deletedBy || "سیستەم"} ·{" "}
-                {relativeTime(r.deletedAt)} · {r.daysRemaining}d left
+                {relativeTime(r.deletedAt)} ·{" "}
+                {t("recycle.daysLeft", { count: r.daysRemaining })}
               </p>
             </li>
           ))}
@@ -97,6 +107,7 @@ export function RecentlyDeletedWidget() {
 }
 
 export function RestoreSuggestionsWidget() {
+  const { t } = useT();
   const [items, setItems] = useState<RecycleBinItem[]>([]);
   useEffect(() => {
     let active = true;
@@ -126,36 +137,38 @@ export function RestoreSuggestionsWidget() {
 
   return (
     <section
-      aria-label="Restore Suggestions"
+      aria-label={t("recycle.restoreSuggestions")}
       className="rek-card overflow-hidden p-0"
     >
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <div className="flex items-center gap-2">
           <Lightbulb size={18} className="text-primary" aria-hidden />
           <h2 className="text-lg font-black text-foreground">
-            Restore Suggestions
+            {t("recycle.restoreSuggestions")}
           </h2>
         </div>
         <Link
           href="/dashboard/recycle-bin"
           className="text-xs font-bold text-primary hover:underline"
         >
-          Review
+          {t("recycle.review")}
         </Link>
       </div>
       {items.length === 0 ? (
         <p className="px-5 py-8 text-sm text-muted-foreground">
-          No restore suggestions right now.
+          {t("recycle.noSuggestions")}
         </p>
       ) : (
         <ul className="divide-y divide-border">
           {items.map((r) => (
             <li key={r.id} className="px-5 py-3">
-              <p className="truncate text-sm font-bold text-foreground">{r.name}</p>
+              <p className="truncate text-sm font-bold text-foreground">
+                {r.name}
+              </p>
               <p className="truncate text-xs text-muted-foreground">
                 {r.daysRemaining <= 7
-                  ? "Expiring soon — restore recommended"
-                  : "Safe to restore"}{" "}
+                  ? t("recycle.expiringSoon")
+                  : t("recycle.safeToRestore")}{" "}
                 · {r.moduleLabel}
               </p>
             </li>
@@ -167,36 +180,45 @@ export function RestoreSuggestionsWidget() {
 }
 
 export function RecycleBinStatsWidget() {
+  const { t } = useT();
   const stats = useRecycleStats();
   return (
     <section
-      aria-label="Recycle Bin Statistics"
+      aria-label={t("recycle.statsTitle")}
       className="rek-card overflow-hidden p-0"
     >
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <div className="flex items-center gap-2">
           <BarChart3 size={18} className="text-primary" aria-hidden />
           <h2 className="text-lg font-black text-foreground">
-            Recycle Bin Statistics
+            {t("recycle.statsTitle")}
           </h2>
         </div>
         <Link
           href="/dashboard/recycle-bin"
           className="text-xs font-bold text-primary hover:underline"
         >
-          Open
+          {t("recycle.open")}
         </Link>
       </div>
       {!stats ? (
-        <p className="px-5 py-8 text-sm text-muted-foreground">Loading…</p>
+        <p className="px-5 py-8 text-sm text-muted-foreground">
+          {t("common.loading")}
+        </p>
       ) : (
         <div className="grid grid-cols-2 gap-3 px-5 py-5 sm:grid-cols-3">
-          <Stat label="In bin" value={stats.deleted} />
-          <Stat label="گەڕێندرایەوە" value={stats.restored} />
-          <Stat label="Purged" value={stats.purged} />
-          <Stat label="This week" value={stats.recent} />
-          <Stat label="Expiring soon" value={stats.expiringSoon} />
-          <Stat label="Retention" value={`${stats.retentionDays}d`} />
+          <Stat label={t("recycle.inBin")} value={stats.deleted} />
+          <Stat label={t("common.restore")} value={stats.restored} />
+          <Stat label={t("recycle.purged")} value={stats.purged} />
+          <Stat label={t("recycle.thisWeek")} value={stats.recent} />
+          <Stat
+            label={t("recycle.expiringSoonLabel")}
+            value={stats.expiringSoon}
+          />
+          <Stat
+            label={t("recycle.retention")}
+            value={t("recycle.retentionDays", { count: stats.retentionDays })}
+          />
         </div>
       )}
     </section>

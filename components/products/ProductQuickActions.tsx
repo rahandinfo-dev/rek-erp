@@ -40,6 +40,7 @@ import { formatStockQty } from "@/lib/inventory/stock";
 import { movementTypeLabel } from "@/lib/inventory/movementLabels";
 import type { ProductCardData } from "@/components/products/ProductCard";
 import type { MovementHistoryRow } from "@/lib/inventory/history";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const BarcodeSvg = dynamic(() => import("@/components/barcode/BarcodeSvg"), {
   ssr: false,
@@ -60,48 +61,18 @@ type Props = {
   onDeleted?: (id: string) => void;
 };
 
-const ACTIONS: Array<{
+const ACTION_DEFS: Array<{
   id: QuickAction;
-  label: string;
+  labelKey: string;
   icon: typeof Pencil;
   tone: string;
 }> = [
-  {
-    id: "edit",
-    label: "دەستکاری",
-    icon: Pencil,
-    tone: "hover:bg-primary/10 hover:text-primary",
-  },
-  {
-    id: "delete",
-    label: "سڕینەوە",
-    icon: Trash2,
-    tone: "hover:bg-destructive/10 hover:text-destructive",
-  },
-  {
-    id: "stock-up",
-    label: "زیادکردنی کۆگا",
-    icon: Plus,
-    tone: "hover:bg-[color-mix(in_srgb,var(--success)_14%,white)] hover:text-[var(--success)]",
-  },
-  {
-    id: "stock-down",
-    label: "کەمکردنی کۆگا",
-    icon: Minus,
-    tone: "hover:bg-amber-50 hover:text-amber-700",
-  },
-  {
-    id: "barcode",
-    label: "چاپی بارکۆد",
-    icon: Printer,
-    tone: "hover:bg-secondary hover:text-primary",
-  },
-  {
-    id: "history",
-    label: "مێژوو",
-    icon: History,
-    tone: "hover:bg-secondary hover:text-primary",
-  },
+  { id: "edit", labelKey: "common.edit", icon: Pencil, tone: "hover:bg-primary/10 hover:text-primary" },
+  { id: "delete", labelKey: "common.delete", icon: Trash2, tone: "hover:bg-destructive/10 hover:text-destructive" },
+  { id: "stock-up", labelKey: "products.stockUp", icon: Plus, tone: "hover:bg-[color-mix(in_srgb,var(--success)_14%,white)] hover:text-[var(--success)]" },
+  { id: "stock-down", labelKey: "products.stockDown", icon: Minus, tone: "hover:bg-amber-50 hover:text-amber-700" },
+  { id: "barcode", labelKey: "products.printBarcode", icon: Printer, tone: "hover:bg-secondary hover:text-primary" },
+  { id: "history", labelKey: "products.tabHistory", icon: History, tone: "hover:bg-secondary hover:text-primary" },
 ];
 
 export default memo(function ProductQuickActions({
@@ -109,6 +80,7 @@ export default memo(function ProductQuickActions({
   onUpdated,
   onDeleted,
 }: Props) {
+  const { t } = useT();
   const [panel, setPanel] = useState<Exclude<QuickAction, "delete"> | null>(
     null
   );
@@ -127,14 +99,14 @@ export default memo(function ProductQuickActions({
     <>
       <div className="rek-quick-actions pointer-events-none absolute inset-x-0 bottom-0 z-10 p-3 opacity-100 sm:opacity-0 sm:transition-all sm:duration-300 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
         <div className="pointer-events-auto flex items-center justify-between gap-1 rounded-2xl border border-border/80 bg-card/95 p-1.5 shadow-[0_10px_28px_var(--shadow-brand)] backdrop-blur-md">
-          {ACTIONS.map((action, index) => {
+          {ACTION_DEFS.map((action, index) => {
             const Icon = action.icon;
             return (
               <button
                 key={action.id}
                 type="button"
-                title={action.label}
-                aria-label={action.label}
+                title={t(action.labelKey)}
+                aria-label={t(action.labelKey)}
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -153,9 +125,9 @@ export default memo(function ProductQuickActions({
       {deleteOpen ? (
         <ConfirmDialog
           open={deleteOpen}
-          title="سڕینەوەی بەرهەم"
-          description={`دڵنیایت لە سڕینەوەی «${product.name}»؟ Soft delete — Undo بۆ چەند چرکەیەک · مێژوو دەمێنێتەوە.`}
-          confirmText={pending ? "سڕینەوە..." : "سڕینەوە"}
+          title={t("products.deleteTitle")}
+          description={t("products.deleteConfirmNamed", { name: product.name })}
+          confirmText={pending ? t("products.deleting") : t("common.delete")}
           loading={pending}
           onCancel={() => setDeleteOpen(false)}
           onConfirm={() => {
@@ -166,9 +138,9 @@ export default memo(function ProductQuickActions({
                 deleteUrl: `/api/products/${product.id}`,
                 restoreUrl: `/api/products/${product.id}/restore`,
                 module: "products",
-                title: "Product deleted",
-                message: `«${product.name}»`,
-                entityType: "Product",
+                title: t("products.deletedTitle"),
+                message: t("products.deletedShortNamed", { name: product.name }),
+                entityType: t("products.entityType"),
                 entityId: product.id,
                 onSoftDeleted: () => {
                   setDeleteOpen(false);
@@ -245,6 +217,7 @@ function QuickEditPanel({
   onClose: () => void;
   onUpdated: (p: ProductCardData) => void;
 }) {
+  const { t } = useT();
   const [name, setName] = useState(product.name);
   const [sku, setSku] = useState(product.sku);
   const [barcode, setBarcode] = useState(product.barcode || "");
@@ -291,7 +264,7 @@ function QuickEditPanel({
     return () => {
       cancelled = true;
     };
-  }, [product.id]);
+  }, [product.id, t]);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -326,10 +299,10 @@ function QuickEditPanel({
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "پاشەکەوت سەرنەکەوت.");
+        appToast.error(json.message || t("products.saveFailed"));
         return;
       }
-      appToast.productSaved("بەرهەم نوێکرایەوە.");
+      appToast.productSaved(t("products.productUpdated"));
       onUpdated({
         ...product,
         name: name.trim(),
@@ -342,7 +315,7 @@ function QuickEditPanel({
         active,
       });
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -351,13 +324,13 @@ function QuickEditPanel({
   return (
     <form onSubmit={save} className="rek-quick-panel space-y-4">
       <DialogHeader>
-        <DialogTitle>دەستکاریی خێرا</DialogTitle>
+        <DialogTitle>{t("products.quickEdit")}</DialogTitle>
         <DialogDescription>{product.sku}</DialogDescription>
       </DialogHeader>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="space-y-1 text-sm font-bold sm:col-span-2">
-          ناو
+          {t("common.name")}
           <input
             required
             minLength={2}
@@ -376,7 +349,7 @@ function QuickEditPanel({
           />
         </label>
         <label className="space-y-1 text-sm font-bold">
-          بارکۆد
+          {t("nav.barcode")}
           <input
             value={barcode}
             onChange={(e) => setBarcode(e.target.value)}
@@ -384,7 +357,7 @@ function QuickEditPanel({
           />
         </label>
         <label className="space-y-1 text-sm font-bold">
-          نرخی کڕین
+          {t("products.purchasePrice")}
           <input
             type="number"
             min={0}
@@ -395,7 +368,7 @@ function QuickEditPanel({
           />
         </label>
         <label className="space-y-1 text-sm font-bold">
-          نرخی فرۆشتن
+          {t("products.salePrice")}
           <input
             type="number"
             min={0}
@@ -406,7 +379,7 @@ function QuickEditPanel({
           />
         </label>
         <label className="space-y-1 text-sm font-bold">
-          ئاگاداری کۆگا
+          {t("products.stockAlert")}
           <input
             type="number"
             min={0}
@@ -423,16 +396,16 @@ function QuickEditPanel({
             onChange={(e) => setActive(e.target.checked)}
             className="size-4 rounded border-border"
           />
-          چالاک
+          {t("common.active")}
         </label>
       </div>
 
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onClose}>
-          هەڵوەشاندنەوە
+          {t("common.cancel")}
         </Button>
         <Button type="submit" disabled={saving}>
-          {saving ? "پاشەکەوت..." : "پاشەکەوت"}
+          {saving ? t("products.savingDots") : t("common.save")}
         </Button>
       </DialogFooter>
     </form>
@@ -450,9 +423,10 @@ function QuickStockPanel({
   onClose: () => void;
   onUpdated: (p: ProductCardData) => void;
 }) {
+  const { t } = useT();
   const [quantity, setQuantity] = useState("1");
   const [reason, setReason] = useState(
-    mode === "increase" ? "زیادکردنی خێرا لە کارتی بەرهەم" : "کەمکردنی خێرا لە کارتی بەرهەم"
+    mode === "increase" ? t("products.quickIncreaseReason") : t("products.quickDecreaseReason")
   );
   const [saving, setSaving] = useState(false);
   const up = mode === "increase";
@@ -460,12 +434,12 @@ function QuickStockPanel({
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!product.warehouseId) {
-      appToast.error("کۆگا دیاری نەکراوە.");
+      appToast.error(t("products.warehouseNotSet"));
       return;
     }
     const qty = Number(quantity);
     if (!(qty > 0)) {
-      appToast.error("بڕ نادروستە.");
+      appToast.error(t("products.invalidQty"));
       return;
     }
     setSaving(true);
@@ -478,17 +452,17 @@ function QuickStockPanel({
           warehouseId: product.warehouseId,
           mode,
           quantity: qty,
-          reason: reason.trim() || (up ? "زیادکردنی خێرا" : "کەمکردنی خێرا"),
+          reason: reason.trim() || (up ? t("products.quickIncreaseFallback") : t("products.quickDecreaseFallback")),
         }),
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "سەرنەکەوت.");
+        appToast.error(json.message || t("products.failed"));
         return;
       }
       appToast.inventoryAdjusted(
         `${json.data?.previousQty} → ${json.data?.newQty}`,
-        json.message || (up ? "کۆگا زیادکرا" : "کۆگا کەمکرا")
+        json.message || (up ? t("products.stockIncreased") : t("products.stockDecreased"))
       );
       emitNotificationsChanged({ reason: "mutation" });
       const delta = up ? qty : -qty;
@@ -497,7 +471,7 @@ function QuickStockPanel({
         currentStock: Math.max(0, product.currentStock + delta),
       });
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -506,15 +480,15 @@ function QuickStockPanel({
   return (
     <form onSubmit={submit} className="rek-quick-panel space-y-4">
       <DialogHeader>
-        <DialogTitle>{up ? "زیادکردنی خێرای کۆگا" : "کەمکردنی خێرای کۆگا"}</DialogTitle>
+        <DialogTitle>{up ? t("products.quickIncreaseTitle") : t("products.quickDecreaseTitle")}</DialogTitle>
         <DialogDescription>
-          {product.name} · ئێستا {formatStockQty(product.currentStock)} ·{" "}
+          {product.name} · {t("products.nowStock", { qty: formatStockQty(product.currentStock) })} ·{" "}
           {product.warehouseName}
         </DialogDescription>
       </DialogHeader>
 
       <label className="space-y-1 text-sm font-bold">
-        بڕ
+        {t("products.qty")}
         <input
           type="number"
           min="0.01"
@@ -527,7 +501,7 @@ function QuickStockPanel({
         />
       </label>
       <label className="space-y-1 text-sm font-bold">
-        هۆکار
+        {t("products.reason")}
         <input
           required
           minLength={2}
@@ -539,10 +513,10 @@ function QuickStockPanel({
 
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onClose}>
-          هەڵوەشاندنەوە
+          {t("common.cancel")}
         </Button>
         <Button type="submit" disabled={saving} variant={up ? "default" : "destructive"}>
-          {saving ? "…" : up ? "زیادکردن" : "کەمکردن"}
+          {saving ? "…" : up ? t("products.increaseAction") : t("products.decreaseAction")}
         </Button>
       </DialogFooter>
     </form>
@@ -558,6 +532,7 @@ function QuickBarcodePanel({
   onClose: () => void;
   onUpdated?: (p: ProductCardData) => void;
 }) {
+  const { t } = useT();
   const labelRef = useRef<HTMLDivElement>(null);
   const { markPrinted } = useNavigationHistory();
   const [barcode, setBarcode] = useState(product.barcode);
@@ -574,7 +549,7 @@ function QuickBarcodePanel({
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "دروستکردنی بارکۆد سەرنەکەوت.");
+        appToast.error(json.message || t("products.barcodeCreateFailed"));
         return null;
       }
       const next = json.data.barcode as string;
@@ -582,7 +557,7 @@ function QuickBarcodePanel({
       onUpdated?.({ ...product, barcode: next });
       return next;
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
       return null;
     } finally {
       setBusy(false);
@@ -601,14 +576,14 @@ function QuickBarcodePanel({
         product.name,
         "barcode"
       );
-      appToast.success("بارکۆد چاپکرا", product.name);
+      appToast.success(t("products.barcodePrinted"), product.name);
     });
   }
 
   return (
     <div className="rek-quick-panel space-y-4">
       <DialogHeader>
-        <DialogTitle>چاپی بارکۆد</DialogTitle>
+        <DialogTitle>{t("products.printBarcode")}</DialogTitle>
         <DialogDescription>{product.name}</DialogDescription>
       </DialogHeader>
 
@@ -625,7 +600,7 @@ function QuickBarcodePanel({
             <BarcodeSvg value={barcode} height={56} displayValue />
           ) : (
             <p className="py-4 text-sm text-muted-foreground">
-              بارکۆد نییە — پێش چاپ دروست دەکرێت
+              {t("products.noBarcodeBeforePrint")}
             </p>
           )}
         </div>
@@ -633,7 +608,7 @@ function QuickBarcodePanel({
 
       <DialogFooter>
         <Button type="button" variant="outline" onClick={onClose}>
-          داخستن
+          {t("common.close")}
         </Button>
         <Button type="button" disabled={busy} onClick={() => void handlePrint()}>
           {busy ? (
@@ -641,7 +616,7 @@ function QuickBarcodePanel({
           ) : (
             <Printer size={16} />
           )}
-          چاپ
+          {t("products.print")}
         </Button>
       </DialogFooter>
     </div>
@@ -655,6 +630,7 @@ function QuickHistoryPanel({
   product: ProductCardData;
   onClose: () => void;
 }) {
+  const { t } = useT();
   const [rows, setRows] = useState<MovementHistoryRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const loadId = useId();
@@ -668,14 +644,14 @@ function QuickHistoryPanel({
       );
       const json = await res.json();
       if (!json.success) {
-        setError(json.message || "بارکردن سەرنەکەوت.");
+        setError(json.message || t("products.loadFailedShort"));
         setRows([]);
         return;
       }
       const items = json.data?.items;
       setRows(Array.isArray(items) ? items : []);
     } catch {
-      setError("هەڵەیەک ڕوویدا.");
+      setError(t("errors.generic"));
       setRows([]);
     }
   }, [product.id]);
@@ -692,16 +668,16 @@ function QuickHistoryPanel({
   return (
     <div className="rek-quick-panel space-y-4" data-load={loadId}>
       <DialogHeader>
-        <DialogTitle>مێژووی خێرا</DialogTitle>
+        <DialogTitle>{t("products.quickHistory")}</DialogTitle>
         <DialogDescription>
-          {product.name} — دوایین جوڵەکان
+          {t("products.recentMovementsFor", { name: product.name })}
         </DialogDescription>
       </DialogHeader>
 
       {rows === null ? (
         <div className="flex items-center justify-center gap-2 py-10 text-muted-foreground">
           <Loader2 size={18} className="animate-spin" />
-          چاوەڕێ…
+          {t("products.waitEllipsis")}
         </div>
       ) : error ? (
         <p className="rounded-xl bg-destructive/10 px-3 py-2 text-sm text-destructive">
@@ -709,7 +685,7 @@ function QuickHistoryPanel({
         </p>
       ) : list.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border px-4 py-10 text-center text-sm text-muted-foreground">
-          هیچ جوڵەیەک نییە.
+          {t("products.noMovements")}
         </p>
       ) : (
         <ul className="max-h-[50vh] space-y-2 overflow-y-auto pe-1">
@@ -752,10 +728,10 @@ function QuickHistoryPanel({
           className="inline-flex h-9 items-center justify-center rounded-xl border border-border bg-card px-4 text-sm font-bold text-primary"
           onClick={onClose}
         >
-          مێژووی تەواو
+          {t("products.fullHistoryShort")}
         </Link>
         <Button type="button" variant="outline" onClick={onClose}>
-          داخستن
+          {t("common.close")}
         </Button>
       </DialogFooter>
     </div>

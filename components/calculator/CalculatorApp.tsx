@@ -6,6 +6,7 @@ import { appToast } from "@/lib/toast";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
+import { tServer } from "@/lib/i18n";
 
 type Op = "+" | "-" | "*" | "/" | null;
 
@@ -19,7 +20,7 @@ type CalcDraft = {
 };
 
 function formatDisplay(n: number) {
-  if (!Number.isFinite(n)) return "Error";
+  if (!Number.isFinite(n)) return tServer.t("calculator.error");
   const rounded = Math.round((n + Number.EPSILON) * 1e10) / 1e10;
   return String(rounded);
 }

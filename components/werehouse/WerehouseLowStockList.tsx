@@ -2,6 +2,7 @@ import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
 import { formatStockQty, type StockStatus } from "@/lib/inventory/stock";
 import { StockStatusBadge } from "@/components/inventory/StockStatusBadge";
+import { tServer } from "@/lib/i18n";
 
 export type LowStockProductRow = {
   id: string;
@@ -21,23 +22,25 @@ export default function WerehouseLowStockList({
 }: {
   products: LowStockProductRow[];
 }) {
+  const t = tServer.t;
+
   return (
     <section className="rek-card p-4 sm:p-6">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <AlertTriangle className="text-orange-500" size={22} aria-hidden />
           <h2 className="text-xl font-black text-foreground">
-            ئاگاداری کۆگا — کەم / تەواو
+            {t("warehouses.lowStockTitle")}
           </h2>
         </div>
         <p className="text-sm font-semibold text-muted-foreground">
-          {products.length} بەرهەم
+          {t("common.productsCount", { count: products.length })}
         </p>
       </div>
 
       {products.length === 0 ? (
         <p className="rounded-2xl bg-emerald-50 px-4 py-10 text-center text-sm font-semibold text-emerald-800">
-          هەموو بەرهەمەکان بەردەستن — کێشەی کۆگا نییە.
+          {t("warehouses.lowStockOk")}
         </p>
       ) : (
         <div className="rek-table-shell">
@@ -45,11 +48,11 @@ export default function WerehouseLowStockList({
             <table className="w-full min-w-[520px] text-sm">
               <thead className="bg-muted/80 text-muted-foreground">
                 <tr>
-                  <th className="p-3 text-right font-bold">بەرهەم</th>
-                  <th className="p-3 text-right font-bold">کۆگا</th>
-                  <th className="p-3 text-right font-bold">بڕی ئێستا</th>
-                  <th className="p-3 text-right font-bold">کەمترین</th>
-                  <th className="p-3 text-center font-bold">دۆخ</th>
+                  <th className="p-3 text-right font-bold">{t("warehouses.colProduct")}</th>
+                  <th className="p-3 text-right font-bold">{t("warehouses.colWarehouse")}</th>
+                  <th className="p-3 text-right font-bold">{t("warehouses.colCurrentQty")}</th>
+                  <th className="p-3 text-right font-bold">{t("warehouses.colMinimum")}</th>
+                  <th className="p-3 text-center font-bold">{t("common.status")}</th>
                 </tr>
               </thead>
               <tbody>

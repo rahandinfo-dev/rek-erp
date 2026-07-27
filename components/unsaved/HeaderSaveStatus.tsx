@@ -4,14 +4,19 @@ import { useSaveGuard } from "@/lib/unsaved/provider";
 import { cn } from "@/lib/utils";
 import { useNow } from "@/lib/hooks/useBrowserStore";
 import { formatTime } from "@/lib/utils/datetime";
+import { useT } from "@/components/i18n/LocaleProvider";
 
-function relativeSaved(savedAt: number | null, now: number) {
+function relativeSaved(
+  savedAt: number | null,
+  now: number,
+  t: (key: string, params?: Record<string, string | number>) => string
+) {
   if (!savedAt || !now) return "";
   const sec = Math.max(0, Math.floor((now - savedAt) / 1000));
   if (sec < 5) return "ئێستا";
-  if (sec < 60) return `${sec} seconds ago`;
+  if (sec < 60) return t("unsaved.secondsAgo", { count: sec });
   const min = Math.floor(sec / 60);
-  if (min < 60) return `${min} min ago`;
+  if (min < 60) return t("unsaved.minutesAgo", { count: min });
   return formatTime(savedAt);
 }
 
@@ -20,28 +25,31 @@ export default function HeaderSaveStatus({
 }: {
   className?: string;
 }) {
+  const { t } = useT();
   const { aggregateState, lastSavedAt, hasUnsaved, history } = useSaveGuard();
   // 0 on the server and during hydration, so the markup cannot diverge.
   const now = useNow();
 
   const last = history[0];
-  const savedLabel = relativeSaved(lastSavedAt, now);
+  const savedLabel = relativeSaved(lastSavedAt, now, t);
 
   let text = "هەموو گۆڕانکارییەکان پاشەکەوتکران";
   let tone =
     "bg-[color-mix(in_srgb,var(--success)_12%,transparent)] text-[var(--success)]";
 
   if (aggregateState === "saving") {
-    text = "پاشەکەوت دەکرێت…";
-    tone = "bg-[color-mix(in_srgb,var(--info)_12%,transparent)] text-[var(--info)]";
+    text = t("common.saving");
+    tone =
+      "bg-[color-mix(in_srgb,var(--info)_12%,transparent)] text-[var(--info)]";
   } else if (aggregateState === "error") {
     text = "پاشەکەوت سەرنەکەوت";
     tone = "bg-destructive/10 text-destructive";
   } else if (hasUnsaved || aggregateState === "modified") {
-    text = "گۆڕانکاری پاشەکەوتنەکراو";
-    tone = "bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200";
+    text = t("unsaved.unsavedChanges");
+    tone =
+      "bg-amber-50 text-amber-800 dark:bg-amber-950/40 dark:text-amber-200";
   } else if (savedLabel) {
-    text = `Saved ${savedLabel}`;
+    text = t("unsaved.savedAgo", { when: savedLabel });
   }
 
   if (aggregateState === "clean" && !lastSavedAt && !hasUnsaved) {
@@ -59,7 +67,10 @@ export default function HeaderSaveStatus({
       aria-live="polite"
       title={
         last
-          ? `Last saved on ${last.device} · ${last.durationMs}ms`
+          ? t("unsaved.lastSavedOn", {
+              device: last.device,
+              ms: last.durationMs,
+            })
           : text
       }
     >
@@ -82,6 +93,7 @@ export function UnsavedDotBadge({
 }: {
   className?: string;
 }) {
+  const { t } = useT();
   const { hasUnsaved } = useSaveGuard();
   if (!hasUnsaved) return null;
   return (
@@ -91,9 +103,9 @@ export function UnsavedDotBadge({
         className
       )}
       role="status"
-      aria-label="Unsaved changes"
+      aria-label={t("unsaved.unsavedChanges")}
     >
-      ● Unsaved
+      ● {t("unsaved.unsavedBadge")}
     </span>
   );
 }

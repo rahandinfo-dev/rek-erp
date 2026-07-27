@@ -17,6 +17,7 @@ import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import ProductPicker from "@/components/forms/ProductPicker";
 import { useNavigationHistory } from "@/lib/history/provider";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Option = { id: string; name: string };
 type Product = {
@@ -72,6 +73,7 @@ function blankLine(): LineItem {
 type SaveMode = "save" | "print" | "new";
 
 export default function SaleForm() {
+  const { t } = useT();
   const router = useRouter();
   const { markCreated } = useNavigationHistory();
   const searchParams = useSearchParams();
@@ -152,7 +154,7 @@ export default function SaleForm() {
     module: "sales",
     value: draftValue,
     setValue: applySaleDraft,
-    label: "Sale draft edit",
+    label: t("sales.draftEditLabel"),
     enabled: !hasPendingDraft,
   });
 
@@ -283,15 +285,15 @@ export default function SaleForm() {
   async function submit(mode: SaveMode) {
     setError("");
     if (!warehouseId) {
-      setError("کۆگا پێویستە.");
+      setError(t("common.warehouseRequired"));
       return;
     }
     if (items.some((item) => !item.productId || item.quantity <= 0)) {
-      setError("هەموو بەرهەمەکان بە تەواوی پڕبکەرەوە.");
+      setError(t("common.fillAllProducts"));
       return;
     }
     if (items.some((item) => item.unitPrice < 0)) {
-      setError("نرخ نابێت نەرێنی بێت.");
+      setError(t("sales.priceNotNegative"));
       return;
     }
 
@@ -313,14 +315,14 @@ export default function SaleForm() {
       });
       const result = await res.json();
       if (!res.ok) {
-        setError(result.message || "هەڵەیەک ڕوویدا.");
-        appToast.error(result.message || "هەڵەیەک ڕوویدا.");
+        setError(result.message || t("errors.generic"));
+        appToast.error(result.message || t("errors.generic"));
         return;
       }
 
       appToast.saleCompleted(
         result.data?.invoiceNo
-          ? `پسوولەی ${result.data.invoiceNo} تۆمارکرا.`
+          ? t("sales.invoiceRecorded", { no: result.data.invoiceNo })
           : undefined
       );
       emitNotificationsChanged({ reason: "mutation" });
@@ -332,13 +334,13 @@ export default function SaleForm() {
       if (invoiceId) {
         markCreated(
           `/dashboard/invoices/${invoiceId}`,
-          invoiceNo ? `Invoice ${invoiceNo}` : "New Invoice",
+          invoiceNo ? t("sales.historyInvoice", { no: invoiceNo }) : t("sales.historyNewInvoice"),
           "invoices"
         );
       } else if (saleId) {
         markCreated(
           `/dashboard/sales/${saleId}`,
-          invoiceNo ? `Sale ${invoiceNo}` : "فرۆشتنی نوێ",
+          invoiceNo ? t("sales.historySale", { no: invoiceNo }) : t("sales.historyNewSale"),
           "sales"
         );
       }
@@ -351,7 +353,7 @@ export default function SaleForm() {
         setNotes("");
         setItems([blankLine()]);
         setSaleDate(toDateInputValue());
-        appToast.success("فرۆشتن تۆمارکرا", "دەستپێکردنی فرۆشتنی نوێ");
+        appToast.success(t("sales.savedStartNewTitle"), t("sales.savedStartNewBody"));
         return;
       }
 
@@ -366,8 +368,8 @@ export default function SaleForm() {
       );
       router.refresh();
     } catch {
-      setError("هەڵەیەک ڕوویدا.");
-      appToast.error("هەڵەیەک ڕوویدا.");
+      setError(t("errors.generic"));
+      appToast.error(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -405,15 +407,15 @@ export default function SaleForm() {
       <section className="rek-card grid gap-4 p-4 sm:grid-cols-3 sm:p-6">
         <div>
           <label className="mb-1.5 block text-sm font-bold">
-            کڕیار{" "}
-            <span className="font-normal text-muted-foreground">(ئارەزوومەندانە)</span>
+            {t("sales.customerOptional")}{" "}
+            <span className="font-normal text-muted-foreground">{t("common.optionalHint")}</span>
           </label>
           <select
             value={customerId}
             onChange={(e) => setCustomerId(e.target.value)}
             className={inputClass}
           >
-            <option value="">کڕیاری گشتی</option>
+            <option value="">{t("sales.walkInCustomer")}</option>
             {customers.map((c) => (
               <option key={c.id} value={c.id}>
                 {c.name}
@@ -422,14 +424,14 @@ export default function SaleForm() {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">کۆگا *</label>
+          <label className="mb-1.5 block text-sm font-bold">{t("common.warehouseStar")}</label>
           <select
             value={warehouseId}
             onChange={(e) => setWarehouseId(e.target.value)}
             className={inputClass}
             required
           >
-            <option value="">هەڵبژێرە</option>
+            <option value="">{t("common.choose")}</option>
             {warehouses.map((w) => (
               <option key={w.id} value={w.id}>
                 {w.name}
@@ -438,7 +440,7 @@ export default function SaleForm() {
           </select>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">بەرواری پسوولە</label>
+          <label className="mb-1.5 block text-sm font-bold">{t("sales.invoiceDate")}</label>
           <input
             type="date"
             value={saleDate}
@@ -451,20 +453,20 @@ export default function SaleForm() {
 
       <section className="rek-card space-y-4 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-lg font-black text-foreground">بەرهەمەکان</h3>
+          <h3 className="text-lg font-black text-foreground">{t("common.products")}</h3>
           <button
             type="button"
             onClick={() => setItems((prev) => [...prev, blankLine()])}
             className="inline-flex h-10 items-center gap-2 rounded-xl border border-border px-3 text-sm font-bold"
           >
             <Plus size={16} />
-            زیادکردنی بەرهەم
+            {t("common.addProduct")}
           </button>
         </div>
 
         <div className="rounded-2xl border border-border bg-muted/30 p-3">
           <p className="mb-2 text-xs font-bold text-muted-foreground">
-            گەڕان / سکان / وێنەی بارکۆد — خۆکار زیاد دەبێت
+            {t("sales.barcodeHint")}
           </p>
           <BarcodeScanner
             compact
@@ -474,11 +476,11 @@ export default function SaleForm() {
             onProduct={addProductFromScan}
             onNotFound={(code) =>
               appToast.warning(
-                "بەرهەم نەدۆزرایەوە",
-                `${code} — لە بەرهەمەکان زیاد بکە`
+                t("common.productNotFound"),
+                t("sales.productNotFoundBody", { code })
               )
             }
-            placeholder="ناو، SKU یان بارکۆد…"
+            placeholder={t("common.barcodePlaceholder")}
           />
         </div>
 
@@ -496,7 +498,7 @@ export default function SaleForm() {
               >
                 <div className="sm:col-span-4">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    بەرهەم
+                    {t("common.product")}
                   </label>
                   <ProductPicker
                     products={products}
@@ -506,13 +508,13 @@ export default function SaleForm() {
                   />
                   {available != null ? (
                     <p className="mt-1 text-[11px] text-muted-foreground">
-                      بەردەست: {available}
+                      {t("common.availableQty", { count: available })}
                     </p>
                   ) : null}
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    بڕ
+                    {t("common.quantity")}
                   </label>
                   <input
                     type="number"
@@ -527,7 +529,7 @@ export default function SaleForm() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    نرخ
+                    {t("common.price")}
                   </label>
                   <input
                     type="number"
@@ -542,7 +544,7 @@ export default function SaleForm() {
                 </div>
                 <div className="sm:col-span-1">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    دراو
+                    {t("common.currencyLabel")}
                   </label>
                   <select
                     value={item.currency}
@@ -559,7 +561,7 @@ export default function SaleForm() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
-                    کۆ
+                    {t("common.lineTotal")}
                   </label>
                   <p className="flex h-11 items-center font-black tabular-nums">
                     {formatNumber(item.total)} {item.currency}
@@ -568,7 +570,7 @@ export default function SaleForm() {
                 <div className="flex gap-1 sm:col-span-1 sm:justify-end">
                   <button
                     type="button"
-                    title="دووبارەکردنەوە"
+                    title={t("common.duplicateLine")}
                     onClick={() =>
                       setItems((prev) => [
                         ...prev.slice(0, index + 1),
@@ -583,7 +585,7 @@ export default function SaleForm() {
                   {items.length > 1 ? (
                     <button
                       type="button"
-                      title="سڕینەوە"
+                      title={t("common.delete")}
                       onClick={() =>
                         setItems((prev) => prev.filter((_, i) => i !== index))
                       }
@@ -601,7 +603,7 @@ export default function SaleForm() {
 
       <section className="rek-card grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
         <div>
-          <label className="mb-1.5 block text-sm font-bold">داشکاندن</label>
+          <label className="mb-1.5 block text-sm font-bold">{t("common.discount")}</label>
           <input
             type="number"
             min={0}
@@ -611,7 +613,7 @@ export default function SaleForm() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">باج</label>
+          <label className="mb-1.5 block text-sm font-bold">{t("common.tax")}</label>
           <input
             type="number"
             min={0}
@@ -621,7 +623,7 @@ export default function SaleForm() {
           />
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-bold">شێوازی پارەدان</label>
+          <label className="mb-1.5 block text-sm font-bold">{t("sales.paymentMethod")}</label>
           <select
             value={paymentMethod}
             onChange={(e) =>
@@ -637,21 +639,24 @@ export default function SaleForm() {
           </select>
         </div>
         <div className="rounded-2xl bg-muted/50 p-4">
-          <p className="text-xs font-bold text-muted-foreground">کۆی گشتی</p>
+          <p className="text-xs font-bold text-muted-foreground">{t("common.total")}</p>
           <p className="text-2xl font-black tabular-nums text-foreground">
             {formatNumber(total)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
-            ژێرکۆ {formatNumber(subtotal)} − داشکاندن {formatNumber(discount)}{" "}
-            + باج {formatNumber(tax)}
+            {t("common.totalsBreakdown", {
+              subtotal: formatNumber(subtotal),
+              discount: formatNumber(discount),
+              tax: formatNumber(tax),
+            })}
           </p>
         </div>
       </section>
 
       <section className="rek-card p-4 sm:p-6">
         <label className="mb-1.5 block text-sm font-bold">
-          تێبینی{" "}
-          <span className="font-normal text-muted-foreground">(ئارەزوومەندانە)</span>
+          {t("common.notes")}{" "}
+          <span className="font-normal text-muted-foreground">{t("common.optionalHint")}</span>
         </label>
         <textarea
           value={notes}
@@ -669,7 +674,7 @@ export default function SaleForm() {
           onClick={() => void submit("new")}
           className="h-11 rounded-2xl border border-border px-4 text-sm font-bold disabled:opacity-50"
         >
-          پاشەکەوت و نوێ
+          {t("sales.saveAndNew")}
         </button>
         <button
           type="button"
@@ -678,14 +683,14 @@ export default function SaleForm() {
           className="inline-flex h-11 items-center gap-2 rounded-2xl border border-border px-4 text-sm font-bold disabled:opacity-50"
         >
           <Printer size={16} />
-          پاشەکەوت و چاپ
+          {t("sales.saveAndPrint")}
         </button>
         <button
           type="submit"
           disabled={saving}
           className="h-11 rounded-2xl bg-primary px-6 text-sm font-bold text-primary-foreground disabled:opacity-50"
         >
-          {saving ? "پاشەکەوت..." : "پاشەکەوتکردنی فرۆشتن"}
+          {saving ? t("common.savingShort") : t("sales.saveSale")}
         </button>
       </div>
     </form>

@@ -3,6 +3,9 @@ import { auditSafe } from "@/lib/audit/log";
 import { notifySafe } from "@/lib/notifications/create";
 import { getVersionById } from "@/lib/versions/query";
 import { normalizeEntityType, versionRecordHref } from "@/lib/versions/urls";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 function asObj(v: unknown): Record<string, unknown> | null {
   if (v && typeof v === "object" && !Array.isArray(v)) {
@@ -42,10 +45,10 @@ export async function restoreEntityVersion(input: {
   comment?: string | null;
 }): Promise<{ ok: true; entityType: string; entityId: string } | { ok: false; message: string }> {
   const version = await getVersionById(input.companyId, input.versionId);
-  if (!version) return { ok: false, message: "Version not found" };
+  if (!version) return { ok: false, message: t("errors.versionNotFound") };
 
   const snap = snapshotForVersion(version);
-  if (!snap) return { ok: false, message: "Version has no restorable snapshot" };
+  if (!snap) return { ok: false, message: t("errors.versionNoSnapshot") };
 
   const entityType = normalizeEntityType(version.entityType);
   const entityId = version.entityId;
@@ -58,7 +61,7 @@ export async function restoreEntityVersion(input: {
         const current = await db.product.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
-        if (!current) return { ok: false, message: "Unauthorized or not found" };
+        if (!current) return { ok: false, message: t("errors.unauthorizedOrMissing") };
         before = {
           name: current.name,
           sku: current.sku,
@@ -113,7 +116,7 @@ export async function restoreEntityVersion(input: {
         const current = await db.customer.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
-        if (!current) return { ok: false, message: "Unauthorized or not found" };
+        if (!current) return { ok: false, message: t("errors.unauthorizedOrMissing") };
         before = { ...current };
         const updated = await db.customer.update({
           where: { id: entityId },
@@ -142,7 +145,7 @@ export async function restoreEntityVersion(input: {
         const current = await db.supplier.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
-        if (!current) return { ok: false, message: "Unauthorized or not found" };
+        if (!current) return { ok: false, message: t("errors.unauthorizedOrMissing") };
         before = { ...current };
         const updated = await db.supplier.update({
           where: { id: entityId },
@@ -171,7 +174,7 @@ export async function restoreEntityVersion(input: {
         const current = await db.warehouse.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
-        if (!current) return { ok: false, message: "Unauthorized or not found" };
+        if (!current) return { ok: false, message: t("errors.unauthorizedOrMissing") };
         before = {
           name: current.name,
           code: current.code,
@@ -201,7 +204,7 @@ export async function restoreEntityVersion(input: {
         const current = await db.employee.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
-        if (!current) return { ok: false, message: "Unauthorized or not found" };
+        if (!current) return { ok: false, message: t("errors.unauthorizedOrMissing") };
         before = {
           fullName: current.fullName,
           phone: current.phone,
@@ -243,7 +246,7 @@ export async function restoreEntityVersion(input: {
         const current = await db.company.findFirst({
           where: { id: input.companyId },
         });
-        if (!current) return { ok: false, message: "Unauthorized or not found" };
+        if (!current) return { ok: false, message: t("errors.unauthorizedOrMissing") };
         before = {
           name: current.name,
           phone: current.phone,
@@ -300,7 +303,7 @@ export async function restoreEntityVersion(input: {
           const current = await db.sale.findFirst({
             where: { id: entityId, companyId: input.companyId },
           });
-          if (!current) return { ok: false, message: "Unauthorized or not found" };
+          if (!current) return { ok: false, message: t("errors.unauthorizedOrMissing") };
           before = { status: current.status };
           if (typeof snap.status === "string") {
             after = await db.sale.update({
@@ -309,7 +312,7 @@ export async function restoreEntityVersion(input: {
               select: { status: true, invoiceNo: true },
             });
           } else {
-            return { ok: false, message: "No restorable sale fields in snapshot" };
+            return { ok: false, message: t("versions.noSaleFields") };
           }
           break;
         }
@@ -317,7 +320,7 @@ export async function restoreEntityVersion(input: {
           const current = await db.purchase.findFirst({
             where: { id: entityId, companyId: input.companyId },
           });
-          if (!current) return { ok: false, message: "Unauthorized or not found" };
+          if (!current) return { ok: false, message: t("errors.unauthorizedOrMissing") };
           before = { status: current.status };
           if (typeof snap.status === "string") {
             after = await db.purchase.update({
@@ -328,7 +331,7 @@ export async function restoreEntityVersion(input: {
           } else {
             return {
               ok: false,
-              message: "No restorable purchase fields in snapshot",
+              message: t("versions.noPurchaseFields"),
             };
           }
           break;
@@ -336,7 +339,7 @@ export async function restoreEntityVersion(input: {
         const current = await db.invoice.findFirst({
           where: { id: entityId, companyId: input.companyId },
         });
-        if (!current) return { ok: false, message: "Unauthorized or not found" };
+        if (!current) return { ok: false, message: t("errors.unauthorizedOrMissing") };
         before = { status: current.status };
         if (typeof snap.status === "string") {
           after = await db.invoice.update({
@@ -347,7 +350,7 @@ export async function restoreEntityVersion(input: {
         } else {
           return {
             ok: false,
-            message: "No restorable invoice fields in snapshot",
+            message: t("versions.noInvoiceFields"),
           };
         }
         break;
@@ -355,17 +358,20 @@ export async function restoreEntityVersion(input: {
       default:
         return {
           ok: false,
-          message: `Restore not supported for ${entityType}`,
+          message: t("versions.notSupported", { entity: entityType }),
         };
     }
   } catch (error) {
     console.error("RESTORE ENTITY VERSION ERROR:", error);
-    return { ok: false, message: "گەڕاندنەوە سەرنەکەوت" };
+    return { ok: false, message: t("versions.restoreFailed") };
   }
 
   const comment =
     input.comment ||
-    `Restored to v${version.versionNumber} (${version.recordName})`;
+    t("versions.restoredComment", {
+      version: version.versionNumber,
+      name: version.recordName,
+    });
 
   const moduleMap: Record<string, string> = {
     Product: "PRODUCT",
@@ -404,7 +410,7 @@ export async function restoreEntityVersion(input: {
   void notifySafe({
     companyId: input.companyId,
     userId: input.userId,
-    title: "وەشان گەڕێندرایەوە",
+    title: t("versions.restoredTitle"),
     message: comment,
     category: "SYSTEM",
     href: versionRecordHref(entityType, entityId),

@@ -15,6 +15,7 @@ import RecentlyViewedWidget from "@/components/history/RecentlyViewedWidget";
 import HistoryActionListWidget from "@/components/history/HistoryActionListWidget";
 import SimpleListCard from "@/components/dashboard/workspace/SimpleListCard";
 import { useSessionRecovery } from "@/lib/recovery/provider";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { loadDashboardHome } from "@/lib/dashboard/home";
 import type { WidgetInstance } from "@/lib/dashboard/workspace/types";
 
@@ -180,12 +181,13 @@ export default function WidgetRenderer({
   const { summary } = data;
   const count = instance.settings.itemCount;
   const { connection } = useSessionRecovery();
+  const { t } = useT();
 
   switch (instance.widgetKey) {
     case "stat-products":
       return (
         <DashboardStatCard
-          title="کۆی بەرهەمەکان"
+          title={t("widgets.stat-products.title")}
           value={summary.productsCount}
           todayChange={0}
           todayLabel=""
@@ -195,7 +197,7 @@ export default function WidgetRenderer({
     case "stat-today-revenue":
       return (
         <DashboardStatCard
-          title="داهاتی ئەمڕۆ"
+          title={t("widgets.stat-today-revenue.title")}
           value={summary.todayRevenue}
           todayChange={summary.todayRevenue}
           todayLabel=""
@@ -206,7 +208,7 @@ export default function WidgetRenderer({
     case "stat-today-sales":
       return (
         <DashboardStatCard
-          title="فرۆشتنی ئەمڕۆ"
+          title={t("widgets.stat-today-sales.title")}
           value={summary.todaySalesCount}
           todayChange={summary.todaySalesCount}
           todayLabel=""
@@ -216,17 +218,17 @@ export default function WidgetRenderer({
     case "stat-low-stock":
       return (
         <DashboardStatCard
-          title="کۆگای کەم"
+          title={t("widgets.stat-low-stock.title")}
           value={summary.lowStockCount}
           todayChange={0}
-          todayLabel="پێویستی بە ئاگاداری"
+          todayLabel={t("dashboard.needsAttention")}
           iconName="trendingDown"
         />
       );
     case "stat-out-of-stock":
       return (
         <DashboardStatCard
-          title="کۆگا بەتاڵە"
+          title={t("widgets.stat-out-of-stock.title")}
           value={summary.outOfStockCount}
           todayChange={0}
           todayLabel=""
@@ -236,10 +238,10 @@ export default function WidgetRenderer({
     case "stat-today-purchases":
       return (
         <DashboardStatCard
-          title="کڕینەکانی ئەمڕۆ"
+          title={t("widgets.stat-today-purchases.title")}
           value={0}
           todayChange={0}
-          todayLabel="کردنەوەی کڕین"
+          todayLabel={t("dashboard.openPurchases")}
           iconName="shoppingCart"
         />
       );
@@ -279,8 +281,8 @@ export default function WidgetRenderer({
     case "recent-customers":
       return (
         <SimpleListCard
-          title="دوایین کڕیارەکان"
-          empty="Open customers to populate."
+          title={t("widgets.recent-customers.title")}
+          empty={t("empty.openCustomers")}
           hrefAll="/dashboard/customers"
           items={[]}
         />
@@ -288,8 +290,8 @@ export default function WidgetRenderer({
     case "recent-suppliers":
       return (
         <SimpleListCard
-          title="دوایین دابینکەران"
-          empty="Open suppliers to populate."
+          title={t("widgets.recent-suppliers.title")}
+          empty={t("empty.openSuppliers")}
           hrefAll="/dashboard/suppliers"
           items={[]}
         />
@@ -297,8 +299,8 @@ export default function WidgetRenderer({
     case "recent-products":
       return (
         <SimpleListCard
-          title="دوایین بەرهەمەکان"
-          empty="Open products to populate."
+          title={t("widgets.recent-products.title")}
+          empty={t("empty.openProducts")}
           hrefAll="/dashboard/products"
           items={[]}
         />
@@ -321,12 +323,12 @@ export default function WidgetRenderer({
         <SimpleListCard
           title={
             instance.widgetKey === "top-products"
-              ? "زۆرترین فرۆشراوەکان"
+              ? t("widgets.top-products.title")
               : instance.widgetKey === "top-customers"
-                ? "Top Customers"
-                : "Top Suppliers"
+                ? t("widgets.top-customers.title")
+                : t("widgets.top-suppliers.title")
           }
-          empty="Insights will appear as activity grows."
+          empty={t("empty.insightsGrow")}
           hrefAll={
             instance.widgetKey === "top-products"
               ? "/dashboard/products"
@@ -343,10 +345,10 @@ export default function WidgetRenderer({
         <SimpleListCard
           title={
             instance.widgetKey === "salary-alerts"
-              ? "ئاگاداری مووچە"
-              : "Employee Alerts"
+              ? t("widgets.salary-alerts.title")
+              : t("widgets.employee-alerts.title")
           }
-          empty="ئێستا هیچ ئاگادارییەک نییە."
+          empty={t("empty.noAlerts")}
           hrefAll="/dashboard/employees"
           items={[]}
         />
@@ -411,9 +413,9 @@ export default function WidgetRenderer({
         <section className="rek-card flex items-center gap-3 p-5">
           <Activity size={18} className="text-primary" />
           <div>
-            <p className="text-sm font-black">System Status</p>
+            <p className="text-sm font-black">{t("status.systemStatus")}</p>
             <p className="text-xs text-muted-foreground">
-              All systems operational
+              {t("status.operational")}
             </p>
           </div>
         </section>
@@ -428,16 +430,18 @@ export default function WidgetRenderer({
             }
           />
           <div>
-            <p className="text-sm font-black">Live Connection</p>
-            <p className="text-xs text-muted-foreground capitalize">
-              {connection}
+            <p className="text-sm font-black">{t("status.liveConnection")}</p>
+            <p className="text-xs text-muted-foreground">
+              {connection === "offline"
+                ? t("status.offline")
+                : t("status.online")}
             </p>
           </div>
           <Link
             href="/dashboard/recovery"
             className="ms-auto text-xs font-bold text-primary"
           >
-            Details
+            {t("common.details")}
           </Link>
         </section>
       );

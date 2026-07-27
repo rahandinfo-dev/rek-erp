@@ -8,8 +8,10 @@ import {
   relativeOpened,
 } from "@/lib/history/types";
 import { HistoryActionBadge } from "@/components/history/HistoryItemActions";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function RecentlyViewedWidget() {
+  const { t } = useT();
   const { items } = useNavigationHistory();
   const top = items.slice(0, 10);
 
@@ -22,21 +24,20 @@ export default function RecentlyViewedWidget() {
         <div className="flex items-center gap-2">
           <Clock3 size={18} className="text-primary" aria-hidden />
           <h2 className="text-lg font-black text-foreground">
-            Recently Viewed
+            {t("history.recentlyViewed")}
           </h2>
         </div>
         <Link
           href="/dashboard/recent"
           className="text-xs font-bold text-primary hover:underline"
         >
-          View All
+          {t("history.viewAll")}
         </Link>
       </div>
 
       {top.length === 0 ? (
         <p className="px-5 py-8 text-sm text-muted-foreground">
-          Nothing here yet — open a product, invoice, or customer and it will
-          appear instantly.
+          {t("history.emptyWidget")}
         </p>
       ) : (
         <ul className="divide-y divide-border">

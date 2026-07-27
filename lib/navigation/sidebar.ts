@@ -1,5 +1,6 @@
 import {
   Barcode,
+  BookOpen,
   Boxes,
   Calculator,
   ChartColumnIncreasing,
@@ -23,27 +24,29 @@ import {
 
 export type SidebarLink = {
   href: string;
-  label: string;
+  /** i18n message key, e.g. `nav.products` */
+  labelKey: string;
   icon: LucideIcon;
-  /** Extra keywords for sidebar search */
+  /** Extra keywords for sidebar search (locale-agnostic + KU/EN aliases) */
   keywords?: string[];
 };
 
 export type SidebarGroup = {
   id: string;
-  label: string;
+  /** i18n message key, e.g. `nav.inventoryGroup` */
+  labelKey: string;
   items: SidebarLink[];
 };
 
-/** Odoo-style grouped sidebar — daily work first */
+/** Odoo-style grouped sidebar — daily work first. Labels are message keys. */
 export const SIDEBAR_GROUPS: SidebarGroup[] = [
   {
     id: "home",
-    label: "سەرەکی",
+    labelKey: "nav.home",
     items: [
       {
         href: "/dashboard",
-        label: "داشبۆرد",
+        labelKey: "nav.dashboard",
         icon: LayoutDashboard,
         keywords: ["سەرەتا", "home"],
       },
@@ -51,35 +54,35 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   },
   {
     id: "inventory",
-    label: "کۆگا و کاڵا",
+    labelKey: "nav.inventoryGroup",
     items: [
       {
         href: "/dashboard/inventory",
-        label: "ئینڤێنتۆری",
+        labelKey: "nav.inventory",
         icon: Warehouse,
         keywords: ["کۆگا", "stock"],
       },
       {
         href: "/dashboard/products",
-        label: "بەرهەمەکان",
+        labelKey: "nav.products",
         icon: Package,
         keywords: ["کاڵا", "product"],
       },
       {
         href: "/dashboard/werehouse",
-        label: "کۆگاکان",
+        labelKey: "nav.warehouses",
         icon: Boxes,
         keywords: ["warehouse"],
       },
       {
         href: "/dashboard/units",
-        label: "یەکە",
+        labelKey: "nav.units",
         icon: Ruler,
         keywords: ["unit"],
       },
       {
         href: "/dashboard/barcode",
-        label: "بارکۆد",
+        labelKey: "nav.barcode",
         icon: Barcode,
         keywords: ["سکان"],
       },
@@ -87,35 +90,35 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   },
   {
     id: "sales",
-    label: "فرۆشتن و کڕین",
+    labelKey: "nav.tradingGroup",
     items: [
       {
         href: "/dashboard/sales",
-        label: "فرۆشتن",
+        labelKey: "nav.sales",
         icon: ShoppingCart,
         keywords: ["sale"],
       },
       {
         href: "/dashboard/purchases",
-        label: "کڕین",
+        labelKey: "nav.purchases",
         icon: ShoppingBasket,
         keywords: ["purchase"],
       },
       {
         href: "/dashboard/invoices",
-        label: "پسوولەکان",
+        labelKey: "nav.invoices",
         icon: FileText,
         keywords: ["invoice"],
       },
       {
         href: "/dashboard/customers",
-        label: "کڕیاران",
+        labelKey: "nav.customers",
         icon: Users,
         keywords: ["customer"],
       },
       {
         href: "/dashboard/suppliers",
-        label: "دابینکەران",
+        labelKey: "nav.suppliers",
         icon: Truck,
         keywords: ["supplier"],
       },
@@ -123,11 +126,11 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   },
   {
     id: "people",
-    label: "خەڵک",
+    labelKey: "nav.peopleGroup",
     items: [
       {
         href: "/dashboard/employees",
-        label: "کارمەندان",
+        labelKey: "nav.employees",
         icon: IdCard,
         keywords: ["hr", "employee"],
       },
@@ -135,35 +138,35 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   },
   {
     id: "insights",
-    label: "ڕاپۆرت",
+    labelKey: "nav.insightsGroup",
     items: [
       {
         href: "/dashboard/analytics",
-        label: "شیکاری",
+        labelKey: "nav.analytics",
         icon: ChartColumnIncreasing,
         keywords: ["analytics"],
       },
       {
         href: "/dashboard/reports",
-        label: "ڕاپۆرتەکان",
+        labelKey: "nav.reports",
         icon: ChartColumnIncreasing,
         keywords: ["report"],
       },
       {
         href: "/dashboard/activity",
-        label: "تێمڵاینی چالاکی",
+        labelKey: "nav.activity",
         icon: History,
         keywords: ["activity", "timeline", "audit", "history", "چاودێری"],
       },
       {
         href: "/dashboard/audit-log",
-        label: "چاودێری",
+        labelKey: "nav.auditLog",
         icon: Shield,
         keywords: ["audit"],
       },
       {
         href: "/dashboard/version-history",
-        label: "مێژووی وەشان",
+        labelKey: "nav.versionHistory",
         icon: History,
         keywords: [
           "version",
@@ -176,7 +179,7 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/ai-assistant",
-        label: "یاریدەدەری زیرەک",
+        labelKey: "nav.aiAssistant",
         icon: Sparkles,
         keywords: [
           "ai",
@@ -192,29 +195,29 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
   },
   {
     id: "system",
-    label: "سیستەم",
+    labelKey: "nav.systemGroup",
     items: [
       {
         href: "/dashboard/notifications",
-        label: "ئاگاداری",
+        labelKey: "nav.notifications",
         icon: Bell,
         keywords: ["notification"],
       },
       {
         href: "/dashboard/recent",
-        label: "دوایین بینراوەکان",
+        labelKey: "nav.recent",
         icon: History,
         keywords: ["recent", "history", "viewed", "دوایین", "مێژوو"],
       },
       {
         href: "/dashboard/drafts",
-        label: "ناوەندی ڕەشنووس",
+        labelKey: "nav.drafts",
         icon: History,
         keywords: ["draft", "drafts", "recovery", "resume", "گەڕاندنەوە"],
       },
       {
         href: "/dashboard/recycle-bin",
-        label: "سەبەتەی زبڵ",
+        labelKey: "nav.recycleBin",
         icon: History,
         keywords: [
           "recycle",
@@ -228,13 +231,13 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/bulk",
-        label: "کردارە کۆمەڵایەتییەکان",
+        labelKey: "nav.bulk",
         icon: History,
         keywords: ["bulk", "multi", "batch", "select", "کۆمەڵ", "هەڵبژاردن"],
       },
       {
         href: "/dashboard/settings/numbering",
-        label: "ژمارەدانی خۆکار",
+        labelKey: "nav.numbering",
         icon: Settings,
         keywords: [
           "numbering",
@@ -247,27 +250,36 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
       },
       {
         href: "/dashboard/recovery",
-        label: "ناوەندی گەڕاندنەوە",
+        labelKey: "nav.recovery",
         icon: History,
         keywords: ["recovery", "session", "گەڕاندنەوە"],
       },
       {
         href: "/dashboard/calculator",
-        label: "ژمێرەر",
+        labelKey: "nav.calculator",
         icon: Calculator,
         keywords: ["calculator", "calc", "ژمێرەر"],
       },
       {
+        href: "/dashboard/settings/docs",
+        labelKey: "nav.systemDocs",
+        icon: BookOpen,
+        keywords: ["docs", "help", "manual", "فێرکاری", "ڕێنمایی", "فێرکاری سیستەم"],
+      },
+      {
         href: "/dashboard/settings",
-        label: "ڕێکخستن",
+        labelKey: "nav.settings",
         icon: Settings,
-        keywords: ["settings"],
+        keywords: ["settings", "ڕێکخستن"],
       },
     ],
   },
 ];
 
-export function filterSidebarGroups(query: string): SidebarGroup[] {
+export function filterSidebarGroups(
+  query: string,
+  t: (key: string) => string
+): SidebarGroup[] {
   const q = query.trim().toLowerCase();
   if (!q) return SIDEBAR_GROUPS;
 
@@ -275,7 +287,8 @@ export function filterSidebarGroups(query: string): SidebarGroup[] {
     ...group,
     items: group.items.filter((item) => {
       const hay = [
-        item.label,
+        t(item.labelKey),
+        t(group.labelKey),
         ...(item.keywords || []),
         item.href,
       ]

@@ -19,6 +19,7 @@ import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import { formatMoney } from "@/lib/utils/format";
 import { useNavigationHistory } from "@/lib/history/provider";
 import ProductImage from "./ProductImage";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Unit = { id: string; name: string; symbol: string };
 type Warehouse = { id: string; name: string; isMain?: boolean };
@@ -44,6 +45,7 @@ export default function ProductForm({
   initialUnits,
   initialWarehouses,
 }: Props) {
+  const { t } = useT();
   const router = useRouter();
   const { markCreated } = useNavigationHistory();
   const [loading, setLoading] = useState(false);
@@ -112,16 +114,16 @@ export default function ProductForm({
     return (
       <div className="rounded-3xl border border-amber-200 bg-amber-50 px-6 py-10 text-center">
         <p className="text-lg font-black text-amber-950">
-          Please create a warehouse before creating products.
+          {t("products.needWarehouse")}
         </p>
         <p className="mt-2 text-sm text-amber-900/80">
-          پێویستە سەرەتا کۆگایەک دروست بکەیت پێش زیادکردنی بەرهەم.
+          {t("products.needWarehouseBody")}
         </p>
         <Link
           href="/dashboard/werehouse/new"
           className="mt-6 inline-flex h-11 items-center rounded-2xl bg-primary px-6 font-bold text-primary-foreground"
         >
-          دروستکردنی کۆگا
+          {t("products.createWarehouse")}
         </Link>
       </div>
     );
@@ -148,16 +150,16 @@ export default function ProductForm({
       });
       const data = await response.json();
       if (!response.ok) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
       appToast.productSaved(
-        `بەرهەم تۆمارکرا · SKU: ${data.data?.sku || "—"}`
+        t("products.savedWithSku", { sku: data.data?.sku || "—" })
       );
       clearDraft();
       form.reset();
       const id = data.data?.id as string | undefined;
-      const name = (data.data?.name as string | undefined) || "بەرهەمی نوێ";
+      const name = (data.data?.name as string | undefined) || t("products.new");
       if (id) {
         markCreated(`/dashboard/products/${id}`, name, "products");
       }
@@ -165,7 +167,7 @@ export default function ProductForm({
       router.refresh();
     } catch (error) {
       console.error(error);
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -190,13 +192,13 @@ export default function ProductForm({
         />
 
         <section className="rek-card space-y-4 p-4 sm:p-6">
-          <h2 className="text-lg font-black text-foreground">زانیاری گشتی</h2>
+          <h2 className="text-lg font-black text-foreground">{t("products.generalInfo")}</h2>
           <div>
-            <label className="mb-1.5 block text-sm font-bold">ناوی بەرهەم</label>
+            <label className="mb-1.5 block text-sm font-bold">{t("products.nameLabel")}</label>
             <input
               {...form.register("name")}
               autoFocus
-              placeholder="ناوی بەرهەم بنووسە"
+              placeholder={t("products.namePlaceholder")}
               className={inputClass}
             />
             {form.formState.errors.name ? (
@@ -205,15 +207,15 @@ export default function ProductForm({
               </p>
             ) : null}
             <p className="mt-1.5 text-xs text-muted-foreground">
-              SKU و بارکۆد دوای پاشەکەوتکردن خۆکار دروست دەبن.
+              {t("products.skuAutoHint")}
             </p>
           </div>
         </section>
 
         <section className="rek-card space-y-4 p-4 sm:p-6">
-          <h2 className="text-lg font-black text-foreground">یەکە</h2>
+          <h2 className="text-lg font-black text-foreground">{t("nav.units")}</h2>
           <select {...form.register("unitId")} className={inputClass}>
-            <option value="">یەکە هەڵبژێرە</option>
+            <option value="">{t("products.selectUnit")}</option>
             {units.map((u) => (
               <option key={u.id} value={u.id}>
                 {u.name} ({u.symbol})
@@ -228,11 +230,11 @@ export default function ProductForm({
         </section>
 
         <section className="rek-card space-y-4 p-4 sm:p-6">
-          <h2 className="text-lg font-black text-foreground">نرخ</h2>
+          <h2 className="text-lg font-black text-foreground">{t("products.pricing")}</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             <div>
               <label className="mb-1.5 block text-sm font-bold">
-                تێچووی کڕین
+                {t("products.purchaseCost")}
               </label>
               <input
                 type="number"
@@ -244,7 +246,7 @@ export default function ProductForm({
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-bold">
-                نرخی فرۆشتن
+                {t("products.salePrice")}
               </label>
               <input
                 type="number"
@@ -255,9 +257,9 @@ export default function ProductForm({
               />
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-bold">قازانج</label>
+              <label className="mb-1.5 block text-sm font-bold">{t("products.profit")}</label>
               <div className="flex h-11 items-center rounded-2xl border border-border bg-muted/50 px-3 text-sm font-bold">
-                {formatMoney(profitAmount)} IQD
+                {formatMoney(profitAmount)} {t("common.currencyCode")}
                 <span className="ms-2 text-xs font-semibold text-muted-foreground">
                   ({profitPct}%)
                 </span>
@@ -267,15 +269,15 @@ export default function ProductForm({
         </section>
 
         <section className="rek-card space-y-4 p-4 sm:p-6">
-          <h2 className="text-lg font-black text-foreground">کۆگا</h2>
+          <h2 className="text-lg font-black text-foreground">{t("products.warehouse")}</h2>
           <div className="grid gap-4 sm:grid-cols-3">
             <div className="sm:col-span-1">
-              <label className="mb-1.5 block text-sm font-bold">کۆگا</label>
+              <label className="mb-1.5 block text-sm font-bold">{t("products.warehouse")}</label>
               <select {...form.register("warehouseId")} className={inputClass}>
                 {warehouses.map((w) => (
                   <option key={w.id} value={w.id}>
                     {w.name}
-                    {w.isMain ? " (سەرەکی)" : ""}
+                    {w.isMain ? t("products.warehouseMainSuffix") : ""}
                   </option>
                 ))}
               </select>
@@ -286,7 +288,7 @@ export default function ProductForm({
               ) : null}
             </div>
             <div>
-              <label className="mb-1.5 block text-sm font-bold">بڕی ئێستا</label>
+              <label className="mb-1.5 block text-sm font-bold">{t("products.currentStock")}</label>
               <input
                 type="number"
                 min={0}
@@ -297,7 +299,7 @@ export default function ProductForm({
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-bold">
-                ئاگاداری کۆگا
+                {t("products.stockAlert")}
               </label>
               <input
                 type="number"
@@ -307,7 +309,7 @@ export default function ProductForm({
                 className={inputClass}
               />
               <p className="mt-1 text-xs text-muted-foreground">
-                کاتێک بڕ کەمتر لەم ژمارەیە بێت، ئاگاداری دەردەچێت.
+                {t("products.stockAlertHint")}
               </p>
             </div>
           </div>
@@ -316,19 +318,19 @@ export default function ProductForm({
         <ProductImage />
 
         <section className="rek-card space-y-4 p-4 sm:p-6">
-          <h2 className="text-lg font-black text-foreground">تێبینی</h2>
+          <h2 className="text-lg font-black text-foreground">{t("common.notes")}</h2>
           <textarea
             {...form.register("notes")}
             rows={3}
-            placeholder="ئارەزوومەندانە"
+            placeholder={t("common.optional")}
             className="w-full rounded-2xl border border-border bg-card px-3 py-2.5 text-sm outline-none focus:border-primary/50"
           />
         </section>
 
         <section className="rek-card flex items-center justify-between gap-4 p-4 sm:p-6">
           <div>
-            <p className="font-bold text-foreground">دۆخ</p>
-            <p className="text-xs text-muted-foreground">چالاک / ناچالاک</p>
+            <p className="font-bold text-foreground">{t("common.status")}</p>
+            <p className="text-xs text-muted-foreground">{t("products.statusActiveInactive")}</p>
           </div>
           <Controller
             name="active"
@@ -360,7 +362,7 @@ export default function ProductForm({
             disabled={loading}
             className="h-11 rounded-2xl bg-primary px-8 text-base font-bold text-primary-foreground shadow-[0_6px_16px_var(--shadow-brand)] transition hover:bg-[var(--brand-hover)] disabled:opacity-50"
           >
-            {loading ? "پاشەکەوت..." : "پاشەکەوتکردنی بەرهەم"}
+            {loading ? t("products.savingDots") : t("products.saveProduct")}
           </button>
         </div>
       </form>

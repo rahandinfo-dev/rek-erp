@@ -115,7 +115,7 @@ export const BULK_MODULE_LABELS: Record<string, string> = {
 };
 
 export const BULK_ACTION_LABELS: Record<string, string> = {
-  edit: "Bulk Edit",
+  edit: "دەستکاریی کۆمەڵایەتی",
   delete: "سڕینەوەی نەرم",
   restore: "گەڕاندنەوە",
   archive: "ئەرشیفکردن",
@@ -126,10 +126,10 @@ export const BULK_ACTION_LABELS: Record<string, string> = {
   export_pdf: "هەناردەی PDF",
   print: "چاپکردن",
   move: "گواستنەوە",
-  change_status: "Change Status",
-  assign_category: "Assign Category",
-  assign_warehouse: "Assign Warehouse",
-  add_tags: "Add Tags",
+  change_status: "گۆڕینی دۆخ",
+  assign_category: "دیاریکردنی پۆل",
+  assign_warehouse: "دیاریکردنی کۆگا",
+  add_tags: "زیادکردنی تاگ",
 };
 
 export const DESTRUCTIVE_BULK_ACTIONS = new Set<BulkAction>([

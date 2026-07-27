@@ -5,6 +5,9 @@ import { UNDO_WINDOW_MS } from "@/lib/undo/types";
 import type { UndoModule } from "@/lib/undo/types";
 import { queueOfflineUndoOp } from "@/lib/undo/offline";
 import { appToast } from "@/lib/toast";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 export const DEFAULT_UNDO_MS = UNDO_WINDOW_MS;
 
@@ -33,7 +36,7 @@ async function httpDelete(url: string) {
       method: "DELETE",
       createdAt: Date.now(),
     });
-    return { ok: true, message: "Queued offline" };
+    return { ok: true, message: t("deleteUndo.queuedOffline") };
   }
   const res = await fetch(url, { method: "DELETE" });
   const json = (await res.json()) as { success?: boolean; message?: string };
@@ -52,7 +55,7 @@ async function httpRestore(url: string) {
       method: "POST",
       createdAt: Date.now(),
     });
-    return { ok: true, message: "Queued offline" };
+    return { ok: true, message: t("deleteUndo.queuedOffline") };
   }
   const res = await fetch(url, { method: "POST" });
   const json = (await res.json()) as { success?: boolean; message?: string };
@@ -86,12 +89,12 @@ export async function softDeleteWithUndo(
     pushUndoable({
       module: undoModule,
       kind: "delete",
-      label: input.title || "Item deleted",
-      title: input.title || "Item deleted",
+      label: input.title || t("deleteUndo.itemDeleted"),
+      title: input.title || t("deleteUndo.itemDeleted"),
       message:
         input.message ||
         deleted.message ||
-        "Moved to recovery — Undo available for 30 seconds.",
+        t("deleteUndo.movedToRecovery"),
       undoLabel: input.undoLabel || "پاشگەزبوونەوە",
       durationMs,
       entityType: input.entityType,

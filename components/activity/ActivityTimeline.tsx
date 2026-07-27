@@ -36,6 +36,8 @@ import { useDraftOwner } from "@/lib/drafts/owner";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { inputClassName } from "@/components/ui/FormPrimitives";
+import { useT } from "@/components/i18n/LocaleProvider";
+import { tServer } from "@/lib/i18n";
 
 type UserOpt = { id: string; fullName: string };
 
@@ -56,6 +58,7 @@ export default function ActivityTimeline({
   initialItems,
   viewerId,
 }: Props) {
+  const { t } = useT();
   const { userId } = useDraftOwner();
   const searchParams = useSearchParams();
   const [items, setItems] = useState(initialItems);
@@ -106,7 +109,7 @@ export default function ActivityTimeline({
           const cached = readActivityCache(userId || viewerId);
           setItems(cached);
           setHasMore(false);
-          appToast.info("دەرهێڵ", "Showing cached activity");
+          appToast.info(t("activity.cachedTitle"), t("activity.cachedBody"));
           return;
         }
 
@@ -115,7 +118,7 @@ export default function ActivityTimeline({
         });
         const json = await res.json();
         if (!json.success) {
-          appToast.error(json.message || "Failed to load activity");
+          appToast.error(json.message || t("activity.loadFailed"));
           return;
         }
         const next = json.data.items as AuditLogRow[];
@@ -142,8 +145,8 @@ export default function ActivityTimeline({
         const cached = readActivityCache(userId || viewerId);
         if (cached.length) {
           setItems(cached);
-          appToast.info("دەرهێڵ", "Showing cached activity");
-        } else appToast.error("Failed to load activity");
+          appToast.info(t("activity.cachedTitle"), t("activity.cachedBody"));
+        } else appToast.error(t("activity.loadFailed"));
       } finally {
         if (!opts?.silent) setLoading(false);
       }
@@ -309,10 +312,10 @@ export default function ActivityTimeline({
 
   async function restore(row: AuditLogRow) {
     if (!restoreApiFor(row) || row.action !== "DELETE") {
-      appToast.warning("Restore not available for this activity");
+      appToast.warning(t("activity.restoreUnavailable"));
       return;
     }
-    if (!window.confirm("Restore this record from the activity timeline?"))
+    if (!window.confirm(t("activity.restoreConfirm")))
       return;
     try {
       const res = await fetch("/api/audit-logs/restore", {
@@ -325,7 +328,7 @@ export default function ActivityTimeline({
         appToast.error(json.message || "گەڕاندنەوە سەرنەکەوت");
         return;
       }
-      appToast.success("Record restored");
+      appToast.success(t("activity.restored"));
       void load();
     } catch {
       appToast.error("گەڕاندنەوە سەرنەکەوت");
@@ -359,14 +362,13 @@ export default function ActivityTimeline({
         <div>
           <div className="mb-2 inline-flex items-center gap-2 rounded-2xl bg-secondary px-3 py-1 text-sm font-bold text-primary">
             <History size={16} />
-            Activity Timeline
+            {t("activity.title")}
           </div>
           <h1 className="text-3xl font-black text-primary sm:text-4xl">
-            Activity Timeline
+            {t("activity.title")}
           </h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            User · Action · Module · Record · Time · Device · Status — searchable
-            enterprise history
+            {t("activity.subtitle")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -376,14 +378,14 @@ export default function ActivityTimeline({
               checked={autoRefresh}
               onChange={(e) => setAutoRefresh(e.target.checked)}
             />
-            Auto Refresh
+            {t("activity.autoRefresh")}
           </label>
           <button
             type="button"
             onClick={() => exportJson()}
             className="inline-flex h-10 items-center gap-2 rounded-2xl border border-border bg-card px-3 text-xs font-bold"
           >
-            <Download size={14} /> Export
+            <Download size={14} /> {t("activity.export")}
           </button>
           <button
             type="button"
@@ -391,7 +393,7 @@ export default function ActivityTimeline({
             className="inline-flex h-10 items-center gap-2 rounded-2xl border border-border bg-card px-4 text-sm font-bold text-primary"
           >
             <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
-            Refresh
+            {t("activity.refresh")}
           </button>
         </div>
       </div>
@@ -405,18 +407,18 @@ export default function ActivityTimeline({
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="Global search: user, module, action, record, device…"
+            placeholder={t("activity.searchPlaceholder")}
             className={`${inputClassName} pe-10`}
-            aria-label="Search activity"
+            aria-label={t("activity.searchLabel")}
           />
         </div>
 
         <div className="flex flex-wrap gap-1.5">
           {(
             [
-              ["all", "Team Activity"],
-              ["mine", "My Activity"],
-              ["team", "Everyone"],
+              ["all", t("activity.scopeAll")],
+              ["mine", t("activity.scopeMine")],
+              ["team", t("activity.scopeEveryone")],
             ] as const
           ).map(([k, label]) => (
             <button
@@ -440,9 +442,9 @@ export default function ActivityTimeline({
             value={module}
             onChange={(e) => setModule(e.target.value)}
             className={inputClassName}
-            aria-label="Filter module"
+            aria-label={t("activity.filterModule")}
           >
-            <option value="">All modules</option>
+            <option value="">{t("activity.allModules")}</option>
             {AUDIT_MODULES.map((m) => (
               <option key={m} value={m}>
                 {AUDIT_MODULE_LABELS[m] || m}
@@ -453,9 +455,9 @@ export default function ActivityTimeline({
             value={action}
             onChange={(e) => setAction(e.target.value)}
             className={inputClassName}
-            aria-label="Filter action"
+            aria-label={t("activity.filterAction")}
           >
-            <option value="">All actions</option>
+            <option value="">{t("activity.allActions")}</option>
             {AUDIT_ACTIONS.map((a) => (
               <option key={a} value={a}>
                 {AUDIT_ACTION_LABELS[a] || a}
@@ -466,9 +468,9 @@ export default function ActivityTimeline({
             value={filterUser}
             onChange={(e) => setFilterUser(e.target.value)}
             className={inputClassName}
-            aria-label="Filter user"
+            aria-label={t("activity.filterUser")}
           >
-            <option value="">All users</option>
+            <option value="">{t("activity.allUsers")}</option>
             {users.map((u) => (
               <option key={u.id} value={u.id}>
                 {u.fullName}
@@ -479,12 +481,20 @@ export default function ActivityTimeline({
             value={device}
             onChange={(e) => setDevice(e.target.value)}
             className={inputClassName}
-            aria-label="Filter device"
+            aria-label={t("activity.filterDevice")}
           >
-            <option value="">All devices</option>
+            <option value="">{t("activity.allDevices")}</option>
             {DEVICES.map((d) => (
               <option key={d} value={d}>
-                {d}
+                {d === "Desktop"
+                  ? t("activity.desktop")
+                  : d === "Mobile"
+                    ? t("activity.mobile")
+                    : d === "Tablet"
+                      ? t("activity.tablet")
+                      : d === "Unknown"
+                        ? t("activity.unknown")
+                        : t("activity.other")}
               </option>
             ))}
           </select>
@@ -492,9 +502,9 @@ export default function ActivityTimeline({
             value={status}
             onChange={(e) => setStatus(e.target.value)}
             className={inputClassName}
-            aria-label="Filter status"
+            aria-label={t("activity.filterStatus")}
           >
-            <option value="">All statuses</option>
+            <option value="">{t("activity.allStatuses")}</option>
             {STATUSES.map((s) => (
               <option key={s} value={s}>
                 {AUDIT_STATUS_LABELS[s] || s}
@@ -505,31 +515,31 @@ export default function ActivityTimeline({
             value={sort}
             onChange={(e) => setSort(e.target.value as SortKey)}
             className={inputClassName}
-            aria-label="Sort"
+            aria-label={t("activity.sort")}
           >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
+            <option value="newest">{t("activity.newest")}</option>
+            <option value="oldest">{t("activity.oldest")}</option>
           </select>
           <input
             type="date"
             value={from}
             onChange={(e) => setFrom(e.target.value)}
             className={inputClassName}
-            aria-label="From date"
+            aria-label={t("activity.fromDate")}
           />
           <input
             type="date"
             value={to}
             onChange={(e) => setTo(e.target.value)}
             className={inputClassName}
-            aria-label="To date"
+            aria-label={t("activity.toDate")}
           />
         </div>
       </div>
 
       {groups.length === 0 ? (
         <div className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
-          {loading ? "چالاکی باردەکرێت…" : "No activity found."}
+          {loading ? t("activity.loading") : t("activity.empty")}
         </div>
       ) : (
         <div className="space-y-8">
@@ -586,7 +596,7 @@ export default function ActivityTimeline({
                     <div className="mt-3 flex flex-wrap gap-1.5">
                       <ActionBtn
                         icon={Eye}
-                        label="Details"
+                        label={t("activity.details")}
                         onClick={() => setDetails(row)}
                       />
                       <ActionBtn
@@ -611,7 +621,7 @@ export default function ActivityTimeline({
                           href={recordHrefFor(row)!}
                           className="inline-flex h-8 items-center gap-1 rounded-xl border border-border px-2.5 text-[11px] font-bold hover:bg-muted"
                         >
-                          Open
+                          {t("activity.open")}
                         </a>
                       ) : null}
                     </div>
@@ -622,11 +632,11 @@ export default function ActivityTimeline({
           ))}
           <div ref={sentinelRef} className="h-8" aria-hidden />
           {loading ? (
-            <p className="text-center text-xs text-muted-foreground">Loading…</p>
+            <p className="text-center text-xs text-muted-foreground">{t("common.loading")}</p>
           ) : null}
           {!hasMore && items.length > 0 ? (
             <p className="text-center text-xs text-muted-foreground">
-              End of timeline
+              {t("activity.endOfTimeline")}
             </p>
           ) : null}
         </div>
@@ -636,15 +646,15 @@ export default function ActivityTimeline({
         <Modal title="وردەکاری چالاکی" onClose={() => setDetails(null)}>
           <dl className="space-y-2 text-sm">
             {[
-              ["User", details.userName || "سیستەم"],
-              ["Action", AUDIT_ACTION_LABELS[details.action] || details.action],
+              [t("activity.user"), details.userName || "سیستەم"],
+              [t("activity.action"), AUDIT_ACTION_LABELS[details.action] || details.action],
               ["مۆدیوول", AUDIT_MODULE_LABELS[details.module] || details.module],
-              ["Record", details.recordName],
+              [t("activity.record"), details.recordName],
               ["دۆخ", AUDIT_STATUS_LABELS[details.status] || details.status],
-              ["Date", `${details.date} ${details.time}`],
-              ["Device", details.device || "—"],
+              [t("activity.date"), `${details.date} ${details.time}`],
+              [t("activity.device"), details.device || "—"],
               ["IP", details.ipAddress || "—"],
-              ["Description", details.summary || "—"],
+              [t("activity.description"), details.summary || "—"],
             ].map(([k, v]) => (
               <div key={k} className="flex justify-between gap-3">
                 <dt className="text-muted-foreground">{k}</dt>
@@ -657,7 +667,7 @@ export default function ActivityTimeline({
             className="mt-4 inline-flex items-center gap-1 text-xs font-bold text-primary"
             onClick={() => copyLink(details)}
           >
-            <Copy size={12} /> Copy deep link
+            <Copy size={12} /> {t("activity.copyDeepLink")}
           </button>
         </Modal>
       ) : null}
@@ -673,19 +683,19 @@ export default function ActivityTimeline({
         >
           {versions.length > 1 ? (
             <p className="mb-3 text-xs text-muted-foreground">
-              {versions.length} versions for this record
+              {t("activity.versionsForRecord", { count: versions.length })}
             </p>
           ) : null}
           {diffs.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No field changes stored.</p>
+            <p className="text-sm text-muted-foreground">{t("activity.noFieldChanges")}</p>
           ) : (
             <div className="max-h-[55vh] overflow-auto">
               <table className="w-full text-start text-xs">
                 <thead>
                   <tr className="border-b border-border text-muted-foreground">
-                    <th className="py-2 pe-2 font-bold">Field</th>
-                    <th className="py-2 pe-2 font-bold">Before</th>
-                    <th className="py-2 font-bold">After</th>
+                    <th className="py-2 pe-2 font-bold">{t("activity.field")}</th>
+                    <th className="py-2 pe-2 font-bold">{t("activity.before")}</th>
+                    <th className="py-2 font-bold">{t("activity.after")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -790,7 +800,7 @@ function Modal({
             className="text-xs font-bold text-muted-foreground"
             onClick={onClose}
           >
-            Close
+            {tServer.t("common.close")}
           </button>
         </div>
         {children}

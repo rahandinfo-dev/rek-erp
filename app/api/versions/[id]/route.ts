@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getVersionById } from "@/lib/versions/query";
 import { canRestoreEntityVersion } from "@/lib/versions/restore";
+import { tServer } from "@/lib/i18n";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -10,7 +11,7 @@ export async function GET(_req: NextRequest, { params }: Props) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }

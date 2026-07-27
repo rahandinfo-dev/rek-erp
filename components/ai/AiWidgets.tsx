@@ -55,7 +55,7 @@ function Shell({
         </Link>
       </div>
       {empty ? (
-        <p className="text-xs text-muted-foreground">Loading…</p>
+        <p className="text-xs text-muted-foreground">بارکردن…</p>
       ) : (
         children
       )}

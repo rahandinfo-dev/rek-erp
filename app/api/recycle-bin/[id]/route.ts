@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { serializeRecycleEntry } from "@/lib/recycle/serialize";
 import { relatedForEntity } from "@/lib/recycle/related";
+import { tServer } from "@/lib/i18n";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -11,7 +12,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }

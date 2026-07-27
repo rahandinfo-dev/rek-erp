@@ -2,8 +2,10 @@
 
 import { useFormContext } from "react-hook-form";
 import { ProductFormValues } from "@/lib/validators/product";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function ProductPricing() {
+  const { t } = useT();
   const {
     register,
     formState: { errors },
@@ -11,14 +13,15 @@ export default function ProductPricing() {
 
   return (
     <div className="rounded-3xl border border-slate-200 bg-white p-6">
-
       <h2 className="mb-6 text-2xl font-bold text-[#FFAE42]">
-        نرخەکان
+        {t("products.prices")}
       </h2>
 
       <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
         <div>
-          <label className="mb-2 block font-semibold">نرخی کڕین</label>
+          <label className="mb-2 block font-semibold">
+            {t("products.purchasePrice")}
+          </label>
           <input
             type="number"
             step="0.01"
@@ -33,7 +36,7 @@ export default function ProductPricing() {
         </div>
 
         <div>
-          <label className="mb-2 block font-semibold">تێچوون</label>
+          <label className="mb-2 block font-semibold">{t("products.cost")}</label>
           <input
             type="number"
             step="0.01"
@@ -48,7 +51,9 @@ export default function ProductPricing() {
         </div>
 
         <div>
-          <label className="mb-2 block font-semibold">نرخی فرۆشتن</label>
+          <label className="mb-2 block font-semibold">
+            {t("products.salePrice")}
+          </label>
           <input
             type="number"
             step="0.01"
@@ -63,7 +68,9 @@ export default function ProductPricing() {
         </div>
 
         <div>
-          <label className="mb-2 block font-semibold">ڕێژەی قازانج (%)</label>
+          <label className="mb-2 block font-semibold">
+            {t("products.profitMargin")}
+          </label>
           <input
             type="number"
             step="0.01"
@@ -77,7 +84,6 @@ export default function ProductPricing() {
           )}
         </div>
       </div>
-
     </div>
   );
 }

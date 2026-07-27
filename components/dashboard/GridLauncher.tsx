@@ -7,6 +7,7 @@ import { X } from "lucide-react";
 import { APP_GRID } from "@/lib/navigation/app-grid";
 import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   open: boolean;
@@ -15,6 +16,7 @@ type Props = {
 
 export default function GridLauncher({ open, onClose }: Props) {
   const pathname = usePathname();
+  const { t } = useT();
   const panelRef = useRef<HTMLDivElement>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -58,7 +60,7 @@ export default function GridLauncher({ open, onClose }: Props) {
     <div className="fixed inset-0 z-[80]">
       <button
         type="button"
-        aria-label="داخستنی مێنیو"
+        aria-label={t("nav.closeAppsMenu")}
         className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-[2px] animate-in fade-in duration-200"
         onClick={onClose}
       />
@@ -67,7 +69,7 @@ export default function GridLauncher({ open, onClose }: Props) {
         ref={panelRef}
         role="dialog"
         aria-modal="true"
-        aria-label="مێنیوی ئەپەکان"
+        aria-label={t("nav.appsMenu")}
         className="absolute inset-x-3 top-[max(8%,env(safe-area-inset-top))] mx-auto max-h-[min(82vh,900px)] w-full max-w-3xl overflow-hidden rounded-[28px] border border-border bg-card text-card-foreground shadow-[0_30px_80px_var(--shadow-brand)] animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-300 sm:inset-x-auto sm:left-1/2 sm:right-auto sm:w-[min(920px,92vw)] sm:-translate-x-1/2"
       >
         <div className="flex items-center justify-between border-b border-border bg-secondary px-5 py-4 sm:px-7">
@@ -76,14 +78,14 @@ export default function GridLauncher({ open, onClose }: Props) {
               {BRAND.nameEn}
             </p>
             <h2 className="text-xl font-black text-primary sm:text-2xl">
-              مێنیوی سەرەکی · {BRAND.nameKu}
+              {t("nav.appsMenuTitle", { name: BRAND.nameKu })}
             </h2>
           </div>
           <button
             ref={closeRef}
             type="button"
             onClick={onClose}
-            aria-label="داخستن"
+            aria-label={t("common.close")}
             className="rounded-2xl border border-border bg-card p-2.5 text-primary transition hover:bg-secondary focus-visible:ring-[3px] focus-visible:ring-ring/35"
           >
             <X size={20} aria-hidden />
@@ -120,10 +122,12 @@ export default function GridLauncher({ open, onClose }: Props) {
                     <Icon size={22} aria-hidden />
                   </span>
                   <div>
-                    <p className="font-bold text-foreground">{item.title}</p>
-                    {item.description ? (
+                    <p className="font-bold text-foreground">
+                      {t(item.titleKey)}
+                    </p>
+                    {item.descriptionKey ? (
                       <p className="mt-0.5 text-xs text-muted-foreground">
-                        {item.description}
+                        {t(item.descriptionKey)}
                       </p>
                     ) : null}
                   </div>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { buildSearchIndex } from "@/lib/search/enterpriseSearch";
+import { tServer } from "@/lib/i18n";
 
 /** Lightweight company index for offline / fuzzy client search */
 export async function GET() {
@@ -8,7 +9,7 @@ export async function GET() {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { GitBranch, History, RotateCcw } from "lucide-react";
 import type { EntityVersionRow } from "@/lib/versions/types";
 import { VERSION_ACTION_LABELS } from "@/lib/versions/types";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Stats = {
   recent: EntityVersionRow[];
@@ -31,6 +32,7 @@ function WidgetShell({
   children: React.ReactNode;
   empty?: boolean;
 }) {
+  const { t } = useT();
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between gap-2">
@@ -42,11 +44,11 @@ function WidgetShell({
           href={href}
           className="text-xs font-bold text-primary hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/35"
         >
-          View all
+          {t("versionsUi.viewAll")}
         </Link>
       </div>
       {empty ? (
-        <p className="text-xs text-muted-foreground">No data yet.</p>
+        <p className="text-xs text-muted-foreground">{t("versionsUi.noData")}</p>
       ) : (
         children
       )}
@@ -75,11 +77,12 @@ function useVersionStats() {
 }
 
 export function RecentChangesWidget() {
+  const { t } = useT();
   const stats = useVersionStats();
   const items = stats?.recent || [];
   return (
     <WidgetShell
-      title="Recent Changes"
+      title={t("versionsUi.recentChanges")}
       href="/dashboard/version-history"
       icon={History}
       empty={!stats || items.length === 0}
@@ -107,11 +110,12 @@ export function RecentChangesWidget() {
 }
 
 export function MostEditedRecordsWidget() {
+  const { t } = useT();
   const stats = useVersionStats();
   const items = stats?.mostEdited || [];
   return (
     <WidgetShell
-      title="Most Edited Records"
+      title={t("versionsUi.mostEdited")}
       href="/dashboard/version-history?sort=version_desc"
       icon={GitBranch}
       empty={!stats || items.length === 0}
@@ -128,7 +132,7 @@ export function MostEditedRecordsWidget() {
             >
               <span className="min-w-0 truncate font-bold">{row.recordName}</span>
               <span className="shrink-0 tabular-nums text-muted-foreground">
-                {row.edits} edits
+                {t("versionsUi.editsCount", { count: row.edits })}
               </span>
             </Link>
           </li>
@@ -139,11 +143,12 @@ export function MostEditedRecordsWidget() {
 }
 
 export function RestoreHistoryWidget() {
+  const { t } = useT();
   const stats = useVersionStats();
   const items = stats?.restoreHistory || [];
   return (
     <WidgetShell
-      title="Restore History"
+      title={t("versionsUi.restoreHistory")}
       href="/dashboard/version-history?action=RESTORE"
       icon={RotateCcw}
       empty={!stats || items.length === 0}

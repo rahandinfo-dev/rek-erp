@@ -3,11 +3,8 @@
 import Link from "next/link";
 import Image from "next/image";
 import { UserRound } from "lucide-react";
-import {
-  EMPLOYEE_ROLE_LABELS,
-  EMPLOYEE_STATUS_LABELS,
-} from "@/lib/employees/labels";
 import ContextMenuSurface from "@/components/quick-actions/ContextMenuSurface";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type EmployeeCardData = {
   id: string;
@@ -27,6 +24,7 @@ export default function EmployeeCard({
 }: {
   employee: EmployeeCardData;
 }) {
+  const { t } = useT();
   const statusTone =
     employee.status === "ACTIVE"
       ? "bg-emerald-500"
@@ -42,7 +40,7 @@ export default function EmployeeCard({
         moduleKey: "employees",
         label: employee.fullName,
         href: `/dashboard/employees/${employee.id}`,
-        entityType: "کارمەند",
+        entityType: t("employees.entityType"),
         archived: employee.status !== "ACTIVE",
       }}
     >
@@ -76,24 +74,24 @@ export default function EmployeeCard({
         <span
           className={`rounded-full px-2.5 py-1 text-[11px] font-bold text-white ${statusTone}`}
         >
-          {EMPLOYEE_STATUS_LABELS[employee.status] || employee.status}
+          {t(`employees.statuses.${employee.status}`) || employee.status}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 p-4 text-xs">
-        <Meta label="پۆست" value={employee.position || "—"} />
-        <Meta label="مۆبایل" value={employee.phone || "—"} />
+        <Meta label={t("employees.position")} value={employee.position || t("common.emDash")} />
+        <Meta label={t("common.phone")} value={employee.phone || t("common.emDash")} />
         <Meta
-          label="مووچە"
+          label={t("employees.salary")}
           value={
             employee.monthlySalary != null && employee.monthlySalary !== ""
-              ? `${Number(employee.monthlySalary).toLocaleString("en-US")} IQD`
-              : "—"
+              ? `${Number(employee.monthlySalary).toLocaleString("en-US")} ${t("common.currencyCode")}`
+              : t("common.emDash")
           }
         />
         <Meta
-          label="ڕۆڵ"
-          value={EMPLOYEE_ROLE_LABELS[employee.role] || employee.role}
+          label={t("employees.role")}
+          value={t(`employees.roles.${employee.role}`) || employee.role}
         />
       </div>
     </Link>

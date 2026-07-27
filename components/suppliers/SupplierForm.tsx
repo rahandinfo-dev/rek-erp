@@ -14,6 +14,7 @@ import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import ImageUpload from "@/components/uploads/ImageUpload";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 function isSupplierDraftEmpty(v: SupplierFormData) {
   return (
@@ -28,6 +29,7 @@ function isSupplierDraftEmpty(v: SupplierFormData) {
 }
 
 export default function SupplierForm() {
+  const { t } = useT();
   const router = useRouter();
   const [serverError, setServerError] = useState("");
 
@@ -85,8 +87,9 @@ export default function SupplierForm() {
       const result = await res.json();
 
       if (!res.ok) {
-        setServerError(result.message || "هەڵەیەک ڕوویدا.");
-        appToast.error(result.message || "هەڵەیەک ڕوویدا.");
+        const msg = result.message || t("errors.generic");
+        setServerError(msg);
+        appToast.error(msg);
         return;
       }
 
@@ -95,8 +98,8 @@ export default function SupplierForm() {
       router.push("/dashboard/suppliers");
       router.refresh();
     } catch {
-      setServerError("هەڵەیەک ڕوویدا.");
-      appToast.error("هەڵەیەک ڕوویدا.");
+      setServerError(t("errors.generic"));
+      appToast.error(t("errors.generic"));
     }
   }
 
@@ -121,12 +124,12 @@ export default function SupplierForm() {
         kind="supplier"
         value={imageValue || null}
         onChange={(url) => setValue("image", url || "", { shouldDirty: true })}
-        label="وێنەی دابینکەر"
+        label={t("suppliers.imageLabel")}
         shape="circle"
       />
 
       <div>
-        <label className="mb-2 block font-bold">ناوی دابینکەر</label>
+        <label className="mb-2 block font-bold">{t("suppliers.nameLabel")}</label>
         <input {...register("name")} className="w-full rounded-xl border p-3" />
         {errors.name && (
           <p className="mt-1 text-sm text-red-500">{errors.name.message}</p>
@@ -134,7 +137,7 @@ export default function SupplierForm() {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">کۆد</label>
+        <label className="mb-2 block font-bold">{t("common.code")}</label>
         <input {...register("code")} className="w-full rounded-xl border p-3" />
         {errors.code && (
           <p className="mt-1 text-sm text-red-500">{errors.code.message}</p>
@@ -142,12 +145,12 @@ export default function SupplierForm() {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">ژمارەی مۆبایل</label>
+        <label className="mb-2 block font-bold">{t("suppliers.phoneLabel")}</label>
         <input {...register("phone")} className="w-full rounded-xl border p-3" />
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">ئیمەیڵ</label>
+        <label className="mb-2 block font-bold">{t("common.email")}</label>
         <input
           type="email"
           {...register("email")}
@@ -159,7 +162,7 @@ export default function SupplierForm() {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">ناونیشان</label>
+        <label className="mb-2 block font-bold">{t("common.address")}</label>
         <textarea
           {...register("address")}
           rows={3}
@@ -168,7 +171,7 @@ export default function SupplierForm() {
       </div>
 
       <div>
-        <label className="mb-2 block font-bold">تێبینی</label>
+        <label className="mb-2 block font-bold">{t("common.notes")}</label>
         <textarea
           {...register("notes")}
           rows={4}
@@ -178,7 +181,7 @@ export default function SupplierForm() {
 
       <div className="flex items-center gap-2">
         <input type="checkbox" {...register("active")} />
-        <span>چالاک</span>
+        <span>{t("common.active")}</span>
       </div>
 
       {serverError && (
@@ -194,7 +197,7 @@ export default function SupplierForm() {
           disabled={isSubmitting}
           className="rounded-xl bg-[#FFAE42] px-6 py-3 font-bold text-white disabled:opacity-50"
         >
-          {isSubmitting ? "چاوەڕێ بکە..." : "زیادکردنی دابینکەر"}
+          {isSubmitting ? t("common.pleaseWait") : t("suppliers.add")}
         </button>
       </div>
     </form>

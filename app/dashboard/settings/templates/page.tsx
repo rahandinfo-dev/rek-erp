@@ -3,10 +3,12 @@ import { Plus, Pencil } from "lucide-react";
 import { getCurrentCompanyId } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import DeleteTemplateButton from "@/components/invoices/DeleteTemplateButton";
+import { tServer } from "@/lib/i18n";
 
 export default async function TemplatesPage() {
   const companyId = await getCurrentCompanyId();
   if (!companyId) return null;
+  const t = tServer.t;
 
   const templates = await db.invoiceTemplate.findMany({
     where: { companyId },
@@ -18,25 +20,23 @@ export default async function TemplatesPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-black text-[#FFAE42] sm:text-4xl">
-            قاڵبی پسوولە
+            {t("settings.templatesTitle")}
           </h1>
-          <p className="mt-2 text-slate-500">
-            چەند قاڵب دروست بکە — A4، Thermal، Receipt
-          </p>
+          <p className="mt-2 text-slate-500">{t("settings.templatesSubtitle")}</p>
         </div>
         <Link
           href="/dashboard/settings/templates/new"
           className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#FFAE42] px-5 py-3 font-bold text-white"
         >
           <Plus size={18} />
-          قاڵبی نوێ
+          {t("settings.newTemplate")}
         </Link>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {templates.length === 0 ? (
           <div className="rounded-3xl border border-dashed bg-white p-10 text-center text-slate-500 md:col-span-2 xl:col-span-3">
-            هیچ قاڵبێک نییە. یەکەم قاڵب دروست بکە.
+            {t("settings.templatesEmpty")}
           </div>
         ) : (
           templates.map((template) => (
@@ -55,7 +55,7 @@ export default async function TemplatesPage() {
                 </div>
                 {template.isDefault && (
                   <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-700">
-                    سەرەکی
+                    {t("common.main")}
                   </span>
                 )}
               </div>
@@ -66,7 +66,7 @@ export default async function TemplatesPage() {
                   className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border py-2.5 font-semibold"
                 >
                   <Pencil size={16} />
-                  دەستکاری
+                  {t("common.edit")}
                 </Link>
                 <DeleteTemplateButton id={template.id} />
               </div>

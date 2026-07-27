@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Package, Pin } from "lucide-react";
+import { useT } from "@/components/i18n/LocaleProvider";
 import { useNavigationHistory } from "@/lib/history/provider";
 import {
   HISTORY_FILTER_MODULES,
@@ -92,6 +93,7 @@ export default function RecentHistorySidebar({
 }: {
   collapsed: boolean;
 }) {
+  const { t } = useT();
   const { items } = useNavigationHistory();
   const [query, setQuery] = useState("");
   const [moduleFilter, setModuleFilter] = useState<HistoryModuleKey | "all">(
@@ -134,13 +136,13 @@ export default function RecentHistorySidebar({
     <div>
       <div className="mb-1.5 flex items-center justify-between px-3">
         <p className="text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
-          Recent
+          {t("history.recent")}
         </p>
         <Link
           href="/dashboard/recent"
           className="text-[10px] font-bold text-primary hover:underline"
         >
-          View All
+          {t("history.viewAll")}
         </Link>
       </div>
 
@@ -150,7 +152,7 @@ export default function RecentHistorySidebar({
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="گەڕان لە مێژوو…"
-          aria-label="Search history"
+          aria-label={t("history.searchAria")}
           className="h-8 w-full rounded-xl border border-transparent bg-muted/70 px-2.5 text-xs outline-none focus:border-primary/40 focus:bg-card"
         />
         <select
@@ -158,10 +160,10 @@ export default function RecentHistorySidebar({
           onChange={(e) =>
             setModuleFilter(e.target.value as HistoryModuleKey | "all")
           }
-          aria-label="Filter history by module"
+          aria-label={t("history.filterModule")}
           className="h-8 w-full rounded-xl border border-transparent bg-muted/70 px-2 text-[11px] font-semibold outline-none focus:border-primary/40 focus:bg-card"
         >
-          <option value="all">All modules</option>
+          <option value="all">{t("history.allModules")}</option>
           {HISTORY_FILTER_MODULES.map((m) => (
             <option key={m} value={m}>
               {HISTORY_MODULE_LABELS[m]}
@@ -172,7 +174,7 @@ export default function RecentHistorySidebar({
 
       {groups.length === 0 ? (
         <p className="px-3 py-3 text-[11px] text-muted-foreground">
-          No recent records yet. Open a product, sale, or customer to start.
+          {t("history.emptySidebar")}
         </p>
       ) : (
         <div className="space-y-3">

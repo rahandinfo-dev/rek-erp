@@ -3,6 +3,9 @@ import { getCachedAnalytics } from "@/lib/cache/company-reads";
 import { notifySafe } from "@/lib/notifications/create";
 import type { AiAlertView } from "@/lib/ai/types";
 import { aiCacheGet, aiCacheKey, aiCacheSet } from "@/lib/ai/cache";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 function mapAlert(row: {
   id: string;
@@ -59,8 +62,10 @@ export async function refreshAiAlerts(companyId: string): Promise<AiAlertView[]>
   if (analytics.summary.lowStockCount > 0) {
     desired.push({
       kind: "low_stock",
-      title: "کەمی کۆگا دۆزرایەوە",
-      message: `${analytics.summary.lowStockCount} products are at or below minimum stock.`,
+      title: t("ai.alerts.lowStockTitle"),
+      message: t("ai.alerts.lowStockMessage", {
+        count: analytics.summary.lowStockCount,
+      }),
       severity: "warning",
       href: "/dashboard/inventory",
     });
@@ -87,8 +92,8 @@ export async function refreshAiAlerts(companyId: string): Promise<AiAlertView[]>
   if (over.length) {
     desired.push({
       kind: "overstock",
-      title: "Overstock risk",
-      message: `${over.length} products exceed maximum stock levels.`,
+      title: t("ai.alerts.overstockTitle"),
+      message: t("ai.alerts.overstockMessage", { count: over.length }),
       severity: "info",
       href: "/dashboard/products",
       entityType: "Product",
@@ -106,8 +111,8 @@ export async function refreshAiAlerts(companyId: string): Promise<AiAlertView[]>
   if (creditCount > 0) {
     desired.push({
       kind: "unpaid_invoices",
-      title: "Credit / unpaid sales",
-      message: `${creditCount} completed credit sales may need collection.`,
+      title: t("ai.alerts.creditTitle"),
+      message: t("ai.alerts.creditMessage", { count: creditCount }),
       severity: "warning",
       href: "/dashboard/sales",
     });
@@ -126,8 +131,8 @@ export async function refreshAiAlerts(companyId: string): Promise<AiAlertView[]>
   if (late > 0) {
     desired.push({
       kind: "late_payments",
-      title: "Late credit payments",
-      message: `${late} credit sales are older than 30 days.`,
+      title: t("ai.alerts.lateTitle"),
+      message: t("ai.alerts.lateMessage", { count: late }),
       severity: "critical",
       href: "/dashboard/customers",
     });
@@ -136,8 +141,8 @@ export async function refreshAiAlerts(companyId: string): Promise<AiAlertView[]>
   if (analytics.summary.profitThisMonth < 0) {
     desired.push({
       kind: "negative_margin",
-      title: "قازانجی نەرێنی لەم مانگەدا",
-      message: "This month's profit is negative — review costs and pricing.",
+      title: t("ai.alerts.negativeMarginTitle"),
+      message: t("ai.alerts.negativeMarginMessage"),
       severity: "critical",
       href: "/dashboard/reports",
     });
@@ -153,8 +158,8 @@ export async function refreshAiAlerts(companyId: string): Promise<AiAlertView[]>
   ) {
     desired.push({
       kind: "unusual_sales",
-      title: "Unusual sales activity",
-      message: "Today's revenue is significantly above the month-to-date daily average.",
+      title: t("ai.alerts.unusualSalesTitle"),
+      message: t("ai.alerts.unusualSalesMessage"),
       severity: "info",
       href: "/dashboard/analytics",
     });
@@ -181,8 +186,11 @@ export async function refreshAiAlerts(companyId: string): Promise<AiAlertView[]>
   if (dupSku + dupBar > 0) {
     desired.push({
       kind: "duplicate_records",
-      title: "Possible duplicate products",
-      message: `${dupSku} duplicate SKU groups · ${dupBar} duplicate barcode groups.`,
+      title: t("ai.alerts.duplicateTitle"),
+      message: t("ai.alerts.duplicateMessage", {
+        sku: dupSku,
+        barcode: dupBar,
+      }),
       severity: "warning",
       href: "/dashboard/products",
     });

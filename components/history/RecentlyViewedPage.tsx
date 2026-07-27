@@ -19,6 +19,7 @@ import {
   type HistoryItem,
   type HistoryModuleKey,
 } from "@/lib/history/types";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 const PAGE_SIZE = 20;
 
@@ -43,6 +44,7 @@ function parseModuleParam(v: string | null): HistoryModuleKey | "all" {
 }
 
 export default function RecentlyViewedPage() {
+  const { t } = useT();
   const searchParams = useSearchParams();
   const { items, refresh } = useNavigationHistory();
   const [query, setQuery] = useState("");
@@ -55,10 +57,10 @@ export default function RecentlyViewedPage() {
   const [visible, setVisible] = useState(PAGE_SIZE);
 
   useEffect(() => {
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       void refresh();
     }, 0);
-    return () => window.clearTimeout(t);
+    return () => window.clearTimeout(timer);
   }, [refresh]);
 
   const filtered = useMemo(() => {
@@ -86,17 +88,17 @@ export default function RecentlyViewedPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="دوایین بینراوەکان"
-        description="Continue where you left off — search, filter, and pin anything."
+        title={t("history.title")}
+        description={t("history.subtitle")}
         breadcrumb={[
-          { label: "داشبۆرد", href: "/dashboard" },
-          { label: "دوایین بینراوەکان" },
+          { label: t("nav.dashboard"), href: "/dashboard" },
+          { label: t("history.title") },
         ]}
       />
 
       {insights.length ? (
         <section
-          aria-label="Insights"
+          aria-label={t("history.insights")}
           className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5"
         >
           {insights.map((ins) => (
@@ -112,7 +114,7 @@ export default function RecentlyViewedPage() {
                 {ins.title}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {ins.count} open{ins.count === 1 ? "" : "s"}
+                {t("history.opens", { count: ins.count })}
               </p>
             </Link>
           ))}
@@ -127,7 +129,7 @@ export default function RecentlyViewedPage() {
             setQuery(e.target.value);
             setVisible(PAGE_SIZE);
           }}
-          placeholder="Search history… (e.g. cement)"
+          placeholder={t("history.searchPlaceholder")}
           className="h-11 flex-1 rounded-xl border border-border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring/30"
         />
         <select
@@ -137,9 +139,9 @@ export default function RecentlyViewedPage() {
             setVisible(PAGE_SIZE);
           }}
           className="h-11 rounded-xl border border-border bg-card px-3 text-sm font-semibold"
-          aria-label="Filter by module"
+          aria-label={t("history.filterModule")}
         >
-          <option value="all">All modules</option>
+          <option value="all">{t("history.allModules")}</option>
           {HISTORY_FILTER_MODULES.map((m) => (
             <option key={m} value={m}>
               {HISTORY_MODULE_LABELS[m]}
@@ -153,21 +155,20 @@ export default function RecentlyViewedPage() {
             setVisible(PAGE_SIZE);
           }}
           className="h-11 rounded-xl border border-border bg-card px-3 text-sm font-semibold"
-          aria-label="Filter by action"
+          aria-label={t("history.filterAction")}
         >
-          <option value="all">All activity</option>
-          <option value="viewed">Viewed</option>
-          <option value="edited">Edited</option>
-          <option value="created">Created</option>
-          <option value="printed">Printed</option>
-          <option value="downloaded">Downloaded</option>
+          <option value="all">{t("history.allActivity")}</option>
+          <option value="viewed">{t("history.viewed")}</option>
+          <option value="edited">{t("history.edited")}</option>
+          <option value="created">{t("history.created")}</option>
+          <option value="printed">{t("history.printed")}</option>
+          <option value="downloaded">{t("history.downloaded")}</option>
         </select>
       </div>
 
       {groups.length === 0 ? (
         <p className="rek-card px-5 py-12 text-center text-sm text-muted-foreground">
-          No matching history. Open a record and it will appear here
-          automatically.
+          {t("history.empty")}
         </p>
       ) : (
         <div className="space-y-6">
@@ -191,7 +192,7 @@ export default function RecentlyViewedPage() {
                 className="h-11 rounded-xl border border-border bg-card px-6 text-sm font-bold hover:bg-muted"
                 onClick={() => setVisible((v) => v + PAGE_SIZE)}
               >
-                Load more ({filtered.length - visible} left)
+                {t("history.loadMore", { count: filtered.length - visible })}
               </button>
             </div>
           ) : null}

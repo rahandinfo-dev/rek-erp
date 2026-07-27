@@ -4,6 +4,7 @@ import { memo } from "react";
 import ProductCard, {
   type ProductCardData,
 } from "@/components/products/ProductCard";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 function ProductGrid({
   products,
@@ -18,6 +19,8 @@ function ProductGrid({
   isSelected?: (id: string) => boolean;
   onToggleSelect?: (id: string) => void;
 }) {
+  const { t } = useT();
+
   return (
     <div className="grid grid-cols-1 gap-3 min-[480px]:grid-cols-2 sm:gap-5 lg:grid-cols-3 2xl:grid-cols-4">
       {products.map((product) => (
@@ -28,10 +31,10 @@ function ProductGrid({
                 type="checkbox"
                 checked={isSelected?.(product.id) || false}
                 onChange={() => onToggleSelect(product.id)}
-                aria-label={`Select ${product.name}`}
+                aria-label={t("common.selectNamed", { name: product.name })}
                 className="focus-visible:ring-[3px] focus-visible:ring-ring/35"
               />
-              Select
+              {t("common.select")}
             </label>
           ) : null}
           <ProductCard

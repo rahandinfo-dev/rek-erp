@@ -6,6 +6,9 @@ import RekToast, {
   type ToastTone,
 } from "@/components/ui/RekToast";
 import UndoToast from "@/components/ui/UndoToast";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 type ShowToastInput = {
   title: string;
@@ -67,7 +70,7 @@ export const appToast = {
           id={id}
           title={input.title}
           message={input.message}
-          undoLabel={input.undoLabel || "پاشگەزبوونەوە"}
+          undoLabel={input.undoLabel || t("toast.undo")}
           durationMs={durationMs}
           onUndo={input.onUndo}
         />
@@ -88,71 +91,71 @@ export const appToast = {
   }) {
     return appToast.actionWithUndo(input);
   },
-  productSaved(message = "بەرهەم بە سەرکەوتوویی پاشەکەوتکرا.") {
+  productSaved(message = t("toast.productSavedBody")) {
     return showToast({
-      title: "بەرهەم پاشەکەوتکرا",
+      title: t("toast.productSavedTitle"),
       message,
       preset: "productSaved",
     });
   },
-  saleCompleted(message = "فرۆشتن بە سەرکەوتوویی تۆمارکرا.") {
+  saleCompleted(message = t("toast.saleCompletedBody")) {
     return showToast({
-      title: "فرۆشتن تەواوکرا",
+      title: t("toast.saleCompletedTitle"),
       message,
       preset: "saleCompleted",
     });
   },
-  purchaseCompleted(message = "کڕین بە سەرکەوتوویی تۆمارکرا.") {
+  purchaseCompleted(message = t("toast.purchaseCompletedBody")) {
     return showToast({
-      title: "کڕین تەواوکرا",
+      title: t("toast.purchaseCompletedTitle"),
       message,
       preset: "purchaseCompleted",
     });
   },
-  invoicePrinted(message = "پسوولە چاپکرا.") {
+  invoicePrinted(message = t("toast.invoicePrintedBody")) {
     return showToast({
-      title: "پسوولە چاپکرا",
+      title: t("toast.invoicePrintedTitle"),
       message,
       preset: "invoicePrinted",
     });
   },
-  customerCreated(message = "کڕیار بە سەرکەوتوویی زیادکرا.") {
+  customerCreated(message = t("toast.customerCreatedBody")) {
     return showToast({
-      title: "کڕیار دروستکرا",
+      title: t("toast.customerCreatedTitle"),
       message,
       preset: "customerCreated",
     });
   },
-  supplierAdded(message = "دابینکەر بە سەرکەوتوویی زیادکرا.") {
+  supplierAdded(message = t("toast.supplierAddedBody")) {
     return showToast({
-      title: "دابینکەر زیادکرا",
+      title: t("toast.supplierAddedTitle"),
       message,
       preset: "supplierAdded",
     });
   },
-  warehouseUpdated(message = "کۆگا بە سەرکەوتوویی نوێکرایەوە.") {
+  warehouseUpdated(message = t("toast.warehouseUpdatedBody")) {
     return showToast({
-      title: "کۆگا نوێکرایەوە",
+      title: t("toast.warehouseUpdatedTitle"),
       message,
       preset: "warehouseUpdated",
     });
   },
-  settingsSaved(message = "ڕێکخستنەکان پاشەکەوتکران.") {
+  settingsSaved(message = t("toast.settingsSavedBody")) {
     return showToast({
-      title: "ڕێکخستن پاشەکەوتکرا",
+      title: t("toast.settingsSavedTitle"),
       message,
       preset: "settingsSaved",
     });
   },
-  pdfGenerated(message = "PDF دروستکرا.") {
+  pdfGenerated(message = t("toast.pdfGeneratedBody")) {
     return showToast({
-      title: "PDF دروستکرا",
+      title: t("toast.pdfGeneratedTitle"),
       message,
       tone: "success",
       preset: "invoicePrinted",
     });
   },
-  salaryAlert(message: string, title = "ئاگاداری مووچە") {
+  salaryAlert(message: string, title = t("toast.salaryAlertTitle")) {
     return showToast({
       title,
       message,
@@ -160,7 +163,7 @@ export const appToast = {
       duration: 5000,
     });
   },
-  stockLow(message: string, title = "کۆگای کەم") {
+  stockLow(message: string, title = t("toast.stockLowTitle")) {
     return showToast({
       title,
       message,
@@ -168,7 +171,7 @@ export const appToast = {
       duration: 5200,
     });
   },
-  stockOut(message: string, title = "کۆگا تەواو بوو") {
+  stockOut(message: string, title = t("toast.stockOutTitle")) {
     return showToast({
       title,
       message,
@@ -176,7 +179,10 @@ export const appToast = {
       duration: 5600,
     });
   },
-  warehouseStockLow(message: string, title = "کۆگا — کۆگای کەم") {
+  warehouseStockLow(
+    message: string,
+    title = t("toast.warehouseStockLowTitle")
+  ) {
     return showToast({
       title,
       message,
@@ -184,7 +190,10 @@ export const appToast = {
       duration: 5400,
     });
   },
-  inventoryAdjusted(message: string, title = "ڕێکخستنی کۆگا") {
+  inventoryAdjusted(
+    message: string,
+    title = t("toast.inventoryAdjustedTitle")
+  ) {
     return showToast({
       title,
       message,
@@ -192,7 +201,10 @@ export const appToast = {
       duration: 4800,
     });
   },
-  warehouseTransfer(message: string, title = "گواستنەوەی کۆگا") {
+  warehouseTransfer(
+    message: string,
+    title = t("toast.warehouseTransferTitle")
+  ) {
     return showToast({
       title,
       message,
@@ -200,7 +212,7 @@ export const appToast = {
       duration: 4800,
     });
   },
-  largeSale(message: string, title = "فرۆشتنی گەورە") {
+  largeSale(message: string, title = t("toast.largeSaleTitle")) {
     return showToast({
       title,
       message,
@@ -208,7 +220,7 @@ export const appToast = {
       duration: 5200,
     });
   },
-  largePurchase(message: string, title = "کڕینی گەورە") {
+  largePurchase(message: string, title = t("toast.largePurchaseTitle")) {
     return showToast({
       title,
       message,

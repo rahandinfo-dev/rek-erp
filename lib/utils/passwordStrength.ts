@@ -1,3 +1,7 @@
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
+
 export function getPasswordStrength(password: string) {
   let score = 0;
 
@@ -14,7 +18,7 @@ export function getPasswordStrength(password: string) {
   if (score <= 2) {
     return {
       score,
-      label: "لاواز",
+      label: t("validation.strengthWeak"),
       color: "bg-red-500",
     };
   }
@@ -22,14 +26,14 @@ export function getPasswordStrength(password: string) {
   if (score <= 4) {
     return {
       score,
-      label: "مامناوەند",
+      label: t("validation.strengthMedium"),
       color: "bg-yellow-500",
     };
   }
 
   return {
     score,
-    label: "بەهێز",
+    label: t("validation.strengthStrong"),
     color: "bg-green-500",
   };
 }

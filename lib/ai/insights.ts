@@ -1,8 +1,11 @@
 import { db } from "@/lib/prisma/db";
 import { getCachedAnalytics } from "@/lib/cache/company-reads";
-import { formatMoney } from "@/lib/utils/format";
+import { formatMoneyLocalized } from "@/lib/i18n";
+import { tServer } from "@/lib/i18n";
 import type { AiInsightView, BusinessHealth } from "@/lib/ai/types";
 import { aiCacheGet, aiCacheKey, aiCacheSet } from "@/lib/ai/cache";
+
+const t = tServer.t.bind(tServer);
 
 function mapInsight(row: {
   id: string;
@@ -37,13 +40,16 @@ export function computeBusinessHealth(input: {
   const factors = [
     {
       key: "inventory",
-      label: "Inventory health",
+      label: t("ai.health.inventory"),
       score: input.inventoryHealthScore,
-      note: `${input.lowStockCount} low · ${input.outOfStockCount} out`,
+      note: t("ai.health.inventoryNote", {
+        low: input.lowStockCount,
+        out: input.outOfStockCount,
+      }),
     },
     {
       key: "profit",
-      label: "Monthly profitability",
+      label: t("ai.health.profit"),
       score:
         input.profitThisMonth > 0
           ? Math.min(100, 60 + Math.log10(input.profitThisMonth + 1) * 8)
@@ -52,23 +58,27 @@ export function computeBusinessHealth(input: {
             : 25,
       note:
         input.profitThisMonth >= 0
-          ? `Profit ${formatMoney(input.profitThisMonth)} IQD`
-          : "Negative profit",
+          ? t("ai.health.profitNote", {
+              amount: formatMoneyLocalized(input.profitThisMonth),
+            })
+          : t("ai.health.negativeProfit"),
     },
     {
       key: "sales",
-      label: "Sales momentum",
+      label: t("ai.health.sales"),
       score:
         input.revenueThisMonth > 0
           ? Math.min(100, 55 + Math.log10(input.revenueThisMonth + 1) * 7)
           : 35,
-      note: `Revenue ${formatMoney(input.revenueThisMonth)} IQD`,
+      note: t("ai.health.salesNote", {
+        amount: formatMoneyLocalized(input.revenueThisMonth),
+      }),
     },
     {
       key: "credit",
-      label: "Collections risk",
+      label: t("ai.health.credit"),
       score: input.creditCount === 0 ? 90 : Math.max(20, 85 - input.creditCount * 3),
-      note: `${input.creditCount} credit sales`,
+      note: t("ai.health.creditNote", { count: input.creditCount }),
     },
   ];
   const score = Math.round(
@@ -76,14 +86,14 @@ export function computeBusinessHealth(input: {
   );
   const label =
     score >= 85
-      ? "Excellent"
+      ? t("ai.health.excellent")
       : score >= 70
-        ? "Good"
+        ? t("ai.health.good")
         : score >= 55
-          ? "Fair"
+          ? t("ai.health.fair")
           : score >= 40
-            ? "At Risk"
-            : "Critical";
+            ? t("ai.health.atRisk")
+            : t("ai.health.critical");
   return { score, label, factors };
 }
 
@@ -116,31 +126,42 @@ export async function refreshAiInsights(companyId: string): Promise<AiInsightVie
   }> = [
     {
       category: "health",
-      title: `Business health: ${health.label}`,
-      summary: `Overall score ${health.score}/100 across inventory, profit, sales and credit.`,
+      title: t("ai.insights.healthTitle", { label: health.label }),
+      summary: t("ai.insights.healthSummary", { score: health.score }),
       severity: health.score >= 70 ? "info" : health.score >= 55 ? "warning" : "critical",
       href: "/dashboard/ai-assistant",
       score: health.score,
     },
     {
       category: "sales",
-      title: "Sales snapshot",
-      summary: `Today ${formatMoney(analytics.summary.revenueToday)} · Month ${formatMoney(analytics.summary.revenueThisMonth)} IQD · ${analytics.summary.salesCountThisMonth} orders.`,
+      title: t("ai.insights.salesTitle"),
+      summary: t("ai.insights.salesSummary", {
+        today: formatMoneyLocalized(analytics.summary.revenueToday),
+        month: formatMoneyLocalized(analytics.summary.revenueThisMonth),
+        orders: analytics.summary.salesCountThisMonth,
+      }),
       severity: "info",
       href: "/dashboard/analytics",
       score: analytics.summary.salesCountThisMonth,
     },
     {
       category: "purchases",
-      title: "Purchase spend",
-      summary: `This month ${formatMoney(analytics.summary.expensesThisMonth)} IQD across ${analytics.summary.purchasesCountThisMonth} purchases.`,
+      title: t("ai.insights.purchasesTitle"),
+      summary: t("ai.insights.purchasesSummary", {
+        amount: formatMoneyLocalized(analytics.summary.expensesThisMonth),
+        count: analytics.summary.purchasesCountThisMonth,
+      }),
       severity: "info",
       href: "/dashboard/purchases",
     },
     {
       category: "inventory",
-      title: "Inventory status",
-      summary: `Health ${analytics.summary.inventoryHealthScore}% · Value ${formatMoney(analytics.summary.inventoryValue)} IQD · Low ${analytics.summary.lowStockCount}.`,
+      title: t("ai.insights.inventoryTitle"),
+      summary: t("ai.insights.inventorySummary", {
+        health: analytics.summary.inventoryHealthScore,
+        value: formatMoneyLocalized(analytics.summary.inventoryValue),
+        low: analytics.summary.lowStockCount,
+      }),
       severity:
         analytics.summary.outOfStockCount > 0
           ? "warning"
@@ -152,36 +173,50 @@ export async function refreshAiInsights(companyId: string): Promise<AiInsightVie
     },
     {
       category: "profit",
-      title: "Profit & loss",
-      summary: `Month profit ${formatMoney(analytics.summary.profitThisMonth)} IQD (gross ${formatMoney(analytics.summary.grossProfitThisMonth)}).`,
+      title: t("ai.insights.profitTitle"),
+      summary: t("ai.insights.profitSummary", {
+        profit: formatMoneyLocalized(analytics.summary.profitThisMonth),
+        gross: formatMoneyLocalized(analytics.summary.grossProfitThisMonth),
+      }),
       severity: analytics.summary.profitThisMonth < 0 ? "critical" : "info",
       href: "/dashboard/reports",
       score: analytics.summary.profitThisMonth,
     },
     {
       category: "customers",
-      title: "Top customer",
+      title: t("ai.insights.topCustomerTitle"),
       summary: analytics.bestCustomers[0]
-        ? `${analytics.bestCustomers[0].name} leads with ${analytics.bestCustomers[0].orders} orders.`
-        : "No customer sales yet.",
+        ? t("ai.insights.topCustomerSummary", {
+            name: analytics.bestCustomers[0].name,
+            orders: analytics.bestCustomers[0].orders,
+          })
+        : t("ai.insights.noCustomerSales"),
       severity: "info",
       href: "/dashboard/customers",
     },
     {
       category: "suppliers",
-      title: "Top supplier",
+      title: t("ai.insights.topSupplierTitle"),
       summary: analytics.topSuppliers[0]
-        ? `${analytics.topSuppliers[0].name} · ${analytics.topSuppliers[0].orders} purchases.`
-        : "No supplier activity yet.",
+        ? t("ai.insights.topSupplierSummary", {
+            name: analytics.topSuppliers[0].name,
+            orders: analytics.topSuppliers[0].orders,
+          })
+        : t("ai.insights.noSupplierActivity"),
       severity: "info",
       href: "/dashboard/suppliers",
     },
     {
       category: "warehouses",
-      title: "Warehouse health",
+      title: t("ai.insights.warehouseTitle"),
       summary: analytics.warehouseStats[0]
-        ? `${analytics.warehouseStats.length} warehouses · Main status ${analytics.warehouseStats.find((w) => w.isMain)?.status || analytics.warehouseStats[0].status}.`
-        : "No warehouses configured.",
+        ? t("ai.insights.warehouseSummary", {
+            count: analytics.warehouseStats.length,
+            status:
+              analytics.warehouseStats.find((w) => w.isMain)?.status ||
+              analytics.warehouseStats[0].status,
+          })
+        : t("ai.insights.noWarehouses"),
       severity: "info",
       href: "/dashboard/werehouse",
     },
@@ -190,8 +225,8 @@ export async function refreshAiInsights(companyId: string): Promise<AiInsightVie
   const employees = await db.employee.count({ where: { companyId } });
   drafts.push({
     category: "employees",
-    title: "Workforce",
-    summary: `${employees} employees on record.`,
+    title: t("ai.insights.workforceTitle"),
+    summary: t("ai.insights.workforceSummary", { count: employees }),
     severity: "info",
     href: "/dashboard/employees",
     score: employees,

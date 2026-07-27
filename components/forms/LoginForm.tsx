@@ -14,9 +14,11 @@ import {
   Zap,
   Database,
 } from "lucide-react";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function LoginForm() {
   const router = useRouter();
+  const { t } = useT();
 
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
@@ -27,15 +29,13 @@ export default function LoginForm() {
 
   const [error, setError] = useState("");
 
-  const handleSubmit = async (
-    e: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setError("");
 
     if (!login || !password) {
-      setError("تکایە هەموو خانەکان پڕبکەرەوە.");
+      setError(t("validation.fillAllFields"));
       return;
     }
 
@@ -59,15 +59,15 @@ export default function LoginForm() {
         setError(
           data?.message ||
             (res.status === 429
-              ? "هەوڵی زۆر درا. تکایە کەمێک چاوەڕێ بکە."
-              : "هەڵەیەک ڕوویدا.")
+              ? t("validation.rateLimited")
+              : t("common.error"))
         );
         return;
       }
       router.push("/dashboard");
       router.refresh();
     } catch {
-      setError("پەیوەندی بە سێرڤەر نەکرا. ئینتەرنێت بپشکنە.");
+      setError(t("validation.serverUnreachable"));
     } finally {
       setLoading(false);
     }
@@ -80,15 +80,12 @@ export default function LoginForm() {
       className="relative min-h-screen min-h-dvh max-w-full overflow-x-clip overflow-y-auto bg-[#FFF8EF]"
     >
       <div className="absolute inset-0">
-
         <div className="absolute -top-52 -left-52 h-[500px] w-[500px] rounded-full bg-[#FFAE42]/15 blur-[170px]" />
 
         <div className="absolute -bottom-52 -right-52 h-[500px] w-[500px] rounded-full bg-[#FFF8EF]/40 blur-[170px]" />
-
       </div>
 
       <div className="relative z-10 flex min-h-screen min-h-dvh items-center justify-center p-4 sm:p-6 md:p-8">
-
         <div
           className="
           grid
@@ -105,8 +102,6 @@ export default function LoginForm() {
           lg:grid-cols-2
           "
         >
-            {/* Right Side */}
-
           <section
             className="
             hidden
@@ -122,150 +117,91 @@ export default function LoginForm() {
             "
           >
             <div>
-
               <div className="flex items-start justify-between">
-
                 <div>
-
                   <p className="text-[#FFF8EF]/80 text-lg">
-                    سیستەمی بەڕێوەبردنی
+                    {t("auth.heroSystem")}
                   </p>
 
                   <p className="text-[#FFF8EF]/80 text-lg">
-                    کارگە
+                    {t("auth.heroFactory")}
                   </p>
-
                 </div>
 
                 <div className="flex items-center gap-5">
-
                   <div className="text-right">
-
                     <h2 className="text-5xl font-black leading-none">
-                      ڕێک
+                      {t("auth.brandName")}
                     </h2>
 
                     <h2 className="mt-2 text-3xl font-black leading-none tracking-[0.35em]">
                       REK
                     </h2>
-
                   </div>
 
                   <Image
                     src="/logo.png"
-                    alt="REK"
+                    alt={t("auth.brandName")}
                     width={170}
                     height={170}
                     priority
                     className="rounded-3xl object-contain bg-[#FFF8EF]/10 p-2"
                   />
                 </div>
-
               </div>
-
             </div>
 
             <div>
-
-              <h1
-                className="
-                text-6xl
-                font-black
-                leading-[85px]
-                "
-              >
-                هەموو
+              <h1 className="text-6xl font-black leading-[85px]">
+                {t("auth.heroTitleLine1")}
                 <br />
-                بەڕێوەبردنی
+                {t("auth.heroTitleLine2")}
                 <br />
-                کۆمپانیاکەت
+                {t("auth.heroTitleLine3")}
               </h1>
 
-              <p
-                className="
-                mt-8
-                text-2xl
-                leading-[45px]
-                text-[#FFF8EF]/90
-                "
-              >
-                ژمێریاری، کۆگا،
-                فرۆشتن،
-                بەرهەمهێنان،
-                مووچە،
-                پارە،
-                CRM،
-                HR
-                و هەموو بەشەکانی
-                کۆمپانیا
-                لە یەک شوێندا.
+              <p className="mt-8 text-2xl leading-[45px] text-[#FFF8EF]/90">
+                {t("auth.heroBody")}
               </p>
-
             </div>
 
             <div className="space-y-6">
-
               <div className="flex items-center gap-4">
-
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15">
-
                   <Zap size={22} />
-
                 </div>
 
-                <span className="text-lg">
-                  خێرایی بەرز
-                </span>
-
+                <span className="text-lg">{t("auth.featureSpeed")}</span>
               </div>
 
               <div className="flex items-center gap-4">
-
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15">
-
                   <ShieldCheck size={22} />
-
                 </div>
 
-                <span className="text-lg">
-                  پاراستنی زانیاری
-                </span>
-
+                <span className="text-lg">{t("auth.featureSecurity")}</span>
               </div>
 
               <div className="flex items-center gap-4">
-
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15">
-
                   <Database size={22} />
-
                 </div>
 
-                <span className="text-lg">
-                  بەڕێوەبردنی یەکگرتوو
-                </span>
-
+                <span className="text-lg">{t("auth.featureUnified")}</span>
               </div>
-
             </div>
-
           </section>
-         {/* Left Side */}
 
           <section className="flex min-w-0 items-center justify-center p-5 sm:p-8 md:p-10 lg:p-14">
-
             <div className="w-full max-w-md min-w-0">
-
               <div className="mb-8 text-center sm:mb-10">
-
                 <h1 className="text-3xl font-black text-slate-800 sm:text-4xl md:text-5xl">
-                  چوونەژوورەوە
+                  {t("auth.loginTitle")}
                 </h1>
 
                 <p className="mt-3 text-base text-slate-500 sm:mt-4 sm:text-lg">
-                  بە ئیمەیڵ و وشەی نهێنی خۆت بچۆ ژوورەوە.
+                  {t("auth.loginHint")}
                 </p>
-
               </div>
 
               {error && (
@@ -278,17 +214,13 @@ export default function LoginForm() {
                 </div>
               )}
 
-              <form
-                onSubmit={handleSubmit}
-                className="space-y-6"
-                noValidate
-              >
+              <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                 <div>
                   <label
                     htmlFor="login-identifier"
                     className="mb-3 block font-semibold text-slate-700"
                   >
-                    ئیمەیڵ یان ناوی بەکارهێنەر
+                    {t("auth.emailOrUsername")}
                   </label>
 
                   <div className="relative">
@@ -304,7 +236,7 @@ export default function LoginForm() {
                       autoComplete="username"
                       value={login}
                       onChange={(e) => setLogin(e.target.value)}
-                      placeholder="ئیمەیڵ یان ناوی بەکارهێنەر"
+                      placeholder={t("auth.emailOrUsername")}
                       aria-invalid={Boolean(error)}
                       className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-5 pl-14 outline-none transition focus:border-[#FFAE42] focus-visible:ring-[3px] focus-visible:ring-[#FFAE42]/35"
                     />
@@ -316,7 +248,7 @@ export default function LoginForm() {
                     htmlFor="login-password"
                     className="mb-3 block font-semibold text-slate-700"
                   >
-                    وشەی نهێنی
+                    {t("auth.password")}
                   </label>
 
                   <div className="relative">
@@ -340,7 +272,9 @@ export default function LoginForm() {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       aria-label={
-                        showPassword ? "شاردنەوەی وشەی نهێنی" : "پیشاندانی وشەی نهێنی"
+                        showPassword
+                          ? t("auth.hidePassword")
+                          : t("auth.showPassword")
                       }
                       className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400"
                     >
@@ -354,7 +288,7 @@ export default function LoginForm() {
                     href="/forgot-password"
                     className="text-[#FFAE42] hover:underline"
                   >
-                    وشەی نهێنی لەبیرکردووە؟
+                    {t("auth.forgotLink")}
                   </Link>
                 </div>
 
@@ -364,28 +298,23 @@ export default function LoginForm() {
                   aria-busy={loading}
                   className="h-14 w-full rounded-2xl bg-gradient-to-r from-[#FFAE42] to-[#FFAE42] font-bold text-white transition hover:scale-[1.02] disabled:opacity-60"
                 >
-                  {loading ? "چاوەڕوان بە..." : "چوونەژوورەوە"}
+                  {loading ? t("common.pleaseWait") : t("common.login")}
                 </button>
 
                 <p className="pt-4 text-center text-slate-500">
-
-                  هێشتا هەژمارت نییە؟
+                  {t("auth.noAccount")}
 
                   <Link
                     href="/register"
                     className="mr-2 font-bold text-[#FFAE42]"
                   >
-                    دروستکردنی هەژمار
+                    {t("auth.createAccount")}
                   </Link>
-
                 </p>
-
               </form>
-
             </div>
-
           </section>
-</div>
+        </div>
       </div>
     </main>
   );

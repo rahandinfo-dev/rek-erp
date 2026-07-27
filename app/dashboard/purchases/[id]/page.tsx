@@ -6,6 +6,7 @@ import { db } from "@/lib/prisma/db";
 import { getCurrentCompanyId } from "@/lib/auth/current-user";
 import { formatMoney } from "@/lib/utils/format";
 import RecordVersionHistorySection from "@/components/versions/RecordVersionHistorySection";
+import { tServer } from "@/lib/i18n";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -15,6 +16,7 @@ export default async function PurchaseDetailPage({ params }: Props) {
   const companyId = await getCurrentCompanyId();
   if (!companyId) return null;
 
+  const t = tServer.t.bind(tServer);
   const { id } = await params;
 
   const purchase = await db.purchase.findFirst({
@@ -45,52 +47,56 @@ export default async function PurchaseDetailPage({ params }: Props) {
           <h1 className="text-3xl font-black text-[#FFAE42] sm:text-4xl">
             {purchase.invoiceNo}
           </h1>
-          <p className="mt-2 text-slate-500">وردەکاری کڕین</p>
+          <p className="mt-2 text-slate-500">{t("purchases.details")}</p>
         </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="rounded-3xl border bg-white p-6 lg:col-span-1">
-          <h2 className="mb-4 text-xl font-bold text-[#FFAE42]">زانیاری</h2>
+          <h2 className="mb-4 text-xl font-bold text-[#FFAE42]">
+            {t("common.info")}
+          </h2>
           <dl className="space-y-3 text-sm">
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">دابینکەر</dt>
+              <dt className="text-slate-500">{t("purchases.supplierOptional")}</dt>
               <dd className="font-semibold">{purchase.supplier.name}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">کۆگا</dt>
+              <dt className="text-slate-500">{t("common.warehouse")}</dt>
               <dd className="font-semibold">{purchase.warehouse.name}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">بەروار</dt>
+              <dt className="text-slate-500">{t("common.date")}</dt>
               <dd className="font-semibold">
                 {formatDate(purchase.purchaseDate)}
               </dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">دۆخ</dt>
+              <dt className="text-slate-500">{t("common.status")}</dt>
               <dd className="font-semibold">{purchase.status}</dd>
             </div>
             <div className="flex justify-between gap-4">
-              <dt className="text-slate-500">کۆی گشتی</dt>
+              <dt className="text-slate-500">{t("common.total")}</dt>
               <dd className="font-bold text-[#FFAE42]">
-                {formatMoney(purchase.total)} IQD
+                {formatMoney(purchase.total)} {t("common.currencyCode")}
               </dd>
             </div>
           </dl>
         </div>
 
         <div className="rounded-3xl border bg-white p-4 sm:p-6 lg:col-span-2">
-          <h2 className="mb-4 text-xl font-bold text-[#FFAE42]">بەرهەمەکان</h2>
+          <h2 className="mb-4 text-xl font-bold text-[#FFAE42]">
+            {t("common.products")}
+          </h2>
           <div className="rek-table-shell">
             <div className="rek-table-wrap">
               <table className="w-full min-w-[420px] sm:min-w-[520px]">
               <thead className="bg-slate-50">
                 <tr className="text-right">
-                  <th className="px-4 py-3">بەرهەم</th>
-                  <th className="px-4 py-3">بڕ</th>
-                  <th className="px-4 py-3">نرخ</th>
-                  <th className="px-4 py-3">کۆ</th>
+                  <th className="px-4 py-3">{t("common.product")}</th>
+                  <th className="px-4 py-3">{t("common.quantity")}</th>
+                  <th className="px-4 py-3">{t("common.price")}</th>
+                  <th className="px-4 py-3">{t("common.lineTotal")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -104,9 +110,11 @@ export default async function PurchaseDetailPage({ params }: Props) {
                     </td>
                     <td className="px-4 py-3">{Number(item.quantity)}</td>
                     <td className="px-4 py-3">
-                      {formatMoney(item.unitPrice)} IQD
+                      {formatMoney(item.unitPrice)} {t("common.currencyCode")}
                     </td>
-                    <td className="px-4 py-3">{formatMoney(item.total)} IQD</td>
+                    <td className="px-4 py-3">
+                      {formatMoney(item.total)} {t("common.currencyCode")}
+                    </td>
                   </tr>
                 ))}
               </tbody>

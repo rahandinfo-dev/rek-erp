@@ -7,12 +7,14 @@ import { Pencil, Phone, Search } from "lucide-react";
 import DeleteCustomerButton from "./DeleteCustomerButton";
 import { formatMoney } from "@/lib/utils/format";
 import type { PartyStats } from "@/lib/parties/stats";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function CustomersBrowser({
   initialData,
 }: {
   initialData: PartyStats[];
 }) {
+  const { t } = useT();
   const [rows, setRows] = useState(initialData);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<"all" | "active" | "inactive">("all");
@@ -31,6 +33,12 @@ export default function CustomersBrowser({
     });
   }, [rows, search, filter]);
 
+  const filters = [
+    { id: "all" as const, label: t("common.all") },
+    { id: "active" as const, label: t("common.active") },
+    { id: "inactive" as const, label: t("common.inactive") },
+  ];
+
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -42,18 +50,12 @@ export default function CustomersBrowser({
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="گەڕان بە ناو، کۆد یان مۆبایل…"
+            placeholder={t("customers.searchPlaceholder")}
             className="h-11 w-full rounded-2xl border border-border bg-card pr-9 pl-4 text-sm outline-none focus:border-primary/50"
           />
         </div>
         <div className="flex gap-1.5">
-          {(
-            [
-              { id: "all", label: "هەموو" },
-              { id: "active", label: "چالاک" },
-              { id: "inactive", label: "ناچالاک" },
-            ] as const
-          ).map((f) => (
+          {filters.map((f) => (
             <button
               key={f.id}
               type="button"
@@ -72,7 +74,7 @@ export default function CustomersBrowser({
 
       {filtered.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-border py-16 text-center text-sm text-muted-foreground">
-          هیچ کڕیارێک نەدۆزرایەوە.
+          {t("customers.notFound")}
         </p>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -98,21 +100,21 @@ export default function CustomersBrowser({
                       : "bg-red-50 text-red-700"
                   }`}
                 >
-                  {c.active ? "چالاک" : "ناچالاک"}
+                  {c.active ? t("common.active") : t("common.inactive")}
                 </span>
               </div>
 
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <Meta
-                  label="کۆی کڕین"
-                  value={`${formatMoney(c.totalPurchases)} IQD`}
+                  label={t("customers.totalPurchases")}
+                  value={`${formatMoney(c.totalPurchases)} ${t("common.currencyCode")}`}
                 />
                 <Meta
-                  label="قەرزی ماوە"
-                  value={`${formatMoney(c.outstandingBalance)} IQD`}
+                  label={t("customers.outstandingBalance")}
+                  value={`${formatMoney(c.outstandingBalance)} ${t("common.currencyCode")}`}
                 />
                 <Meta
-                  label="دوایین کڕین"
+                  label={t("customers.lastPurchase")}
                   value={
                     c.lastPurchaseAt
                       ? formatDate(c.lastPurchaseAt)
@@ -126,7 +128,7 @@ export default function CustomersBrowser({
                 <Link
                   href={`/dashboard/customers/${c.id}/edit`}
                   className="inline-flex size-9 items-center justify-center rounded-xl bg-secondary text-primary"
-                  aria-label="دەستکاری"
+                  aria-label={t("common.edit")}
                 >
                   <Pencil size={16} />
                 </Link>

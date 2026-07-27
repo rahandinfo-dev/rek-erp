@@ -7,7 +7,7 @@ const VersionHistoryPanel = dynamic(
   {
     ssr: false,
     loading: () => (
-      <p className="text-sm text-muted-foreground">Loading version history…</p>
+      <p className="text-sm text-muted-foreground">بارکردنی مێژووی وەشان…</p>
     ),
   }
 );

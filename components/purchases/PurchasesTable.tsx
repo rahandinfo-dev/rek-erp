@@ -8,6 +8,7 @@ import { formatMoney } from "@/lib/utils/format";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import BulkListShell from "@/components/bulk/BulkListShell";
 import ContextMenuSurface from "@/components/quick-actions/ContextMenuSurface";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type PurchaseRow = {
   id: string;
@@ -24,6 +25,7 @@ export default function PurchasesTable({
 }: {
   initialData: PurchaseRow[];
 }) {
+  const { t } = useT();
   const [purchases, setPurchases] = useState(initialData);
   const [search, setSearch] = useState("");
   const [cancelId, setCancelId] = useState<string | null>(null);
@@ -35,7 +37,7 @@ export default function PurchasesTable({
       deleteUrl: `/api/purchases/${id}`,
       restoreUrl: `/api/purchases/${id}/restore`,
       module: "purchases",
-      title: "Purchase cancelled",
+      title: t("purchases.cancelledTitle"),
       entityType: "Purchase",
       entityId: id,
       onSoftDeleted: () => {
@@ -73,7 +75,7 @@ export default function PurchasesTable({
         />
         <input
           type="text"
-          placeholder="گەڕان بە ژمارەی پسوولە یان دابینکەر..."
+          placeholder={t("purchases.searchPlaceholder")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className="w-full rounded-2xl border border-slate-300 py-3 pl-12 pr-4 outline-none focus:border-[#FFAE42]"
@@ -94,20 +96,20 @@ export default function PurchasesTable({
           <thead className="bg-slate-100">
             <tr className="text-right">
               <th className="px-5 py-4">{headerCheckbox}</th>
-              <th className="px-5 py-4">پسوولە</th>
-              <th className="px-5 py-4">دابینکەر</th>
-              <th className="px-5 py-4">کۆگا</th>
-              <th className="px-5 py-4">بەروار</th>
-              <th className="px-5 py-4">کۆی گشتی</th>
-              <th className="px-5 py-4">دۆخ</th>
-              <th className="px-5 py-4 text-center">کردار</th>
+              <th className="px-5 py-4">{t("common.invoice")}</th>
+              <th className="px-5 py-4">{t("purchases.supplierOptional")}</th>
+              <th className="px-5 py-4">{t("common.warehouse")}</th>
+              <th className="px-5 py-4">{t("common.date")}</th>
+              <th className="px-5 py-4">{t("common.total")}</th>
+              <th className="px-5 py-4">{t("common.status")}</th>
+              <th className="px-5 py-4 text-center">{t("common.action")}</th>
             </tr>
           </thead>
           <tbody>
             {filtered.length === 0 ? (
               <tr>
                 <td colSpan={8} className="py-10 text-center text-slate-500">
-                  هیچ کڕینێک نەدۆزرایەوە.
+                  {t("purchases.notFound")}
                 </td>
               </tr>
             ) : (
@@ -130,7 +132,7 @@ export default function PurchasesTable({
                       type="checkbox"
                       checked={isSelected(purchase.id)}
                       onChange={() => toggle(purchase.id)}
-                      aria-label={`Select ${purchase.invoiceNo}`}
+                      aria-label={t("common.selectNamed", { name: purchase.invoiceNo })}
                     />
                   </td>
                   <td className="px-5 py-4 font-medium">{purchase.invoiceNo}</td>
@@ -140,7 +142,7 @@ export default function PurchasesTable({
                     {formatDate(purchase.purchaseDate)}
                   </td>
                   <td className="px-5 py-4">
-                    {formatMoney(purchase.total)} IQD
+                    {formatMoney(purchase.total)} {t("common.currencyCode")}
                   </td>
                   <td className="px-5 py-4">
                     <span
@@ -153,10 +155,10 @@ export default function PurchasesTable({
                       }`}
                     >
                       {purchase.status === "COMPLETED"
-                        ? "تەواو"
+                        ? t("common.statusCompleted")
                         : purchase.status === "CANCELLED"
-                          ? "هەڵوەشاوە"
-                          : "ڕەشنووس"}
+                          ? t("common.statusCancelled")
+                          : t("common.statusDraft")}
                     </span>
                   </td>
                   <td className="px-5 py-4">
@@ -172,7 +174,7 @@ export default function PurchasesTable({
                           type="button"
                           onClick={() => setCancelId(purchase.id)}
                           className="text-destructive hover:opacity-80"
-                          aria-label="هەڵوەشاندنەوەی کڕین"
+                          aria-label={t("purchases.cancelAria")}
                         >
                           <XCircle size={18} />
                         </button>
@@ -191,9 +193,9 @@ export default function PurchasesTable({
 
       <ConfirmDialog
         open={Boolean(cancelId)}
-        title="هەڵوەشاندنەوەی کڕین"
-        description="دڵنیایت لە هەڵوەشاندنەوەی ئەم کڕینە؟"
-        confirmText="هەڵوەشاندنەوە"
+        title={t("purchases.cancelTitle")}
+        description={t("purchases.cancelConfirm")}
+        confirmText={t("common.cancel")}
         onCancel={() => setCancelId(null)}
         onConfirm={async () => {
           const id = cancelId;

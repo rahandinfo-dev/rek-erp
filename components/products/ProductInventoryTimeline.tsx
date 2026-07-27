@@ -3,6 +3,7 @@ import { formatNumber } from "@/lib/utils/format";
 import { formatDateTime } from "@/lib/utils/datetime";
 
 import { Clock3 } from "lucide-react";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export type TimelineItem = {
   id: string;
@@ -18,17 +19,17 @@ export type TimelineItem = {
   userName: string | null;
 };
 
-const TYPE_LABELS: Record<string, string> = {
-  PURCHASE: "کڕین",
-  SALE: "فرۆشتن",
-  SALE_RETURN: "گەڕاندنەوەی فرۆشتن",
-  PURCHASE_RETURN: "گەڕاندنەوەی کڕین",
-  TRANSFER_IN: "گواستنەوەی ناوەوە",
-  TRANSFER_OUT: "گواستنەوەی دەرەوە",
-  ADJUSTMENT: "ڕێکخستن",
-  PRODUCT_CREATE: "دروستکردنی بەرهەم",
-  PRODUCT_DELETE: "سڕینەوەی بەرهەم",
-  RESTORE: "گەڕاندنەوە",
+const TYPE_KEYS: Record<string, string> = {
+  PURCHASE: "products.movementPurchase",
+  SALE: "products.movementSale",
+  SALE_RETURN: "products.movementSaleReturn",
+  PURCHASE_RETURN: "products.movementPurchaseReturn",
+  TRANSFER_IN: "products.movementTransferIn",
+  TRANSFER_OUT: "products.movementTransferOut",
+  ADJUSTMENT: "products.movementAdjustment",
+  PRODUCT_CREATE: "products.movementProductCreate",
+  PRODUCT_DELETE: "products.movementProductDelete",
+  RESTORE: "products.movementRestore",
 };
 
 export default function ProductInventoryTimeline({
@@ -36,10 +37,12 @@ export default function ProductInventoryTimeline({
 }: {
   items: TimelineItem[];
 }) {
+  const { t } = useT();
+
   if (items.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-muted/40 px-4 py-12 text-center text-muted-foreground">
-        هێشتا هیچ جوڵەیەک لە تایملایندا نییە.
+        {t("products.timelineEmpty")}
       </div>
     );
   }
@@ -49,7 +52,7 @@ export default function ProductInventoryTimeline({
       <div className="flex items-center gap-2">
         <Clock3 className="text-primary" size={18} />
         <h3 className="text-lg font-black text-foreground">
-          تایملاینی ئینڤێنتۆری
+          {t("products.timelineTitle")}
         </h3>
       </div>
 
@@ -57,6 +60,7 @@ export default function ProductInventoryTimeline({
         {items.map((item, index) => {
           const delta = item.quantity;
           const up = delta >= 0;
+          const typeKey = TYPE_KEYS[item.type];
           return (
             <li
               key={item.id}
@@ -72,7 +76,7 @@ export default function ProductInventoryTimeline({
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="font-bold text-foreground">
-                      {TYPE_LABELS[item.type] || item.type}
+                      {typeKey ? t(typeKey) : item.type}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {item.warehouse.name}

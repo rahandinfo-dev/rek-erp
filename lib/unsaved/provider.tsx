@@ -14,6 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import SaveGuardDialog from "@/components/unsaved/SaveGuardDialog";
 import ConflictDialog from "@/components/unsaved/ConflictDialog";
 import { appToast } from "@/lib/toast";
+import { tServer } from "@/lib/i18n";
 import { buildChangeSummary } from "@/lib/unsaved/changeSummary";
 import {
   pushLocalSaveHistory,
@@ -449,7 +450,7 @@ export function SaveGuardProvider({
     if (ok) {
       await proceedPending();
     } else {
-      appToast.error("Save failed. Fix errors or discard changes.");
+      appToast.error(tServer.t("unsaved.saveFailed"));
     }
   }, [forceSaveAll, proceedPending]);
 

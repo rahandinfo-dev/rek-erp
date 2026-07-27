@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { softDeleteWithUndo } from "@/lib/delete/withUndo";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   id: string;
@@ -17,12 +18,11 @@ export default function DeleteSupplierButton({
   onDeleted,
   onRestored,
 }: Props) {
+  const { t } = useT();
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    const ok = window.confirm(
-      "Soft delete بکە؟ Undo بۆ چەند چرکەیەک دەردەکەوێت · مێژوو دەمێنێتەوە."
-    );
+    const ok = window.confirm(t("common.softDeleteConfirm"));
     if (!ok) return;
 
     try {
@@ -31,9 +31,9 @@ export default function DeleteSupplierButton({
         deleteUrl: `/api/suppliers/${id}`,
         restoreUrl: `/api/suppliers/${id}/restore`,
         module: "suppliers",
-        title: "Supplier archived",
+        title: t("suppliers.archivedTitle"),
         message: name ? `«${name}»` : undefined,
-        entityType: "دابینکەر",
+        entityType: t("suppliers.entityType"),
         entityId: id,
         onSoftDeleted: onDeleted,
         onRestored,
@@ -49,7 +49,7 @@ export default function DeleteSupplierButton({
       onClick={() => void handleDelete()}
       disabled={loading}
       className="text-red-600 hover:text-red-800 disabled:opacity-50"
-      aria-label="سڕینەوەی دابینکەر"
+      aria-label={t("suppliers.deleteAria")}
     >
       <Trash2 size={18} />
     </button>

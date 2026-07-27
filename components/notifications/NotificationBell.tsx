@@ -18,6 +18,7 @@ import type {
   NotificationCategory,
   NotificationPriority,
 } from "@/lib/prisma/client";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type NotificationItem = {
   id: string;
@@ -40,6 +41,7 @@ type ApiResponse = {
 };
 
 export default function NotificationBell() {
+  const { t } = useT();
   const router = useRouter();
   const panelRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
@@ -163,7 +165,7 @@ export default function NotificationBell() {
     <div className="relative" ref={panelRef}>
       <button
         type="button"
-        aria-label="ئاگادارییەکان"
+        aria-label={t("notifications.ariaLabel")}
         aria-expanded={open}
         onClick={() => {
           const next = !open;
@@ -184,9 +186,9 @@ export default function NotificationBell() {
         <div className="absolute left-0 z-50 mt-2 w-[min(92vw,380px)] overflow-hidden rounded-3xl border border-[rgba(255, 174, 66,0.12)] bg-white shadow-xl shadow-[#FFAE42]/10">
           <div className="flex items-center justify-between border-b border-[rgba(255, 174, 66,0.08)] px-4 py-3">
             <div>
-              <h3 className="font-bold text-[#1f1218]">ناوەندی ئاگاداری</h3>
+              <h3 className="font-bold text-[#1f1218]">{t("notifications.title")}</h3>
               <p className="text-xs text-[#6b5560]">
-                {unreadCount} نەخوێندراو
+                {t("notifications.unreadCount", { count: unreadCount })}
               </p>
             </div>
             <button
@@ -195,20 +197,20 @@ export default function NotificationBell() {
               className="inline-flex items-center gap-1 rounded-xl px-2 py-1 text-xs font-semibold text-[#FFAE42] hover:bg-[#FFF8EF]"
             >
               <CheckCheck size={14} />
-              خوێندنەوەی هەموو
+              {t("notifications.markAllRead")}
             </button>
           </div>
 
           <div className="max-h-[420px] overflow-y-auto">
             {loading && items.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-slate-500">
-                چاوەڕێ بکە...
+                {t("common.wait")}
               </p>
             ) : null}
 
             {!loading && items.length === 0 ? (
               <p className="px-4 py-8 text-center text-sm text-slate-500">
-                هیچ ئاگادارییەک نییە
+                {t("notifications.emptyShort")}
               </p>
             ) : null}
 
@@ -247,7 +249,7 @@ export default function NotificationBell() {
             onClick={() => setOpen(false)}
             className="flex items-center justify-center gap-2 border-t border-[rgba(255, 174, 66,0.08)] bg-[#FFF8EF]/50 px-4 py-3 text-sm font-bold text-[#FFAE42] transition hover:bg-[#FFF8EF]"
           >
-            کردنەوەی ناوەندی ئاگاداری
+            {t("notifications.openCenter")}
             <ExternalLink size={14} />
           </Link>
         </div>

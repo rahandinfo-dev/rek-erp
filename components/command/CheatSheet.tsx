@@ -11,33 +11,10 @@ import { useKeyboardProductivity } from "@/lib/command/keyboardProvider";
 import { ALL_STATIC_COMMANDS } from "@/lib/command/commands";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
-
-const LABELS: Record<string, { title: string; category: string }> = {
-  "global-search": { title: "گەڕانی گشتی", category: "Searching" },
-  "command-palette": { title: "پەلێتی فەرمان", category: "سیستەم" },
-  "cheat-sheet": { title: "Shortcut Cheat Sheet", category: "سیستەم" },
-  "ai-assistant": { title: "یاریدەدەری زیرەک", category: "سیستەم" },
-  "create-new": { title: "Create New Record", category: "دروستکردن" },
-  "manual-save": { title: "پاشەکەوتی دەستی", category: "Editing" },
-  undo: { title: "پاشگەزبوونەوە", category: "Editing" },
-  redo: { title: "دووبارەکردنەوە", category: "Editing" },
-  print: { title: "چاپکردن", category: "سیستەم" },
-  "page-search": { title: "گەڕان لە پەڕەی ئێستا", category: "Searching" },
-  refresh: { title: "Refresh Module", category: "سیستەم" },
-  duplicate: { title: "دووبارەکردنەوەی تۆمار", category: "Editing" },
-  "delete-selected": { title: "Delete Selected", category: "Editing" },
-  "nav-1": { title: "داشبۆرد", category: "گەشتکردن" },
-  "nav-2": { title: "بەرهەمەکان", category: "گەشتکردن" },
-  "nav-3": { title: "فرۆشتن", category: "گەشتکردن" },
-  "nav-4": { title: "کڕین", category: "گەشتکردن" },
-  "nav-5": { title: "ئینڤێنتۆری", category: "گەشتکردن" },
-  "nav-6": { title: "کڕیارەکان", category: "گەشتکردن" },
-  "nav-7": { title: "دابینکەران", category: "گەشتکردن" },
-  "nav-8": { title: "ڕاپۆرتەکان", category: "گەشتکردن" },
-  "nav-9": { title: "ڕێکخستنەکان", category: "گەشتکردن" },
-};
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function CheatSheetHost() {
+  const { t } = useT();
   const {
     prefs,
     setBinding,
@@ -49,6 +26,68 @@ export default function CheatSheetHost() {
   const [query, setQuery] = useState("");
   const [recordingId, setRecordingId] = useState<string | null>(null);
   const [category, setCategory] = useState<string>("all");
+
+  const labels = useMemo(
+    () =>
+      ({
+        "global-search": {
+          title: t("command.openSmartSearch"),
+          category: t("commandSheet.searching"),
+        },
+        "command-palette": {
+          title: "پەلێتی فەرمان",
+          category: t("nav.systemGroup"),
+        },
+        "cheat-sheet": {
+          title: t("commandSheet.cheatSheet"),
+          category: t("nav.systemGroup"),
+        },
+        "ai-assistant": {
+          title: t("nav.aiAssistant"),
+          category: t("nav.systemGroup"),
+        },
+        "create-new": {
+          title: t("commandSheet.createNew"),
+          category: t("common.create"),
+        },
+        "manual-save": {
+          title: "پاشەکەوتی دەستی",
+          category: t("commandSheet.editing"),
+        },
+        undo: { title: "پاشگەزبوونەوە", category: t("commandSheet.editing") },
+        redo: {
+          title: "دووبارەکردنەوە",
+          category: t("commandSheet.editing"),
+        },
+        print: { title: "چاپکردن", category: t("nav.systemGroup") },
+        "page-search": {
+          title: "گەڕان لە پەڕەی ئێستا",
+          category: t("commandSheet.searching"),
+        },
+        refresh: {
+          title: t("commandSheet.refreshModule"),
+          category: t("nav.systemGroup"),
+        },
+        duplicate: {
+          title: "دووبارەکردنەوەی تۆمار",
+          category: t("commandSheet.editing"),
+        },
+        "delete-selected": {
+          title: t("commandSheet.deleteSelected"),
+          category: t("commandSheet.editing"),
+        },
+        "nav-1": { title: t("nav.dashboard"), category: "گەشتکردن" },
+        "nav-2": { title: t("nav.products"), category: "گەشتکردن" },
+        "nav-3": { title: t("nav.sales"), category: "گەشتکردن" },
+        "nav-4": { title: t("nav.purchases"), category: "گەشتکردن" },
+        "nav-5": { title: t("nav.inventory"), category: "گەشتکردن" },
+        "nav-6": { title: t("nav.customers"), category: "گەشتکردن" },
+        "nav-7": { title: t("nav.suppliers"), category: "گەشتکردن" },
+        "nav-8": { title: t("nav.reports"), category: "گەشتکردن" },
+        "nav-9": { title: t("nav.settings"), category: "گەشتکردن" },
+      }) as Record<string, { title: string; category: string }>,
+    [t]
+  );
 
   useEffect(() => {
     function openSheet() {
@@ -92,15 +131,17 @@ export default function CheatSheetHost() {
       const chord = parts.join("+");
       const result = setBinding(recordingId!, chord);
       if (!result.ok) {
-        appToast.error(`Conflict with: ${result.conflicts.join(", ")}`);
+        appToast.error(
+          t("commandSheet.conflictWith", { list: result.conflicts.join(", ") })
+        );
       } else {
-        appToast.success("Shortcut updated");
+        appToast.success(t("commandSheet.shortcutUpdated"));
         setRecordingId(null);
       }
     }
     window.addEventListener("keydown", onKey, true);
     return () => window.removeEventListener("keydown", onKey, true);
-  }, [open, recordingId, setBinding]);
+  }, [open, recordingId, setBinding, t]);
 
   const rows = useMemo(() => {
     const all = {
@@ -110,9 +151,9 @@ export default function CheatSheetHost() {
     const q = query.trim().toLowerCase();
     return Object.entries(all)
       .map(([id, binding]) => {
-        const meta = LABELS[id] || {
+        const meta = labels[id] || {
           title: id,
-          category: "سیستەم",
+          category: t("nav.systemGroup"),
         };
         const cmd = ALL_STATIC_COMMANDS.find((c) => c.shortcutId === id);
         return {
@@ -135,16 +176,19 @@ export default function CheatSheetHost() {
           r.category.toLowerCase().includes(q)
         );
       })
-      .sort((a, b) => a.category.localeCompare(b.category) || a.title.localeCompare(b.title));
-  }, [prefs.bindings, query, category, labelFor]);
+      .sort(
+        (a, b) =>
+          a.category.localeCompare(b.category) || a.title.localeCompare(b.title)
+      );
+  }, [prefs.bindings, query, category, labelFor, labels, t]);
 
   const categories = useMemo(() => {
-    const set = new Set(Object.values(LABELS).map((l) => l.category));
+    const set = new Set(Object.values(labels).map((l) => l.category));
     ALL_STATIC_COMMANDS.forEach((c) => {
       if (c.category) set.add(c.category);
     });
     return ["all", ...[...set].sort()];
-  }, []);
+  }, [labels]);
 
   if (!open) return null;
 
@@ -158,18 +202,20 @@ export default function CheatSheetHost() {
       <button
         type="button"
         className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-[2px]"
-        aria-label="Close cheat sheet"
+        aria-label={t("commandSheet.closeSheet")}
         onClick={() => setOpen(false)}
       />
       <div className="relative z-10 flex max-h-[min(80vh,720px)] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
         <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-          <h2 className="text-sm font-black">Keyboard Shortcuts</h2>
+          <h2 className="text-sm font-black">
+            {t("commandSheet.keyboardShortcuts")}
+          </h2>
           <kbd className="rek-cmd-kbd">Ctrl+/</kbd>
           <button
             type="button"
             className="ms-auto rounded-lg p-1.5 text-muted-foreground hover:bg-muted"
             onClick={() => setOpen(false)}
-            aria-label="داخستن"
+            aria-label={t("common.close")}
           >
             <X size={16} />
           </button>
@@ -217,7 +263,7 @@ export default function CheatSheetHost() {
                 </p>
               </div>
               <kbd className="rek-cmd-kbd shrink-0">
-                {recordingId === r.id ? "Press keys…" : r.label}
+                {recordingId === r.id ? t("commandSheet.pressKeys") : r.label}
               </kbd>
               <button
                 type="button"
@@ -226,14 +272,14 @@ export default function CheatSheetHost() {
                   setRecordingId((id) => (id === r.id ? null : r.id))
                 }
               >
-                Change
+                {t("commandSheet.change")}
               </button>
               <button
                 type="button"
                 className="text-[10px] font-bold text-muted-foreground"
                 onClick={() => resetBinding(r.id)}
               >
-                Reset
+                {t("commandSheet.reset")}
               </button>
               <button
                 type="button"

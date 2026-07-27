@@ -3,14 +3,15 @@
 import { HeartPulse } from "lucide-react";
 import {
   buildProductInventoryHealth,
-  HEALTH_LABELS_KU,
+  type InventoryHealthLabel,
 } from "@/lib/inventory/health";
 import {
-  formatStockQty,
-  STOCK_STATUS_LABELS_KU,
+  type StockStatus,
   stockStatusBadgeClass,
+  formatStockQty,
 } from "@/lib/inventory/stock";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   currentStock: number;
@@ -20,6 +21,18 @@ type Props = {
   unitLabel: string;
 };
 
+const STATUS_KEYS: Record<StockStatus, string> = {
+  IN_STOCK: "inventory.statusAvailable",
+  LOW_STOCK: "inventory.statusLow",
+  OUT_OF_STOCK: "inventory.statusOut",
+};
+
+const HEALTH_KEYS: Record<InventoryHealthLabel, string> = {
+  HEALTHY: "products.healthOk",
+  ATTENTION: "products.healthAttention",
+  CRITICAL: "products.healthCritical",
+};
+
 export default function ProductInventoryHealth({
   currentStock,
   reservedStock,
@@ -27,6 +40,7 @@ export default function ProductInventoryHealth({
   maximumStock,
   unitLabel,
 }: Props) {
+  const { t } = useT();
   const health = buildProductInventoryHealth({
     currentStock,
     reservedStock,
@@ -57,17 +71,17 @@ export default function ProductInventoryHealth({
           </div>
           <div>
             <h3 className="text-lg font-black text-foreground">
-              تەندروستی ئینڤێنتۆری
+              {t("products.inventoryHealth")}
             </h3>
             <p className="text-sm text-muted-foreground">
-              هەڵسەنگاندن لەسەر کۆگا، کەمترین و زۆرترین ئاست
+              {t("products.inventoryHealthDesc")}
             </p>
           </div>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           <span className={stockStatusBadgeClass(health.status)}>
-            {STOCK_STATUS_LABELS_KU[health.status]}
+            {t(STATUS_KEYS[health.status])}
           </span>
           <span
             className={cn(
@@ -79,14 +93,16 @@ export default function ProductInventoryHealth({
                   : "rek-badge-success"
             )}
           >
-            {HEALTH_LABELS_KU[health.label]}
+            {t(HEALTH_KEYS[health.label])}
           </span>
         </div>
       </div>
 
       <div className="mt-5 flex flex-wrap items-end gap-4">
         <div>
-          <p className="text-xs font-semibold text-muted-foreground">ئاستی تەندروستی</p>
+          <p className="text-xs font-semibold text-muted-foreground">
+            {t("products.healthLevel")}
+          </p>
           <p className={cn("text-4xl font-black tabular-nums", scoreColor)}>
             {health.score}
             <span className="text-lg text-muted-foreground">/100</span>
@@ -101,9 +117,11 @@ export default function ProductInventoryHealth({
           </div>
           {health.fillPct != null && (
             <p className="mt-2 text-xs text-muted-foreground">
-              پڕبوونی کۆگا بەرامبەر زۆرترین: {health.fillPct}% ·{" "}
-              {formatStockQty(currentStock, unitLabel)} /{" "}
-              {formatStockQty(maximumStock, unitLabel)}
+              {t("products.fillPct", {
+                pct: String(health.fillPct),
+                current: formatStockQty(currentStock, unitLabel),
+                max: formatStockQty(maximumStock, unitLabel),
+              })}
             </p>
           )}
         </div>

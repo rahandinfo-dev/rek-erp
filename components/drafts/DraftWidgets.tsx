@@ -273,7 +273,7 @@ export function DraftStatisticsWidget() {
         <h2 className="text-lg font-black">Draft Statistics</h2>
       </div>
       {!stats ? (
-        <p className="text-sm text-muted-foreground">Loading…</p>
+        <p className="text-sm text-muted-foreground">بارکردن…</p>
       ) : (
         <dl className="grid grid-cols-2 gap-3">
           {rows.map(([k, v]) => (

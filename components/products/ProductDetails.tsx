@@ -31,6 +31,7 @@ import { StockStatusBadge } from "@/components/inventory/StockStatusBadge";
 import { inputClassName } from "@/components/ui/FormPrimitives";
 import ImageUpload from "@/components/uploads/ImageUpload";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 import dynamic from "next/dynamic";
 
 const BarcodeSvg = dynamic(() => import("@/components/barcode/BarcodeSvg"), {
@@ -45,7 +46,7 @@ const VersionHistoryPanel = dynamic(
   {
     ssr: false,
     loading: () => (
-      <p className="text-sm text-muted-foreground">Loading versions…</p>
+      <p className="text-sm text-muted-foreground">…</p>
     ),
   }
 );
@@ -92,14 +93,14 @@ type TabId =
   | "barcode"
   | "images";
 
-const TABS: { id: TabId; label: string; icon: typeof Info }[] = [
-  { id: "general", label: "گشتی", icon: Info },
-  { id: "inventory", label: "کۆگا", icon: Boxes },
-  { id: "pricing", label: "نرخ", icon: Package },
-  { id: "barcode", label: "بارکۆد", icon: Barcode },
-  { id: "history", label: "مێژوو", icon: History },
-  { id: "versions", label: "وەشانەکان", icon: History },
-  { id: "images", label: "وێنە", icon: ImageIcon },
+const TAB_DEFS: { id: TabId; icon: typeof Info; labelKey: string }[] = [
+  { id: "general", icon: Info, labelKey: "products.tabGeneral" },
+  { id: "inventory", icon: Boxes, labelKey: "products.tabInventory" },
+  { id: "pricing", icon: Package, labelKey: "products.tabPricing" },
+  { id: "barcode", icon: Barcode, labelKey: "products.tabBarcode" },
+  { id: "history", icon: History, labelKey: "products.tabHistory" },
+  { id: "versions", icon: History, labelKey: "products.tabVersions" },
+  { id: "images", icon: ImageIcon, labelKey: "products.tabImages" },
 ];
 
 type Props = {
@@ -113,6 +114,7 @@ export default function ProductDetails({
   units,
   warehouseBalances = [],
 }: Props) {
+  const { t } = useT();
   const router = useRouter();
   const [tab, setTab] = useState<TabId>("general");
   const [editing, setEditing] = useState(false);
@@ -182,7 +184,7 @@ export default function ProductDetails({
       });
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
 
@@ -220,10 +222,10 @@ export default function ProductDetails({
         maximumStock: Number(p.maximumStock ?? prev.maximumStock),
       }));
       setEditing(false);
-      appToast.productSaved("گۆڕانکارییەکان پاشەکەوتکران.");
+      appToast.productSaved(t("products.changesSaved"));
       startTransition(() => router.refresh());
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setSaving(false);
     }
@@ -237,9 +239,9 @@ export default function ProductDetails({
         deleteUrl: `/api/products/${product.id}`,
         restoreUrl: `/api/products/${product.id}/restore`,
         module: "products",
-        title: "Product deleted",
-        message: `«${product.name}»`,
-        entityType: "Product",
+        title: t("products.deletedTitle"),
+        message: t("products.deletedShortNamed", { name: product.name }),
+        entityType: t("products.entityType"),
         entityId: product.id,
         onSoftDeleted: () => {
           setConfirmOpen(false);
@@ -267,15 +269,15 @@ export default function ProductDetails({
       });
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
-      appToast.success("بەرهەم گەڕێنرایەوە", data.message);
+      appToast.success(t("products.restored"), data.message);
       setProduct((prev) => ({ ...prev, active: true }));
       setForm((prev) => ({ ...prev, active: true }));
       startTransition(() => router.refresh());
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setDeleting(false);
     }
@@ -291,16 +293,16 @@ export default function ProductDetails({
       });
       const data = await res.json();
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
       const code = data.data?.barcode || "";
       update("barcode", code);
       setProduct((p) => ({ ...p, barcode: code }));
-      appToast.productSaved(data.message || "بارکۆد پاشەکەوتکرا.");
+      appToast.productSaved(data.message || t("products.barcodeSaved"));
       startTransition(() => router.refresh());
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setBarcodeBusy(false);
     }
@@ -335,14 +337,14 @@ export default function ProductDetails({
           className="inline-flex items-center gap-2 rounded-2xl border border-border bg-card px-4 py-2.5 text-sm font-bold text-muted-foreground transition hover:border-primary/40 hover:text-primary"
         >
           <ArrowRight size={16} />
-          گەڕانەوە بۆ بەرهەمەکان
+          {t("products.backToProducts")}
         </Link>
 
         <div className="flex flex-wrap items-center gap-2">
           {editing ? (
             <>
               <Button type="button" variant="outline" onClick={cancelEdit}>
-                هەڵوەشاندنەوە
+                {t("common.cancel")}
               </Button>
               <Button
                 type="button"
@@ -350,13 +352,13 @@ export default function ProductDetails({
                 onClick={() => void handleSave()}
               >
                 <Save size={16} />
-                {saving ? "پاشەکەوت..." : "پاشەکەوتکردنی گۆڕانکاری"}
+                {saving ? t("products.savingDots") : t("common.saveChanges")}
               </Button>
             </>
           ) : (
             <Button type="button" onClick={() => setEditing(true)}>
               <Pencil size={16} />
-              دەستکاری
+              {t("common.edit")}
             </Button>
           )}
           {product.active ? (
@@ -366,7 +368,7 @@ export default function ProductDetails({
               onClick={() => setConfirmOpen(true)}
             >
               <Trash2 size={16} />
-              سڕینەوە
+              {t("common.delete")}
             </Button>
           ) : (
             <Button
@@ -375,7 +377,7 @@ export default function ProductDetails({
               onClick={() => void handleRestore()}
             >
               <RotateCcw size={16} />
-              {deleting ? "گەڕاندنەوە..." : "گەڕاندنەوە"}
+              {deleting ? t("products.restoring") : t("common.restore")}
             </Button>
           )}
         </div>
@@ -430,23 +432,23 @@ export default function ProductDetails({
 
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               <Stat
-                label="بڕی ئێستا"
+                label={t("products.currentStock")}
                 value={formatStockQty(stock.currentStock, unitLabel)}
               />
               <Stat
-                label="ئاگاداری کۆگا"
+                label={t("products.stockAlert")}
                 value={formatStockQty(stock.minimumStock, unitLabel)}
               />
               <Stat
-                label="نرخی فرۆشتن"
-                value={`${formatMoney(form.salePrice)} IQD`}
+                label={t("products.salePrice")}
+                value={`${formatMoney(form.salePrice)} ${t("common.currencyCode")}`}
               />
               <Stat
-                label="نرخی کڕین"
-                value={`${formatMoney(form.purchasePrice)} IQD`}
+                label={t("products.purchasePrice")}
+                value={`${formatMoney(form.purchasePrice)} ${t("common.currencyCode")}`}
               />
-              <Stat label="یەکە" value={unitLabel} />
-              <Stat label="کۆگا" value={product.warehouseName} icon />
+              <Stat label={t("nav.units")} value={unitLabel} />
+              <Stat label={t("products.warehouse")} value={product.warehouseName} icon />
             </div>
           </div>
         </div>
@@ -455,7 +457,7 @@ export default function ProductDetails({
       {/* Tabs */}
       <div className="rek-tabs-scroll">
         <div className="inline-flex min-w-full gap-1.5 rounded-[1.5rem] border border-border bg-card p-2 shadow-[var(--shadow-xs)] sm:min-w-0 sm:flex-wrap">
-          {TABS.map(({ id, label, icon: Icon }) => {
+          {TAB_DEFS.map(({ id, labelKey, icon: Icon }) => {
             const active = tab === id;
             return (
               <button
@@ -470,7 +472,7 @@ export default function ProductDetails({
                 )}
               >
                 <Icon size={16} />
-                {label}
+                {t(labelKey)}
               </button>
             );
           })}
@@ -480,7 +482,7 @@ export default function ProductDetails({
       <div className="rek-product-tab rek-card p-6 sm:p-8">
         {tab === "general" && (
           <div className="space-y-6">
-            <SectionTitle>زانیاری گشتی</SectionTitle>
+            <SectionTitle>{t("products.generalInfo")}</SectionTitle>
             <div className="grid gap-4 md:grid-cols-2">
               <Field label="SKU">
                 {editing ? (
@@ -493,7 +495,7 @@ export default function ProductDetails({
                   <Value>{product.sku}</Value>
                 )}
               </Field>
-              <Field label="بارکۆد">
+              <Field label={t("nav.barcode")}>
                 {editing ? (
                   <input
                     value={form.barcode}
@@ -504,7 +506,7 @@ export default function ProductDetails({
                   <Value>{product.barcode || "—"}</Value>
                 )}
               </Field>
-              <Field label="یەکە">
+              <Field label={t("nav.units")}>
                 {editing ? (
                   <select
                     value={form.unitId}
@@ -524,10 +526,10 @@ export default function ProductDetails({
                   </Value>
                 )}
               </Field>
-              <Field label="کۆگا">
+              <Field label={t("products.warehouse")}>
                 <Value>{product.warehouseName}</Value>
               </Field>
-              <Field label="نرخی کڕین">
+              <Field label={t("products.purchasePrice")}>
                 {editing ? (
                   <input
                     type="number"
@@ -538,10 +540,10 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.purchasePrice)} IQD</Value>
+                  <Value>{formatMoney(product.purchasePrice)} {t("common.currencyCode")}</Value>
                 )}
               </Field>
-              <Field label="نرخی فرۆشتن">
+              <Field label={t("products.salePrice")}>
                 {editing ? (
                   <input
                     type="number"
@@ -552,10 +554,10 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.salePrice)} IQD</Value>
+                  <Value>{formatMoney(product.salePrice)} {t("common.currencyCode")}</Value>
                 )}
               </Field>
-              <Field label="تێچوون">
+              <Field label={t("products.cost")}>
                 {editing ? (
                   <input
                     type="number"
@@ -566,10 +568,10 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.costPrice)} IQD</Value>
+                  <Value>{formatMoney(product.costPrice)} {t("common.currencyCode")}</Value>
                 )}
               </Field>
-              <Field label="قازانج %">
+              <Field label={t("products.profitPct")}>
                 {editing ? (
                   <input
                     type="number"
@@ -585,7 +587,7 @@ export default function ProductDetails({
               </Field>
             </div>
 
-            <Field label="تێبینی">
+            <Field label={t("common.notes")}>
               {editing ? (
                 <textarea
                   value={form.notes}
@@ -606,7 +608,7 @@ export default function ProductDetails({
                   onChange={(e) => update("active", e.target.checked)}
                   className="size-5 rounded border-border"
                 />
-                بەرهەم چالاک بێت
+                {t("products.productActive")}
               </label>
             )}
           </div>
@@ -614,29 +616,29 @@ export default function ProductDetails({
 
         {tab === "inventory" && (
           <div className="space-y-6">
-            <SectionTitle>کۆگا</SectionTitle>
+            <SectionTitle>{t("products.warehouse")}</SectionTitle>
 
             <div className="flex flex-wrap items-center gap-3">
               <StockStatusBadge status={stock.status} size="lg" />
               <p className="text-sm text-muted-foreground">
-                دۆخ خۆکارە — ناکرێت دەستکاری بکرێت
+                {t("products.statusAutoHint")}
               </p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <InvMetric
-                label="بڕی ئێستا"
+                label={t("products.currentStock")}
                 value={formatStockQty(stock.currentStock, unitLabel)}
               />
               <InvMetric
-                label="ئاگاداری کۆگا"
+                label={t("products.stockAlert")}
                 value={formatStockQty(stock.minimumStock, unitLabel)}
               />
             </div>
 
             {editing && (
               <div className="grid gap-4 md:grid-cols-2">
-                <Field label="بڕی ئێستا">
+                <Field label={t("products.currentStock")}>
                   <input
                     type="number"
                     value={form.currentStock}
@@ -646,7 +648,7 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 </Field>
-                <Field label="ئاگاداری کۆگا">
+                <Field label={t("products.stockAlert")}>
                   <input
                     type="number"
                     value={form.minimumStock}
@@ -661,12 +663,12 @@ export default function ProductDetails({
 
             <div className="flex items-center gap-3 rounded-2xl bg-secondary px-4 py-3 text-sm font-semibold text-primary">
               <Warehouse size={18} aria-hidden />
-              کۆگا: {product.warehouseName}
+              {t("products.warehouseLabel")}{product.warehouseName}
             </div>
 
             {warehouseBalances.length > 0 && (
               <div className="space-y-3">
-                <h3 className="font-bold text-foreground">کۆگاکانی تر</h3>
+                <h3 className="font-bold text-foreground">{t("products.otherWarehouses")}</h3>
                 <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                   {warehouseBalances.map((w) => (
                     <div
@@ -677,7 +679,7 @@ export default function ProductDetails({
                         {w.warehouseName}
                         {w.isMain ? (
                           <span className="rek-badge rek-badge-primary mr-2">
-                            سەرەکی
+                            {t("common.main")}
                           </span>
                         ) : null}
                       </p>
@@ -694,9 +696,9 @@ export default function ProductDetails({
 
         {tab === "pricing" && (
           <div className="space-y-6">
-            <SectionTitle>نرخ</SectionTitle>
+            <SectionTitle>{t("products.pricing")}</SectionTitle>
             <div className="grid gap-4 md:grid-cols-2">
-              <Field label="نرخی کڕین">
+              <Field label={t("products.purchasePrice")}>
                 {editing ? (
                   <input
                     type="number"
@@ -707,10 +709,10 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.purchasePrice)} IQD</Value>
+                  <Value>{formatMoney(product.purchasePrice)} {t("common.currencyCode")}</Value>
                 )}
               </Field>
-              <Field label="نرخی فرۆشتن">
+              <Field label={t("products.salePrice")}>
                 {editing ? (
                   <input
                     type="number"
@@ -721,7 +723,7 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.salePrice)} IQD</Value>
+                  <Value>{formatMoney(product.salePrice)} {t("common.currencyCode")}</Value>
                 )}
               </Field>
             </div>
@@ -742,7 +744,7 @@ export default function ProductDetails({
 
         {tab === "barcode" && (
           <div className="space-y-6">
-            <SectionTitle>بارکۆدی Code128</SectionTitle>
+            <SectionTitle>{t("products.barcodeTitle")}</SectionTitle>
             <div className="flex flex-col items-center gap-6 rounded-[1.75rem] border border-dashed border-primary/30 bg-secondary/40 px-6 py-10">
               {form.barcode ? (
                 <>
@@ -758,7 +760,7 @@ export default function ProductDetails({
                 </>
               ) : (
                 <p className="text-muted-foreground">
-                  بارکۆد بۆ ئەم بەرهەمە نییە.
+                  {t("products.noBarcode")}
                 </p>
               )}
 
@@ -768,7 +770,7 @@ export default function ProductDetails({
                   disabled={barcodeBusy}
                   onClick={() => void generateBarcode(false)}
                 >
-                  {form.barcode ? "نوێکردنەوەی پیشاندان" : "دروستکردنی بارکۆد"}
+                  {form.barcode ? t("products.refreshPreview") : t("products.generateBarcode")}
                 </Button>
                 {form.barcode && (
                   <Button
@@ -777,7 +779,7 @@ export default function ProductDetails({
                     disabled={barcodeBusy}
                     onClick={() => void generateBarcode(true)}
                   >
-                    دوبارە دروستکردن
+                    {t("products.regenerate")}
                   </Button>
                 )}
               </div>
@@ -787,17 +789,16 @@ export default function ProductDetails({
 
         {tab === "images" && (
           <div className="space-y-6">
-            <SectionTitle>وێنەی بەرهەم</SectionTitle>
+            <SectionTitle>{t("products.imageLabel")}</SectionTitle>
             <p className="text-muted-foreground">
-              وێنەی سەرەکی بەرهەم. لە کاتی دەستکاریدا دەتوانیت وێنەی نوێ
-              باربکەیت — پاشان پاشەکەوت بکە.
+              {t("products.imageHint")}
             </p>
             {editing ? (
               <ImageUpload
                 kind="product"
                 value={form.image || null}
                 onChange={(url) => update("image", url || "")}
-                label="وێنەی بەرهەم"
+                label={t("products.imageLabel")}
                 shape="square"
               />
             ) : (
@@ -826,7 +827,7 @@ export default function ProductDetails({
                   }}
                 >
                   <Pencil size={16} />
-                  دەستکاری وێنە
+                  {t("products.editImage")}
                 </Button>
               </div>
             )}
@@ -836,9 +837,9 @@ export default function ProductDetails({
 
       <ConfirmDialog
         open={confirmOpen}
-        title="سڕینەوەی بەرهەم"
-        description={`دڵنیایت لە سڕینەوەی «${product.name}»؟ Soft delete — Undo بۆ چەند چرکەیەک · مێژووی جوڵە دەمێنێتەوە.`}
-        confirmText={deleting ? "سڕینەوە..." : "سڕینەوە"}
+        title={t("products.deleteTitle")}
+        description={t("products.deleteConfirmNamed", { name: product.name })}
+        confirmText={deleting ? t("products.deleting") : t("common.delete")}
         loading={deleting}
         onConfirm={() => void handleDelete()}
         onCancel={() => setConfirmOpen(false)}

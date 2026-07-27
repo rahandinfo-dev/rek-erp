@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/utils/datetime";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import DeleteUnitButton from "./DeleteUnitButton";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Unit = {
   id: string;
@@ -21,6 +22,7 @@ type Pagination = {
 };
 
 export default function UnitTable() {
+  const { t } = useT();
   const [units, setUnits] = useState<Unit[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -56,10 +58,10 @@ export default function UnitTable() {
   }, [page, search]);
 
   useEffect(() => {
-    const t = window.setTimeout(() => {
+    const timer = window.setTimeout(() => {
       void fetchUnits();
     }, 250);
-    return () => window.clearTimeout(t);
+    return () => window.clearTimeout(timer);
   }, [fetchUnits]);
 
   return (
@@ -67,7 +69,7 @@ export default function UnitTable() {
       <div className="border-b border-border p-3 sm:p-4">
         <input
           type="text"
-          placeholder="گەڕان بە ناوی یەکە یان کورتکراوە..."
+          placeholder={t("units.searchPlaceholder")}
           value={search}
           onChange={(e) => {
             setPage(1);
@@ -78,21 +80,21 @@ export default function UnitTable() {
       </div>
 
       {loading ? (
-        <div className="p-8 text-center text-muted-foreground">چاوەڕێ بکە...</div>
+        <div className="p-8 text-center text-muted-foreground">{t("common.wait")}</div>
       ) : units.length === 0 ? (
         <div className="p-8 text-center text-muted-foreground">
-          هیچ یەکەیەک نەدۆزرایەوە.
+          {t("units.notFound")}
         </div>
       ) : (
         <div className="rek-table-wrap">
           <table className="w-full min-w-[480px] sm:min-w-[560px]">
             <thead className="bg-primary text-primary-foreground">
               <tr>
-                <th className="p-4 text-right">ناوی یەکە</th>
-                <th className="p-4 text-right">کورتکراوە</th>
-                <th className="p-4 text-right">دۆخ</th>
-                <th className="p-4 text-right">بەروار</th>
-                <th className="p-4 text-center">کردار</th>
+                <th className="p-4 text-right">{t("units.nameLabel")}</th>
+                <th className="p-4 text-right">{t("units.symbolLabel")}</th>
+                <th className="p-4 text-right">{t("common.status")}</th>
+                <th className="p-4 text-right">{t("units.colDate")}</th>
+                <th className="p-4 text-center">{t("common.actions")}</th>
               </tr>
             </thead>
             <tbody>
@@ -113,7 +115,7 @@ export default function UnitTable() {
                           : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
                       }`}
                     >
-                      {unit.active ? "چالاک" : "ناچالاک"}
+                      {unit.active ? t("common.active") : t("common.inactive")}
                     </span>
                   </td>
                   <td className="p-4 text-muted-foreground">
@@ -125,7 +127,7 @@ export default function UnitTable() {
                         href={`/dashboard/units/${unit.id}/edit`}
                         className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-[var(--brand-hover)]"
                       >
-                        دەستکاری
+                        {t("common.edit")}
                       </Link>
                       <DeleteUnitButton id={unit.id} onDeleted={fetchUnits} />
                     </div>
@@ -139,8 +141,11 @@ export default function UnitTable() {
 
       <div className="flex flex-wrap items-center justify-between gap-3 border-t border-border p-4">
         <p className="text-sm text-muted-foreground">
-          کۆی گشتی: {pagination.total} · لاپەڕە {pagination.page} /{" "}
-          {pagination.totalPages}
+          {t("common.pagination", {
+            total: pagination.total,
+            page: pagination.page,
+            totalPages: pagination.totalPages,
+          })}
         </p>
         <div className="flex gap-2">
           <button
@@ -149,7 +154,7 @@ export default function UnitTable() {
             onClick={() => setPage((p) => Math.max(1, p - 1))}
             className="rounded-xl border border-border px-4 py-2 text-sm font-bold disabled:opacity-40"
           >
-            پێشوو
+            {t("common.prevPage")}
           </button>
           <button
             type="button"
@@ -157,7 +162,7 @@ export default function UnitTable() {
             onClick={() => setPage((p) => p + 1)}
             className="rounded-xl border border-border px-4 py-2 text-sm font-bold disabled:opacity-40"
           >
-            داهاتوو
+            {t("common.nextPage")}
           </button>
         </div>
       </div>

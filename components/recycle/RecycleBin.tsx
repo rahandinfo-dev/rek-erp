@@ -19,10 +19,12 @@ import { relativeTime } from "@/lib/drafts/centerMeta";
 import ConfirmDialog from "@/components/ui/ConfirmDialog";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type SortKey = "newest" | "oldest" | "expires" | "name" | "module";
 
 export default function RecycleBin() {
+  const { t } = useT();
   const [items, setItems] = useState<RecycleBinItem[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -312,7 +314,7 @@ export default function RecycleBin() {
             className="inline-flex items-center gap-2 rounded-xl border border-destructive/40 px-3 py-2 text-sm font-bold text-destructive hover:bg-destructive/10 focus-visible:ring-[3px] focus-visible:ring-ring/35"
           >
             <Trash2 size={16} aria-hidden />
-            Empty Bin
+            {t("recycle.emptyBin")}
           </button>
         </div>
       </header>
@@ -418,7 +420,7 @@ export default function RecycleBin() {
                     colSpan={9}
                     className="px-4 py-12 text-center text-muted-foreground"
                   >
-                    Loading…
+                    {t("common.loading")}
                   </td>
                 </tr>
               ) : items.length === 0 ? (
@@ -427,7 +429,7 @@ export default function RecycleBin() {
                     colSpan={9}
                     className="px-4 py-12 text-center text-muted-foreground"
                   >
-                    Recycle Bin is empty.
+                    {t("recycle.emptyState")}
                   </td>
                 </tr>
               ) : (
@@ -438,7 +440,7 @@ export default function RecycleBin() {
                         type="checkbox"
                         checked={selected.has(item.id)}
                         onChange={() => toggleOne(item.id)}
-                        aria-label={`Select ${item.name}`}
+                        aria-label={t("recycle.selectItem", { name: item.name })}
                       />
                     </td>
                     <td className="px-4 py-3 font-bold text-foreground">
@@ -465,7 +467,7 @@ export default function RecycleBin() {
                             : "bg-muted text-foreground"
                         )}
                       >
-                        {item.daysRemaining}d
+                        {t("recycle.daysLeft", { count: item.daysRemaining })}
                       </span>
                     </td>
                     <td className="px-4 py-3 capitalize text-muted-foreground">
@@ -475,7 +477,7 @@ export default function RecycleBin() {
                       <button
                         type="button"
                         className="rounded-lg p-2 hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
-                        aria-label={`Actions for ${item.name}`}
+                        aria-label={t("recycle.actionsFor", { name: item.name })}
                         aria-haspopup="menu"
                         aria-expanded={menuFor === item.id}
                         onClick={() =>
@@ -498,7 +500,7 @@ export default function RecycleBin() {
                               setRestoreId(item.id);
                             }}
                           >
-                            <RotateCcw size={14} /> Restore
+                            <RotateCcw size={14} /> {t("common.restore")}
                           </button>
                           <button
                             type="button"
@@ -509,7 +511,7 @@ export default function RecycleBin() {
                               setDetails(item);
                             }}
                           >
-                            <Eye size={14} /> View Details
+                            <Eye size={14} /> {t("recycle.viewDetails")}
                           </button>
                           <button
                             type="button"
@@ -520,7 +522,7 @@ export default function RecycleBin() {
                               void copyLink(item);
                             }}
                           >
-                            <Copy size={14} /> Copy Link
+                            <Copy size={14} /> {t("recycle.copyLink")}
                           </button>
                           {item.detailHref && (
                             <Link
@@ -529,7 +531,7 @@ export default function RecycleBin() {
                               className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-start text-sm font-bold hover:bg-muted"
                               onClick={() => setMenuFor(null)}
                             >
-                              <Link2 size={14} /> Open record
+                              <Link2 size={14} /> {t("recycle.openRecord")}
                             </Link>
                           )}
                           <button
@@ -542,7 +544,7 @@ export default function RecycleBin() {
                               setPurgeConfirm2(false);
                             }}
                           >
-                            <Trash2 size={14} /> Permanent Delete
+                            <Trash2 size={14} /> {t("recycle.permanentDelete")}
                           </button>
                         </div>
                       )}
@@ -606,7 +608,7 @@ export default function RecycleBin() {
             {details.related.length > 0 && (
               <div className="mt-4 rounded-xl border border-border p-3">
                 <p className="text-xs font-black uppercase text-muted-foreground">
-                  Related data
+                  {t("recycle.relatedData")}
                 </p>
                 <ul className="mt-2 space-y-1 text-sm">
                   {details.related.map((r) => (
@@ -624,7 +626,7 @@ export default function RecycleBin() {
                 className="rounded-xl border border-border px-4 py-2 text-sm font-bold focus-visible:ring-[3px] focus-visible:ring-ring/35"
                 onClick={() => setDetails(null)}
               >
-                Close
+                {t("common.close")}
               </button>
               <button
                 type="button"
@@ -634,7 +636,7 @@ export default function RecycleBin() {
                   setRestoreId(details.id);
                 }}
               >
-                Restore
+                {t("common.restore")}
               </button>
             </div>
           </div>
@@ -646,7 +648,10 @@ export default function RecycleBin() {
         title="تۆمارەکە بگەڕێنرێتەوە؟"
         description={
           restoreTarget
-            ? `Restore “${restoreTarget.name}” (${restoreTarget.moduleLabel}). Related links will be recovered safely where supported.`
+            ? t("recycle.restoreConfirm", {
+                name: restoreTarget.name,
+                module: restoreTarget.moduleLabel,
+              })
             : "ئەم تۆمارە بگەڕێنرێتەوە؟"
         }
         confirmText="گەڕاندنەوە"
@@ -661,13 +666,16 @@ export default function RecycleBin() {
         title="سڕینەوەی هەمیشەیی؟"
         description={
           purgeTarget
-            ? `This will permanently remove “${purgeTarget.name}”.${
-                purgeTarget.related.length
-                  ? ` Related: ${purgeTarget.related
-                      .map((r) => `${r.label} (${r.count})`)
-                      .join(", ")}.`
-                  : ""
-              } This cannot be undone.`
+            ? t("recycle.purgeConfirm", {
+                name: purgeTarget.name,
+                related: purgeTarget.related.length
+                  ? t("recycle.purgeRelated", {
+                      list: purgeTarget.related
+                        .map((r) => `${r.label} (${r.count})`)
+                        .join(", "),
+                    })
+                  : "",
+              })
             : "ئەم کردارە ناگەڕێتەوە."
         }
         confirmText="بەردەوامبوون"
@@ -683,7 +691,7 @@ export default function RecycleBin() {
       <ConfirmDialog
         open={Boolean(purgeId) && purgeConfirm2}
         title="پشتڕاستکردنەوەی سڕینەوەی هەمیشەیی"
-        description="Type-level confirmation: permanently delete this record from the database?"
+        description={t("recycle.purgeConfirm2")}
         confirmText="سڕینەوەی هەمیشەیی"
         cancelText="هەڵوەشاندنەوە"
         loading={busy}

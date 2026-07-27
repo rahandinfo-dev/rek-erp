@@ -8,6 +8,7 @@ import {
   relativeOpened,
   type HistoryAction,
 } from "@/lib/history/types";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function HistoryActionListWidget({
   action,
@@ -16,6 +17,7 @@ export default function HistoryActionListWidget({
   action: Extract<HistoryAction, "edited" | "created">;
   title: string;
 }) {
+  const { t } = useT();
   const { items } = useNavigationHistory();
   const list = items.filter((i) => i.action === action).slice(0, 6);
   const Icon = action === "edited" ? FilePenLine : PlusCircle;
@@ -31,12 +33,14 @@ export default function HistoryActionListWidget({
           href={`/dashboard/recent?action=${action}`}
           className="text-xs font-bold text-primary hover:underline"
         >
-          View All
+          {t("history.viewAll")}
         </Link>
       </div>
       {list.length === 0 ? (
         <p className="px-5 py-8 text-sm text-muted-foreground">
-          No {action} records yet.
+          {action === "edited"
+            ? "هێشتا هیچ تۆمارێکی دەستکاریکراو نییە."
+            : "هێشتا هیچ تۆمارێکی دروستکراو نییە."}
         </p>
       ) : (
         <ul className="divide-y divide-border">

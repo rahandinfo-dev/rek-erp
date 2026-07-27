@@ -36,6 +36,7 @@ import ConnectionStatusBadge from "@/components/recovery/ConnectionStatus";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { useSaveGuard } from "@/lib/unsaved/provider";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type SortKey = "newest" | "oldest" | "modified" | "progress" | "module";
 type FilterKey =
@@ -61,9 +62,9 @@ const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "customers", label: "کڕیارەکان" },
   { key: "suppliers", label: "دابینکەران" },
   { key: "reports", label: "ڕاپۆرتەکان" },
-  { key: "completed", label: "Completed" },
-  { key: "recovered", label: "Recovered" },
-  { key: "archived", label: "Archived" },
+  { key: "completed", label: "تەواوکراو" },
+  { key: "recovered", label: "گەڕێندراوەتەوە" },
+  { key: "archived", label: "ئەرشیفکراو" },
   { key: "failed", label: "سەرنەکەوت" },
 ];
 
@@ -81,6 +82,7 @@ function mergeDrafts(
 }
 
 export default function DraftCenter() {
+  const { t } = useT();
   const router = useRouter();
   const { userId, companyId } = useDraftOwner();
   const { connection, sessions, restoreSession } = useSessionRecovery();
@@ -234,7 +236,7 @@ export default function DraftCenter() {
     extra?: Record<string, unknown>
   ) {
     if (key.startsWith("session:")) {
-      appToast.info("Use Resume for session recovery items");
+      appToast.info(t("drafts.useResume"));
       return;
     }
     try {
@@ -254,9 +256,9 @@ export default function DraftCenter() {
         );
         appToast.success("بەستەر کۆپی کرا");
       } else if (action === "duplicate") {
-        appToast.success("Draft duplicated");
+        appToast.success(t("drafts.duplicated"));
       } else {
-        appToast.success("Draft updated");
+        appToast.success(t("drafts.updated"));
       }
       void refresh();
     } catch {
@@ -280,7 +282,7 @@ export default function DraftCenter() {
               : full.meta?.status,
         title: (extra?.title as string) || full.meta?.title,
       });
-      appToast.success("Updated offline");
+      appToast.success(t("drafts.updatedOffline"));
       void refresh();
     }
   }
@@ -306,7 +308,7 @@ export default function DraftCenter() {
       /* offline */
     }
     void postDraftAudit({ draftKey: deleteKey, action: "deleted" });
-    appToast.success("Draft deleted");
+    appToast.success(t("drafts.deleted"));
     setDeleteKey(null);
     void refresh();
   }
@@ -329,7 +331,7 @@ export default function DraftCenter() {
   function exportDrafts(format: "json" | "csv") {
     const rows = filtered.filter((d) => d.source === "form");
     if (!rows.length) {
-      appToast.warning("No drafts to export");
+      appToast.warning(t("drafts.noExport"));
       return;
     }
     if (format === "json") {
@@ -356,7 +358,7 @@ export default function DraftCenter() {
   async function exportExcel() {
     const rows = filtered.filter((d) => d.source === "form");
     if (!rows.length) {
-      appToast.warning("No drafts to export");
+      appToast.warning(t("drafts.noExport"));
       return;
     }
     try {
@@ -374,9 +376,9 @@ export default function DraftCenter() {
       const book = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(book, sheet, "Drafts");
       XLSX.writeFile(book, `drafts-${Date.now()}.xlsx`);
-      appToast.success("Excel export ready");
+      appToast.success(t("drafts.excelReady"));
     } catch {
-      appToast.error("Excel export failed");
+      appToast.error(t("drafts.excelFailed"));
     }
   }
 
@@ -388,7 +390,7 @@ export default function DraftCenter() {
         ? parsed
         : (parsed as { drafts?: unknown[] }).drafts;
       if (!Array.isArray(draftsIn)) {
-        appToast.error("Invalid import file");
+        appToast.error(t("drafts.invalidImport"));
         return;
       }
       const payload = {
@@ -409,13 +411,13 @@ export default function DraftCenter() {
       });
       const json = await res.json();
       if (!res.ok || !json.success) {
-        appToast.error(json.message || "Import failed");
+        appToast.error(json.message || t("drafts.importFailed"));
         return;
       }
-      appToast.success(`Imported ${json.data.imported} drafts`);
+      appToast.success(t("drafts.imported", { count: json.data.imported }));
       void refresh();
     } catch {
-      appToast.error("Import failed");
+      appToast.error(t("drafts.importFailed"));
     }
   }
 
@@ -423,9 +425,11 @@ export default function DraftCenter() {
     <div className="space-y-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-black text-foreground">Draft Center</h1>
+          <h1 className="text-2xl font-black text-foreground">
+            {t("drafts.title")}
+          </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Unfinished work auto-saved — resume instantly, never lose a draft.
+            {t("drafts.subtitle")}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -452,7 +456,7 @@ export default function DraftCenter() {
             <Download size={14} /> Excel
           </button>
           <label className="inline-flex h-10 cursor-pointer items-center gap-1.5 rounded-xl border border-border px-3 text-xs font-bold">
-            <Upload size={14} /> Import
+            <Upload size={14} /> {t("drafts.import")}
             <input
               type="file"
               accept="application/json,.json"
@@ -469,10 +473,10 @@ export default function DraftCenter() {
             onClick={() => router.push("/dashboard/settings")}
             className="inline-flex h-10 items-center rounded-xl bg-primary px-4 text-xs font-bold text-primary-foreground"
           >
-            Auto Save:{" "}
+            {t("drafts.autoSave")}:{" "}
             {saveGuard.prefs.autoSaveEnabled
               ? `${saveGuard.prefs.autoSaveDelayMs / 1000}s`
-              : "Off"}
+              : t("drafts.autoSaveOff")}
           </button>
         </div>
       </div>
@@ -480,10 +484,10 @@ export default function DraftCenter() {
       {stats ? (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
           {[
-            ["Total", stats.total],
-            ["Recovered", stats.recovered],
-            ["Completed", stats.completed],
-            ["Archived", stats.archived],
+            [t("drafts.total"), stats.total],
+            [t("drafts.recovered"), stats.recovered],
+            [t("drafts.completed"), stats.completed],
+            [t("drafts.archived"), stats.archived],
             ["سەرنەکەوت", stats.failed],
           ].map(([label, value]) => (
             <div
@@ -508,22 +512,22 @@ export default function DraftCenter() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search drafts by name, module, status, tags…"
+            placeholder={t("drafts.searchPlaceholder")}
             className="h-11 w-full rounded-2xl border border-border bg-card pe-3 ps-9 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/30"
-            aria-label="Search drafts"
+            aria-label={t("drafts.searchPlaceholder")}
           />
         </div>
         <select
           value={sort}
           onChange={(e) => setSort(e.target.value as SortKey)}
           className="h-11 rounded-2xl border border-border bg-card px-3 text-xs font-bold"
-          aria-label="Sort drafts"
+          aria-label={t("drafts.sortLabel")}
         >
-          <option value="modified">Recently Modified</option>
-          <option value="newest">Newest</option>
-          <option value="oldest">Oldest</option>
-          <option value="progress">Progress</option>
-          <option value="module">Module</option>
+          <option value="modified">{t("drafts.sortModified")}</option>
+          <option value="newest">{t("drafts.sortNewest")}</option>
+          <option value="oldest">{t("drafts.sortOldest")}</option>
+          <option value="progress">{t("drafts.sortProgress")}</option>
+          <option value="module">{t("drafts.sortModule")}</option>
         </select>
       </div>
 
@@ -547,11 +551,11 @@ export default function DraftCenter() {
 
       {loading ? (
         <div className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
-          Loading drafts…
+          {t("drafts.loading")}
         </div>
       ) : shown.length === 0 ? (
         <div className="rounded-3xl border border-border bg-card p-10 text-center text-muted-foreground">
-          No drafts found. Start editing a form — drafts appear automatically.
+          {t("drafts.empty")}
         </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
@@ -579,7 +583,7 @@ export default function DraftCenter() {
 
               <div className="mb-3">
                 <div className="mb-1 flex justify-between text-[11px] font-bold text-muted-foreground">
-                  <span>Progress</span>
+                  <span>{t("drafts.progress")}</span>
                   <span>{d.progress}%</span>
                 </div>
                 <div className="h-1.5 overflow-hidden rounded-full bg-muted">
@@ -592,25 +596,25 @@ export default function DraftCenter() {
 
               <dl className="mb-4 space-y-1 text-xs text-muted-foreground">
                 <div className="flex justify-between gap-2">
-                  <dt>Created</dt>
+                  <dt>{t("drafts.created")}</dt>
                   <dd className="font-semibold text-foreground">
                     {relativeTime(d.createdAt)}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt>Last modified</dt>
+                  <dt>{t("drafts.lastModified")}</dt>
                   <dd className="font-semibold text-foreground">
                     {relativeTime(d.updatedAt)}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt>Auto saved</dt>
+                  <dt>{t("drafts.autoSaved")}</dt>
                   <dd className="font-semibold text-foreground">
                     {relativeTime(d.savedAt)}
                   </dd>
                 </div>
                 <div className="flex justify-between gap-2">
-                  <dt>Device</dt>
+                  <dt>{t("drafts.device")}</dt>
                   <dd className="font-semibold text-foreground">
                     {d.device || "—"}
                   </dd>
@@ -623,13 +627,13 @@ export default function DraftCenter() {
                   onClick={() => resume(d)}
                   className="inline-flex h-9 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-3 text-xs font-bold text-primary-foreground"
                 >
-                  <Play size={14} /> Resume
+                  <Play size={14} /> {t("drafts.resume")}
                 </button>
                 <button
                   type="button"
                   onClick={() => setPreview(d)}
                   className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3"
-                  aria-label="Preview"
+                  aria-label={t("drafts.preview")}
                 >
                   <Eye size={14} />
                 </button>
@@ -640,7 +644,7 @@ export default function DraftCenter() {
                       setMenuFor((k) => (k === d.key ? null : d.key))
                     }
                     className="inline-flex h-9 items-center justify-center rounded-xl border border-border px-3"
-                    aria-label="More actions"
+                    aria-label={t("drafts.moreActions")}
                   >
                     <MoreHorizontal size={14} />
                   </button>
@@ -657,7 +661,7 @@ export default function DraftCenter() {
                           label: "ناوگۆڕین",
                           icon: Copy,
                           run: () => {
-                            const title = window.prompt("Draft name", d.title);
+                            const title = window.prompt(t("drafts.draftName"), d.title);
                             if (title)
                               void patchDraft(d.key, "rename", { title });
                           },
@@ -731,7 +735,7 @@ export default function DraftCenter() {
           className="fixed inset-0 z-[90] flex items-center justify-center bg-[var(--overlay)] p-4"
           role="dialog"
           aria-modal="true"
-          aria-label="Draft preview"
+          aria-label={t("drafts.draftPreview")}
         >
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-5 shadow-2xl">
             <h3 className="text-lg font-black">{preview.title}</h3>
@@ -746,7 +750,7 @@ export default function DraftCenter() {
                   </li>
                 ))
               ) : (
-                <li className="text-muted-foreground">No field summary</li>
+                <li className="text-muted-foreground">{t("drafts.noFieldSummary")}</li>
               )}
             </ul>
             <p className="mt-3 text-xs text-muted-foreground">
@@ -759,7 +763,7 @@ export default function DraftCenter() {
                 className="rounded-xl border border-border px-4 py-2 text-xs font-bold"
                 onClick={() => setPreview(null)}
               >
-                Close
+                {t("common.close")}
               </button>
               <button
                 type="button"
@@ -769,7 +773,7 @@ export default function DraftCenter() {
                   resume(preview);
                 }}
               >
-                Continue Working
+                {t("drafts.continueWorking")}
               </button>
             </div>
           </div>
@@ -781,23 +785,23 @@ export default function DraftCenter() {
           className="fixed inset-0 z-[90] flex items-center justify-center bg-[var(--overlay)] p-4"
           role="dialog"
           aria-modal="true"
-          aria-label="Version history"
+          aria-label={t("drafts.versionHistory")}
         >
           <div className="flex max-h-[80vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl">
             <div className="flex items-center justify-between border-b border-border px-4 py-3">
-              <h3 className="text-sm font-black">Version History</h3>
+              <h3 className="text-sm font-black">{t("drafts.versionHistoryTitle")}</h3>
               <button
                 type="button"
                 className="text-xs font-bold"
                 onClick={() => setVersionsFor(null)}
               >
-                Close
+                {t("common.close")}
               </button>
             </div>
             <ul className="flex-1 overflow-y-auto p-2">
               {versions.length === 0 ? (
                 <li className="p-4 text-sm text-muted-foreground">
-                  No versions yet
+                  {t("drafts.noVersions")}
                 </li>
               ) : (
                 versions.map((v, idx) => (
@@ -820,10 +824,10 @@ export default function DraftCenter() {
                             a: v.payload,
                             b: versions[idx + 1].payload,
                           });
-                        } else appToast.info("No older version to compare");
+                        } else appToast.info(t("drafts.noOlderVersion"));
                       }}
                     >
-                      Compare
+                      {t("drafts.compare")}
                     </button>
                     <button
                       type="button"
@@ -842,13 +846,13 @@ export default function DraftCenter() {
                         );
                         const json = await res.json();
                         if (json.success) {
-                          appToast.success("وەشان گەڕێندرایەوە");
+                          appToast.success(t("versions.restoredTitle"));
                           setVersionsFor(null);
                           void refresh();
-                        } else appToast.error("گەڕاندنەوە سەرنەکەوت");
+                        } else appToast.error(t("versions.restoreFailed"));
                       }}
                     >
-                      Restore
+                      {t("common.restore")}
                     </button>
                     <button
                       type="button"
@@ -862,7 +866,7 @@ export default function DraftCenter() {
                         void openVersions(versionsFor);
                       }}
                     >
-                      Delete
+                      {t("common.delete")}
                     </button>
                   </li>
                 ))
@@ -880,13 +884,13 @@ export default function DraftCenter() {
         >
           <div className="max-h-[80vh] w-full max-w-3xl overflow-hidden rounded-2xl border border-border bg-card">
             <div className="flex justify-between border-b border-border px-4 py-3">
-              <h3 className="text-sm font-black">Compare Versions</h3>
+              <h3 className="text-sm font-black">{t("drafts.compareVersions")}</h3>
               <button
                 type="button"
                 className="text-xs font-bold"
                 onClick={() => setCompare(null)}
               >
-                Close
+                {t("common.close")}
               </button>
             </div>
             <div className="grid max-h-[70vh] overflow-auto md:grid-cols-2">
@@ -904,7 +908,7 @@ export default function DraftCenter() {
       <ConfirmDialog
         open={Boolean(deleteKey)}
         title="سڕینەوەی ڕەشنووس"
-        description="This draft will be removed. You can still recover session snapshots from Recovery Center."
+        description={t("drafts.deleteConfirm")}
         confirmText="سڕینەوە"
         cancelText="هەڵوەشاندنەوە"
         onConfirm={() => void confirmDelete()}

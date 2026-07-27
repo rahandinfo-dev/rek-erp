@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { RotateCcw, Undo2, X } from "lucide-react";
 import { toast } from "sonner";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   id: string | number;
@@ -20,10 +21,12 @@ export default function UndoToast({
   id,
   title,
   message,
-  undoLabel = "پاشگەزبوونەوە",
+  undoLabel,
   durationMs,
   onUndo,
 }: Props) {
+  const { t } = useT();
+  const resolvedUndoLabel = undoLabel || t("toast.undo");
   const initialSeconds = Math.max(1, Math.ceil(durationMs / 1000));
   const [remaining, setRemaining] = useState(initialSeconds);
   const [busy, setBusy] = useState(false);
@@ -76,7 +79,7 @@ export default function UndoToast({
             className="rek-toast-undo-btn inline-flex min-h-11 min-w-[5.5rem] items-center justify-center gap-1.5 rounded-xl bg-card px-4 py-2 text-sm font-black text-primary shadow-sm ring-1 ring-border transition hover:bg-secondary disabled:opacity-60"
           >
             <RotateCcw size={14} className={busy ? "animate-spin" : ""} />
-            {busy ? "…" : undoLabel}
+            {busy ? "…" : resolvedUndoLabel}
           </button>
           <span className="text-[11px] font-bold tabular-nums text-muted-foreground">
             {remaining}s
@@ -86,7 +89,7 @@ export default function UndoToast({
       <button
         type="button"
         className="rek-toast-close"
-        aria-label="Dismiss"
+        aria-label={t("toast.close")}
         onClick={() => toast.dismiss(id)}
       >
         <X size={16} />

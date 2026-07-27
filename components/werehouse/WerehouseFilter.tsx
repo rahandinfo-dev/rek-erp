@@ -1,8 +1,10 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function WerehouseFilter() {
+  const { t } = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -33,21 +35,21 @@ export default function WerehouseFilter() {
         onClick={() => changeFilter("all")}
         className={buttonClass(current === "all")}
       >
-        هەموو
+        {t("common.all")}
       </button>
 
       <button
         onClick={() => changeFilter("main")}
         className={buttonClass(current === "main")}
       >
-        کۆگای سەرەکی
+        {t("warehouses.isMain")}
       </button>
 
       <button
         onClick={() => changeFilter("secondary")}
         className={buttonClass(current === "secondary")}
       >
-        کۆگای لاوەکی
+        {t("warehouses.secondary")}
       </button>
     </div>
   );

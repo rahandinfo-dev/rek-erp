@@ -9,6 +9,7 @@ import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import ImageUpload from "@/components/uploads/ImageUpload";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type WarehouseDraft = {
   name: string;
@@ -31,6 +32,7 @@ function isEmpty(v: WarehouseDraft) {
 }
 
 export default function WarehouseForm() {
+  const { t } = useT();
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -77,7 +79,7 @@ export default function WarehouseForm() {
     setError("");
 
     if (!name.trim() || !code.trim()) {
-      setError("تکایە ناوی کۆگا و کۆدی کۆگا پڕبکەرەوە.");
+      setError(t("warehouses.nameAndCodeRequired"));
       return;
     }
 
@@ -102,19 +104,19 @@ export default function WarehouseForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "هەڵەیەک ڕوویدا.");
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        setError(data.message || t("errors.generic"));
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
 
       clearDraft();
-      appToast.warehouseUpdated("کۆگا بە سەرکەوتوویی زیادکرا.");
+      appToast.warehouseUpdated(t("warehouses.createdBody"));
       router.push("/dashboard/werehouse");
       router.refresh();
     } catch (err) {
       console.error(err);
-      setError("هەڵەیەک ڕوویدا.");
-      appToast.error("هەڵەیەک ڕوویدا.");
+      setError(t("errors.generic"));
+      appToast.error(t("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -139,23 +141,27 @@ export default function WarehouseForm() {
           kind="warehouse"
           value={image || null}
           onChange={(url) => setImage(url || "")}
-          label="وێنەی کۆگا"
+          label={t("warehouses.imageLabel")}
           shape="square"
         />
 
         <div>
-          <label className="mb-2 block text-sm font-bold">ناوی کۆگا</label>
+          <label className="mb-2 block text-sm font-bold">
+            {t("warehouses.nameLabel")}
+          </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className={inputClassName}
-            placeholder="ناوی کۆگا"
+            placeholder={t("warehouses.nameLabel")}
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-bold">کۆدی کۆگا</label>
+          <label className="mb-2 block text-sm font-bold">
+            {t("warehouses.codeLabel")}
+          </label>
           <input
             type="text"
             value={code}
@@ -166,7 +172,9 @@ export default function WarehouseForm() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-bold">ناونیشان</label>
+          <label className="mb-2 block text-sm font-bold">
+            {t("warehouses.addressLabel")}
+          </label>
           <textarea
             value={address}
             onChange={(e) => setAddress(e.target.value)}
@@ -176,7 +184,9 @@ export default function WarehouseForm() {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-bold">توانا (ئۆپشناڵ)</label>
+          <label className="mb-2 block text-sm font-bold">
+            {t("warehouses.capacityLabel")}
+          </label>
           <input
             type="number"
             min={0}
@@ -192,7 +202,7 @@ export default function WarehouseForm() {
             checked={isMain}
             onChange={(e) => setIsMain(e.target.checked)}
           />
-          کۆگای سەرەکی
+          {t("warehouses.isMain")}
         </label>
 
         {error ? (
@@ -202,7 +212,7 @@ export default function WarehouseForm() {
         <div className="flex flex-wrap items-center gap-3">
           <AutoSaveStatus status={draftStatus} savedAt={draftSavedAt} />
           <Button type="submit" disabled={loading}>
-            {loading ? "چاوەڕێ بکە..." : "زیادکردنی کۆگا"}
+            {loading ? t("common.wait") : t("warehouses.add")}
           </Button>
         </div>
       </form>

@@ -62,7 +62,7 @@ export default function HistoryItemActions({
       <button
         type="button"
         className="rounded-lg bg-card p-1.5 text-muted-foreground shadow-sm ring-1 ring-border hover:text-foreground"
-        aria-label="History actions"
+        aria-label="کردارەکانی مێژوو"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -78,7 +78,7 @@ export default function HistoryItemActions({
             className="block rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
             onClick={() => setOpen(false)}
           >
-            Open
+            کردنەوە
           </Link>
           <a
             href={item.href}
@@ -87,7 +87,7 @@ export default function HistoryItemActions({
             className="flex items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
             onClick={() => setOpen(false)}
           >
-            <ExternalLink size={12} /> Open in New Tab
+            <ExternalLink size={12} /> کردنەوە لە تابێکی نوێ
           </a>
           <button
             type="button"
@@ -125,14 +125,14 @@ export default function HistoryItemActions({
             className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
             onClick={() => void copyLink()}
           >
-            <Copy size={12} /> Copy Link
+            <Copy size={12} /> کۆپیکردنی بەستەر
           </button>
           <button
             type="button"
             className="flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-semibold hover:bg-muted"
             onClick={() => void share()}
           >
-            <Share2 size={12} /> Share
+            <Share2 size={12} /> هاوبەشکردن
           </button>
           <button
             type="button"
@@ -142,7 +142,7 @@ export default function HistoryItemActions({
               setOpen(false);
             }}
           >
-            <Trash2 size={12} /> Remove
+            <Trash2 size={12} /> لابردن
           </button>
         </div>
       ) : null}
@@ -165,7 +165,7 @@ export function HistoryActionBadge({
       className: "bg-amber-100 text-amber-800",
     },
     created: {
-      label: "New",
+      label: "نوێ",
       className:
         "bg-[color-mix(in_srgb,var(--success)_18%,white)] text-[var(--success)]",
     },
@@ -174,7 +174,7 @@ export function HistoryActionBadge({
       className: "bg-sky-100 text-sky-800",
     },
     downloaded: {
-      label: "Downloaded",
+      label: "داگرتراو",
       className: "bg-violet-100 text-violet-800",
     },
   };

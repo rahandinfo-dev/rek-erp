@@ -12,6 +12,7 @@ import { filterSidebarGroups, isSidebarActive } from "@/lib/navigation/sidebar";
 import FavoritesSidebar from "@/components/favorites/FavoritesSidebar";
 import { UnsavedDotBadge } from "@/components/unsaved/HeaderSaveStatus";
 import { useSaveGuard } from "@/lib/unsaved/provider";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   user: {
@@ -26,11 +27,12 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const saveGuard = useSaveGuard();
+  const { t } = useT();
   const [navQuery, setNavQuery] = useState("");
 
   const groups = useMemo(
-    () => filterSidebarGroups(collapsed ? "" : navQuery),
-    [navQuery, collapsed]
+    () => filterSidebarGroups(collapsed ? "" : navQuery, t),
+    [navQuery, collapsed, t]
   );
 
   function handleLogout() {
@@ -85,7 +87,9 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
           type="button"
           onClick={onToggle}
           className="shrink-0 rounded-xl p-2 text-muted-foreground transition hover:bg-sidebar-accent hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35"
-          aria-label={collapsed ? "فراوانکردنی لایەن" : "بچووککردنەوەی لایەن"}
+          aria-label={
+            collapsed ? t("nav.expandSidebar") : t("nav.collapseSidebar")
+          }
         >
           {collapsed ? (
             <ChevronLeft size={18} aria-hidden />
@@ -107,8 +111,8 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
               type="search"
               value={navQuery}
               onChange={(e) => setNavQuery(e.target.value)}
-              placeholder="گەڕان لە مێنیو…"
-              aria-label="گەڕان لە مێنیو"
+              placeholder={t("nav.searchMenu")}
+              aria-label={t("nav.searchMenuAria")}
               className="h-9 w-full rounded-xl border border-transparent bg-muted/70 pr-9 pl-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/40 focus:bg-card focus-visible:ring-[3px] focus-visible:ring-ring/25"
             />
           </label>
@@ -117,31 +121,32 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
 
       <nav
         className="flex-1 space-y-4 overflow-y-auto overscroll-contain px-2 py-3"
-        aria-label="مێنیوی سەرەکی"
+        aria-label={t("nav.mainMenu")}
       >
         <FavoritesSidebar collapsed={collapsed} />
 
         {groups.length === 0 ? (
           <p className="px-3 py-6 text-center text-xs text-muted-foreground">
-            هیچ بەشێک نەدۆزرایەوە
+            {t("nav.noSectionFound")}
           </p>
         ) : (
           groups.map((group) => (
             <div key={group.id}>
               {!collapsed && (
                 <p className="mb-1.5 px-3 text-[10px] font-bold tracking-wide text-muted-foreground uppercase">
-                  {group.label}
+                  {t(group.labelKey)}
                 </p>
               )}
               <ul className="space-y-0.5">
                 {group.items.map((item) => {
                   const Icon = item.icon;
+                  const label = t(item.labelKey);
                   const active = isSidebarActive(pathname, item.href);
                   return (
                     <li key={item.href}>
                       <Link
                         href={item.href}
-                        title={item.label}
+                        title={label}
                         prefetch
                         data-active={active}
                         className={cn(
@@ -152,7 +157,7 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
                         <Icon size={18} className="shrink-0" aria-hidden />
                         {!collapsed && (
                           <span className="truncate text-[13px] font-semibold">
-                            {item.label}
+                            {label}
                           </span>
                         )}
                       </Link>
@@ -195,7 +200,7 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
           className="h-9 w-full justify-center text-destructive hover:bg-destructive/8 hover:text-destructive"
         >
           <LogOut size={16} aria-hidden />
-          {!collapsed && <span>چوونەدەرەوە</span>}
+          {!collapsed && <span>{t("common.logout")}</span>}
         </Button>
       </div>
     </aside>

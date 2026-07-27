@@ -6,6 +6,9 @@ import { processBulkItem, type ProcessResult } from "@/lib/bulk/process";
 import { deleteUrlFor, restoreUrlFor } from "@/lib/bulk/urls";
 import { auditSafe } from "@/lib/audit/log";
 import { notifySafe } from "@/lib/notifications/create";
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
 
 function toJson(value: unknown): Prisma.InputJsonValue | undefined {
   if (value === undefined || value === null) return undefined;
@@ -25,11 +28,11 @@ export async function createBulkJob(input: {
   payload?: BulkPayload;
 }) {
   if (!isActionAllowed(input.moduleKey, input.action)) {
-    throw new Error("Action not allowed for this module");
+    throw new Error(t("bulk.actionNotAllowed"));
   }
   const ids = Array.from(new Set(input.ids.filter(Boolean)));
-  if (ids.length === 0) throw new Error("No records selected");
-  if (ids.length > 2000) throw new Error("Maximum 2000 records per job");
+  if (ids.length === 0) throw new Error(t("bulk.noRecordsSelected"));
+  if (ids.length > 2000) throw new Error(t("bulk.maxRecordsPerJob"));
 
   const canUndo = [
     "delete",
@@ -91,7 +94,7 @@ export async function processBulkJobBatch(input: {
   const job = await db.bulkJob.findFirst({
     where: { id: input.jobId, companyId: input.companyId },
   });
-  if (!job) throw new Error("Job not found");
+  if (!job) throw new Error(t("bulk.jobNotFound"));
 
   if (["completed", "failed", "cancelled"].includes(job.status) && !job.cancelRequested) {
     return serializeJob(job.id);
@@ -114,7 +117,7 @@ export async function processBulkJobBatch(input: {
   if (job.cancelRequested) {
     await db.bulkJobItem.updateMany({
       where: { jobId: job.id, status: "pending" },
-      data: { status: "cancelled", message: "Cancelled by user" },
+      data: { status: "cancelled", message: t("bulk.cancelledByUser") },
     });
     const cancelled = await db.bulkJobItem.count({
       where: { jobId: job.id, status: "cancelled" },
@@ -147,7 +150,7 @@ export async function processBulkJobBatch(input: {
     if (fresh?.cancelRequested) {
       await db.bulkJobItem.update({
         where: { id: item.id },
-        data: { status: "cancelled", message: "Cancelled by user" },
+        data: { status: "cancelled", message: t("bulk.cancelledByUser") },
       });
       continue;
     }
@@ -283,7 +286,7 @@ async function httpDeleteOrRestore(input: {
   if (!path) {
     return {
       status: "skipped" as const,
-      message: "Endpoint not available",
+      message: t("bulk.endpointUnavailable"),
     };
   }
   try {
@@ -316,7 +319,7 @@ async function httpDeleteOrRestore(input: {
   } catch (error) {
     return {
       status: "failed" as const,
-      message: error instanceof Error ? error.message : "Request failed",
+      message: error instanceof Error ? error.message : t("bulk.requestFailed"),
     };
   }
 }
@@ -397,7 +400,7 @@ export async function cancelBulkJob(companyId: string, jobId: string) {
   const job = await db.bulkJob.findFirst({
     where: { id: jobId, companyId },
   });
-  if (!job) throw new Error("Job not found");
+  if (!job) throw new Error(t("bulk.jobNotFound"));
   await db.bulkJob.update({
     where: { id: jobId },
     data: { cancelRequested: true },
@@ -415,9 +418,9 @@ export async function undoBulkJob(input: {
   const job = await db.bulkJob.findFirst({
     where: { id: input.jobId, companyId: input.companyId },
   });
-  if (!job) throw new Error("Job not found");
+  if (!job) throw new Error(t("bulk.jobNotFound"));
   if (!job.canUndo || job.undoneAt) {
-    throw new Error("Undo not available");
+    throw new Error(t("bulk.undoUnavailable"));
   }
 
   const items = await db.bulkJobItem.findMany({

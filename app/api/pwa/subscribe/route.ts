@@ -3,6 +3,7 @@ import { z } from "zod";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { db } from "@/lib/prisma/db";
 import { DEFAULT_PUSH_CATEGORIES } from "@/lib/pwa/categories";
+import { tServer } from "@/lib/i18n";
 
 const subscribeSchema = z.object({
   endpoint: z.string().url().max(2048),
@@ -35,7 +36,7 @@ export async function POST(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
-      { success: false, message: "Unauthorized", code: "UNAUTHORIZED" },
+      { success: false, message: tServer.t("api.unauthorized"), code: "UNAUTHORIZED" },
       { status: 401 }
     );
   }
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
     body = await req.json();
   } catch {
     return NextResponse.json(
-      { success: false, message: "Invalid JSON" },
+      { success: false, message: tServer.t("api.invalidJson") },
       { status: 400 }
     );
   }
@@ -53,7 +54,7 @@ export async function POST(req: NextRequest) {
   const parsed = subscribeSchema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { success: false, message: "Invalid subscription payload" },
+      { success: false, message: tServer.t("api.invalidSubscriptionPayload") },
       { status: 400 }
     );
   }
@@ -109,7 +110,7 @@ export async function DELETE(req: NextRequest) {
   const user = await getCurrentUser();
   if (!user) {
     return NextResponse.json(
-      { success: false, message: "Unauthorized", code: "UNAUTHORIZED" },
+      { success: false, message: tServer.t("api.unauthorized"), code: "UNAUTHORIZED" },
       { status: 401 }
     );
   }

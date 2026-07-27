@@ -16,6 +16,7 @@ import {
 } from "@/lib/pwa/client";
 import { cn } from "@/lib/utils";
 import { appToast } from "@/lib/toast";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type PrefsState = {
   enabled: boolean;
@@ -29,6 +30,7 @@ export default function NotificationPrefsPanel({
 }: {
   className?: string;
 }) {
+  const { t } = useT();
   const [ready, setReady] = useState(false);
   const [busy, setBusy] = useState(false);
   const [prefs, setPrefs] = useState<PrefsState>({
@@ -37,7 +39,6 @@ export default function NotificationPrefsPanel({
     deviceCount: 0,
     options: { silent: false },
   });
-  // Bumped after permission prompts so the snapshot re-reads Notification.permission.
   const [permTick, setPermTick] = useState(0);
   const permission = useSyncExternalStore(
     () => () => {},
@@ -113,7 +114,7 @@ export default function NotificationPrefsPanel({
       });
       const json = await res.json();
       if (!json.success) {
-        appToast.error(json.message || "پاشەکەوتکردنی هەڵبژاردەکان سەرنەکەوت");
+        appToast.error(json.message || t("pwa.saveFailed"));
         return;
       }
       setPrefs((prev) => ({
@@ -136,27 +137,25 @@ export default function NotificationPrefsPanel({
       const perm = await requestNotificationPermission();
       setPermTick((n) => n + 1);
       if (perm !== "granted") {
-        appToast.error(
-          "Notification permission was denied. Enable it in browser settings."
-        );
+        appToast.error(t("pwa.permDenied"));
         return;
       }
       const reg = (await getRegistration()) || null;
       if (!reg) {
-        appToast.error("Service worker is not ready yet. Try again.");
+        appToast.error(t("pwa.swNotReady"));
         return;
       }
       const sub = await subscribeToPush(reg);
       if (!sub) {
-        appToast.error("Could not subscribe to push on this device.");
+        appToast.error(t("pwa.subscribeFailed"));
         return;
       }
       await save({ enabled: true });
-      appToast.success("Push notifications enabled");
+      appToast.success(t("pwa.enabled"));
       await load();
     } catch (error) {
       console.error(error);
-      appToast.error("Failed to enable notifications");
+      appToast.error(t("pwa.enableFailed"));
     } finally {
       setBusy(false);
     }
@@ -167,10 +166,10 @@ export default function NotificationPrefsPanel({
     try {
       await unsubscribeFromPush();
       await save({ enabled: false });
-      appToast.success("Push notifications disabled");
+      appToast.success(t("pwa.disabled"));
       await load();
     } catch {
-      appToast.error("Failed to disable notifications");
+      appToast.error(t("pwa.disableFailed"));
     } finally {
       setBusy(false);
     }
@@ -190,10 +189,10 @@ export default function NotificationPrefsPanel({
             id="push-prefs-title"
             className="text-xl font-bold text-foreground"
           >
-            Push Notifications
+            {t("pwa.title")}
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">
-            وەرگرتنی ئاگاداری لەسەر Desktop، Android و وێبگەڕ — تەنانەت کاتێک
+            وەرگرتنی ئاگاداری لەسەر کۆمپیوتەر، ئەندرۆید و وێبگەڕ — تەنانەت کاتێک
             تاب داخراوە.
           </p>
         </div>
@@ -209,7 +208,7 @@ export default function NotificationPrefsPanel({
 
       <div className="mt-6 space-y-4">
         <label className="flex items-center justify-between gap-4 rounded-2xl bg-muted/50 px-4 py-3">
-          <span className="text-sm font-bold">Enable Notifications</span>
+          <span className="text-sm font-bold">{t("pwa.enable")}</span>
           <input
             type="checkbox"
             checked={prefs.enabled}
@@ -219,29 +218,29 @@ export default function NotificationPrefsPanel({
               else void disablePush();
             }}
             className="size-4 accent-primary"
-            aria-label="Enable push notifications"
+            aria-label={t("pwa.enableAria")}
           />
         </label>
 
         <div className="rounded-2xl border border-border px-4 py-3 text-xs text-muted-foreground">
           <p>
-            Permission:{" "}
+            {t("pwa.permission")}:{" "}
             <span className="font-bold text-foreground">{permission}</span>
             {" · "}
-            Devices:{" "}
+            {t("pwa.devices")}:{" "}
             <span className="font-bold text-foreground">
               {prefs.deviceCount}
             </span>
           </p>
           {busy ? (
             <p className="mt-2 inline-flex items-center gap-1.5">
-              <Loader2 size={12} className="animate-spin" /> Saving…
+              <Loader2 size={12} className="animate-spin" /> {t("pwa.saving")}
             </p>
           ) : null}
         </div>
 
         <div className="rounded-2xl bg-muted/50 px-4 py-3">
-          <p className="text-sm font-bold">Categories</p>
+          <p className="text-sm font-bold">{t("pwa.categories")}</p>
           <p className="mt-1 text-xs text-muted-foreground">
             هەڵبژێرە کام جۆری ئاگاداری دەتەوێت وەربگریت.
           </p>
@@ -250,10 +249,7 @@ export default function NotificationPrefsPanel({
               <li key={key}>
                 <label className="flex items-center justify-between gap-2 rounded-xl bg-card px-3 py-2 text-xs">
                   <span className="font-semibold text-foreground">
-                    {PUSH_CATEGORY_LABELS[key].en}
-                    <span className="mt-0.5 block text-[10px] font-normal text-muted-foreground">
-                      {PUSH_CATEGORY_LABELS[key].ku}
-                    </span>
+                    {PUSH_CATEGORY_LABELS[key].ku}
                   </span>
                   <input
                     type="checkbox"
@@ -268,7 +264,7 @@ export default function NotificationPrefsPanel({
                       setPrefs((p) => ({ ...p, categories: next }));
                       void save({ categories: next });
                     }}
-                    aria-label={PUSH_CATEGORY_LABELS[key].en}
+                    aria-label={PUSH_CATEGORY_LABELS[key].ku}
                   />
                 </label>
               </li>
@@ -278,10 +274,8 @@ export default function NotificationPrefsPanel({
 
         <label className="flex items-center justify-between gap-4 rounded-2xl bg-muted/50 px-4 py-3">
           <div>
-            <span className="text-sm font-bold">Silent mode</span>
-            <p className="text-xs text-muted-foreground">
-              وەرگرتنی ئاگاداری بەبێ دەنگ / vibration
-            </p>
+            <span className="text-sm font-bold">{t("pwa.silent")}</span>
+            <p className="text-xs text-muted-foreground">{t("pwa.silentHint")}</p>
           </div>
           <input
             type="checkbox"
@@ -293,7 +287,7 @@ export default function NotificationPrefsPanel({
               void save({ options });
             }}
             className="size-4 accent-primary"
-            aria-label="Silent notifications"
+            aria-label={t("pwa.silentAria")}
           />
         </label>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function SimpleListCard({
   title,
@@ -13,6 +14,7 @@ export default function SimpleListCard({
   hrefAll?: string;
   items: Array<{ id: string; title: string; subtitle?: string; href: string }>;
 }) {
+  const { t } = useT();
   return (
     <section className="rek-card overflow-hidden p-0">
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -22,7 +24,7 @@ export default function SimpleListCard({
             href={hrefAll}
             className="text-xs font-bold text-primary hover:underline"
           >
-            View All
+            {t("history.viewAll")}
           </Link>
         ) : null}
       </div>

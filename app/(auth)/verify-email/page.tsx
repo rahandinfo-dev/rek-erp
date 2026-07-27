@@ -3,9 +3,11 @@
 import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { appToast } from "@/lib/toast";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 function VerifyEmailForm() {
   const searchParams = useSearchParams();
+  const { t } = useT();
   const [email, setEmail] = useState(searchParams.get("email") || "");
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,11 +25,11 @@ function VerifyEmailForm() {
     const data = await res.json();
 
     if (!data.success) {
-      appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+      appToast.error(data.message || t("common.error"));
       return;
     }
 
-    appToast.success(data.message || "ئیمەیڵ پشتڕاستکرایەوە.");
+    appToast.success(data.message || t("auth.emailVerified"));
     window.location.href = "/login";
   }
 
@@ -44,13 +46,13 @@ function VerifyEmailForm() {
       const data = await res.json();
 
       if (!data.success) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("common.error"));
       } else {
         appToast.success(data.message);
         setCountdown(60);
       }
     } catch {
-      appToast.error("پەیوەندی بە سێرڤەر نەکرا.");
+      appToast.error(t("validation.serverUnreachableShort"));
     } finally {
       setLoading(false);
     }
@@ -72,12 +74,12 @@ function VerifyEmailForm() {
         className="rek-card w-full max-w-md space-y-5 p-6 sm:p-8"
       >
         <h1 className="text-center text-2xl font-black text-primary">
-          پشتڕاستکردنەوەی ئیمەیڵ
+          {t("auth.verifyEmail")}
         </h1>
 
         <div>
           <label htmlFor="verify-email" className="mb-2 block text-sm font-bold">
-            ئیمەیڵ
+            {t("auth.email")}
           </label>
           <input
             id="verify-email"
@@ -91,7 +93,7 @@ function VerifyEmailForm() {
 
         <div>
           <label htmlFor="verify-otp" className="mb-2 block text-sm font-bold">
-            کۆد
+            {t("auth.otp")}
           </label>
           <input
             id="verify-otp"
@@ -107,7 +109,7 @@ function VerifyEmailForm() {
           type="submit"
           className="h-11 w-full rounded-2xl bg-primary font-bold text-primary-foreground"
         >
-          پشتڕاستکردنەوە
+          {t("auth.verify")}
         </button>
 
         <button
@@ -117,10 +119,10 @@ function VerifyEmailForm() {
           className="w-full text-sm font-bold text-primary disabled:opacity-50"
         >
           {countdown > 0
-            ? `دووبارە ناردن (${countdown})`
+            ? t("auth.resendCountdown", { count: countdown })
             : loading
-              ? "چاوەڕوان بە..."
-              : "ناردنی کۆدی نوێ"}
+              ? t("common.pleaseWait")
+              : t("auth.resendCode")}
         </button>
       </form>
     </div>
@@ -128,11 +130,12 @@ function VerifyEmailForm() {
 }
 
 export default function VerifyEmailPage() {
+  const { t } = useT();
   return (
     <Suspense
       fallback={
         <div className="flex min-h-dvh items-center justify-center text-muted-foreground">
-          چاوەڕێ بکە...
+          {t("common.pleaseWait")}
         </div>
       }
     >

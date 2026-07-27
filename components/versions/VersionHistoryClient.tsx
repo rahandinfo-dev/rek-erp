@@ -23,6 +23,7 @@ import { exportToCsv, exportToExcel } from "@/lib/export";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Filters = {
   users: { id: string; fullName: string }[];
@@ -30,6 +31,7 @@ type Filters = {
 };
 
 export default function VersionHistoryClient() {
+  const { t } = useT();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [items, setItems] = useState<EntityVersionRow[]>([]);
@@ -85,7 +87,7 @@ export default function VersionHistoryClient() {
       setTotalPages(json.data.pagination?.totalPages || 1);
       if (json.data.filters) setFilters(json.data.filters);
     } catch {
-      appToast.error("Failed to load version history");
+      appToast.error(t("versionsUi.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -120,7 +122,7 @@ export default function VersionHistoryClient() {
 
   async function runCompare() {
     if (selected.length !== 2) {
-      appToast.info("Select two versions");
+      appToast.info(t("versionsUi.selectTwo"));
       return;
     }
     const res = await fetch(
@@ -128,7 +130,7 @@ export default function VersionHistoryClient() {
     );
     const json = await res.json();
     if (!json.success) {
-      appToast.error(json.message || "Compare failed");
+      appToast.error(json.message || t("versionsUi.compareFailed"));
       return;
     }
     setCompareDiffs(json.data.diffs);
@@ -191,10 +193,10 @@ export default function VersionHistoryClient() {
         <div>
           <h1 className="flex items-center gap-2 text-3xl font-black text-primary">
             <History aria-hidden />
-            Version History
+            {t("versionsUi.title")}
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Review, compare and restore previous versions of any record.
+            {t("versionsUi.subtitle")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -206,7 +208,7 @@ export default function VersionHistoryClient() {
             disabled={selected.length !== 2}
           >
             <GitCompare size={16} aria-hidden />
-            Compare
+            {t("versionsUi.compare")}
           </Button>
           <Button
             type="button"
@@ -231,7 +233,7 @@ export default function VersionHistoryClient() {
 
       <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-[var(--shadow-xs)] lg:flex-row lg:flex-wrap lg:items-end">
         <label className="relative min-w-[200px] flex-1">
-          <span className="sr-only">Search</span>
+          <span className="sr-only">{t("common.search")}</span>
           <Search
             size={16}
             className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground"
@@ -243,12 +245,12 @@ export default function VersionHistoryClient() {
               setPage(1);
               setQ(e.target.value);
             }}
-            placeholder="Search record, user, comment…"
+            placeholder={t("versionsUi.searchPlaceholder")}
             className="h-11 w-full rounded-2xl border border-border bg-background py-2 pe-3 ps-10 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
           />
         </label>
         <label className="text-xs font-bold">
-          Type
+          {t("versionsUi.type")}
           <select
             value={entityType}
             onChange={(e) => {
@@ -257,16 +259,16 @@ export default function VersionHistoryClient() {
             }}
             className="mt-1 block h-11 min-w-[140px] rounded-2xl border border-border bg-background px-3 text-sm"
           >
-            <option value="">All</option>
-            {filters.entityTypes.map((t) => (
-              <option key={t} value={t}>
-                {t}
+            <option value="">{t("common.all")}</option>
+            {filters.entityTypes.map((et) => (
+              <option key={et} value={et}>
+                {et}
               </option>
             ))}
           </select>
         </label>
         <label className="text-xs font-bold">
-          Action
+          {t("activity.action")}
           <select
             value={action}
             onChange={(e) => {
@@ -275,7 +277,7 @@ export default function VersionHistoryClient() {
             }}
             className="mt-1 block h-11 min-w-[140px] rounded-2xl border border-border bg-background px-3 text-sm"
           >
-            <option value="">All</option>
+            <option value="">{t("common.all")}</option>
             {Object.keys(VERSION_ACTION_LABELS).map((a) => (
               <option key={a} value={a}>
                 {VERSION_ACTION_LABELS[a]}
@@ -284,7 +286,7 @@ export default function VersionHistoryClient() {
           </select>
         </label>
         <label className="text-xs font-bold">
-          User
+          {t("versionsUi.user")}
           <select
             value={userId}
             onChange={(e) => {
@@ -293,7 +295,7 @@ export default function VersionHistoryClient() {
             }}
             className="mt-1 block h-11 min-w-[160px] rounded-2xl border border-border bg-background px-3 text-sm"
           >
-            <option value="">All</option>
+            <option value="">{t("common.all")}</option>
             {filters.users.map((u) => (
               <option key={u.id} value={u.id}>
                 {u.fullName}
@@ -302,16 +304,16 @@ export default function VersionHistoryClient() {
           </select>
         </label>
         <label className="text-xs font-bold">
-          Sort
+          {t("versionsUi.sort")}
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}
             className="mt-1 block h-11 min-w-[140px] rounded-2xl border border-border bg-background px-3 text-sm"
           >
-            <option value="newest">Newest</option>
-            <option value="oldest">Oldest</option>
-            <option value="version_desc">Version ↓</option>
-            <option value="version_asc">Version ↑</option>
+            <option value="newest">{t("versionsUi.newest")}</option>
+            <option value="oldest">{t("versionsUi.oldest")}</option>
+            <option value="version_desc">{t("versionsUi.versionDesc")}</option>
+            <option value="version_asc">{t("versionsUi.versionAsc")}</option>
           </select>
         </label>
         {entityId ? (
@@ -323,13 +325,13 @@ export default function VersionHistoryClient() {
               setPage(1);
             }}
           >
-            Clear entity filter
+            {t("versionsUi.clearEntityFilter")}
           </button>
         ) : null}
       </div>
 
       <p className="text-sm text-muted-foreground" aria-live="polite">
-        {loading ? "چاوەڕوان بە…" : `${total} versions`}
+        {loading ? t("common.loading") : t("versionsUi.versionsCount", { count: total })}
       </p>
 
       <div className="rek-table-shell">
@@ -338,31 +340,31 @@ export default function VersionHistoryClient() {
             <thead className="sticky top-0 z-10 bg-muted/95 backdrop-blur-sm">
               <tr className="text-right">
                 <th className="px-3 py-3 font-bold" scope="col">
-                  <span className="sr-only">Select</span>
+                  <span className="sr-only">{t("versionsUi.select")}</span>
                 </th>
                 <th className="px-3 py-3 font-bold" scope="col">
-                  Ver
+                  {t("versionsUi.ver")}
                 </th>
                 <th className="px-3 py-3 font-bold" scope="col">
-                  Record
+                  {t("versionsUi.record")}
                 </th>
                 <th className="px-3 py-3 font-bold" scope="col">
-                  Type
+                  {t("versionsUi.type")}
                 </th>
                 <th className="px-3 py-3 font-bold" scope="col">
-                  Action
+                  {t("activity.action")}
                 </th>
                 <th className="px-3 py-3 font-bold" scope="col">
-                  User
+                  {t("versionsUi.user")}
                 </th>
                 <th className="px-3 py-3 font-bold" scope="col">
-                  When
+                  {t("versionsUi.when")}
                 </th>
                 <th className="px-3 py-3 font-bold" scope="col">
-                  Fields
+                  {t("versionsUi.fields")}
                 </th>
                 <th className="px-3 py-3 text-center font-bold" scope="col">
-                  Actions
+                  {t("common.actions")}
                 </th>
               </tr>
             </thead>
@@ -373,7 +375,7 @@ export default function VersionHistoryClient() {
                     colSpan={9}
                     className="px-4 py-16 text-center text-muted-foreground"
                   >
-                    No versions found.
+                    {t("versionsUi.noVersions")}
                   </td>
                 </tr>
               ) : (
@@ -390,7 +392,7 @@ export default function VersionHistoryClient() {
                         type="checkbox"
                         checked={selected.includes(row.id)}
                         onChange={() => toggleSelect(row.id)}
-                        aria-label={`Select v${row.versionNumber}`}
+                        aria-label={t("versionsUi.select") + ` v${row.versionNumber}`}
                       />
                     </td>
                     <td className="px-3 py-3 font-black tabular-nums">
@@ -428,7 +430,7 @@ export default function VersionHistoryClient() {
                         <button
                           type="button"
                           className="rounded-lg p-1.5 hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
-                          aria-label="View version"
+                          aria-label={t("versionsUi.viewVersion")}
                           onClick={() => setViewRow(row)}
                         >
                           <Eye size={15} />
@@ -436,7 +438,7 @@ export default function VersionHistoryClient() {
                         <button
                           type="button"
                           className="rounded-lg p-1.5 hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
-                          aria-label="Copy link"
+                          aria-label={t("versionsUi.copyLink")}
                           onClick={() => void copyLink(row.id)}
                         >
                           <Copy size={15} />
@@ -461,7 +463,7 @@ export default function VersionHistoryClient() {
 
       <div className="flex flex-wrap items-center justify-between gap-2">
         <p className="text-sm text-muted-foreground">
-          Page {page} / {totalPages}
+          {t("versionsUi.pageOf", { page, total: totalPages })}
         </p>
         <div className="flex gap-2">
           <Button
@@ -471,7 +473,7 @@ export default function VersionHistoryClient() {
             disabled={page <= 1}
             onClick={() => setPage((p) => Math.max(1, p - 1))}
           >
-            Prev
+            {t("common.previous")}
           </Button>
           <Button
             type="button"
@@ -480,14 +482,14 @@ export default function VersionHistoryClient() {
             disabled={page >= totalPages}
             onClick={() => setPage((p) => p + 1)}
           >
-            Next
+            {t("common.next")}
           </Button>
         </div>
       </div>
 
       {compareDiffs ? (
         <div className="space-y-2">
-          <h2 className="text-lg font-black">Side-by-side comparison</h2>
+          <h2 className="text-lg font-black">{t("versionsUi.sideBySide")}</h2>
           <VersionCompare
             leftLabel={compareLabels.left}
             rightLabel={compareLabels.right}
@@ -500,7 +502,7 @@ export default function VersionHistoryClient() {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label={`Version ${viewRow.versionNumber}`}
+          aria-label={t("versionsUi.ver") + ` ${viewRow.versionNumber}`}
           className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-[var(--shadow-md)]"
         >
           <div className="flex items-start justify-between gap-2">
@@ -521,9 +523,7 @@ export default function VersionHistoryClient() {
               variant="outline"
               size="sm"
               onClick={() => setViewRow(null)}
-            >
-              Close
-            </Button>
+            >{t("common.close")}</Button>
           </div>
           <VersionCompare
             leftLabel="پێش"
@@ -546,7 +546,7 @@ export default function VersionHistoryClient() {
       <ConfirmDialog
         open={Boolean(restoreId)}
         title="ئەم وەشانە بگەڕێنرێتەوە؟"
-        description="The live record will be updated to match this version. A new version entry will be created for the restore action."
+        description={t("versionsUi.restoreDesc")}
         confirmText="گەڕاندنەوە"
         cancelText="هەڵوەشاندنەوە"
         loading={restoring}

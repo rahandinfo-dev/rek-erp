@@ -1,6 +1,6 @@
 "use client";
 
-import { ATTENDANCE_STATUS_LABELS } from "@/lib/employees/labels";
+import { useT } from "@/components/i18n/LocaleProvider";
 import type { attendanceStatuses } from "@/lib/validators/employee";
 
 type Status = (typeof attendanceStatuses)[number];
@@ -20,7 +20,23 @@ const STATUS_COLORS: Record<string, string> = {
   HALF_DAY: "bg-violet-500 text-white",
 };
 
-const WEEKDAYS = ["یەک", "دوو", "سێ", "چوار", "پێنج", "هەینی", "شەممە"];
+const WEEKDAY_KEYS = [
+  "employees.weekdayMon",
+  "employees.weekdayTue",
+  "employees.weekdayWed",
+  "employees.weekdayThu",
+  "employees.weekdayFri",
+  "employees.weekdaySat",
+  "employees.weekdaySun",
+] as const;
+
+const ATTENDANCE_KEYS = [
+  "PRESENT",
+  "ABSENT",
+  "LATE",
+  "LEAVE",
+  "HALF_DAY",
+] as const;
 
 export default function AttendanceCalendar({
   year,
@@ -35,6 +51,7 @@ export default function AttendanceCalendar({
   selectedDate: string;
   onSelectDate: (date: string) => void;
 }) {
+  const { t } = useT();
   const map = new Map(
     items.map((item) => [item.date.slice(0, 10), item.status])
   );
@@ -55,9 +72,9 @@ export default function AttendanceCalendar({
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-7 gap-2 text-center text-xs font-bold text-slate-400">
-        {WEEKDAYS.map((d) => (
-          <div key={d} className="py-1">
-            {d}
+        {WEEKDAY_KEYS.map((key) => (
+          <div key={key} className="py-1">
+            {t(key)}
           </div>
         ))}
       </div>
@@ -78,8 +95,8 @@ export default function AttendanceCalendar({
               onClick={() => onSelectDate(iso)}
               title={
                 status
-                  ? ATTENDANCE_STATUS_LABELS[status] || status
-                  : "هیچ تۆمارێک نییە"
+                  ? t(`employees.attendance.${status}`) || status
+                  : t("employees.noAttendanceRecord")
               }
               className={`aspect-square rounded-2xl border text-sm font-bold transition ${
                 selected
@@ -98,12 +115,12 @@ export default function AttendanceCalendar({
       </div>
 
       <div className="flex flex-wrap gap-2 pt-2">
-        {Object.entries(ATTENDANCE_STATUS_LABELS).map(([key, label]) => (
+        {ATTENDANCE_KEYS.map((key) => (
           <span
             key={key}
             className={`rounded-full px-2.5 py-1 text-[11px] font-bold ${STATUS_COLORS[key]}`}
           >
-            {label}
+            {t(`employees.attendance.${key}`)}
           </span>
         ))}
       </div>

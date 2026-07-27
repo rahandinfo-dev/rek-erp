@@ -8,13 +8,14 @@ import { relatedForEntity } from "@/lib/recycle/related";
 import { getRetentionDays } from "@/lib/recycle/record";
 import { RETENTION_OPTIONS } from "@/lib/recycle/types";
 import type { Prisma } from "@/lib/prisma/client";
+import { tServer } from "@/lib/i18n";
 
 export async function GET(req: NextRequest) {
   try {
     const user = await getCurrentUser();
     if (!user) {
       return NextResponse.json(
-        { success: false, message: "Unauthorized" },
+        { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
       );
     }

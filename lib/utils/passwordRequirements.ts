@@ -1,28 +1,32 @@
+import { tServer } from "@/lib/i18n";
+
+const t = tServer.t.bind(tServer);
+
 export function passwordRequirements(password: string) {
   return {
     minLength: {
       valid: password.length >= 8,
-      text: "لانیکەم ٨ پیت",
+      text: t("validation.minLength"),
     },
 
     lowerCase: {
       valid: /[a-z]/.test(password),
-      text: "پیتی بچووک (a-z)",
+      text: t("validation.lowerCase"),
     },
 
     upperCase: {
       valid: /[A-Z]/.test(password),
-      text: "پیتی گەورە (A-Z)",
+      text: t("validation.upperCase"),
     },
 
     number: {
       valid: /\d/.test(password),
-      text: "ژمارە (0-9)",
+      text: t("validation.number"),
     },
 
     special: {
       valid: /[@$!%*?&]/.test(password),
-      text: "هێمای تایبەت (@$!%*?&)",
+      text: t("validation.special"),
     },
   };
 }

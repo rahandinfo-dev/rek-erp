@@ -8,6 +8,7 @@ import ValuationMetricsGrid from "@/components/inventory/ValuationMetricsGrid";
 import { buildWarehouseValuation } from "@/lib/inventory/valuation";
 import { toValuationMetrics } from "@/lib/inventory/valuationMetrics";
 import RecordVersionHistorySection from "@/components/versions/RecordVersionHistorySection";
+import { tServer } from "@/lib/i18n";
 
 type PageProps = {
   params: Promise<{
@@ -16,6 +17,7 @@ type PageProps = {
 };
 
 export default async function EditWerehousePage({ params }: PageProps) {
+  const t = tServer.t;
   const user = await getCurrentUser();
 
   if (!user) {
@@ -58,25 +60,28 @@ export default async function EditWerehousePage({ params }: PageProps) {
           className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-muted-foreground transition hover:bg-muted"
         >
           <ArrowRight size={18} />
-          گەڕانەوە بۆ کۆگاکان
+          {t("warehouses.backToList")}
         </Link>
 
         <div>
           <h1 className="text-4xl font-black text-primary">
-            دەستکاریکردنی کۆگا
+            {t("warehouses.editTitle")}
           </h1>
           <p className="mt-2 text-muted-foreground">
-            زانیارییەکانی کۆگا دەستکاری بکە · بەهاکان خۆکار هەژمار دەکرێن
+            {t("warehouses.editDescription")}
           </p>
         </div>
       </div>
 
       <ValuationMetricsGrid
         metrics={metrics}
-        title={`بەهاکانی ${werehouse.name}`}
+        title={t("warehouses.valuesTitle", { name: werehouse.name })}
         subtitle={
           valuation
-            ? `تەندروستی ${valuation.inventoryHealthScore}% · ${valuation.productsCount} بەرهەم`
+            ? t("warehouses.healthSubtitle", {
+                score: valuation.inventoryHealthScore,
+                count: valuation.productsCount,
+              })
             : undefined
         }
       />
@@ -84,7 +89,7 @@ export default async function EditWerehousePage({ params }: PageProps) {
       <EditWerehouseForm werehouse={werehouse} />
 
       <RecordVersionHistorySection
-        entityType="کۆگا"
+        entityType={t("warehouses.entityType")}
         entityId={werehouse.id}
         recordLabel={werehouse.name}
       />

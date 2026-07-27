@@ -7,6 +7,7 @@ import { FormSkeleton } from "@/components/ui/Skeleton";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar } from "@/components/ui/AutoSaveStatus";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   id: string;
@@ -15,6 +16,7 @@ type Props = {
 type BrandDraft = { name: string };
 
 export default function EditBrandForm({ id }: Props) {
+  const { t } = useT();
   const router = useRouter();
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
@@ -28,7 +30,7 @@ export default function EditBrandForm({ id }: Props) {
         const data = await response.json();
 
         if (!response.ok) {
-          appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+          appToast.error(data.message || t("errors.generic"));
           router.push("/dashboard/brands");
           return;
         }
@@ -36,14 +38,14 @@ export default function EditBrandForm({ id }: Props) {
         setName(data.data.name);
         setHydrated(true);
       } catch {
-        appToast.error("هەڵەیەک ڕوویدا.");
+        appToast.error(t("errors.generic"));
       } finally {
         setPageLoading(false);
       }
     }
 
     void fetchBrand();
-  }, [id, router]);
+  }, [id, router, t]);
 
   const draftValue = useMemo<BrandDraft>(() => ({ name }), [name]);
 
@@ -75,16 +77,16 @@ export default function EditBrandForm({ id }: Props) {
       const data = await response.json();
 
       if (!response.ok) {
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
 
       clearDraft();
-      appToast.success("براند بە سەرکەوتوویی نوێکرایەوە.");
+      appToast.success(t("brands.updated"));
       router.push("/dashboard/brands");
       router.refresh();
     } catch {
-      appToast.error("هەڵەیەک ڕوویدا.");
+      appToast.error(t("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -113,7 +115,7 @@ export default function EditBrandForm({ id }: Props) {
           htmlFor="edit-brand-name"
           className="mb-2 block text-sm font-bold text-foreground"
         >
-          ناوی براند
+          {t("brands.nameLabel")}
         </label>
         <input
           id="edit-brand-name"
@@ -129,7 +131,7 @@ export default function EditBrandForm({ id }: Props) {
         aria-busy={loading}
         className="rounded-2xl bg-primary px-8 py-3 font-bold text-primary-foreground transition hover:bg-[var(--brand-hover)] disabled:opacity-50"
       >
-        {loading ? "چاوەڕێ بکە..." : "نوێکردنەوەی براند"}
+        {loading ? t("common.wait") : t("brands.update")}
       </button>
     </form>
   );

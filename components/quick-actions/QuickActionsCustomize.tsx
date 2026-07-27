@@ -20,6 +20,7 @@ import type {
   QuickActionPrefs,
 } from "@/lib/quick-actions/types";
 import { cn } from "@/lib/utils";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   open: boolean;
@@ -37,6 +38,7 @@ function CustomizeBody({
   onSave,
   onReset,
 }: Omit<Props, "open">) {
+  const { t } = useT();
   const baseIds =
     prefs.orderByModule[moduleKey] ||
     DEFAULT_MODULE_ACTIONS[moduleKey] ||
@@ -92,10 +94,8 @@ function CustomizeBody({
   return (
     <>
       <DialogHeader>
-        <DialogTitle>Customize Quick Actions</DialogTitle>
-        <DialogDescription>
-          Pin favorites, reorder, or hide unused actions for this module.
-        </DialogDescription>
+        <DialogTitle>{t("quickActions.customizeTitle")}</DialogTitle>
+        <DialogDescription>{t("quickActions.customizeHint")}</DialogDescription>
       </DialogHeader>
 
       <ul className="mt-4 space-y-1">
@@ -118,7 +118,7 @@ function CustomizeBody({
                 className="rounded-lg px-2 py-1 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
                 onClick={() => move(id, -1)}
                 disabled={idx === 0}
-                aria-label={`Move ${def.label} up`}
+                aria-label={t("quickActions.moveUp", { label: def.label })}
               >
                 ↑
               </button>
@@ -127,7 +127,7 @@ function CustomizeBody({
                 className="rounded-lg px-2 py-1 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
                 onClick={() => move(id, 1)}
                 disabled={idx === order.length - 1}
-                aria-label={`Move ${def.label} down`}
+                aria-label={t("quickActions.moveDown", { label: def.label })}
               >
                 ↓
               </button>
@@ -139,14 +139,14 @@ function CustomizeBody({
                 )}
                 onClick={() => togglePin(id)}
               >
-                {pinned ? "Pinned" : "هەڵواسین"}
+                {pinned ? t("quickActions.pinned") : t("quickActions.pin")}
               </button>
               <button
                 type="button"
                 className="rounded-lg px-2 py-1 text-xs font-bold hover:bg-muted focus-visible:ring-[3px] focus-visible:ring-ring/35"
                 onClick={() => toggleHidden(id)}
               >
-                {hidden ? "Show" : "Hide"}
+                {hidden ? t("quickActions.show") : t("quickActions.hide")}
               </button>
             </li>
           );
@@ -168,13 +168,13 @@ function CustomizeBody({
             onReset();
           }}
         >
-          Reset to default
+          {t("quickActions.resetDefault")}
         </Button>
         <Button type="button" variant="outline" onClick={onClose}>
-          Cancel
+          {t("common.cancel")}
         </Button>
         <Button type="button" onClick={save}>
-          Save
+          {t("common.save")}
         </Button>
       </DialogFooter>
     </>

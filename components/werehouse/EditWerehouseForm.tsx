@@ -9,6 +9,7 @@ import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import ImageUpload from "@/components/uploads/ImageUpload";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Werehouse = {
   id: string;
@@ -34,6 +35,7 @@ type WarehouseDraft = {
 };
 
 export default function EditWerehouseForm({ werehouse }: Props) {
+  const { t } = useT();
   const router = useRouter();
 
   const [name, setName] = useState(werehouse.name);
@@ -75,12 +77,12 @@ export default function EditWerehouseForm({ werehouse }: Props) {
     setError("");
 
     if (!name.trim()) {
-      setError("تکایە ناوی کۆگا بنووسە.");
+      setError(t("warehouses.nameRequired"));
       return;
     }
 
     if (!code.trim()) {
-      setError("تکایە کۆدی کۆگا بنووسە.");
+      setError(t("warehouses.codeRequired"));
       return;
     }
 
@@ -105,8 +107,8 @@ export default function EditWerehouseForm({ werehouse }: Props) {
       const data = await res.json();
 
       if (!res.ok) {
-        setError(data.message || "هەڵەیەک ڕوویدا.");
-        appToast.error(data.message || "هەڵەیەک ڕوویدا.");
+        setError(data.message || t("errors.generic"));
+        appToast.error(data.message || t("errors.generic"));
         return;
       }
 
@@ -115,8 +117,8 @@ export default function EditWerehouseForm({ werehouse }: Props) {
       router.push("/dashboard/werehouse");
       router.refresh();
     } catch {
-      setError("هەڵەیەک ڕوویدا.");
-      appToast.error("هەڵەیەک ڕوویدا.");
+      setError(t("errors.generic"));
+      appToast.error(t("errors.generic"));
     } finally {
       setLoading(false);
     }
@@ -147,23 +149,27 @@ export default function EditWerehouseForm({ werehouse }: Props) {
           kind="warehouse"
           value={image || null}
           onChange={(url) => setImage(url || "")}
-          label="وێنەی کۆگا"
+          label={t("warehouses.imageLabel")}
           shape="square"
         />
 
         <div>
-          <label className="mb-2 block text-sm font-bold">ناوی کۆگا</label>
+          <label className="mb-2 block text-sm font-bold">
+            {t("warehouses.nameLabel")}
+          </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
             className={inputClassName}
-            placeholder="ناوی کۆگا"
+            placeholder={t("warehouses.nameLabel")}
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-bold">کۆدی کۆگا</label>
+          <label className="mb-2 block text-sm font-bold">
+            {t("warehouses.codeLabel")}
+          </label>
           <input
             type="text"
             value={code}
@@ -174,7 +180,9 @@ export default function EditWerehouseForm({ werehouse }: Props) {
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-bold">توانای کۆگا</label>
+          <label className="mb-2 block text-sm font-bold">
+            {t("warehouses.capacityLabelEdit")}
+          </label>
           <input
             type="number"
             min="0"
@@ -182,18 +190,20 @@ export default function EditWerehouseForm({ werehouse }: Props) {
             value={capacity}
             onChange={(e) => setCapacity(e.target.value)}
             className={inputClassName}
-            placeholder="بڕی زۆرترین یەکە (ئارەزوومەندانە)"
+            placeholder={t("warehouses.capacityPlaceholder")}
           />
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-bold">ناونیشان</label>
+          <label className="mb-2 block text-sm font-bold">
+            {t("warehouses.addressLabel")}
+          </label>
           <textarea
             rows={4}
             value={address}
             onChange={(e) => setAddress(e.target.value)}
             className={textareaClassName}
-            placeholder="ناونیشانی کۆگا..."
+            placeholder={t("warehouses.addressPlaceholder")}
           />
         </div>
 
@@ -206,7 +216,7 @@ export default function EditWerehouseForm({ werehouse }: Props) {
             className="size-5 rounded border-border"
           />
           <label htmlFor="isMain" className="font-semibold">
-            ئەمە کۆگای سەرەکییە
+            {t("warehouses.isMainEdit")}
           </label>
         </div>
 
@@ -219,7 +229,7 @@ export default function EditWerehouseForm({ werehouse }: Props) {
         <div className="flex flex-wrap items-center gap-3">
           <AutoSaveStatus status={draftStatus} savedAt={draftSavedAt} />
           <Button type="submit" disabled={loading} size="lg">
-            {loading ? "چاوەڕوانبە..." : "پاشەکەوتکردنی گۆڕانکاری"}
+            {loading ? t("common.pleaseWait") : t("common.saveChanges")}
           </Button>
           <Button
             type="button"
@@ -227,7 +237,7 @@ export default function EditWerehouseForm({ werehouse }: Props) {
             size="lg"
             onClick={() => router.push("/dashboard/werehouse")}
           >
-            هەڵوەشاندنەوە
+            {t("common.cancel")}
           </Button>
         </div>
       </form>

@@ -13,6 +13,7 @@ import type {
   InvoiceSizeOption,
   InvoiceTemplateConfig,
 } from "@/lib/invoices/template-config";
+import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
   company: {
@@ -39,6 +40,7 @@ export default function SaleInvoiceActions({
   size,
   data,
 }: Props) {
+  const { t } = useT();
   const ref = useRef<HTMLDivElement>(null);
 
   return (
@@ -51,8 +53,8 @@ export default function SaleInvoiceActions({
             printElement(ref.current, data.invoiceNo);
             void reportClientNotification({
               type: "INVOICE_PRINTED",
-              title: "پسوولە چاپکرا",
-              message: `پسوولەی ${data.invoiceNo} چاپکرا.`,
+              title: t("invoices.printedTitle"),
+              message: t("invoices.printedBody", { no: data.invoiceNo }),
               href: "/dashboard/sales",
               entityType: "Sale",
               entityId: data.invoiceNo,
@@ -61,7 +63,7 @@ export default function SaleInvoiceActions({
           className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#FFAE42] px-4 font-semibold text-white"
         >
           <Printer size={16} />
-          چاپ
+          {t("common.print")}
         </button>
         <button
           type="button"
@@ -70,8 +72,8 @@ export default function SaleInvoiceActions({
             exportElementToPdf(ref.current, `${data.invoiceNo}.pdf`);
             void reportClientNotification({
               type: "PDF_GENERATED",
-              title: "PDF دروستکرا",
-              message: `PDFی پسوولەی ${data.invoiceNo} دروستکرا.`,
+              title: t("invoices.pdfTitle"),
+              message: t("invoices.pdfBody", { no: data.invoiceNo }),
               href: "/dashboard/sales",
               entityType: "Sale",
               entityId: data.invoiceNo,
