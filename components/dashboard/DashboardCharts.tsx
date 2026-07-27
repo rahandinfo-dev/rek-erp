@@ -98,7 +98,7 @@ function DashboardCharts({ data }: { data: DashboardChartData }) {
                     color: "var(--popover-foreground)",
                   }}
                   formatter={(value) =>
-                    `${formatMoney(Number(value ?? 0))} IQD`
+                    `${formatMoney(Number(value ?? 0))}`
                   }
                 />
                 <Bar
@@ -151,7 +151,7 @@ function DashboardCharts({ data }: { data: DashboardChartData }) {
                       color: "var(--popover-foreground)",
                     }}
                     formatter={(value) =>
-                      `${formatMoney(Number(value ?? 0))} IQD`
+                      `${formatMoney(Number(value ?? 0))}`
                     }
                   />
                 </PieChart>

@@ -142,7 +142,7 @@ export default function PurchasesTable({
                     {formatDate(purchase.purchaseDate)}
                   </td>
                   <td className="px-5 py-4">
-                    {formatMoney(purchase.total)} {t("common.currencyCode")}
+                    {formatMoney(purchase.total)}
                   </td>
                   <td className="px-5 py-4">
                     <span

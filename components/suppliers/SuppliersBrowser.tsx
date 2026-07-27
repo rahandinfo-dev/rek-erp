@@ -107,11 +107,11 @@ export default function SuppliersBrowser({
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <Meta
                   label={t("suppliers.totalPurchases")}
-                  value={`${formatMoney(s.totalPurchases)} ${t("common.currencyCode")}`}
+                  value={`${formatMoney(s.totalPurchases)}`}
                 />
                 <Meta
                   label={t("suppliers.outstandingBalance")}
-                  value={`${formatMoney(s.outstandingBalance)} ${t("common.currencyCode")}`}
+                  value={`${formatMoney(s.outstandingBalance)}`}
                 />
                 <Meta
                   label={t("suppliers.lastPurchase")}

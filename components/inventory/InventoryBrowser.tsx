@@ -8,7 +8,6 @@ import { Boxes, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import InventoryStats from "@/components/inventory/InventoryStats";
 import InventoryFilters from "@/components/inventory/InventoryFilters";
 import InventoryStockList from "@/components/inventory/InventoryStockList";
-import { LowStockWarningBanner } from "@/components/inventory/LowStockWarningBanner";
 import type {
   InventoryMovementRow,
   InventoryProductRow,
@@ -151,19 +150,9 @@ export default function InventoryBrowser({
 
   return (
     <div className="w-full min-w-0 space-y-5 sm:space-y-7">
-      <LowStockWarningBanner
-        lowStockCount={summary.lowStockCount}
-        outOfStockCount={summary.outOfStockCount}
-        href={null}
-        onActivate={() => {
-          setStatus(summary.outOfStockCount > 0 ? "out" : "low");
-          setPage(1);
-        }}
-      />
-
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="min-w-0">
-          <div className="mb-2 inline-flex items-center gap-2 rounded-2xl bg-secondary px-3 py-1 text-sm font-bold text-primary">
+          <div className="mb-2 inline-flex items-center gap-2 bg-secondary px-3 py-1 text-sm font-bold text-primary">
             <Boxes size={16} />
             {formatNumber(pagination.total)} ئەنجام
           </div>
@@ -171,7 +160,7 @@ export default function InventoryBrowser({
             ئینڤێنتۆری
           </h1>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-            کۆگا، یەکە، نرخ و دۆخی کۆگا — داتای ڕاستەقینەی Prisma
+            کۆگا، یەکە، نرخ و دۆخی کۆگا — داتای ڕاستەقینەی سیستەم
           </p>
         </div>
 

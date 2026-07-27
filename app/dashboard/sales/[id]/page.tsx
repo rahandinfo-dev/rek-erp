@@ -53,8 +53,7 @@ export default async function SaleDetailPage({ params }: Props) {
             {sale.invoiceNo}
           </h1>
           <p className="mt-2 text-slate-500">
-            {sale.customer.name} · {formatMoney(sale.total)}{" "}
-            {t("common.currencyCode")} ·{" "}
+            {sale.customer.name} · {formatMoney(sale.total)} ·{" "}
             {PAYMENT_METHOD_LABELS[sale.paymentMethod]}
           </p>
         </div>

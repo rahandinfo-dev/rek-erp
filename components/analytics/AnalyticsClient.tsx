@@ -236,28 +236,28 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           title={t("analytics.revenue")}
-          value={`${formatMoney(summary.revenueTotal)} IQD`}
+          value={`${formatMoney(summary.revenueTotal)}`}
           description={t("analytics.thisMonthToday", { month: formatMoney(summary.revenueThisMonth), today: formatMoney(summary.revenueToday) })}
           icon={ShoppingCart}
           accent="sales"
         />
         <StatCard
           title={t("analytics.expenses")}
-          value={`${formatMoney(summary.expensesTotal)} IQD`}
+          value={`${formatMoney(summary.expensesTotal)}`}
           description={t("analytics.thisMonthToday", { month: formatMoney(summary.expensesThisMonth), today: formatMoney(summary.expensesToday) })}
           icon={ShoppingBasket}
           accent="purchases"
         />
         <StatCard
           title={t("analytics.profit")}
-          value={`${formatMoney(summary.profitTotal)} IQD`}
+          value={`${formatMoney(summary.profitTotal)}`}
           description={t("analytics.profitDesc", { month: formatMoney(summary.profitThisMonth), gross: formatMoney(summary.grossProfitThisMonth) })}
           icon={TrendingUp}
           accent="sales"
         />
         <StatCard
           title={t("analytics.loss")}
-          value={`${formatMoney(summary.lossTotal)} IQD`}
+          value={`${formatMoney(summary.lossTotal)}`}
           description={t("analytics.thisMonthToday", { month: formatMoney(summary.lossThisMonth), today: formatMoney(summary.lossToday) })}
           icon={TrendingDown}
         />
@@ -315,7 +315,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           <dl className="grid gap-3 sm:grid-cols-2">
             <PerfRow
               label={t("analytics.revenueThisMonth")}
-              value={`${formatMoney(salesPerformance.revenueThisMonth)} IQD`}
+              value={`${formatMoney(salesPerformance.revenueThisMonth)}`}
             />
             <PerfRow
               label={t("analytics.growthVsPrev")}
@@ -327,15 +327,15 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
             />
             <PerfRow
               label={t("analytics.avgInvoice")}
-              value={`${formatMoney(salesPerformance.avgOrderValueThisMonth)} IQD`}
+              value={`${formatMoney(salesPerformance.avgOrderValueThisMonth)}`}
             />
             <PerfRow
               label={t("analytics.grossProfit")}
-              value={`${formatMoney(salesPerformance.grossProfitThisMonth)} IQD`}
+              value={`${formatMoney(salesPerformance.grossProfitThisMonth)}`}
             />
             <PerfRow
               label={t("analytics.revenueToday")}
-              value={`${formatMoney(salesPerformance.revenueToday)} IQD`}
+              value={`${formatMoney(salesPerformance.revenueToday)}`}
             />
           </dl>
         </div>
@@ -350,7 +350,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           <dl className="grid gap-3 sm:grid-cols-2">
             <PerfRow
               label={t("analytics.expensesThisMonth")}
-              value={`${formatMoney(purchasePerformance.expensesThisMonth)} IQD`}
+              value={`${formatMoney(purchasePerformance.expensesThisMonth)}`}
             />
             <PerfRow
               label={t("analytics.growthVsPrev")}
@@ -362,15 +362,15 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
             />
             <PerfRow
               label={t("analytics.avgPurchase")}
-              value={`${formatMoney(purchasePerformance.avgPurchaseValueThisMonth)} IQD`}
+              value={`${formatMoney(purchasePerformance.avgPurchaseValueThisMonth)}`}
             />
             <PerfRow
               label={t("analytics.expensesTotal")}
-              value={`${formatMoney(purchasePerformance.expensesTotal)} IQD`}
+              value={`${formatMoney(purchasePerformance.expensesTotal)}`}
             />
             <PerfRow
               label={t("analytics.expensesToday")}
-              value={`${formatMoney(purchasePerformance.expensesToday)} IQD`}
+              value={`${formatMoney(purchasePerformance.expensesToday)}`}
             />
           </dl>
         </div>
@@ -390,7 +390,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               />
               <Tooltip
                 contentStyle={tooltipStyle}
-                formatter={(value) => `${formatMoney(Number(value ?? 0))} IQD`}
+                formatter={(value) => `${formatMoney(Number(value ?? 0))}`}
               />
               <Legend />
               <Bar
@@ -442,7 +442,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
                 contentStyle={tooltipStyle}
                 formatter={(value) =>
                   data.warehouseDistribution.length
-                    ? `${formatMoney(Number(value ?? 0))} IQD`
+                    ? `${formatMoney(Number(value ?? 0))}`
                     : t("common.empty")
                 }
               />
@@ -532,7 +532,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               />
               <Tooltip
                 contentStyle={tooltipStyle}
-                formatter={(value) => `${formatMoney(Number(value ?? 0))} IQD`}
+                formatter={(value) => `${formatMoney(Number(value ?? 0))}`}
               />
               <Legend />
               <Line
@@ -614,7 +614,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
             title: p.name,
             subtitle: p.sku,
             meta: t("analytics.qtyPieces", { qty: formatMoney(p.quantity) }),
-            value: `${formatMoney(p.revenue)} IQD`,
+            value: `${formatMoney(p.revenue)}`,
             href: `/dashboard/products/${p.id}`,
           }))}
         />
@@ -627,7 +627,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
             title: p.name,
             subtitle: p.sku,
             meta: t("analytics.days90", { qty: formatMoney(p.quantity) }),
-            value: `${formatMoney(p.revenue)} IQD`,
+            value: `${formatMoney(p.revenue)}`,
             href: `/dashboard/products/${p.id}`,
           }))}
         />
@@ -706,7 +706,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
             title: c.name,
             subtitle: t("analytics.invoicesCount", { count: c.orders }),
             meta: "",
-            value: `${formatMoney(c.revenue)} IQD`,
+            value: `${formatMoney(c.revenue)}`,
             href: `/dashboard/customers/${c.id}/edit`,
           }))}
         />
@@ -737,7 +737,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               title: s.invoiceNo,
               subtitle: s.customer,
               meta: formatDate(s.date),
-              value: `${formatMoney(s.total)} IQD`,
+              value: `${formatMoney(s.total)}`,
               href: `/dashboard/sales/${s.id}`,
             }))}
           />
@@ -750,7 +750,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
               title: p.invoiceNo,
               subtitle: p.supplier,
               meta: formatDate(p.date),
-              value: `${formatMoney(p.total)} IQD`,
+              value: `${formatMoney(p.total)}`,
               href: `/dashboard/purchases/${p.id}`,
             }))}
           />
@@ -826,7 +826,7 @@ function AreaChartLike({
         contentStyle={tooltipStyle}
         formatter={(value) =>
           money
-            ? `${formatMoney(Number(value ?? 0))} IQD`
+            ? `${formatMoney(Number(value ?? 0))}`
             : formatMoney(Number(value ?? 0))
         }
       />

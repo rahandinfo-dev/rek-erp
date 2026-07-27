@@ -67,7 +67,7 @@ export default async function InvoiceDetailPage({
               {invoice.invoiceNo}
             </h1>
             <p className="mt-2 text-slate-500">
-              {invoice.customerName} · {formatMoney(invoice.grandTotal)} IQD ·{" "}
+              {invoice.customerName} · {formatMoney(invoice.grandTotal)} ·{" "}
               {PAYMENT_METHOD_LABELS[invoice.paymentMethod]}
             </p>
             <div className="mt-3 flex flex-wrap gap-2 text-sm">

@@ -59,17 +59,23 @@ export default async function InventoryPage({
       pageSize: 20,
       status,
     }),
-    loadStockAlertProducts(companyId, 15),
+    loadStockAlertProducts(companyId, 15).catch((error) => {
+      console.error("INVENTORY ALERTS LOAD ERROR:", error);
+      return [] as Awaited<ReturnType<typeof loadStockAlertProducts>>;
+    }),
   ]);
 
   return (
     <div className="space-y-5">
-      <LowStockWarningBanner
-        lowStockCount={initial.summary.lowStockCount}
-        outOfStockCount={initial.summary.outOfStockCount}
-        href={null}
-      />
-      <StockAlertBanners products={alertProducts} />
+      {alertProducts.length > 0 ? (
+        <StockAlertBanners products={alertProducts} />
+      ) : (
+        <LowStockWarningBanner
+          lowStockCount={initial.summary.lowStockCount}
+          outOfStockCount={initial.summary.outOfStockCount}
+          href="/dashboard/inventory?status=low"
+        />
+      )}
       <InventoryBrowser
         units={filterOptions.units}
         warehouses={filterOptions.warehouses}

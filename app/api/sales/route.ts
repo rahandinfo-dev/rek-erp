@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { createSaleSchema } from "@/lib/validators/sale";
-import { roundMoney } from "@/lib/utils/format";
+import { formatMoney, roundMoney } from "@/lib/utils/format";
 import { notifySafe } from "@/lib/notifications/create";
 import { notifyStockLevels } from "@/lib/notifications/stock";
 import { createInvoiceFromSale } from "@/lib/invoices/create-from-sale";
@@ -313,7 +313,7 @@ export async function POST(req: NextRequest) {
         companyId,
         userId: user.id,
         title: "فرۆشتنی گەورە",
-        message: `فرۆشتنی ${sale.invoiceNo} بە بڕی ${total.toLocaleString()} IQD تۆمارکرا.`,
+        message: `فرۆشتنی ${sale.invoiceNo} بە بڕی ${formatMoney(total)} تۆمارکرا.`,
         category: "SALE",
         priority: "HIGH",
         href: `/dashboard/sales/${sale.id}`,

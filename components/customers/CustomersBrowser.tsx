@@ -107,11 +107,11 @@ export default function CustomersBrowser({
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <Meta
                   label={t("customers.totalPurchases")}
-                  value={`${formatMoney(c.totalPurchases)} ${t("common.currencyCode")}`}
+                  value={`${formatMoney(c.totalPurchases)}`}
                 />
                 <Meta
                   label={t("customers.outstandingBalance")}
-                  value={`${formatMoney(c.outstandingBalance)} ${t("common.currencyCode")}`}
+                  value={`${formatMoney(c.outstandingBalance)}`}
                 />
                 <Meta
                   label={t("customers.lastPurchase")}

@@ -305,7 +305,7 @@ export default function InvoiceDocument({
             }}
           >
             <span>کۆی گشتی</span>
-            <span>{formatMoney(data.total)} IQD</span>
+            <span>{formatMoney(data.total)}</span>
           </div>
         </div>
       </div>

@@ -384,28 +384,28 @@ export default function ReportsClient({ companyName, initialData }: Props) {
         <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
           <StatCard
             title={t("reports.revenue")}
-            value={`${formatMoney(summary.revenue)} IQD`}
+            value={`${formatMoney(summary.revenue)}`}
             description={t("reports.salesCount", { count: summary.salesCount })}
             icon={DollarSign}
             accent="sales"
           />
           <StatCard
             title={t("reports.expenses")}
-            value={`${formatMoney(summary.expenses)} IQD`}
+            value={`${formatMoney(summary.expenses)}`}
             description={t("reports.purchasesCount", { count: summary.purchasesCount })}
             icon={ShoppingBasket}
             accent="purchases"
           />
           <StatCard
             title={t("reports.profit")}
-            value={`${formatMoney(summary.profit)} IQD`}
+            value={`${formatMoney(summary.profit)}`}
             description={t("reports.profitFormula")}
             icon={TrendingUp}
           />
           <StatCard
             title={t("reports.avgSalePurchase")}
             value={`${formatMoney(summary.averageSale)} / ${formatMoney(summary.averagePurchase)}`}
-            description={t("common.currencyCode")}
+            description={t("reports.average")}
             icon={ShoppingCart}
           />
         </div>
@@ -444,7 +444,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                 <Tooltip
                   contentStyle={tooltipStyle}
                   formatter={(value) =>
-                    `${formatMoney(Number(value ?? 0))} IQD`
+                    `${formatMoney(Number(value ?? 0))}`
                   }
                 />
                 <Legend />
@@ -475,7 +475,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                   key={s.id}
                   title={s.invoiceNo}
                   subtitle={s.customer}
-                  value={`${formatMoney(s.total)} IQD`}
+                  value={`${formatMoney(s.total)}`}
                   href={`/dashboard/sales/${s.id}`}
                 />
               ))
@@ -491,7 +491,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                   key={p.id}
                   title={p.invoiceNo}
                   subtitle={p.supplier}
-                  value={`${formatMoney(p.total)} IQD`}
+                  value={`${formatMoney(p.total)}`}
                   href={`/dashboard/purchases/${p.id}`}
                 />
               ))
@@ -507,7 +507,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                   key={p.id}
                   title={p.name}
                   subtitle={t("reports.productMeta", { sku: p.sku, qty: formatMoney(p.quantity) })}
-                  value={`${formatMoney(p.revenue)} IQD`}
+                  value={`${formatMoney(p.revenue)}`}
                   href={`/dashboard/products/${p.id}`}
                 />
               ))
@@ -523,7 +523,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                   key={c.id}
                   title={c.name}
                   subtitle={t("reports.ordersCount", { count: c.orders })}
-                  value={`${formatMoney(c.revenue)} IQD`}
+                  value={`${formatMoney(c.revenue)}`}
                   href={`/dashboard/customers/${c.id}/edit`}
                 />
               ))
@@ -539,7 +539,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                   key={s.id}
                   title={s.name}
                   subtitle={t("reports.purchaseOrders", { count: s.orders })}
-                  value={`${formatMoney(s.spent)} IQD`}
+                  value={`${formatMoney(s.spent)}`}
                   href={`/dashboard/suppliers/${s.id}/edit`}
                 />
               ))

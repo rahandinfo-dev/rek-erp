@@ -119,6 +119,7 @@ export const ckbMessages = {
   nav: {
     home: "سەرەکی",
     dashboard: "داشبۆرد",
+    currency: "دراو",
     inventoryGroup: "کۆگا و کاڵا",
     inventory: "ئینڤێنتۆری",
     inventoryAdjustments: "ڕێکخستنی کۆگا",
@@ -178,6 +179,7 @@ export const ckbMessages = {
     companyLogo: "لۆگۆی {name}",
     pageError: "هەڵەی پەڕە",
     descHome: "سەرەکی",
+    descCurrency: "دراوی کۆمپانیا",
     descInventory: "کۆگا",
     descAdjustments: "ڕێکخستن",
     descTransfers: "گواستنەوە",

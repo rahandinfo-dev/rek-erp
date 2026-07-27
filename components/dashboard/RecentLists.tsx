@@ -39,7 +39,7 @@ export function RecentSalesList({ items }: { items: DashboardRecentSale[] }) {
                   </p>
                 </div>
                 <p className="shrink-0 text-sm font-black tabular-nums text-foreground">
-                  {formatMoney(item.total)} IQD
+                  {formatMoney(item.total)}
                 </p>
               </Link>
             </li>
@@ -88,7 +88,7 @@ export function RecentInvoicesList({
                   </p>
                 </div>
                 <p className="shrink-0 text-sm font-black tabular-nums text-foreground">
-                  {formatMoney(item.grandTotal)} IQD
+                  {formatMoney(item.grandTotal)}
                 </p>
               </Link>
             </li>

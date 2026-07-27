@@ -1,4 +1,6 @@
-import { formatMoneyLocalized, formatNumberLocalized } from "@/lib/i18n/format";
+import { formatMoneyAmount } from "@/lib/currency/format";
+import { getRuntimeCurrency } from "@/lib/currency/runtime";
+import { formatNumberLocalized } from "@/lib/i18n/format";
 import { DEFAULT_LOCALE } from "@/lib/i18n/config";
 
 type MoneyInput =
@@ -8,12 +10,11 @@ type MoneyInput =
   | undefined
   | { toString(): string };
 
-/** @deprecated Prefer formatMoneyLocalized — kept as thin wrapper for existing imports. */
+/** Company-aware money formatter — uses runtime currency (Settings → دراو). */
 export function formatMoney(value: MoneyInput) {
-  return formatMoneyLocalized(value, DEFAULT_LOCALE);
+  return formatMoneyAmount(value, { currency: getRuntimeCurrency() });
 }
 
-/** @deprecated Prefer formatNumberLocalized */
 export function formatNumber(value: MoneyInput, maximumFractionDigits = 2) {
   return formatNumberLocalized(value, DEFAULT_LOCALE, maximumFractionDigits);
 }

@@ -158,7 +158,7 @@ export default function InvoicesTable({
       id: "total",
       header: "کۆی گشتی",
       accessor: (row) => Number(row.grandTotal),
-      cell: (row) => `${formatMoney(row.grandTotal)} IQD`,
+      cell: (row) => `${formatMoney(row.grandTotal)}`,
     },
   ];
 

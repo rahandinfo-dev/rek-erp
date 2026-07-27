@@ -1,5 +1,6 @@
 import {
   BookOpen,
+  Banknote,
   LayoutDashboard,
   Warehouse,
   Package,
@@ -38,6 +39,12 @@ export const APP_GRID: AppMenuItem[] = [
     href: "/dashboard",
     icon: LayoutDashboard,
     descriptionKey: "nav.descHome",
+  },
+  {
+    titleKey: "nav.currency",
+    href: "/dashboard/currency",
+    icon: Banknote,
+    descriptionKey: "nav.descCurrency",
   },
   {
     titleKey: "nav.inventory",

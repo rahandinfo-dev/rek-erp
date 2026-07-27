@@ -9,7 +9,7 @@ import {
   type DragEvent,
 } from "react";
 import Image from "next/image";
-import { ImagePlus, Loader2, Trash2, Upload } from "lucide-react";
+import { Crop, ImagePlus, Loader2, Trash2, Upload } from "lucide-react";
 import type { UploadKind } from "@/lib/uploads/kinds";
 import { ACCEPT_IMAGE } from "@/lib/uploads/kinds";
 import { uploadMessages } from "@/lib/uploads/messages";
@@ -19,6 +19,7 @@ import {
 } from "@/lib/uploads/client";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import ImageCropDialog from "@/components/uploads/ImageCropDialog";
 
 type ImageUploadProps = {
   kind: UploadKind;
@@ -35,6 +36,11 @@ type ImageUploadProps = {
   /** Called with Kurdish error text when upload fails */
   onError?: (message: string) => void;
 };
+
+function aspectForShape(shape: "square" | "circle" | "wide") {
+  if (shape === "wide") return 16 / 9;
+  return 1;
+}
 
 export default function ImageUpload({
   kind,
@@ -57,14 +63,17 @@ export default function ImageUpload({
     "idle"
   );
   const [progress, setProgress] = useState(0);
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const [cropName, setCropName] = useState("image.jpg");
 
   const displayUrl = preview || value || null;
 
   useEffect(() => {
     return () => {
       if (preview?.startsWith("blob:")) URL.revokeObjectURL(preview);
+      if (cropSrc?.startsWith("blob:")) URL.revokeObjectURL(cropSrc);
     };
-  }, [preview]);
+  }, [preview, cropSrc]);
 
   const fail = useCallback(
     (message: string) => {
@@ -74,7 +83,7 @@ export default function ImageUpload({
     [onError]
   );
 
-  const processFile = useCallback(
+  const uploadFile = useCallback(
     async (file: File) => {
       if (disabled || busy) return;
 
@@ -114,6 +123,14 @@ export default function ImageUpload({
     [busy, deleteOnClear, disabled, fail, kind, onChange, preview, value]
   );
 
+  function beginCrop(file: File) {
+    if (disabled || busy) return;
+    if (cropSrc?.startsWith("blob:")) URL.revokeObjectURL(cropSrc);
+    const url = URL.createObjectURL(file);
+    setCropName(file.name || "image.jpg");
+    setCropSrc(url);
+  }
+
   async function clearImage() {
     if (disabled || busy) return;
     const current = value || null;
@@ -141,15 +158,15 @@ export default function ImageUpload({
     e.preventDefault();
     setDragging(false);
     const file = e.dataTransfer.files?.[0];
-    if (file) void processFile(file);
+    if (file) beginCrop(file);
   }
 
   const shapeClass =
     shape === "circle"
-      ? "rounded-full"
+      ? "aspect-square"
       : shape === "wide"
-        ? "aspect-[16/9] rounded-2xl"
-        : "aspect-square rounded-2xl";
+        ? "aspect-[16/9]"
+        : "aspect-square";
 
   const statusLabel =
     phase === "compressing"
@@ -173,7 +190,8 @@ export default function ImageUpload({
         <div
           className={cn(
             "relative w-full max-w-[11rem] overflow-hidden border border-border bg-muted/40",
-            shapeClass
+            shapeClass,
+            shape === "circle" && "rounded-none"
           )}
         >
           {displayUrl ? (
@@ -199,9 +217,9 @@ export default function ImageUpload({
                 </p>
               ) : null}
               {phase === "uploading" ? (
-                <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-1.5 w-full overflow-hidden bg-muted">
                   <div
-                    className="h-full rounded-full bg-primary transition-all"
+                    className="h-full bg-primary transition-all"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -227,7 +245,7 @@ export default function ImageUpload({
             }}
             onDrop={onDrop}
             className={cn(
-              "flex min-h-[7rem] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-4 py-5 text-center transition",
+              "flex min-h-[7rem] cursor-pointer flex-col items-center justify-center border-2 border-dashed px-4 py-5 text-center transition",
               dragging
                 ? "border-primary bg-primary/10"
                 : "border-primary/35 bg-primary/5 hover:bg-primary/10",
@@ -238,8 +256,9 @@ export default function ImageUpload({
             <p className="mt-2 text-sm font-bold text-foreground">
               {displayUrl ? uploadMessages.replace : uploadMessages.dropHint}
             </p>
-            <p className="mt-1 text-[11px] text-muted-foreground">
-              {uploadMessages.types} · {uploadMessages.maxSize}
+            <p className="mt-1 inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+              <Crop size={12} aria-hidden />
+              {uploadMessages.types} · {uploadMessages.maxSize} · بڕین پێش بارکردن
             </p>
             <input
               id={inputId}
@@ -250,7 +269,7 @@ export default function ImageUpload({
               disabled={disabled || busy}
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) void processFile(file);
+                if (file) beginCrop(file);
               }}
             />
           </label>
@@ -260,7 +279,7 @@ export default function ImageUpload({
               type="button"
               onClick={() => void clearImage()}
               disabled={disabled || busy}
-              className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-destructive/30 px-3 text-xs font-bold text-destructive hover:bg-destructive/5 disabled:opacity-50"
+              className="inline-flex h-9 items-center gap-1.5 border border-destructive/30 px-3 text-xs font-bold text-destructive hover:bg-destructive/5 disabled:opacity-50"
             >
               <Trash2 size={14} aria-hidden />
               {uploadMessages.delete}
@@ -268,6 +287,25 @@ export default function ImageUpload({
           ) : null}
         </div>
       </div>
+
+      {cropSrc ? (
+        <ImageCropDialog
+          imageSrc={cropSrc}
+          aspect={aspectForShape(shape)}
+          shape={shape === "circle" ? "round" : "rect"}
+          fileName={cropName}
+          onCancel={() => {
+            if (cropSrc.startsWith("blob:")) URL.revokeObjectURL(cropSrc);
+            setCropSrc(null);
+            if (inputRef.current) inputRef.current.value = "";
+          }}
+          onComplete={(file) => {
+            if (cropSrc.startsWith("blob:")) URL.revokeObjectURL(cropSrc);
+            setCropSrc(null);
+            void uploadFile(file);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

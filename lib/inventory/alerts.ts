@@ -30,7 +30,7 @@ export async function loadStockAlertProducts(
     LEFT JOIN LATERAL (
       SELECT wh.name
       FROM "WarehouseStock" ws
-      INNER JOIN "کۆگا" wh ON wh.id = ws."warehouseId"
+      INNER JOIN "Warehouse" wh ON wh.id = ws."warehouseId"
       WHERE ws."productId" = p.id
         AND ws."companyId" = p."companyId"
       ORDER BY wh."isMain" DESC, ws.quantity::numeric DESC

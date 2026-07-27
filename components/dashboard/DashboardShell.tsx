@@ -17,6 +17,9 @@ import { SaveGuardProvider } from "@/lib/unsaved/provider";
 import { QuickActionsProvider } from "@/lib/quick-actions/provider";
 import ErrorBoundary from "@/components/ui/ErrorBoundary";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { CurrencyProvider } from "@/components/currency/CurrencyProvider";
+import { setRuntimeCurrency } from "@/lib/currency/runtime";
+import type { CurrencyCode } from "@/lib/currency/catalog";
 
 const GridLauncher = dynamic(
   () => import("@/components/dashboard/GridLauncher"),
@@ -69,15 +72,21 @@ type UserInfo = {
 export default function DashboardShell({
   user,
   initialCollapsed = false,
+  initialCurrency = "IQD",
   children,
 }: {
   user: UserInfo;
   initialCollapsed?: boolean;
+  initialCurrency?: string;
   children: React.ReactNode;
 }) {
   const { t } = useT();
   const [launcherOpen, setLauncherOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(initialCollapsed);
+
+  useEffect(() => {
+    setRuntimeCurrency(initialCurrency);
+  }, [initialCurrency]);
 
   // Narrow viewports collapse the sidebar. The media query is read through a
   // store so the server render (always false) matches hydration; collapsing is
@@ -107,6 +116,7 @@ export default function DashboardShell({
   }, []);
 
   return (
+    <CurrencyProvider initialCurrency={initialCurrency as CurrencyCode}>
     <DraftOwnerProvider userId={user.id} companyId={user.companyId}>
       <UndoProvider userId={user.id} companyId={user.companyId}>
       <SessionRecoveryProvider userId={user.id} companyId={user.companyId}>
@@ -166,5 +176,6 @@ export default function DashboardShell({
       </SessionRecoveryProvider>
       </UndoProvider>
     </DraftOwnerProvider>
+    </CurrencyProvider>
   );
 }

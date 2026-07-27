@@ -4,6 +4,9 @@ import DashboardShell, {
 } from "@/components/dashboard/DashboardShell";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { redirect } from "next/navigation";
+import { db } from "@/lib/prisma/db";
+import { resolveCurrencyCode } from "@/lib/currency/catalog";
+import { setRuntimeCurrency } from "@/lib/currency/runtime";
 
 export default async function DashboardLayout({
   children,
@@ -16,9 +19,14 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
-  // Read on the server so the rail renders at its final width in the initial
-  // HTML — no hydration mismatch and no post-hydration layout jump.
   const collapsed = cookieStore.get(SIDEBAR_COLLAPSE_COOKIE)?.value === "1";
+
+  const settings = await db.settings.findUnique({
+    where: { companyId: user.companyId },
+    select: { currency: true },
+  });
+  const currency = resolveCurrencyCode(settings?.currency);
+  setRuntimeCurrency(currency);
 
   const currentUser = {
     id: user.id,
@@ -32,7 +40,11 @@ export default async function DashboardLayout({
   };
 
   return (
-    <DashboardShell user={currentUser} initialCollapsed={collapsed}>
+    <DashboardShell
+      user={currentUser}
+      initialCollapsed={collapsed}
+      initialCurrency={currency}
+    >
       {children}
     </DashboardShell>
   );

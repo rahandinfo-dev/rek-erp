@@ -228,6 +228,9 @@ export async function POST(req: NextRequest) {
       req,
     });
 
+    const { invalidateAfterWarehouse } = await import("@/lib/cache/invalidate");
+    invalidateAfterWarehouse(companyId);
+
     return NextResponse.json({
       success: true,
       data: transfer,

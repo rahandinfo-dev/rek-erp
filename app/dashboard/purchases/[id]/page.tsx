@@ -78,7 +78,7 @@ export default async function PurchaseDetailPage({ params }: Props) {
             <div className="flex justify-between gap-4">
               <dt className="text-slate-500">{t("common.total")}</dt>
               <dd className="font-bold text-[#FFAE42]">
-                {formatMoney(purchase.total)} {t("common.currencyCode")}
+                {formatMoney(purchase.total)}
               </dd>
             </div>
           </dl>
@@ -110,10 +110,10 @@ export default async function PurchaseDetailPage({ params }: Props) {
                     </td>
                     <td className="px-4 py-3">{Number(item.quantity)}</td>
                     <td className="px-4 py-3">
-                      {formatMoney(item.unitPrice)} {t("common.currencyCode")}
+                      {formatMoney(item.unitPrice)}
                     </td>
                     <td className="px-4 py-3">
-                      {formatMoney(item.total)} {t("common.currencyCode")}
+                      {formatMoney(item.total)}
                     </td>
                   </tr>
                 ))}

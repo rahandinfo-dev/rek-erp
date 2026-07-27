@@ -84,7 +84,7 @@ function InventoryStockList({
                       کەمترین: {formatStockQty(p.minimumStock, unit)}
                     </span>
                     <span className="font-bold text-primary">
-                      {formatMoney(p.salePrice)} IQD
+                      {formatMoney(p.salePrice)}
                     </span>
                     {p.barcode ? (
                       <span className="font-mono">{p.barcode}</span>

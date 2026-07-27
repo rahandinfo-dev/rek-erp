@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma/db";
 import { getCurrentCompanyId, getCurrentUser } from "@/lib/auth/current-user";
 import { createPurchaseSchema } from "@/lib/validators/purchase";
-import { roundMoney } from "@/lib/utils/format";
+import { formatMoney, roundMoney } from "@/lib/utils/format";
 import { notifySafe } from "@/lib/notifications/create";
 import { notifyStockLevels } from "@/lib/notifications/stock";
 import { applyStockMovement } from "@/lib/inventory/movements";
@@ -224,7 +224,7 @@ export async function POST(req: NextRequest) {
         companyId,
         userId: user.id,
         title: "کڕینی گەورە",
-        message: `کڕینی ${purchase.invoiceNo} بە بڕی ${total.toLocaleString()} IQD تۆمارکرا.`,
+        message: `کڕینی ${purchase.invoiceNo} بە بڕی ${formatMoney(total)} تۆمارکرا.`,
         category: "PURCHASE",
         priority: "HIGH",
         href: `/dashboard/purchases/${purchase.id}`,

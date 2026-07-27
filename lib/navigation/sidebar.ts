@@ -1,4 +1,5 @@
 import {
+  Banknote,
   Barcode,
   BookOpen,
   Boxes,
@@ -49,6 +50,12 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
         labelKey: "nav.dashboard",
         icon: LayoutDashboard,
         keywords: ["سەرەتا", "home"],
+      },
+      {
+        href: "/dashboard/currency",
+        labelKey: "nav.currency",
+        icon: Banknote,
+        keywords: ["دراو", "دینار", "دۆلار", "currency", "IQD", "USD"],
       },
     ],
   },

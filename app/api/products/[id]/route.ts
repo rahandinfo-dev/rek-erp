@@ -223,31 +223,75 @@ export async function PUT(
       );
     }
 
-    const updated = await db.product.update({
-      where: {
-        id,
-      },
-      data: {
-        name: data.name,
-        sku: data.sku,
-        barcode: data.barcode ?? null,
-        unitId: data.unitId,
-        purchasePrice: data.purchasePrice,
-        costPrice: data.costPrice,
-        salePrice: data.salePrice,
-        profitMargin: data.profitMargin,
-        currentStock: data.currentStock,
-        reservedStock: data.reservedStock,
-        minimumStock: data.minimumStock,
-        maximumStock: data.maximumStock,
-        notes: data.notes ?? null,
-        active: data.active,
-        image: data.image ?? null,
-      },
-      include: {
-        unit: true,
-      },
+    const updated = await db.$transaction(async (tx) => {
+      const row = await tx.product.update({
+        where: { id },
+        data: {
+          name: data.name,
+          sku: data.sku,
+          barcode: data.barcode ?? null,
+          unitId: data.unitId,
+          purchasePrice: data.purchasePrice,
+          costPrice: data.costPrice,
+          salePrice: data.salePrice,
+          profitMargin: data.profitMargin,
+          // Stock is synced via WarehouseStock + applyStockMovement below.
+          reservedStock: data.reservedStock,
+          minimumStock: data.minimumStock,
+          maximumStock: data.maximumStock,
+          notes: data.notes ?? null,
+          active: data.active,
+          image: data.image ?? null,
+        },
+        include: { unit: true },
+      });
+
+      const previousStock = Number(product.currentStock);
+      const targetStock = Number(data.currentStock);
+      const stockDelta = targetStock - previousStock;
+
+      if (Math.abs(stockDelta) >= 0.00001) {
+        await ensureProductWarehouseBalance(tx, companyId, id);
+        const mainWh =
+          (await tx.warehouse.findFirst({
+            where: { companyId, isMain: true, active: true },
+            select: { id: true },
+          })) ||
+          (await tx.warehouse.findFirst({
+            where: { companyId, active: true },
+            select: { id: true },
+            orderBy: { createdAt: "asc" },
+          }));
+
+        if (!mainWh) {
+          throw new Error("NO_WAREHOUSE");
+        }
+
+        await applyStockMovement(tx, {
+          companyId,
+          productId: id,
+          warehouseId: mainWh.id,
+          quantity: Math.abs(stockDelta),
+          type: "ADJUSTMENT",
+          direction: stockDelta > 0 ? 1 : -1,
+          userId,
+          reason: "نوێکردنەوەی بەرهەم",
+          notes: `ڕێکخستنی کۆگا لە فۆرمی بەرهەم: ${previousStock} → ${targetStock}`,
+          referenceType: "PRODUCT_UPDATE",
+          referenceId: id,
+          allowNegative: false,
+        });
+      }
+
+      const synced = await tx.product.findFirst({
+        where: { id, companyId },
+        include: { unit: true },
+      });
+      return synced ?? row;
     });
+
+    const { invalidateAfterProduct } = await import("@/lib/cache/invalidate");
+    invalidateAfterProduct(companyId);
 
     const stockChanged =
       Number(product.currentStock) !== Number(updated.currentStock) ||
@@ -314,6 +358,22 @@ export async function PUT(
     });
   } catch (error) {
     console.error(error);
+
+    if (error instanceof Error && error.message === "INSUFFICIENT_STOCK") {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "کۆگا بەس نییە بۆ ئەم گۆڕانکارییە. لە ئینڤێنتۆری ڕێکی بکەرەوە.",
+        },
+        { status: 400 }
+      );
+    }
+    if (error instanceof Error && error.message === "NO_WAREHOUSE") {
+      return NextResponse.json(
+        { success: false, message: "هیچ کۆگایەک نەدۆزرایەوە." },
+        { status: 400 }
+      );
+    }
 
     const message =
       error &&

@@ -34,7 +34,7 @@ export const DOC_CATEGORIES: DocCategory[] = [
   {
     id: "insights",
     title: "شیکاری و ڕاپۆرت",
-    description: "شیکاری، ڕاپۆرت، چالاکی و تۆماری وردبینی",
+    description: "شیکاری، ڕاپۆرت، تێرمیناڵی چالاکی و چاودێری",
     order: 6,
   },
   {
@@ -46,7 +46,7 @@ export const DOC_CATEGORIES: DocCategory[] = [
   {
     id: "system",
     title: "سیستەم و پاراستن",
-    description: "ڕێکخستن، ژمارەدان، وێنە، پشتگیری داتا و پاراستن",
+    description: "ڕێکخستن، ژمارەدان، وێنە، ناوەندی گەڕاندنەوە و پاراستن",
     order: 8,
   },
 ];

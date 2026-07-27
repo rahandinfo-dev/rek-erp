@@ -1,5 +1,5 @@
 "use client";
-import { formatNumber } from "@/lib/utils/format";
+import { formatMoney } from "@/lib/utils/format";
 
 import { useMemo, useRef, useState } from "react";
 import Image from "next/image";
@@ -393,7 +393,7 @@ export default function BarcodeWorkbench({
                   </p>
                 ) : null}
                 <p className="mt-2 text-sm text-slate-500">
-                  {formatNumber(selected.salePrice)} IQD
+                  {formatMoney(selected.salePrice)}
                 </p>
               </div>
             </>

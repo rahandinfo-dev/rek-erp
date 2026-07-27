@@ -97,7 +97,7 @@ export default function SalesTable({ initialData }: { initialData: SaleRow[] }) 
       id: "total",
       header: t("common.total"),
       accessor: (s) => Number(s.total),
-      cell: (s) => `${formatMoney(s.total)} ${t("common.currencyCode")}`,
+      cell: (s) => `${formatMoney(s.total)}`,
     },
     {
       id: "status",

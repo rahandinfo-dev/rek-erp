@@ -5,6 +5,7 @@ import Image from "next/image";
 import { UserRound } from "lucide-react";
 import ContextMenuSurface from "@/components/quick-actions/ContextMenuSurface";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { formatMoney } from "@/lib/utils/format";
 
 export type EmployeeCardData = {
   id: string;
@@ -85,7 +86,7 @@ export default function EmployeeCard({
           label={t("employees.salary")}
           value={
             employee.monthlySalary != null && employee.monthlySalary !== ""
-              ? `${Number(employee.monthlySalary).toLocaleString("en-US")} ${t("common.currencyCode")}`
+              ? formatMoney(employee.monthlySalary)
               : t("common.emDash")
           }
         />

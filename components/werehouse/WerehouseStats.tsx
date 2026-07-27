@@ -49,7 +49,6 @@ export default function WerehouseStats({
   const t = tServer.t;
   const whValue = warehouseValue ?? inventoryValue;
   const assetValue = currentAssetValue ?? inventoryValue;
-  const iqd = t("common.currencyCode");
 
   const cards = [
     {
@@ -64,32 +63,32 @@ export default function WerehouseStats({
     },
     {
       label: t("warehouses.statInventoryValue"),
-      value: `${formatMoney(inventoryValue)} ${iqd}`,
+      value: formatMoney(inventoryValue),
       icon: Wallet,
     },
     {
       label: t("warehouses.statWarehouseValue"),
-      value: `${formatMoney(whValue)} ${iqd}`,
+      value: formatMoney(whValue),
       icon: Warehouse,
     },
     {
       label: t("warehouses.statPurchaseValue"),
-      value: `${formatMoney(purchaseValue)} ${iqd}`,
+      value: formatMoney(purchaseValue),
       icon: ShoppingBasket,
     },
     {
       label: t("warehouses.statSalesValue"),
-      value: `${formatMoney(salesValue)} ${iqd}`,
+      value: formatMoney(salesValue),
       icon: ShoppingCart,
     },
     {
       label: t("warehouses.statAssetValue"),
-      value: `${formatMoney(assetValue)} ${iqd}`,
+      value: formatMoney(assetValue),
       icon: Landmark,
     },
     {
       label: t("warehouses.statAvgCost"),
-      value: `${formatMoney(averageCost)} ${iqd}`,
+      value: formatMoney(averageCost),
       icon: Calculator,
     },
     {

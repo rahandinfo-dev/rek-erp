@@ -93,7 +93,7 @@ export default function ProductStockHistory({
                     <td className="px-3 py-3">{item.warehouse.name}</td>
                     <td className="px-3 py-3 whitespace-nowrap text-muted-foreground">
                       {item.unitCost != null
-                        ? `${formatMoney(item.unitCost)} ${t("common.currencyCode")}`
+                        ? `${formatMoney(item.unitCost)}`
                         : "—"}
                     </td>
                     <td className="px-3 py-3 text-muted-foreground">

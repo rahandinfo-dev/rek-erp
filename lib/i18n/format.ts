@@ -1,5 +1,6 @@
 import { DEFAULT_LOCALE, LOCALE_META, resolveLocale, type AppLocale } from "@/lib/i18n/config";
-import { createTranslator } from "@/lib/i18n/t";
+import { formatMoneyAmount } from "@/lib/currency/format";
+import { getRuntimeCurrency } from "@/lib/currency/runtime";
 
 type MoneyInput =
   | number
@@ -15,7 +16,6 @@ function toNum(value: MoneyInput) {
 
 /**
  * Digit grouping uses a stable Intl tag for SSR hydration safety.
- * Currency wording comes from the active locale catalog.
  */
 export function formatNumberLocalized(
   value: MoneyInput,
@@ -28,10 +28,13 @@ export function formatNumberLocalized(
 
 export function formatMoneyLocalized(
   value: MoneyInput,
-  locale: AppLocale = DEFAULT_LOCALE
+  locale: AppLocale = DEFAULT_LOCALE,
+  currency?: string | null
 ) {
-  const { t } = createTranslator(locale);
-  return `${formatNumberLocalized(value, locale, 2)} ${t("common.currency")}`;
+  return formatMoneyAmount(value, {
+    locale,
+    currency: currency ?? getRuntimeCurrency(),
+  });
 }
 
 export function formatDateLocalized(

@@ -19,7 +19,7 @@ const PERIOD_LABEL: Record<MetricPeriod, string> = {
 };
 
 export function moneyKu(n: number) {
-  return `${formatMoney(n)} دینار`;
+  return formatMoney(n);
 }
 
 export function numKu(n: number, digits = 0) {

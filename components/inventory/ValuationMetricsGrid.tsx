@@ -65,10 +65,7 @@ export default function ValuationMetricsGrid({
                     {VALUATION_LABELS[key]}
                   </p>
                   <p className="mt-2 truncate text-xl font-black tracking-tight text-foreground sm:text-2xl">
-                    {formatMoney(value)}
-                    <span className="mr-1 text-xs font-bold text-muted-foreground">
-                      IQD
-                    </span>
+                    {formatMoney(value)}
                   </p>
                 </div>
                 <div className="rek-stat-icon shrink-0">

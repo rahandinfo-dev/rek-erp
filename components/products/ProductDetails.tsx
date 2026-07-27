@@ -441,11 +441,11 @@ export default function ProductDetails({
               />
               <Stat
                 label={t("products.salePrice")}
-                value={`${formatMoney(form.salePrice)} ${t("common.currencyCode")}`}
+                value={`${formatMoney(form.salePrice)}`}
               />
               <Stat
                 label={t("products.purchasePrice")}
-                value={`${formatMoney(form.purchasePrice)} ${t("common.currencyCode")}`}
+                value={`${formatMoney(form.purchasePrice)}`}
               />
               <Stat label={t("nav.units")} value={unitLabel} />
               <Stat label={t("products.warehouse")} value={product.warehouseName} icon />
@@ -540,7 +540,7 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.purchasePrice)} {t("common.currencyCode")}</Value>
+                  <Value>{formatMoney(product.purchasePrice)}</Value>
                 )}
               </Field>
               <Field label={t("products.salePrice")}>
@@ -554,7 +554,7 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.salePrice)} {t("common.currencyCode")}</Value>
+                  <Value>{formatMoney(product.salePrice)}</Value>
                 )}
               </Field>
               <Field label={t("products.cost")}>
@@ -568,7 +568,7 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.costPrice)} {t("common.currencyCode")}</Value>
+                  <Value>{formatMoney(product.costPrice)}</Value>
                 )}
               </Field>
               <Field label={t("products.profitPct")}>
@@ -709,7 +709,7 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.purchasePrice)} {t("common.currencyCode")}</Value>
+                  <Value>{formatMoney(product.purchasePrice)}</Value>
                 )}
               </Field>
               <Field label={t("products.salePrice")}>
@@ -723,7 +723,7 @@ export default function ProductDetails({
                     className={inputClassName}
                   />
                 ) : (
-                  <Value>{formatMoney(product.salePrice)} {t("common.currencyCode")}</Value>
+                  <Value>{formatMoney(product.salePrice)}</Value>
                 )}
               </Field>
             </div>

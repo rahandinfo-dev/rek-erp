@@ -180,7 +180,6 @@ export default function EmployeeReportsClient({
                 <p className="font-bold text-slate-800">{e.fullName}</p>
                 <p className="text-xs text-slate-500">
                   {e.nextSalaryDate} · {formatMoney(e.monthlySalary)}{" "}
-                  {t("common.currencyCode")}
                 </p>
               </Link>
             ))}
@@ -292,7 +291,7 @@ export default function EmployeeReportsClient({
               empty={t("employees.salaryReportEmpty")}
               rows={data.salaryReport.map((r) => [
                 r.employee.fullName,
-                `${formatMoney(r.amount)} ${t("common.currencyCode")}`,
+                `${formatMoney(r.amount)}`,
                 `${r.month}/${r.year}`,
                 r.paymentDate || t("common.emDash"),
                 t(`employees.salaryStatuses.${r.status}`) || r.status,
@@ -310,7 +309,7 @@ export default function EmployeeReportsClient({
               empty={t("employees.salaryHistoryEmptyShort")}
               rows={data.salaryHistory.map((r) => [
                 r.employee.fullName,
-                `${formatMoney(r.amount)} ${t("common.currencyCode")}`,
+                `${formatMoney(r.amount)}`,
                 `${r.month}/${r.year}`,
                 r.nextSalaryDate || t("common.emDash"),
                 t(`employees.salaryStatuses.${r.status}`) || r.status,
@@ -447,7 +446,7 @@ export default function EmployeeReportsClient({
               rows={data.upcomingSalaries.map((r) => [
                 r.fullName,
                 r.nextSalaryDate || t("common.emDash"),
-                `${formatMoney(r.monthlySalary)} ${t("common.currencyCode")}`,
+                `${formatMoney(r.monthlySalary)}`,
                 r.department || t("common.emDash"),
               ])}
               headers={[
@@ -613,7 +612,7 @@ function EmployeeList({
                   {t(`employees.statuses.${e.status}`) || e.status}
                 </span>
                 <span className="rounded-full bg-white px-2 py-1 text-slate-600">
-                  {formatMoney(e.monthlySalary)} {t("common.currencyCode")}
+                  {formatMoney(e.monthlySalary)}
                 </span>
               </div>
             </Link>

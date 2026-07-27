@@ -15,6 +15,12 @@ import { appToast } from "@/lib/toast";
 import { useFormDraft } from "@/lib/hooks/useFormDraft";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar } from "@/components/ui/AutoSaveStatus";
+import {
+  CURRENCY_CATALOG,
+  CURRENCY_CODES,
+  resolveCurrencyCode,
+  type CurrencyCode,
+} from "@/lib/currency/catalog";
 
 type Props = {
   company: {
@@ -74,7 +80,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
       themeColor: settings?.themeColor || "#FFAE42",
       accentColor: settings?.accentColor || "#FFF8EF",
       fontFamily: settings?.fontFamily || "Rudaw",
-      currency: settings?.currency || "IQD",
+      currency: resolveCurrencyCode(settings?.currency),
     }),
     [company, settings]
   );
@@ -93,7 +99,9 @@ export default function CompanySettingsForm({ company, settings }: Props) {
   const [themeColor, setThemeColor] = useState(baseline.themeColor);
   const [accentColor, setAccentColor] = useState(baseline.accentColor);
   const [fontFamily, setFontFamily] = useState(baseline.fontFamily);
-  const [currency, setCurrency] = useState(baseline.currency);
+  const [currency, setCurrency] = useState<CurrencyCode>(
+    resolveCurrencyCode(baseline.currency)
+  );
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -164,7 +172,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
     setThemeColor(data.themeColor);
     setAccentColor(data.accentColor);
     setFontFamily(data.fontFamily);
-    setCurrency(data.currency);
+    setCurrency(resolveCurrencyCode(data.currency));
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -373,11 +381,19 @@ export default function CompanySettingsForm({ company, settings }: Props) {
             </select>
           </FormField>
           <FormField label="دراو">
-            <input
+            <select
               value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
+              onChange={(e) =>
+                setCurrency(resolveCurrencyCode(e.target.value))
+              }
               className={inputClassName}
-            />
+            >
+              {CURRENCY_CODES.map((code) => (
+                <option key={code} value={code}>
+                  {CURRENCY_CATALOG[code].nameKu} ({code})
+                </option>
+              ))}
+            </select>
           </FormField>
         </div>
       </FormSection>

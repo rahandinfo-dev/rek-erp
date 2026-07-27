@@ -625,7 +625,7 @@ export default function EmployeeProfile({
           <div className="grid grid-cols-2 gap-3 sm:min-w-[240px]">
             <Stat
               label={t("employees.salary")}
-              value={`${formatMoney(employee.monthlySalary)} ${t("common.currencyCode")}`}
+              value={`${formatMoney(employee.monthlySalary)}`}
             />
             <Stat
               label={t("employees.nextSalary")}
@@ -817,7 +817,7 @@ export default function EmployeeProfile({
                   />
                 ) : (
                   <Value>
-                    {formatMoney(employee.monthlySalary)} {t("common.currencyCode")}
+                    {formatMoney(employee.monthlySalary)}
                   </Value>
                 )}
               </Field>
@@ -1158,7 +1158,7 @@ export default function EmployeeProfile({
                   >
                     <div>
                       <p className="font-bold text-slate-800">
-                        {s.month}/{s.year} · {formatMoney(s.amount)} {t("common.currencyCode")}
+                        {s.month}/{s.year} · {formatMoney(s.amount)}
                       </p>
                       <p className="text-xs text-slate-500">
                         {t("employees.paymentLabel", {

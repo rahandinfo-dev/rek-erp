@@ -72,7 +72,7 @@ export default function DashboardStatCard({
   const showChange = todayLabel !== "" || todayChange !== 0;
 
   const changeText = money
-    ? `${isUp ? "+" : isDown ? "-" : ""}${formatMoney(Math.abs(todayChange))} IQD`
+    ? `${isUp ? "+" : isDown ? "-" : ""}${formatMoney(Math.abs(todayChange))}`
     : `${isUp ? "+" : isDown ? "-" : ""}${formatNumber(Math.abs(todayChange))}`;
 
   return (
@@ -85,7 +85,7 @@ export default function DashboardStatCard({
               value={value}
               format={(n) =>
                 money
-                  ? `${formatMoney(n)} IQD`
+                  ? `${formatMoney(n)}`
                   : formatNumber(Math.round(n))
               }
             />

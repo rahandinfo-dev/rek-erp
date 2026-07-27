@@ -100,11 +100,11 @@ async function productIdsForWarehouse(
   companyId: string,
   warehouseId: string
 ): Promise<string[]> {
-  const groups = await db.inventoryTransaction.groupBy({
-    by: ["productId"],
+  const rows = await db.warehouseStock.findMany({
     where: { companyId, warehouseId },
+    select: { productId: true },
   });
-  return groups.map((g) => g.productId);
+  return rows.map((r) => r.productId);
 }
 
 function orderByForSort(

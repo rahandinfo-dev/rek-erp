@@ -259,7 +259,7 @@ export default function ProductForm({
             <div>
               <label className="mb-1.5 block text-sm font-bold">{t("products.profit")}</label>
               <div className="flex h-11 items-center rounded-2xl border border-border bg-muted/50 px-3 text-sm font-bold">
-                {formatMoney(profitAmount)} {t("common.currencyCode")}
+                {formatMoney(profitAmount)}
                 <span className="ms-2 text-xs font-semibold text-muted-foreground">
                   ({profitPct}%)
                 </span>
