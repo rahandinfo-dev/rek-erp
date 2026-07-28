@@ -13,6 +13,14 @@ export const db =
   globalForPrisma.prisma ??
   new PrismaClient({
     adapter,
+    // Inventory writes intentionally perform several dependent reads and writes
+    // in one interactive transaction. Prisma's 5 second default is too short
+    // for a cold serverless connection and can close an otherwise healthy
+    // transaction halfway through a stock movement.
+    transactionOptions: {
+      maxWait: 5_000,
+      timeout: 20_000,
+    },
   });
 
 if (process.env.NODE_ENV !== "production") {
