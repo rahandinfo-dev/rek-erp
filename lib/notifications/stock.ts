@@ -213,61 +213,69 @@ export async function notifyStockLevels(
   const uniqueIds = [...new Set(productIds.filter(Boolean))];
   if (uniqueIds.length === 0) return [];
 
-  const since = startOfUtcDay();
-  const [products, existingKeys, warehouseRows] = await Promise.all([
-    db.product.findMany({
-      where: { companyId, id: { in: uniqueIds } },
-      select: {
-        id: true,
-        name: true,
-        sku: true,
-        currentStock: true,
-        reservedStock: true,
-        minimumStock: true,
-      },
-    }),
-    loadTodaysAlertKeys(companyId, since),
-    db.warehouseStock.findMany({
-      where: { companyId, productId: { in: uniqueIds } },
-      select: {
-        productId: true,
-        quantity: true,
-        warehouse: { select: { name: true, isMain: true } },
-      },
-      orderBy: { warehouse: { isMain: "desc" } },
-    }),
-  ]);
+  try {
+    const since = startOfUtcDay();
+    const [products, existingKeys, warehouseRows] = await Promise.all([
+      db.product.findMany({
+        where: { companyId, id: { in: uniqueIds } },
+        select: {
+          id: true,
+          name: true,
+          sku: true,
+          currentStock: true,
+          reservedStock: true,
+          minimumStock: true,
+        },
+      }),
+      loadTodaysAlertKeys(companyId, since),
+      db.warehouseStock.findMany({
+        where: { companyId, productId: { in: uniqueIds } },
+        select: {
+          productId: true,
+          quantity: true,
+          warehouse: { select: { name: true, isMain: true } },
+        },
+        orderBy: { warehouse: { isMain: "desc" } },
+      }),
+    ]);
 
-  const warehouseByProduct = new Map<string, string>();
-  for (const row of warehouseRows) {
-    if (!warehouseByProduct.has(row.productId)) {
-      warehouseByProduct.set(row.productId, row.warehouse.name);
+    const warehouseByProduct = new Map<string, string>();
+    for (const row of warehouseRows) {
+      if (!warehouseByProduct.has(row.productId)) {
+        warehouseByProduct.set(row.productId, row.warehouse.name);
+      }
     }
+
+    const results: InventoryAlertResult[] = [];
+
+    for (const product of products) {
+      const stock = num(product.currentStock);
+      const min = num(product.minimumStock);
+      const reserved = num(product.reservedStock);
+      const available = getAvailableStock(stock, reserved);
+      const kind = resolveStockAlertKind(stock, min);
+      if (!kind) continue;
+
+      const warehouseName = warehouseByProduct.get(product.id) || "کۆگا";
+      const alert = await createProductAlert(
+        companyId,
+        product,
+        kind,
+        { stock, min, available, reserved },
+        existingKeys,
+        warehouseName
+      );
+      results.push(alert);
+    }
+
+    return results;
+  } catch (error) {
+    // Alerts are a post-commit side effect. A notification outage must never
+    // turn a successfully committed sale, purchase, or stock update into a 500
+    // response (which encourages the client to retry the business mutation).
+    console.error("STOCK LEVEL NOTIFICATION ERROR:", error);
+    return [];
   }
-
-  const results: InventoryAlertResult[] = [];
-
-  for (const product of products) {
-    const stock = num(product.currentStock);
-    const min = num(product.minimumStock);
-    const reserved = num(product.reservedStock);
-    const available = getAvailableStock(stock, reserved);
-    const kind = resolveStockAlertKind(stock, min);
-    if (!kind) continue;
-
-    const warehouseName = warehouseByProduct.get(product.id) || "کۆگا";
-    const alert = await createProductAlert(
-      companyId,
-      product,
-      kind,
-      { stock, min, available, reserved },
-      existingKeys,
-      warehouseName
-    );
-    results.push(alert);
-  }
-
-  return results;
 }
 
 /**
