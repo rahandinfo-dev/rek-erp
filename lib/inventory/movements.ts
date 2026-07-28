@@ -76,14 +76,21 @@ export async function ensureProductWarehouseBalance(
 
   if (!product || !mainWh) return;
 
-  await tx.warehouseStock.create({
-    data: {
+  await tx.warehouseStock.upsert({
+    where: {
+      productId_warehouseId: {
+        productId,
+        warehouseId: mainWh.id,
+      },
+    },
+    create: {
       companyId,
       productId,
       warehouseId: mainWh.id,
       quantity: product.currentStock,
       reserved: product.reservedStock,
     },
+    update: {},
   });
 }
 
@@ -157,7 +164,24 @@ export async function applyStockMovement(
 
   await ensureProductWarehouseBalance(tx, input.companyId, input.productId);
 
-  const balance = await tx.warehouseStock.findUnique({
+  await tx.warehouseStock.upsert({
+    where: {
+      productId_warehouseId: {
+        productId: input.productId,
+        warehouseId: input.warehouseId,
+      },
+    },
+    create: {
+      companyId: input.companyId,
+      productId: input.productId,
+      warehouseId: input.warehouseId,
+      quantity: 0,
+      reserved: 0,
+    },
+    update: {},
+  });
+
+  const balance = await tx.warehouseStock.findUniqueOrThrow({
     where: {
       productId_warehouseId: {
         productId: input.productId,
@@ -166,7 +190,7 @@ export async function applyStockMovement(
     },
   });
 
-  const previousQty = balance ? num(balance.quantity) : 0;
+  const previousQty = num(balance.quantity);
   const product = await tx.product.findFirst({
     where: { id: input.productId, companyId: input.companyId },
     select: { currentStock: true },
@@ -211,21 +235,30 @@ export async function applyStockMovement(
     throw new Error("INSUFFICIENT_STOCK");
   }
 
-  if (balance) {
+  if (input.direction < 0) {
+    const updated = await tx.warehouseStock.updateMany({
+      where: {
+        id: balance.id,
+        ...(input.allowNegative ? {} : { quantity: { gte: qty } }),
+      },
+      data: { quantity: { decrement: qty } },
+    });
+
+    if (updated.count !== 1) {
+      throw new Error("INSUFFICIENT_STOCK");
+    }
+  } else {
     await tx.warehouseStock.update({
       where: { id: balance.id },
-      data: { quantity: Math.max(0, newQty) },
-    });
-  } else {
-    await tx.warehouseStock.create({
-      data: {
-        companyId: input.companyId,
-        productId: input.productId,
-        warehouseId: input.warehouseId,
-        quantity: Math.max(0, newQty),
-      },
+      data: { quantity: { increment: qty } },
     });
   }
+
+  const updatedBalance = await tx.warehouseStock.findUniqueOrThrow({
+    where: { id: balance.id },
+    select: { quantity: true },
+  });
+  const actualNewQty = num(updatedBalance.quantity);
 
   const productNew = await syncProductCurrentStock(
     tx,
@@ -240,7 +273,7 @@ export async function applyStockMovement(
       warehouseId: input.warehouseId,
       quantity: qty,
       previousQty,
-      newQty: Math.max(0, newQty),
+      newQty: actualNewQty,
       unitCost: input.unitCost ?? null,
       referenceId: input.referenceId ?? null,
       referenceType: input.referenceType ?? null,
@@ -256,7 +289,7 @@ export async function applyStockMovement(
 
   return {
     previousQty,
-    newQty: Math.max(0, newQty),
+    newQty: actualNewQty,
     productPrevious,
     productNew,
     transactionId: row.id,

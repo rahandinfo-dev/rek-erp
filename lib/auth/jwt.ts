@@ -12,8 +12,6 @@ function getSecret() {
   return new TextEncoder().encode(raw);
 }
 
-const secret = getSecret();
-
 export type TokenPayload = {
   id: string;
   companyId: string;
@@ -25,12 +23,12 @@ export async function generateToken(payload: TokenPayload) {
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("7d")
-    .sign(secret);
+    .sign(getSecret());
 }
 
 export async function verifyToken(token: string) {
   try {
-    const { payload } = await jwtVerify(token, secret);
+    const { payload } = await jwtVerify(token, getSecret());
     return payload as unknown as TokenPayload;
   } catch {
     return null;

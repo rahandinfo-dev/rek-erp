@@ -16,51 +16,6 @@ import { listProductsPage } from "@/lib/products/list";
 import { auditSafe } from "@/lib/audit/log";
 import { invalidateAfterProduct } from "@/lib/cache/invalidate";
 
-function logProductCreateDebugError(operation: string, error: unknown) {
-  console.error(`[CREATE PRODUCT DEBUG] ${operation} failed:`, error);
-
-  if (error && typeof error === "object") {
-    const err = error as {
-      name?: unknown;
-      message?: unknown;
-      code?: unknown;
-      meta?: unknown;
-      clientVersion?: unknown;
-      stack?: unknown;
-      cause?: unknown;
-    };
-
-    console.error(`[CREATE PRODUCT DEBUG] ${operation} Prisma/PostgreSQL details:`, {
-      name: err.name,
-      message: err.message,
-      code: err.code,
-      meta: err.meta,
-      clientVersion: err.clientVersion,
-      cause: err.cause,
-    });
-
-    if (err.stack) {
-      console.error(`[CREATE PRODUCT DEBUG] ${operation} stack:`, err.stack);
-    }
-  }
-}
-
-async function runProductCreateDebugStep<T>(
-  operation: string,
-  fn: () => Promise<T>
-): Promise<T> {
-  console.log(`[CREATE PRODUCT DEBUG] starting ${operation}`);
-
-  try {
-    const result = await fn();
-    console.log(`[CREATE PRODUCT DEBUG] completed ${operation}`);
-    return result;
-  } catch (error) {
-    logProductCreateDebugError(operation, error);
-    throw error;
-  }
-}
-
 export async function GET(req: NextRequest) {
   try {
     const companyId = await getCurrentCompanyId();
@@ -259,10 +214,8 @@ export async function POST(req: NextRequest) {
         barcode = generateProductBarcode(sku);
       }
     }
-    const tx = db;
-
-    const created = await runProductCreateDebugStep("1. tx.product.create", () =>
-      tx.product.create({
+    const product = await db.$transaction(async (tx) => {
+      const created = await tx.product.create({
         data: {
           companyId,
           name: data.name,
@@ -292,25 +245,28 @@ export async function POST(req: NextRequest) {
           active: true,
           unit: { select: { id: true, name: true, symbol: true } },
         },
-      })
-    );
+      });
 
-    const targetWhId = warehouse.id;
+      const targetWhId = warehouse.id;
 
-    await runProductCreateDebugStep("2. warehouseStock.create", () =>
-      tx.warehouseStock.create({
-        data: {
+      await tx.warehouseStock.upsert({
+        where: {
+          productId_warehouseId: {
+            productId: created.id,
+            warehouseId: targetWhId,
+          },
+        },
+        create: {
           companyId,
           productId: created.id,
           warehouseId: targetWhId,
           quantity: 0,
           reserved: 0,
         },
-      })
-    );
+        update: {},
+      });
 
-    await runProductCreateDebugStep("3. applyStockMovement", () =>
-      applyStockMovement(tx, {
+      await applyStockMovement(tx, {
         companyId,
         productId: created.id,
         warehouseId: targetWhId,
@@ -328,53 +284,63 @@ export async function POST(req: NextRequest) {
         referenceNo: created.sku,
         allowZero: true,
         auditOnly: data.currentStock <= 0,
-      })
-    );
+      });
 
-    const product = {
-      ...created,
-      currentStock: data.currentStock > 0 ? data.currentStock : created.currentStock,
-    };
-
-    await runProductCreateDebugStep("4. notifySafe", () =>
-      notifySafe({
-        companyId,
-        title: "بەرهەم دروستکرا",
-        message: `${product.name} (${product.sku}) زیادکرا.`,
-        category: "PRODUCT",
-        priority: "NORMAL",
-        href: `/dashboard/products/${product.id}`,
-        entityType: "Product",
-        entityId: product.id,
-      })
-    );
-
-    await runProductCreateDebugStep("5. notifyStockLevels", () =>
-      notifyStockLevels(companyId, [product.id])
-    );
-
-    await runProductCreateDebugStep("6. auditSafe", () =>
-      auditSafe({
-        companyId,
-        userId: user.id,
-        module: "PRODUCT",
-        action: "CREATE",
-        entityType: "Product",
-        entityId: product.id,
-        summary: `بەرهەم دروستکرا: ${product.name}`,
-        newValue: {
-          id: product.id,
-          name: product.name,
-          sku: product.sku,
-          barcode: product.barcode,
-          salePrice: Number(product.salePrice),
-          purchasePrice: Number(product.purchasePrice),
-          currentStock: Number(product.currentStock),
-          active: product.active,
+      const synced = await tx.product.findUnique({
+        where: { id: created.id },
+        select: {
+          id: true,
+          name: true,
+          sku: true,
+          barcode: true,
+          salePrice: true,
+          purchasePrice: true,
+          currentStock: true,
+          active: true,
+          unit: { select: { id: true, name: true, symbol: true } },
         },
-        req,
-      })
-    );
+      });
+
+      if (!synced) {
+        throw new Error("PRODUCT_CREATE_SYNC_FAILED");
+      }
+
+      return synced;
+    });
+
+    await notifySafe({
+      companyId,
+      title: "بەرهەم دروستکرا",
+      message: `${product.name} (${product.sku}) زیادکرا.`,
+      category: "PRODUCT",
+      priority: "NORMAL",
+      href: `/dashboard/products/${product.id}`,
+      entityType: "Product",
+      entityId: product.id,
+    });
+
+    await notifyStockLevels(companyId, [product.id]);
+
+    await auditSafe({
+      companyId,
+      userId: user.id,
+      module: "PRODUCT",
+      action: "CREATE",
+      entityType: "Product",
+      entityId: product.id,
+      summary: `بەرهەم دروستکرا: ${product.name}`,
+      newValue: {
+        id: product.id,
+        name: product.name,
+        sku: product.sku,
+        barcode: product.barcode,
+        salePrice: Number(product.salePrice),
+        purchasePrice: Number(product.purchasePrice),
+        currentStock: Number(product.currentStock),
+        active: product.active,
+      },
+      req,
+    });
 
     invalidateAfterProduct(companyId);
 
