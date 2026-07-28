@@ -145,30 +145,32 @@ async function allocateSequence(
   periodKey: string,
   startFrom: number
 ): Promise<number> {
-  try {
-    const created = await tx.numberingCounter.create({
-      data: {
+  // Do not implement this as create-then-catch-and-update. A duplicate counter
+  // is the normal path after the first number has been allocated, but
+  // PostgreSQL aborts the transaction as soon as that CREATE raises 23505.
+  // Attempting UPDATE in the catch block can then only report 25P02, hiding the
+  // original unique-key violation. One atomic upsert handles both first use and
+  // subsequent allocations without issuing a statement that is expected to
+  // fail, and keeps the increment concurrency-safe.
+  const counter = await tx.numberingCounter.upsert({
+    where: {
+      companyId_moduleKey_periodKey: {
         companyId,
         moduleKey,
         periodKey,
-        nextValue: startFrom + 1,
       },
-    });
-    return created.nextValue - 1;
-  } catch {
-    // Concurrent create — increment existing
-    const updated = await tx.numberingCounter.update({
-      where: {
-        companyId_moduleKey_periodKey: {
-          companyId,
-          moduleKey,
-          periodKey,
-        },
-      },
-      data: { nextValue: { increment: 1 } },
-    });
-    return updated.nextValue - 1;
-  }
+    },
+    create: {
+      companyId,
+      moduleKey,
+      periodKey,
+      nextValue: startFrom + 1,
+    },
+    update: { nextValue: { increment: 1 } },
+    select: { nextValue: true },
+  });
+
+  return counter.nextValue - 1;
 }
 
 /**
