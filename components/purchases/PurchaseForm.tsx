@@ -14,17 +14,15 @@ import { useFormHistory } from "@/lib/hooks/useFormHistory";
 import { DRAFT_KEYS } from "@/lib/drafts/types";
 import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import ProductPicker from "@/components/forms/ProductPicker";
+import {
+  mapActiveProductOptions,
+  type ProductSelectorItem,
+} from "@/lib/products/selector";
 import { useNavigationHistory } from "@/lib/history/provider";
 import { useT } from "@/components/i18n/LocaleProvider";
 
 type Option = { id: string; name: string };
-type Product = {
-  id: string;
-  name: string;
-  sku: string;
-  barcode?: string | null;
-  purchasePrice: string | number;
-};
+type Product = ProductSelectorItem;
 
 type LineItem = {
   productId: string;
@@ -144,7 +142,7 @@ export default function PurchaseForm() {
       const [sRes, wRes, pRes] = await Promise.all([
         fetch("/api/suppliers"),
         fetch("/api/werehouses"),
-        fetch("/api/products"),
+        fetch("/api/products", { cache: "no-store" }),
       ]);
       const [sJson, wJson, pJson] = await Promise.all([
         sRes.json(),
@@ -165,7 +163,7 @@ export default function PurchaseForm() {
         if (main && !warehouseId) setWarehouseId(main.id);
       }
       if (pJson.success) {
-        setProducts(pJson.data.filter((p: { active: boolean }) => p.active));
+        setProducts(mapActiveProductOptions(pJson));
       }
     }
     void load();
@@ -209,6 +207,10 @@ export default function PurchaseForm() {
           sku: product.sku,
           barcode: product.barcode,
           purchasePrice: product.purchasePrice,
+          salePrice: product.salePrice,
+          currentStock: product.currentStock,
+          reservedStock: product.reservedStock,
+          active: product.active,
         },
         ...prev,
       ];

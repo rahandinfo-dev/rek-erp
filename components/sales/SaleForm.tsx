@@ -18,17 +18,13 @@ import { AutoSaveBar, AutoSaveStatus } from "@/components/ui/AutoSaveStatus";
 import ProductPicker from "@/components/forms/ProductPicker";
 import { useNavigationHistory } from "@/lib/history/provider";
 import { useT } from "@/components/i18n/LocaleProvider";
+import {
+  mapActiveProductOptions,
+  type ProductSelectorItem,
+} from "@/lib/products/selector";
 
 type Option = { id: string; name: string };
-type Product = {
-  id: string;
-  name: string;
-  sku: string;
-  barcode?: string | null;
-  salePrice: string | number;
-  currentStock: string | number;
-  reservedStock: string | number;
-};
+type Product = ProductSelectorItem;
 
 type LineItem = {
   productId: string;
@@ -163,7 +159,7 @@ export default function SaleForm() {
       const [cRes, wRes, pRes] = await Promise.all([
         fetch("/api/customers"),
         fetch("/api/werehouses"),
-        fetch("/api/products"),
+        fetch("/api/products", { cache: "no-store" }),
       ]);
       const [cJson, wJson, pJson] = await Promise.all([
         cRes.json(),
@@ -188,7 +184,7 @@ export default function SaleForm() {
         if (main && !warehouseId) setWarehouseId(main.id);
       }
       if (pJson.success) {
-        setProducts(pJson.data.filter((p: { active: boolean }) => p.active));
+        setProducts(mapActiveProductOptions(pJson));
       }
 
       if (duplicateInvoiceId) {
@@ -247,8 +243,10 @@ export default function SaleForm() {
           sku: product.sku,
           barcode: product.barcode,
           salePrice: product.salePrice,
+          purchasePrice: product.purchasePrice,
           currentStock: product.currentStock,
           reservedStock: product.reservedStock,
+          active: product.active,
         },
         ...prev,
       ];
