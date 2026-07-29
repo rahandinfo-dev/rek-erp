@@ -10,6 +10,10 @@ import { applyStockMovement } from "@/lib/inventory/movements";
 import { ensureWalkInCustomer } from "@/lib/parties/walk-in";
 import { auditSafe } from "@/lib/audit/log";
 import { invalidateAfterSale } from "@/lib/cache/invalidate";
+import {
+  createErpTrace,
+  publicErpError,
+} from "@/lib/observability/erp-operation";
 
 export async function GET() {
   try {
@@ -18,7 +22,7 @@ export async function GET() {
     if (!user) {
       return NextResponse.json(
         { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -50,38 +54,56 @@ export async function GET() {
     console.error("GET SALES ERROR:", error);
     return NextResponse.json(
       { success: false, message: "هەڵەیەک ڕوویدا." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(req: NextRequest) {
+  const trace = createErpTrace(
+    "SALE",
+    req.headers.get("x-correlation-id") || undefined,
+  );
+  let activeStep = "SALE_01_REQUEST_START";
+  let stepStarted = trace.start(activeStep);
   try {
+    trace.ok(activeStep, stepStarted);
+    activeStep = "SALE_02_PARSE_BODY";
+    stepStarted = trace.start(activeStep);
     const user = await getCurrentUser();
 
     if (!user) {
       return NextResponse.json(
         { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const companyId = user.companyId;
     const body = await req.json();
+    trace.ok(activeStep, stepStarted);
+    activeStep = "SALE_03_VALIDATE";
+    stepStarted = trace.start(activeStep);
     const validation = createSaleSchema.safeParse(body);
 
     if (!validation.success) {
       return NextResponse.json(
         { success: false, errors: validation.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const data = validation.data;
+    trace.ok(activeStep, stepStarted);
+    activeStep = "SALE_04_COMPANY";
+    stepStarted = trace.start(activeStep);
+
+    trace.ok(activeStep, stepStarted);
+    activeStep = "SALE_05_CUSTOMER";
+    stepStarted = trace.start(activeStep);
 
     const resolvedCustomerId =
-      data.customerId ||
-      (await ensureWalkInCustomer(companyId)).id;
+      data.customerId || (await ensureWalkInCustomer(companyId)).id;
 
     const [customer, warehouse, company, template, warehouseBalances] =
       await Promise.all([
@@ -128,23 +150,27 @@ export async function POST(req: NextRequest) {
     if (!customer) {
       return NextResponse.json(
         { success: false, message: "کڕیار نەدۆزرایەوە." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!warehouse) {
       return NextResponse.json(
         { success: false, message: "کۆگا نەدۆزرایەوە." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!company) {
       return NextResponse.json(
         { success: false, message: "کۆمپانیا نەدۆزرایەوە." },
-        { status: 400 }
+        { status: 400 },
       );
     }
+
+    trace.ok(activeStep, stepStarted);
+    activeStep = "SALE_06_ITEMS";
+    stepStarted = trace.start(activeStep);
 
     const productIds = data.items.map((item) => item.productId);
     const products = await db.product.findMany({
@@ -158,7 +184,7 @@ export async function POST(req: NextRequest) {
     if (products.length !== new Set(productIds).size) {
       return NextResponse.json(
         { success: false, message: "هەندێک بەرهەم نادروستن یان ناچالاکن." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -167,7 +193,7 @@ export async function POST(req: NextRequest) {
       warehouseBalances.map((b) => [
         b.productId,
         Number(b.quantity) - Number(b.reserved),
-      ])
+      ]),
     );
 
     for (const item of data.items) {
@@ -182,25 +208,30 @@ export async function POST(req: NextRequest) {
             success: false,
             message: `کۆگای «${product.name}» لە «${warehouse.name}» بەس نییە (بەردەست: ${available}).`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
 
     const subtotal = roundMoney(
-      data.items.reduce((sum, item) => sum + item.total, 0)
+      data.items.reduce((sum, item) => sum + item.total, 0),
     );
     const total = roundMoney(subtotal - data.discount + data.tax);
 
+    trace.ok(activeStep, stepStarted);
+    activeStep = "SALE_07_NUMBERING";
+    stepStarted = trace.start(activeStep);
     const { generateSaleNumber } = await import("@/lib/numbering/engine");
-    const allocated = await generateSaleNumber(
-      companyId,
-      warehouse.code,
-      null
-    );
+    const allocated = await generateSaleNumber(companyId, warehouse.code, null);
     const invoiceNo = allocated.value;
 
+    trace.ok(activeStep, stepStarted);
+    activeStep = "SALE_08_TRANSACTION_START";
+    stepStarted = trace.start(activeStep);
     const { sale, invoice } = await db.$transaction(async (tx) => {
+      trace.ok(activeStep, stepStarted);
+      activeStep = "SALE_09_MASTER_CREATE";
+      stepStarted = trace.start(activeStep);
       const created = await tx.sale.create({
         data: {
           invoiceNo,
@@ -232,6 +263,13 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      trace.ok(activeStep, stepStarted);
+      activeStep = "SALE_10_ITEMS_CREATE";
+      stepStarted = trace.start(activeStep);
+      trace.ok(activeStep, stepStarted);
+      activeStep = "SALE_11_STOCK_UPDATE";
+      stepStarted = trace.start(activeStep);
+
       for (const item of data.items) {
         try {
           await applyStockMovement(tx, {
@@ -250,23 +288,38 @@ export async function POST(req: NextRequest) {
             unitCost: item.unitPrice,
           });
         } catch (error) {
-          if (error instanceof Error && error.message === "INSUFFICIENT_STOCK") {
+          if (
+            error instanceof Error &&
+            error.message === "INSUFFICIENT_STOCK"
+          ) {
             throw new Error(`INSUFFICIENT:${item.productId}`);
           }
           throw error;
         }
       }
 
+      trace.ok(activeStep, stepStarted);
+      activeStep = "SALE_12_INVENTORY";
+      stepStarted = trace.start(activeStep);
+      trace.ok(activeStep, stepStarted);
+      activeStep = "SALE_13_ACCOUNTING";
+      stepStarted = trace.start(activeStep);
+      trace.ok(activeStep, stepStarted);
+
       const createdInvoice = await createInvoiceFromSale(
         tx,
         created,
         company,
         { id: user.id, fullName: user.fullName },
-        template?.id
+        template?.id,
       );
 
       return { sale: created, invoice: createdInvoice };
     });
+
+    trace.ok(activeStep, stepStarted);
+    activeStep = "SALE_14_NOTIFICATION";
+    stepStarted = trace.start(activeStep);
 
     await notifySafe({
       companyId,
@@ -305,7 +358,7 @@ export async function POST(req: NextRequest) {
 
     await notifyStockLevels(
       companyId,
-      data.items.map((item) => item.productId)
+      data.items.map((item) => item.productId),
     );
 
     if (total >= 1_000_000) {
@@ -337,6 +390,9 @@ export async function POST(req: NextRequest) {
 
     invalidateAfterSale(companyId);
 
+    trace.ok(activeStep, stepStarted);
+    trace.committed("SALE_15_COMMIT");
+
     return NextResponse.json({
       success: true,
       data: { ...sale, invoice },
@@ -344,15 +400,21 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("CREATE SALE ERROR:", error);
+    trace.failed(activeStep, stepStarted, error);
     if (error instanceof Error && error.message.startsWith("INSUFFICIENT:")) {
       return NextResponse.json(
         { success: false, message: "کۆگای بەرهەم بەس نییە." },
-        { status: 400 }
+        { status: 400 },
       );
     }
+    const response = publicErpError(error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
-      { status: 500 }
+      {
+        success: false,
+        message: response.message,
+        correlationId: trace.correlationId,
+      },
+      { status: response.status },
     );
   }
 }
