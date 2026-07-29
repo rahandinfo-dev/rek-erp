@@ -15,8 +15,12 @@ test("preserves the first nested PostgreSQL error", () => {
     },
   };
   assert.deepEqual(databaseErrorDetails(error), {
+    name: undefined,
+    constructor: "Object",
+    message: undefined,
     code: "DriverAdapterError",
-    postgresCode: "23505",
+    originalCode: "23505",
+    originalMessage: undefined,
     constraint: "Sale_invoiceNo_key",
     table: "Sale",
     column: undefined,
@@ -46,8 +50,12 @@ test("reports the original SQL error instead of a later 25P02", () => {
   };
 
   assert.deepEqual(databaseErrorDetails(error), {
+    name: undefined,
+    constructor: "Object",
+    message: undefined,
     code: "DriverAdapterError",
-    postgresCode: "23505",
+    originalCode: "23505",
+    originalMessage: undefined,
     constraint: "NumberingCounter_companyId_moduleKey_periodKey_key",
     table: "NumberingCounter",
     column: undefined,

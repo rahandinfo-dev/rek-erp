@@ -1,7 +1,7 @@
 "use client";
 import { toDateInputValue } from "@/lib/utils/datetime";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Copy, Plus, Printer, Trash2 } from "lucide-react";
 import { roundMoney , formatNumber} from "@/lib/utils/format";
@@ -22,6 +22,7 @@ import {
   mapActiveProductOptions,
   type ProductSelectorItem,
 } from "@/lib/products/selector";
+import { erpResponseError } from "@/lib/transactions/client-error";
 
 type Option = { id: string; name: string };
 type Product = ProductSelectorItem;
@@ -89,6 +90,7 @@ export default function SaleForm() {
   const [items, setItems] = useState<LineItem[]>([blankLine()]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const submitLocked = useRef(false);
 
   const draftValue = useMemo<SaleDraft>(
     () => ({
@@ -281,6 +283,7 @@ export default function SaleForm() {
   }
 
   async function submit(mode: SaveMode) {
+    if (submitLocked.current) return;
     setError("");
     if (!warehouseId) {
       setError(t("common.warehouseRequired"));
@@ -296,6 +299,7 @@ export default function SaleForm() {
     }
 
     try {
+      submitLocked.current = true;
       setSaving(true);
       const res = await fetch("/api/sales", {
         method: "POST",
@@ -311,12 +315,13 @@ export default function SaleForm() {
           items,
         }),
       });
-      const result = await res.json();
       if (!res.ok) {
-        setError(result.message || t("errors.generic"));
-        appToast.error(result.message || t("errors.generic"));
+        const message = await erpResponseError(res, t("errors.generic"));
+        setError(message);
+        appToast.error(message);
         return;
       }
+      const result = await res.json();
 
       appToast.saleCompleted(
         result.data?.invoiceNo
@@ -369,6 +374,7 @@ export default function SaleForm() {
       setError(t("errors.generic"));
       appToast.error(t("errors.generic"));
     } finally {
+      submitLocked.current = false;
       setSaving(false);
     }
   }

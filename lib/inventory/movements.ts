@@ -62,17 +62,17 @@ export async function ensureProductWarehouseBalance(
   });
   if (existing > 0) return;
 
-  const [product, mainWh] = await Promise.all([
-    tx.product.findFirst({
+  // Interactive transaction clients use one connection. Keep these reads
+  // sequential so query ordering and the first failure remain deterministic.
+  const product = await tx.product.findFirst({
       where: { id: productId, companyId },
       select: { currentStock: true, reservedStock: true },
-    }),
-    tx.warehouse.findFirst({
+    });
+  const mainWh = await tx.warehouse.findFirst({
       where: { companyId },
       orderBy: [{ isMain: "desc" }, { createdAt: "asc" }],
       select: { id: true },
-    }),
-  ]);
+    });
 
   if (!product || !mainWh) return;
 

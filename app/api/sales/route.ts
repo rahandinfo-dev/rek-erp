@@ -64,11 +64,11 @@ export async function POST(req: NextRequest) {
     "SALE",
     req.headers.get("x-correlation-id") || undefined,
   );
-  let activeStep = "SALES_STEP_01_REQUEST";
+  let activeStep = "SALE_PRE_01_REQUEST_START";
   let stepStarted = trace.start(activeStep);
   try {
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALES_STEP_02_PARSE";
+    activeStep = "SALE_PRE_02_USER_RESOLUTION_START";
     stepStarted = trace.start(activeStep);
     const user = await getCurrentUser();
 
@@ -80,9 +80,12 @@ export async function POST(req: NextRequest) {
     }
 
     const companyId = user.companyId;
+    trace.ok("SALE_PRE_03_USER_RESOLUTION_OK", stepStarted);
+    activeStep = "SALE_PRE_04_BODY_PARSE_START";
+    stepStarted = trace.start(activeStep);
     const body = await req.json();
-    trace.ok(activeStep, stepStarted);
-    activeStep = "SALES_STEP_03_VALIDATE";
+    trace.ok("SALE_PRE_05_BODY_PARSE_OK", stepStarted);
+    activeStep = "SALE_PRE_06_VALIDATION_START";
     stepStarted = trace.start(activeStep);
     const validation = createSaleSchema.safeParse(body);
 
@@ -94,12 +97,13 @@ export async function POST(req: NextRequest) {
     }
 
     const data = validation.data;
-    trace.ok(activeStep, stepStarted);
-    activeStep = "SALES_STEP_04_COMPANY";
+    trace.ok("SALE_PRE_07_VALIDATION_OK", stepStarted);
+    trace.ok("SALE_PRE_08_PAYLOAD_NORMALIZED", stepStarted);
+    activeStep = "SALE_PRE_09_COMPANY_VALIDATION_START";
     stepStarted = trace.start(activeStep);
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALES_STEP_05_PARTNER";
+    activeStep = "SALE_PRE_11_CUSTOMER_VALIDATION_START";
     stepStarted = trace.start(activeStep);
 
     const resolvedCustomerId =
@@ -169,7 +173,7 @@ export async function POST(req: NextRequest) {
     }
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALES_STEP_06_ITEMS";
+    activeStep = "SALE_PRE_15_ITEMS_VALIDATION_START";
     stepStarted = trace.start(activeStep);
 
     const productIds = data.items.map((item) => item.productId);
@@ -219,18 +223,18 @@ export async function POST(req: NextRequest) {
     const total = roundMoney(subtotal - data.discount + data.tax);
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALES_STEP_07_NUMBERING";
+    activeStep = "SALE_PRE_21_NUMBERING_START";
     stepStarted = trace.start(activeStep);
     const { generateSaleNumber } = await import("@/lib/numbering/engine");
     const allocated = await generateSaleNumber(companyId, warehouse.code, null);
     const invoiceNo = allocated.value;
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALES_STEP_08_TRANSACTION_BEGIN";
+    activeStep = "SALE_TX_01_START";
     stepStarted = trace.start(activeStep);
     const { sale, invoice } = await db.$transaction(async (tx) => {
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALES_STEP_09_MASTER_RECORD";
+      activeStep = "SALE_TX_02_HEADER_CREATE_START";
       stepStarted = trace.start(activeStep);
       const created = await tx.sale.create({
         data: {
@@ -264,10 +268,10 @@ export async function POST(req: NextRequest) {
       });
 
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALES_STEP_10_ITEMS";
+      activeStep = "SALE_TX_04_LINES_CREATE_START";
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALES_STEP_11_STOCK";
+      activeStep = "SALE_TX_06_STOCK_MOVEMENTS_START";
       stepStarted = trace.start(activeStep);
 
       for (const item of data.items) {
@@ -299,10 +303,10 @@ export async function POST(req: NextRequest) {
       }
 
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALES_STEP_12_LEDGER";
+      activeStep = "SALE_TX_08_ACCOUNTING_START";
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALES_STEP_12_LEDGER";
+      activeStep = "SALE_TX_10_PAYMENT_START";
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
 
@@ -318,7 +322,7 @@ export async function POST(req: NextRequest) {
     });
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALES_STEP_13_NOTIFICATIONS";
+    activeStep = "SALE_POST_01_NOTIFICATION_START";
     stepStarted = trace.start(activeStep);
 
     await notifySafe({
@@ -391,30 +395,31 @@ export async function POST(req: NextRequest) {
     invalidateAfterSale(companyId);
 
     trace.ok(activeStep, stepStarted);
-    trace.committed("SALES_STEP_14_COMMIT");
+    trace.committed("SALE_RESPONSE_SUCCESS");
 
-    return NextResponse.json({
-      success: true,
-      data: { ...sale, invoice },
-      message: "فرۆشتن و پسوولە بە سەرکەوتوویی تۆمارکران.",
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        data: { ...sale, invoice },
+        message: "فرۆشتن و پسوولە بە سەرکەوتوویی تۆمارکران.",
+        correlationId: trace.correlationId,
+      },
+      { headers: { "x-correlation-id": trace.correlationId } },
+    );
   } catch (error) {
-    console.error("CREATE SALE ERROR:", error);
     trace.failed(activeStep, stepStarted, error);
-    if (error instanceof Error && error.message.startsWith("INSUFFICIENT:")) {
-      return NextResponse.json(
-        { success: false, message: "کۆگای بەرهەم بەس نییە." },
-        { status: 400 },
-      );
-    }
     const response = publicErpError(error);
     return NextResponse.json(
       {
         success: false,
+        code: response.code,
         message: response.message,
         correlationId: trace.correlationId,
       },
-      { status: response.status },
+      {
+        status: response.status,
+        headers: { "x-correlation-id": trace.correlationId },
+      },
     );
   }
 }

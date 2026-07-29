@@ -1,7 +1,7 @@
 "use client";
 import { toDateInputValue } from "@/lib/utils/datetime";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Copy, Plus, Trash2 } from "lucide-react";
 import { roundMoney , formatNumber} from "@/lib/utils/format";
@@ -20,6 +20,7 @@ import {
 } from "@/lib/products/selector";
 import { useNavigationHistory } from "@/lib/history/provider";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { erpResponseError } from "@/lib/transactions/client-error";
 
 type Option = { id: string; name: string };
 type Product = ProductSelectorItem;
@@ -81,6 +82,7 @@ export default function PurchaseForm() {
   const [items, setItems] = useState<LineItem[]>([blankLine()]);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
+  const submitLocked = useRef(false);
 
   const draftValue = useMemo<PurchaseDraft>(
     () => ({
@@ -245,6 +247,7 @@ export default function PurchaseForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (submitLocked.current) return;
     setError("");
     if (!warehouseId) {
       setError(t("common.warehouseRequired"));
@@ -255,6 +258,7 @@ export default function PurchaseForm() {
       return;
     }
     try {
+      submitLocked.current = true;
       setSaving(true);
       const res = await fetch("/api/purchases", {
         method: "POST",
@@ -269,12 +273,13 @@ export default function PurchaseForm() {
           items,
         }),
       });
-      const result = await res.json();
       if (!res.ok) {
-        setError(result.message || t("errors.generic"));
-        appToast.error(result.message || t("errors.generic"));
+        const message = await erpResponseError(res, t("errors.generic"));
+        setError(message);
+        appToast.error(message);
         return;
       }
+      const result = await res.json();
       appToast.success(t("purchases.recordedTitle"), result.data?.invoiceNo || "");
       emitNotificationsChanged({ reason: "mutation" });
       clearDraft();
@@ -293,6 +298,7 @@ export default function PurchaseForm() {
       setError(t("errors.generic"));
       appToast.error(t("errors.generic"));
     } finally {
+      submitLocked.current = false;
       setSaving(false);
     }
   }
