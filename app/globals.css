@@ -1492,21 +1492,14 @@ html:not(.dark) .border-zinc-200 {
 }
 
 /* ─── REK ERP Academy Learning Center hero ─── */
-/*
- * Replace public/images/background-tutorial.png with your own image.
- * The hero always loads /images/background-tutorial.png.
- * If the file is missing, background-color provides a clean fallback.
- */
 .rek-academy-hero {
   --academy-ink: #070b14;
   --academy-panel: #0b1220;
   --academy-brand: #ffae42;
-  /* Solid fallback when public/images/background-tutorial.png is absent */
   background-color: #0b1220;
   background-image:
-    /* Dark overlay ~35% so Kurdish text stays readable over any photo */
-    linear-gradient(rgba(7, 11, 20, 0.35), rgba(7, 11, 20, 0.35)),
-    url("/images/background-tutorial.png");
+    radial-gradient(circle at 18% 20%, rgba(255, 174, 66, 0.14), transparent 34%),
+    linear-gradient(135deg, #070b14 0%, #0b1220 58%, #121827 100%);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
