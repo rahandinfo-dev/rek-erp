@@ -1,12 +1,18 @@
 import { z } from "zod";
+import {
+  erpNumber,
+  erpPositiveNumber,
+  optionalTrimmedText,
+} from "@/lib/validators/erp-normalization";
 
 export const currencySchema = z.enum(["IQD", "USD"]).default("IQD");
 
 export const saleItemSchema = z.object({
   productId: z.string().min(1, "بەرهەم پێویستە"),
-  quantity: z.number().positive("بڕ دەبێت لە سفر گەورەتر بێت"),
-  unitPrice: z.number().min(0, "نرخ نابێت نەرێنی بێت"),
-  total: z.number().min(0, "کۆ نابێت نەرێنی بێت"),
+  quantity: erpPositiveNumber("بڕ دەبێت لە سفر گەورەتر بێت"),
+  unitPrice: erpNumber("نرخ نابێت نەرێنی بێت"),
+  // Accepted for backwards compatibility, but never trusted by the server.
+  total: erpNumber("کۆ نابێت نەرێنی بێت").optional(),
   currency: currencySchema,
 });
 
@@ -19,26 +25,25 @@ export const createSaleSchema = z
       .pipe(z.string()),
     warehouseId: z.string().min(1, "کۆگا پێویستە"),
     saleDate: z.coerce.date(),
-    discount: z.number().min(0).default(0),
-    tax: z.number().min(0).default(0),
-    notes: z.string().optional(),
+    discount: erpNumber("داشکاندن نابێت نەرێنی بێت").default(0),
+    tax: erpNumber("باج نابێت نەرێنی بێت").default(0),
+    notes: optionalTrimmedText,
     paymentMethod: z
       .enum(["CASH", "CARD", "TRANSFER", "CREDIT", "DIGITAL", "OTHER"])
       .default("CASH"),
     items: z.array(saleItemSchema).min(1, "لانیکەم یەک بەرهەم پێویستە"),
   })
   .superRefine((data, ctx) => {
+    const ids = new Set<string>();
     let subtotal = 0;
-    for (const item of data.items) {
-      const expected = item.quantity * item.unitPrice;
-      if (Math.abs(expected - item.total) > 0.01) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          message: "کۆی هێڵ نادروستە.",
-          path: ["items"],
-        });
-      }
-      subtotal += item.total;
+    for (const [index, item] of data.items.entries()) {
+      if (ids.has(item.productId)) ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "هەمان بەرهەم نابێت دوو جار زیاد بکرێت.",
+        path: ["items", index, "productId"],
+      });
+      ids.add(item.productId);
+      subtotal += item.quantity * item.unitPrice;
     }
     if (subtotal - data.discount + data.tax < 0) {
       ctx.addIssue({
