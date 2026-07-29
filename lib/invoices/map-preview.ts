@@ -8,6 +8,10 @@ type InvoiceLike = {
   invoiceDate: Date | string;
   invoiceTime: Date | string;
   customerName: string;
+  customerCode: string;
+  customerPhone: string | null;
+  customerAddress: string | null;
+  currency?: string;
   warehouseName: string;
   notes: string | null;
   subtotal: unknown;
@@ -31,6 +35,10 @@ export function mapInvoiceToPreview(invoice: InvoiceLike): InvoicePreviewData {
     date: formatDate(invoice.invoiceDate),
     time: formatTime(invoice.invoiceTime),
     customerOrSupplier: invoice.customerName,
+    customerCode: invoice.customerCode,
+    customerPhone: invoice.customerPhone,
+    customerAddress: invoice.customerAddress,
+    currency: invoice.currency || "IQD",
     warehouse: invoice.warehouseName,
     notes: invoice.notes,
     subtotal: Number(invoice.subtotal),

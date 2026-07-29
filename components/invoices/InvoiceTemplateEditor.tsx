@@ -65,7 +65,7 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
     initial?.docType || "SALE"
   );
   const [config, setConfig] = useState<InvoiceTemplateConfig>(
-    initial?.config || DEFAULT_INVOICE_CONFIG
+    initial?.config ? { ...DEFAULT_INVOICE_CONFIG, ...initial.config, labels: { ...DEFAULT_INVOICE_CONFIG.labels, ...(initial.config.labels || {}) } } : DEFAULT_INVOICE_CONFIG
   );
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -270,6 +270,17 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
                   </label>
                 ))}
               </div>
+            </div>
+          </FormSection>
+
+          <FormSection title="زانیاری بازرگانی و ناونیشانەکان">
+            <div className="space-y-4">
+              <FormField label="ناونیشانی ژێر ناوی کۆمپانیا"><input className={inputClassName} value={config.companySubtitle} onChange={(e) => patchConfig({ companySubtitle: e.target.value })}/></FormField>
+              <FormField label="ژمارەی مۆبایلی دووەم"><input className={inputClassName} value={config.phone2} onChange={(e) => patchConfig({ phone2: e.target.value })}/></FormField>
+              <FormField label="دەقی سوپاس"><input className={inputClassName} value={config.thankYouText} onChange={(e) => patchConfig({ thankYouText: e.target.value })}/></FormField>
+              <div className="grid grid-cols-2 gap-3 text-sm">{([['showSku','کۆدی کاڵا'],['showDiscount','داشکاندن'],['showTax','باج'],['showSignatures','واژووەکان'],['showPrintedBy','چاپکراو لەلایەن'],['showPrintedAt','کاتی چاپ']] as const).map(([key,label]) => <label key={key} className="flex items-center gap-2"><input type="checkbox" checked={config[key]} onChange={(e) => patchConfig({[key]: e.target.checked})}/>{label}</label>)}</div>
+              <p className="text-sm font-bold">دەستکاری ناونیشانەکان</p>
+              <div className="grid gap-3 sm:grid-cols-2">{(Object.keys(config.labels) as Array<keyof typeof config.labels>).map((key) => <FormField key={key} label={key}><input className={inputClassName} value={config.labels[key]} onChange={(e) => patchConfig({labels: {...config.labels, [key]: e.target.value}})}/></FormField>)}</div>
             </div>
           </FormSection>
 

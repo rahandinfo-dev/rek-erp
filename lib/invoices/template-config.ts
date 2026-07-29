@@ -28,6 +28,23 @@ export type InvoiceTemplateConfig = {
   signatureImage: string | null;
   stampEnabled: boolean;
   stampImage: string | null;
+  showSku: boolean;
+  showDiscount: boolean;
+  showTax: boolean;
+  showSignatures: boolean;
+  showPrintedBy: boolean;
+  showPrintedAt: boolean;
+  companySubtitle: string;
+  phone2: string;
+  thankYouText: string;
+  labels: InvoiceLabels;
+};
+
+export type InvoiceLabels = {
+  customerCode: string; customerName: string; customerPhone: string; customerAddress: string;
+  invoiceNo: string; date: string; time: string; cashier: string; warehouse: string; reference: string;
+  row: string; sku: string; product: string; quantity: string; unit: string; unitPrice: string; discount: string; tax: string; lineTotal: string;
+  subtotal: string; additionalCharges: string; grandTotal: string; paid: string; remaining: string; signature: string; customerSignature: string;
 };
 
 export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
@@ -57,6 +74,21 @@ export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
   signatureImage: null,
   stampEnabled: true,
   stampImage: null,
+  showSku: true,
+  showDiscount: true,
+  showTax: true,
+  showSignatures: true,
+  showPrintedBy: true,
+  showPrintedAt: true,
+  companySubtitle: "",
+  phone2: "",
+  thankYouText: "سوپاس بۆ بازرگانیکردنتان",
+  labels: {
+    customerCode: "کۆدی کڕیار", customerName: "ناوی کڕیار", customerPhone: "ژ. مۆبایل", customerAddress: "ناونیشان",
+    invoiceNo: "ژمارەی پسوولە", date: "بەروار", time: "کات", cashier: "کاشێر", warehouse: "کۆگا", reference: "سەرچاوە",
+    row: "ژ", sku: "کۆد", product: "ناوی بەرهەم", quantity: "بڕ", unit: "یەکە", unitPrice: "نرخ", discount: "داشکاندن", tax: "باج", lineTotal: "کۆی گشتی",
+    subtotal: "کۆی ناوەڕاست", additionalCharges: "خەرجی زیادە", grandTotal: "پارەی دراو", paid: "دراو", remaining: "ماوە", signature: "واژووی فرۆشیار", customerSignature: "واژووی کڕیار",
+  },
 };
 
 export type InvoicePreviewData = {
@@ -64,6 +96,12 @@ export type InvoicePreviewData = {
   date: string;
   time?: string;
   customerOrSupplier: string;
+  customerCode?: string;
+  customerPhone?: string | null;
+  customerAddress?: string | null;
+  currency: string;
+  paidAmount?: number;
+  additionalCharges?: number;
   warehouse: string;
   notes?: string | null;
   subtotal: number;
@@ -76,6 +114,9 @@ export type InvoicePreviewData = {
     name: string;
     sku?: string;
     quantity: number;
+    unit?: string;
+    discount?: number;
+    tax?: number;
     unitPrice: number;
     total: number;
   }>;
@@ -90,6 +131,7 @@ export const SAMPLE_INVOICE_DATA: InvoicePreviewData = {
   time: "09:00",
   customerOrSupplier: "کڕیاری نموونەیی",
   warehouse: "کۆگای سەرەکی",
+  customerCode: "C-001", customerPhone: "0750 000 0000", customerAddress: "هەولێر", currency: "IQD", paidAmount: 145000, additionalCharges: 0,
   notes: "تێبینی نموونەیی",
   subtotal: 150000,
   discount: 5000,

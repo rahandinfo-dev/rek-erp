@@ -39,6 +39,7 @@ export default async function InvoiceDetailPage({
       pdfHistory: { orderBy: { createdAt: "desc" }, take: 50 },
       template: true,
       sale: { select: { id: true, status: true } },
+      company: { select: { settings: { select: { currency: true } } } },
     },
   });
 
@@ -47,10 +48,11 @@ export default async function InvoiceDetailPage({
   const config: InvoiceTemplateConfig = {
     ...DEFAULT_INVOICE_CONFIG,
     ...((invoice.template?.config as Partial<InvoiceTemplateConfig>) || {}),
+    labels: { ...DEFAULT_INVOICE_CONFIG.labels, ...(((invoice.template?.config as Partial<InvoiceTemplateConfig>) || {}).labels || {}) },
   };
 
   const size = (invoice.template?.size || "A4") as InvoiceSizeOption;
-  const preview = mapInvoiceToPreview(invoice);
+  const preview = mapInvoiceToPreview({ ...invoice, currency: invoice.company.settings?.currency || "IQD" });
 
   return (
     <div className="space-y-6 sm:space-y-8">
