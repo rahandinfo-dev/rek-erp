@@ -44,10 +44,6 @@ export default function LearningCenterHub() {
 
   return (
     <div className="space-y-8">
-      {/*
-        Learning Center hero — background from /images/background-tutorial.png
-        Replace public/images/background-tutorial.png with your own image.
-      */}
       <section
         className="rek-academy-hero relative overflow-hidden border border-[#FFAE42]/30 p-6 sm:p-10"
         dir="rtl"
