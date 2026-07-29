@@ -19,8 +19,22 @@ function record(value: unknown): Record<string, unknown> | undefined {
 /** Extract the original Prisma/pg failure without logging request data or credentials. */
 export function databaseErrorDetails(error: unknown): ErrorDetails {
   const outer = record(error);
-  const cause = record(outer?.cause);
-  const driver = record(cause?.cause) ?? cause;
+  const chain: Record<string, unknown>[] = [];
+  const seen = new Set<unknown>();
+  let cursor = outer;
+  while (cursor && !seen.has(cursor)) {
+    chain.push(cursor);
+    seen.add(cursor);
+    cursor = record(cursor.cause);
+  }
+  // 25P02 only says that an earlier statement aborted the transaction. Prefer
+  // the deepest concrete PostgreSQL failure so the root constraint is logged.
+  const driver =
+    [...chain]
+      .reverse()
+      .find(
+        (entry) => typeof entry.code === "string" && entry.code !== "25P02",
+      ) ?? chain.at(-1);
   const meta = record(outer?.meta);
   const target = Array.isArray(meta?.target)
     ? meta.target.join(",")
@@ -29,7 +43,10 @@ export function databaseErrorDetails(error: unknown): ErrorDetails {
     typeof value === "string" ? value : undefined;
   return {
     code: string(outer?.code),
-    postgresCode: string(driver?.code) ?? string(cause?.code),
+    postgresCode:
+      string(driver?.code) === "DriverAdapterError"
+        ? undefined
+        : string(driver?.code),
     constraint:
       string(driver?.constraint) ?? string(meta?.constraint) ?? target,
     table: string(driver?.table) ?? string(meta?.modelName),
@@ -75,7 +92,7 @@ export function createErpTrace(
   const started = performance.now();
   const log = (
     step: string,
-    state: "START" | "OK" | "FAILED",
+    state: "START" | "SUCCESS" | "FAILED",
     since: number,
     error?: unknown,
   ) => {
@@ -102,13 +119,13 @@ export function createErpTrace(
       return at;
     },
     ok(step: string, at: number) {
-      log(step, "OK", at);
+      log(step, "SUCCESS", at);
     },
     failed(step: string, at: number, error: unknown) {
       log(step, "FAILED", at, error);
     },
     committed(step: string) {
-      log(step, "OK", started);
+      log(step, "SUCCESS", started);
     },
   };
 }
