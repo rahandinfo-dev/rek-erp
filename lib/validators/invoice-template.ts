@@ -28,6 +28,14 @@ export const invoiceTemplateConfigSchema = z.object({
   signatureImage: z.string().nullable(),
   stampEnabled: z.boolean(),
   stampImage: z.string().nullable(),
+  showSku: z.boolean(), showDiscount: z.boolean(), showTax: z.boolean(), showSignatures: z.boolean(),
+  showPrintedBy: z.boolean(), showPrintedAt: z.boolean(), companySubtitle: z.string(), phone2: z.string(), thankYouText: z.string(),
+  labels: z.object({
+    customerCode: z.string(), customerName: z.string(), customerPhone: z.string(), customerAddress: z.string(),
+    invoiceNo: z.string(), date: z.string(), time: z.string(), cashier: z.string(), warehouse: z.string(), reference: z.string(),
+    row: z.string(), sku: z.string(), product: z.string(), quantity: z.string(), unit: z.string(), unitPrice: z.string(), discount: z.string(), tax: z.string(), lineTotal: z.string(),
+    subtotal: z.string(), additionalCharges: z.string(), grandTotal: z.string(), paid: z.string(), remaining: z.string(), signature: z.string(), customerSignature: z.string(),
+  }),
 });
 
 export const invoiceTemplateSchema = z.object({

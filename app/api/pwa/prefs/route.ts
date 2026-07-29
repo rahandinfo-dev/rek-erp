@@ -11,7 +11,9 @@ import {
 } from "@/lib/pwa/categories";
 
 const prefsSchema = z.object({
-  enabled: z.boolean().optional(),
+  pushEnabled: z.boolean().optional(),
+  soundEnabled: z.boolean().optional(),
+  enabled: z.boolean().optional(), // legacy push client
   categories: z.record(z.string(), z.boolean()).optional(),
   options: z
     .object({
@@ -32,17 +34,19 @@ export async function GET() {
     );
   }
 
-  const prefs = await db.notificationPushPrefs.findUnique({
-    where: { userId: user.id },
+  const prefs = await db.notificationPushPrefs.findFirst({
+    where: { userId: user.id, companyId: user.companyId },
   });
   const devices = await db.pushSubscription.count({
-    where: { userId: user.id },
+    where: { userId: user.id, companyId: user.companyId },
   });
 
   return NextResponse.json({
     success: true,
     data: {
+      pushEnabled: prefs?.enabled ?? false,
       enabled: prefs?.enabled ?? false,
+      soundEnabled: prefs?.soundEnabled ?? false,
       categories: parseCategoryMap(prefs?.categories ?? DEFAULT_PUSH_CATEGORIES),
       options: prefs?.options ?? { silent: false },
       deviceCount: devices,
@@ -78,8 +82,8 @@ export async function PUT(req: NextRequest) {
     );
   }
 
-  const existing = await db.notificationPushPrefs.findUnique({
-    where: { userId: user.id },
+  const existing = await db.notificationPushPrefs.findFirst({
+    where: { userId: user.id, companyId: user.companyId },
   });
 
   const nextCategories = parseCategoryMap({
@@ -97,19 +101,23 @@ export async function PUT(req: NextRequest) {
       silent: false,
     };
 
+  const nextPushEnabled = parsed.data.pushEnabled ?? parsed.data.enabled;
+
   const row = await db.notificationPushPrefs.upsert({
     where: { userId: user.id },
     create: {
       companyId: user.companyId,
       userId: user.id,
-      enabled: parsed.data.enabled ?? false,
+      enabled: nextPushEnabled ?? false,
+      soundEnabled: parsed.data.soundEnabled ?? false,
       categories: clean,
       options: optionsValue,
     },
     update: {
-      ...(parsed.data.enabled !== undefined
-        ? { enabled: parsed.data.enabled }
+      ...(nextPushEnabled !== undefined
+        ? { enabled: nextPushEnabled }
         : {}),
+      ...(parsed.data.soundEnabled !== undefined ? { soundEnabled: parsed.data.soundEnabled } : {}),
       categories: clean,
       ...(parsed.data.options !== undefined
         ? {
@@ -123,14 +131,16 @@ export async function PUT(req: NextRequest) {
   });
 
   // When disabling, drop subscriptions so OS stops background delivery.
-  if (parsed.data.enabled === false) {
+  if (nextPushEnabled === false) {
     await db.pushSubscription.deleteMany({ where: { userId: user.id } });
   }
 
   return NextResponse.json({
     success: true,
     data: {
+      pushEnabled: row.enabled,
       enabled: row.enabled,
+      soundEnabled: row.soundEnabled,
       categories: parseCategoryMap(row.categories),
       options: row.options,
     },

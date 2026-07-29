@@ -944,7 +944,8 @@ model NotificationPushPrefs {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  enabled Boolean @default(false)
+  enabled      Boolean @default(false)
+  soundEnabled Boolean @default(false)
 
   /// { LOW_STOCK, NEW_ORDERS, NEW_SALES, ... } boolean map
   categories Json
