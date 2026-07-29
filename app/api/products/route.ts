@@ -15,6 +15,7 @@ import { applyStockMovement } from "@/lib/inventory/movements";
 import { listProductsPage } from "@/lib/products/list";
 import { auditSafe } from "@/lib/audit/log";
 import { invalidateAfterProduct } from "@/lib/cache/invalidate";
+import { listProductSelectorOptions } from "@/lib/products/selector-query";
 
 export async function GET(req: NextRequest) {
   try {
@@ -41,31 +42,29 @@ export async function GET(req: NextRequest) {
 
     // Compact picker payload for Sales / Purchases forms.
     if (!usePagination) {
-      const products = await db.product.findMany({
-        where: { companyId, active: true },
-        select: {
-          id: true,
-          name: true,
-          sku: true,
-          barcode: true,
-          salePrice: true,
-          purchasePrice: true,
-          currentStock: true,
-          reservedStock: true,
-          unit: { select: { id: true, name: true, symbol: true } },
-        },
-        orderBy: { name: "asc" },
-        take: 500,
-      });
+      if (process.env.PRODUCT_SELECTOR_DEBUG === "true") {
+        console.info("[PRODUCT_SELECTOR_DEBUG] STEP 1 API request", {
+          route: "/api/products",
+          companyId,
+        });
+      }
+      const products = await listProductSelectorOptions(companyId);
+
+      if (process.env.PRODUCT_SELECTOR_DEBUG === "true") {
+        console.info("[PRODUCT_SELECTOR_DEBUG] STEP 4 API response count", products.length);
+      }
 
       return NextResponse.json(
         {
           success: true,
           data: products,
+          ...(process.env.PRODUCT_SELECTOR_DEBUG === "true"
+            ? { productSelectorDebug: true }
+            : {}),
         },
         {
           headers: {
-            "Cache-Control": "private, max-age=15, stale-while-revalidate=30",
+            "Cache-Control": "private, no-store",
           },
         }
       );

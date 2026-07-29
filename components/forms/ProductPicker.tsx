@@ -1,19 +1,15 @@
 "use client";
 import { formatNumber } from "@/lib/utils/format";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import {
+  filterProductOptions,
+  isProductSelectorDebugEnabled,
+  type ProductSelectorItem,
+} from "@/lib/products/selector";
 
-export type PickableProduct = {
-  id: string;
-  name: string;
-  sku: string;
-  barcode?: string | null;
-  salePrice?: string | number;
-  purchasePrice?: string | number;
-  currentStock?: string | number;
-  reservedStock?: string | number;
-};
+export type PickableProduct = ProductSelectorItem;
 
 type Props = {
   products: PickableProduct[];
@@ -39,17 +35,18 @@ export default function ProductPicker({
   const selected = products.find((p) => p.id === value);
 
   const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return products.slice(0, 40);
-    return products
-      .filter(
-        (p) =>
-          p.name.toLowerCase().includes(q) ||
-          p.sku.toLowerCase().includes(q) ||
-          (p.barcode || "").toLowerCase().includes(q)
-      )
-      .slice(0, 40);
+    const result = filterProductOptions(products, query);
+    if (isProductSelectorDebugEnabled()) {
+      console.info("[PRODUCT_SELECTOR_DEBUG] STEP 8 Search result count", result.length);
+    }
+    return result;
   }, [products, query]);
+
+  useEffect(() => {
+    if (open && isProductSelectorDebugEnabled()) {
+      console.info("[PRODUCT_SELECTOR_DEBUG] STEP 7 Render count", filtered.length);
+    }
+  }, [filtered.length, open]);
 
   return (
     <div className="relative min-w-0">
