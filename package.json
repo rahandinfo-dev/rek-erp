@@ -11,6 +11,7 @@
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test lib/**/*.test.ts",
+    "verify:erp-transactions": "node scripts/verify-erp-transactions.mjs",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:deploy": "prisma migrate deploy",

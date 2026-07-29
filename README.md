@@ -34,3 +34,22 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# ERP transaction diagnostics
+
+Sale and purchase writes have correlation-aware diagnostics. Verbose output is
+disabled by default and is enabled **only** when
+`ERP_TRANSACTION_DEBUG=true`. Logs contain operation/step identifiers and
+sanitized Prisma/PostgreSQL error metadata; request bodies, credentials,
+cookies, and authorization values are never logged.
+
+```bash
+ERP_TRANSACTION_DEBUG=true npm run dev
+npm run verify:erp-transactions
+```
+
+The verifier requires `DATABASE_URL`, never prints it, opens a read-only
+transaction, selects compatible fixture IDs, and checks stock aggregation,
+document-item, and duplicate-movement invariants. It neither migrates nor
+deletes data. If a write still fails, return the complete `ERP_OPERATION`
+entries for its correlation ID, from `*_PRE_01_REQUEST_START` through the
+first `FAILED` entry (including the sanitized `error` object).
