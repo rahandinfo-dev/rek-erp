@@ -181,7 +181,7 @@ export async function applyStockMovement(
     update: {},
   });
 
-  const balance = await tx.warehouseStock.findUniqueOrThrow({
+  let balance = await tx.warehouseStock.findUniqueOrThrow({
     where: {
       productId_warehouseId: {
         productId: input.productId,
@@ -190,12 +190,25 @@ export async function applyStockMovement(
     },
   });
 
-  const previousQty = num(balance.quantity);
-  const product = await tx.product.findFirst({
+  // Serialize movements for the same product before changing any warehouse
+  // row. Without this lock, concurrent movements in different warehouses can
+  // both aggregate an incomplete snapshot and the last Product update wins.
+  const locked = await tx.product.updateMany({
     where: { id: input.productId, companyId: input.companyId },
+    data: { currentStock: { increment: 0 } },
+  });
+  if (locked.count !== 1) throw new Error("PRODUCT_NOT_FOUND");
+  // The balance may have changed while this transaction waited for the
+  // product lock, so refresh it before deriving ledger previous/new values.
+  balance = await tx.warehouseStock.findUniqueOrThrow({
+    where: { id: balance.id },
+  });
+  const previousQty = num(balance.quantity);
+  const product = await tx.product.findUniqueOrThrow({
+    where: { id: input.productId },
     select: { currentStock: true },
   });
-  const productPrevious = num(product?.currentStock);
+  const productPrevious = num(product.currentStock);
 
   if (input.auditOnly) {
     const row = await tx.inventoryTransaction.create({

@@ -13,6 +13,7 @@ import {
   createErpTrace,
   publicErpError,
 } from "@/lib/observability/erp-operation";
+import { generatePurchaseNumberInTransaction } from "@/lib/numbering/engine";
 
 export async function GET() {
   try {
@@ -89,7 +90,13 @@ export async function POST(req: NextRequest) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { success: false, errors: validation.error.flatten() },
+        {
+          success: false,
+          code: "INVALID_PAYLOAD",
+          message: validation.error.issues[0]?.message || "زانیارییەکان نادروستن.",
+          errors: validation.error.flatten(),
+          correlationId: trace.correlationId,
+        },
         { status: 400 },
       );
     }
@@ -151,25 +158,28 @@ export async function POST(req: NextRequest) {
     }
 
     const subtotal = roundMoney(
-      data.items.reduce((sum, item) => sum + item.total, 0),
+      data.items.reduce(
+        (sum, item) => sum + roundMoney(item.quantity * item.unitPrice),
+        0,
+      ),
     );
     const total = roundMoney(subtotal - data.discount + data.tax);
 
-    const wh = await db.warehouse.findFirst({
-      where: { id: data.warehouseId, companyId },
-      select: { code: true },
-    });
     trace.ok(activeStep, stepStarted);
     activeStep = "PURCHASE_PRE_19_NUMBERING_START";
     stepStarted = trace.start(activeStep);
-    const { generatePurchaseNumber } = await import("@/lib/numbering/engine");
-    const allocated = await generatePurchaseNumber(companyId, wh?.code, null);
-    const invoiceNo = allocated.value;
-
     trace.ok(activeStep, stepStarted);
     activeStep = "PURCHASE_TX_01_START";
     stepStarted = trace.start(activeStep);
     const purchase = await db.$transaction(async (tx) => {
+      trace.ok(activeStep, stepStarted);
+      activeStep = "PURCHASE_TX_01_NUMBERING_START";
+      stepStarted = trace.start(activeStep);
+      const { value: invoiceNo } = await generatePurchaseNumberInTransaction(
+        tx,
+        companyId,
+        warehouse.code,
+      );
       trace.ok(activeStep, stepStarted);
       activeStep = "PURCHASE_TX_02_HEADER_CREATE_START";
       stepStarted = trace.start(activeStep);
@@ -191,7 +201,7 @@ export async function POST(req: NextRequest) {
               productId: item.productId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
-              total: item.total,
+              total: roundMoney(item.quantity * item.unitPrice),
               currency: item.currency || "IQD",
             })),
           },

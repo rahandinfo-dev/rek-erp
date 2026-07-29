@@ -1214,7 +1214,7 @@ model Customer {
 model Purchase {
   id String @id @default(cuid())
 
-  invoiceNo String @unique
+  invoiceNo String
 
   supplierId String
   supplier   Supplier @relation(fields: [supplierId], references: [id])
@@ -1240,6 +1240,8 @@ model Purchase {
   updatedAt DateTime @updatedAt
 
   items PurchaseItem[]
+
+  @@unique([companyId, invoiceNo])
 }
 
 model PurchaseItem {
@@ -1386,7 +1388,7 @@ model StockTransferItem {
 model Sale {
   id String @id @default(cuid())
 
-  invoiceNo String @unique
+  invoiceNo String
 
   customerId String
   customer   Customer @relation(fields: [customerId], references: [id])
@@ -1415,13 +1417,15 @@ model Sale {
 
   items   SaleItem[]
   invoice Invoice?
+
+  @@unique([companyId, invoiceNo])
 }
 
 /// Permanent invoice snapshot created from every completed sale. Never hard-deleted.
 model Invoice {
   id String @id @default(cuid())
 
-  invoiceNo String @unique
+  invoiceNo String
 
   saleId String @unique
   sale   Sale   @relation(fields: [saleId], references: [id], onDelete: Restrict)
@@ -1491,6 +1495,7 @@ model Invoice {
   updatedAt DateTime @updatedAt
 
   @@index([companyId, createdAt])
+  @@unique([companyId, invoiceNo])
   @@index([companyId, invoiceDate])
   @@index([customerId])
 }
@@ -1930,4 +1935,3 @@ model AiAutomationRule {
   @@index([companyId, enabled])
   @@index([companyId, nextRunAt])
 }
-

@@ -173,6 +173,75 @@ async function allocateSequence(
   return counter.nextValue - 1;
 }
 
+async function generateDocumentNumberInTransaction(
+  tx: Tx,
+  moduleKey: "sales" | "purchases",
+  companyId: string,
+  warehouseCode?: string | null,
+) {
+  const defaults = DEFAULT_RULES[moduleKey];
+  const row = await tx.numberingRule.upsert({
+    where: { companyId_moduleKey: { companyId, moduleKey } },
+    create: { companyId, ...defaults },
+    update: {},
+  });
+  const rule = ruleFromDb(row);
+  const company = await tx.company.findUniqueOrThrow({
+    where: { id: companyId },
+    select: { code: true },
+  });
+  const now = new Date();
+  const periodKey = periodKeyFor(
+    rule.resetPolicy,
+    now,
+    rule.fiscalYearStartMonth,
+  );
+
+  // Allocation deliberately shares the document transaction. A later stock,
+  // invoice, or accounting failure therefore rolls the counter back too.
+  for (let attempt = 0; attempt < 8; attempt++) {
+    const sequential = await allocateSequence(
+      tx,
+      companyId,
+      moduleKey,
+      periodKey,
+      rule.startFrom,
+    );
+    const value = renderFormat(rule, sequential, {
+      companyCode: company.code || "CO",
+      warehouseCode,
+      now,
+    });
+    const taken = moduleKey === "sales"
+      ? await tx.sale.findUnique({
+          where: { companyId_invoiceNo: { companyId, invoiceNo: value } },
+          select: { id: true },
+        })
+      : await tx.purchase.findUnique({
+          where: { companyId_invoiceNo: { companyId, invoiceNo: value } },
+          select: { id: true },
+        });
+    if (!taken) return { value, sequential, fromOverride: false as const };
+  }
+  throw new Error("Unable to allocate a unique document number");
+}
+
+export function generateSaleNumberInTransaction(
+  tx: Tx,
+  companyId: string,
+  warehouseCode?: string | null,
+) {
+  return generateDocumentNumberInTransaction(tx, "sales", companyId, warehouseCode);
+}
+
+export function generatePurchaseNumberInTransaction(
+  tx: Tx,
+  companyId: string,
+  warehouseCode?: string | null,
+) {
+  return generateDocumentNumberInTransaction(tx, "purchases", companyId, warehouseCode);
+}
+
 /**
  * Generate next document number. Collision-safe under concurrency via
  * unique counter rows + increment. Retries if rendered value collides
@@ -267,7 +336,7 @@ export async function generateSaleNumber(
     { companyId, warehouseCode, override },
     async (value) => {
       const hit = await db.sale.findFirst({
-        where: { invoiceNo: value },
+        where: { companyId, invoiceNo: value },
         select: { id: true },
       });
       return Boolean(hit);
@@ -285,7 +354,7 @@ export async function generatePurchaseNumber(
     { companyId, warehouseCode, override },
     async (value) => {
       const hit = await db.purchase.findFirst({
-        where: { invoiceNo: value },
+        where: { companyId, invoiceNo: value },
         select: { id: true },
       });
       return Boolean(hit);
