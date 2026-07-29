@@ -3,6 +3,7 @@ import { currencySchema } from "@/lib/validators/sale";
 import {
   erpNumber,
   erpPositiveNumber,
+  optionalEntityId,
   optionalTrimmedText,
 } from "@/lib/validators/erp-normalization";
 
@@ -17,10 +18,7 @@ export const purchaseItemSchema = z.object({
 export const createPurchaseSchema = z
   .object({
     /** Empty → walk-in supplier */
-    supplierId: z
-      .union([z.string(), z.literal(""), z.null(), z.undefined()])
-      .transform((v) => (typeof v === "string" ? v.trim() : ""))
-      .pipe(z.string()),
+    supplierId: optionalEntityId,
     warehouseId: z.string().min(1, "کۆگا پێویستە"),
     purchaseDate: z.coerce.date(),
     discount: erpNumber("داشکاندن نابێت نەرێنی بێت").default(0),

@@ -33,3 +33,14 @@ export const optionalTrimmedText = z.preprocess(
   (value) => (value == null ? undefined : String(value).trim() || undefined),
   z.string().max(2000, "تێبینی زۆر درێژە").optional(),
 );
+
+/**
+ * Party selectors intentionally allow an empty value for walk-in transactions.
+ * JSON.stringify omits `undefined`, while restored drafts and older clients can
+ * send either null or an empty string, so all four wire representations must
+ * normalize to the same value before the route resolves the walk-in party.
+ */
+export const optionalEntityId = z.preprocess(
+  (value) => (typeof value === "string" ? value.trim() : value ?? ""),
+  z.string(),
+);
