@@ -64,11 +64,11 @@ export async function POST(req: NextRequest) {
     "SALE",
     req.headers.get("x-correlation-id") || undefined,
   );
-  let activeStep = "SALE_01_REQUEST_START";
+  let activeStep = "SALES_STEP_01_REQUEST";
   let stepStarted = trace.start(activeStep);
   try {
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALE_02_PARSE_BODY";
+    activeStep = "SALES_STEP_02_PARSE";
     stepStarted = trace.start(activeStep);
     const user = await getCurrentUser();
 
@@ -82,7 +82,7 @@ export async function POST(req: NextRequest) {
     const companyId = user.companyId;
     const body = await req.json();
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALE_03_VALIDATE";
+    activeStep = "SALES_STEP_03_VALIDATE";
     stepStarted = trace.start(activeStep);
     const validation = createSaleSchema.safeParse(body);
 
@@ -95,11 +95,11 @@ export async function POST(req: NextRequest) {
 
     const data = validation.data;
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALE_04_COMPANY";
+    activeStep = "SALES_STEP_04_COMPANY";
     stepStarted = trace.start(activeStep);
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALE_05_CUSTOMER";
+    activeStep = "SALES_STEP_05_PARTNER";
     stepStarted = trace.start(activeStep);
 
     const resolvedCustomerId =
@@ -169,7 +169,7 @@ export async function POST(req: NextRequest) {
     }
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALE_06_ITEMS";
+    activeStep = "SALES_STEP_06_ITEMS";
     stepStarted = trace.start(activeStep);
 
     const productIds = data.items.map((item) => item.productId);
@@ -219,18 +219,18 @@ export async function POST(req: NextRequest) {
     const total = roundMoney(subtotal - data.discount + data.tax);
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALE_07_NUMBERING";
+    activeStep = "SALES_STEP_07_NUMBERING";
     stepStarted = trace.start(activeStep);
     const { generateSaleNumber } = await import("@/lib/numbering/engine");
     const allocated = await generateSaleNumber(companyId, warehouse.code, null);
     const invoiceNo = allocated.value;
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALE_08_TRANSACTION_START";
+    activeStep = "SALES_STEP_08_TRANSACTION_BEGIN";
     stepStarted = trace.start(activeStep);
     const { sale, invoice } = await db.$transaction(async (tx) => {
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALE_09_MASTER_CREATE";
+      activeStep = "SALES_STEP_09_MASTER_RECORD";
       stepStarted = trace.start(activeStep);
       const created = await tx.sale.create({
         data: {
@@ -264,10 +264,10 @@ export async function POST(req: NextRequest) {
       });
 
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALE_10_ITEMS_CREATE";
+      activeStep = "SALES_STEP_10_ITEMS";
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALE_11_STOCK_UPDATE";
+      activeStep = "SALES_STEP_11_STOCK";
       stepStarted = trace.start(activeStep);
 
       for (const item of data.items) {
@@ -299,10 +299,10 @@ export async function POST(req: NextRequest) {
       }
 
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALE_12_INVENTORY";
+      activeStep = "SALES_STEP_12_LEDGER";
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
-      activeStep = "SALE_13_ACCOUNTING";
+      activeStep = "SALES_STEP_12_LEDGER";
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
 
@@ -318,7 +318,7 @@ export async function POST(req: NextRequest) {
     });
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "SALE_14_NOTIFICATION";
+    activeStep = "SALES_STEP_13_NOTIFICATIONS";
     stepStarted = trace.start(activeStep);
 
     await notifySafe({
@@ -391,7 +391,7 @@ export async function POST(req: NextRequest) {
     invalidateAfterSale(companyId);
 
     trace.ok(activeStep, stepStarted);
-    trace.committed("SALE_15_COMMIT");
+    trace.committed("SALES_STEP_14_COMMIT");
 
     return NextResponse.json({
       success: true,

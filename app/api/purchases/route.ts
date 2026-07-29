@@ -62,11 +62,11 @@ export async function POST(req: NextRequest) {
     "PURCHASE",
     req.headers.get("x-correlation-id") || undefined,
   );
-  let activeStep = "PURCHASE_01_REQUEST_START";
+  let activeStep = "PURCHASE_STEP_01_REQUEST";
   let stepStarted = trace.start(activeStep);
   try {
     trace.ok(activeStep, stepStarted);
-    activeStep = "PURCHASE_02_PARSE_BODY";
+    activeStep = "PURCHASE_STEP_02_PARSE";
     stepStarted = trace.start(activeStep);
     const user = await getCurrentUser();
     const companyId = user?.companyId;
@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
     trace.ok(activeStep, stepStarted);
-    activeStep = "PURCHASE_03_VALIDATE";
+    activeStep = "PURCHASE_STEP_03_VALIDATE";
     stepStarted = trace.start(activeStep);
     const validation = createPurchaseSchema.safeParse(body);
 
@@ -93,11 +93,11 @@ export async function POST(req: NextRequest) {
 
     const data = validation.data;
     trace.ok(activeStep, stepStarted);
-    activeStep = "PURCHASE_04_COMPANY";
+    activeStep = "PURCHASE_STEP_04_COMPANY";
     stepStarted = trace.start(activeStep);
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "PURCHASE_05_SUPPLIER";
+    activeStep = "PURCHASE_STEP_05_PARTNER";
     stepStarted = trace.start(activeStep);
 
     const resolvedSupplierId =
@@ -127,7 +127,7 @@ export async function POST(req: NextRequest) {
     }
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "PURCHASE_06_ITEMS";
+    activeStep = "PURCHASE_STEP_06_ITEMS";
     stepStarted = trace.start(activeStep);
 
     const productIds = data.items.map((item) => item.productId);
@@ -156,18 +156,18 @@ export async function POST(req: NextRequest) {
       select: { code: true },
     });
     trace.ok(activeStep, stepStarted);
-    activeStep = "PURCHASE_07_NUMBERING";
+    activeStep = "PURCHASE_STEP_07_NUMBERING";
     stepStarted = trace.start(activeStep);
     const { generatePurchaseNumber } = await import("@/lib/numbering/engine");
     const allocated = await generatePurchaseNumber(companyId, wh?.code, null);
     const invoiceNo = allocated.value;
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "PURCHASE_08_TRANSACTION_START";
+    activeStep = "PURCHASE_STEP_08_TRANSACTION_BEGIN";
     stepStarted = trace.start(activeStep);
     const purchase = await db.$transaction(async (tx) => {
       trace.ok(activeStep, stepStarted);
-      activeStep = "PURCHASE_09_MASTER_CREATE";
+      activeStep = "PURCHASE_STEP_09_MASTER_RECORD";
       stepStarted = trace.start(activeStep);
       const created = await tx.purchase.create({
         data: {
@@ -200,10 +200,10 @@ export async function POST(req: NextRequest) {
       });
 
       trace.ok(activeStep, stepStarted);
-      activeStep = "PURCHASE_10_ITEMS_CREATE";
+      activeStep = "PURCHASE_STEP_10_ITEMS";
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
-      activeStep = "PURCHASE_11_STOCK_UPDATE";
+      activeStep = "PURCHASE_STEP_11_STOCK";
       stepStarted = trace.start(activeStep);
 
       for (const item of data.items) {
@@ -233,10 +233,10 @@ export async function POST(req: NextRequest) {
       }
 
       trace.ok(activeStep, stepStarted);
-      activeStep = "PURCHASE_12_INVENTORY";
+      activeStep = "PURCHASE_STEP_12_LEDGER";
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
-      activeStep = "PURCHASE_13_ACCOUNTING";
+      activeStep = "PURCHASE_STEP_12_LEDGER";
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
 
@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
     });
 
     trace.ok(activeStep, stepStarted);
-    activeStep = "PURCHASE_14_NOTIFICATION";
+    activeStep = "PURCHASE_STEP_13_NOTIFICATIONS";
     stepStarted = trace.start(activeStep);
 
     await notifySafe({
@@ -304,7 +304,7 @@ export async function POST(req: NextRequest) {
     invalidateAfterPurchase(companyId);
 
     trace.ok(activeStep, stepStarted);
-    trace.committed("PURCHASE_15_COMMIT");
+    trace.committed("PURCHASE_STEP_14_COMMIT");
 
     return NextResponse.json({
       success: true,
