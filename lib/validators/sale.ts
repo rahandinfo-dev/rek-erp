@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   erpNumber,
   erpPositiveNumber,
+  optionalEntityId,
   optionalTrimmedText,
 } from "@/lib/validators/erp-normalization";
 
@@ -19,10 +20,7 @@ export const saleItemSchema = z.object({
 export const createSaleSchema = z
   .object({
     /** Empty / omitted → walk-in customer */
-    customerId: z
-      .union([z.string(), z.literal(""), z.null(), z.undefined()])
-      .transform((v) => (typeof v === "string" ? v.trim() : ""))
-      .pipe(z.string()),
+    customerId: optionalEntityId,
     warehouseId: z.string().min(1, "کۆگا پێویستە"),
     saleDate: z.coerce.date(),
     discount: erpNumber("داشکاندن نابێت نەرێنی بێت").default(0),
