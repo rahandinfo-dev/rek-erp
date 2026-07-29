@@ -9,6 +9,10 @@ import { applyStockMovement } from "@/lib/inventory/movements";
 import { ensureWalkInSupplier } from "@/lib/parties/walk-in";
 import { auditSafe } from "@/lib/audit/log";
 import { invalidateAfterPurchase } from "@/lib/cache/invalidate";
+import {
+  createErpTrace,
+  publicErpError,
+} from "@/lib/observability/erp-operation";
 
 export async function GET() {
   try {
@@ -17,7 +21,7 @@ export async function GET() {
     if (!companyId) {
       return NextResponse.json(
         { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -48,38 +52,56 @@ export async function GET() {
     console.error("GET PURCHASES ERROR:", error);
     return NextResponse.json(
       { success: false, message: "هەڵەیەک ڕوویدا." },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(req: NextRequest) {
+  const trace = createErpTrace(
+    "PURCHASE",
+    req.headers.get("x-correlation-id") || undefined,
+  );
+  let activeStep = "PURCHASE_01_REQUEST_START";
+  let stepStarted = trace.start(activeStep);
   try {
+    trace.ok(activeStep, stepStarted);
+    activeStep = "PURCHASE_02_PARSE_BODY";
+    stepStarted = trace.start(activeStep);
     const user = await getCurrentUser();
     const companyId = user?.companyId;
 
     if (!user || !companyId) {
       return NextResponse.json(
         { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const body = await req.json();
+    trace.ok(activeStep, stepStarted);
+    activeStep = "PURCHASE_03_VALIDATE";
+    stepStarted = trace.start(activeStep);
     const validation = createPurchaseSchema.safeParse(body);
 
     if (!validation.success) {
       return NextResponse.json(
         { success: false, errors: validation.error.flatten() },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const data = validation.data;
+    trace.ok(activeStep, stepStarted);
+    activeStep = "PURCHASE_04_COMPANY";
+    stepStarted = trace.start(activeStep);
+
+    trace.ok(activeStep, stepStarted);
+    activeStep = "PURCHASE_05_SUPPLIER";
+    stepStarted = trace.start(activeStep);
 
     const resolvedSupplierId =
-      data.supplierId ||
-      (await ensureWalkInSupplier(companyId)).id;
+      data.supplierId || (await ensureWalkInSupplier(companyId)).id;
 
     const [supplier, warehouse] = await Promise.all([
       db.supplier.findFirst({
@@ -93,16 +115,20 @@ export async function POST(req: NextRequest) {
     if (!supplier) {
       return NextResponse.json(
         { success: false, message: "دابینکەر نەدۆزرایەوە." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!warehouse) {
       return NextResponse.json(
         { success: false, message: "کۆگا نەدۆزرایەوە." },
-        { status: 400 }
+        { status: 400 },
       );
     }
+
+    trace.ok(activeStep, stepStarted);
+    activeStep = "PURCHASE_06_ITEMS";
+    stepStarted = trace.start(activeStep);
 
     const productIds = data.items.map((item) => item.productId);
     const products = await db.product.findMany({
@@ -116,12 +142,12 @@ export async function POST(req: NextRequest) {
     if (products.length !== new Set(productIds).size) {
       return NextResponse.json(
         { success: false, message: "هەندێک بەرهەم نادروستن یان ناچالاکن." },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const subtotal = roundMoney(
-      data.items.reduce((sum, item) => sum + item.total, 0)
+      data.items.reduce((sum, item) => sum + item.total, 0),
     );
     const total = roundMoney(subtotal - data.discount + data.tax);
 
@@ -129,15 +155,20 @@ export async function POST(req: NextRequest) {
       where: { id: data.warehouseId, companyId },
       select: { code: true },
     });
+    trace.ok(activeStep, stepStarted);
+    activeStep = "PURCHASE_07_NUMBERING";
+    stepStarted = trace.start(activeStep);
     const { generatePurchaseNumber } = await import("@/lib/numbering/engine");
-    const allocated = await generatePurchaseNumber(
-      companyId,
-      wh?.code,
-      null
-    );
+    const allocated = await generatePurchaseNumber(companyId, wh?.code, null);
     const invoiceNo = allocated.value;
 
+    trace.ok(activeStep, stepStarted);
+    activeStep = "PURCHASE_08_TRANSACTION_START";
+    stepStarted = trace.start(activeStep);
     const purchase = await db.$transaction(async (tx) => {
+      trace.ok(activeStep, stepStarted);
+      activeStep = "PURCHASE_09_MASTER_CREATE";
+      stepStarted = trace.start(activeStep);
       const created = await tx.purchase.create({
         data: {
           invoiceNo,
@@ -168,6 +199,13 @@ export async function POST(req: NextRequest) {
         },
       });
 
+      trace.ok(activeStep, stepStarted);
+      activeStep = "PURCHASE_10_ITEMS_CREATE";
+      stepStarted = trace.start(activeStep);
+      trace.ok(activeStep, stepStarted);
+      activeStep = "PURCHASE_11_STOCK_UPDATE";
+      stepStarted = trace.start(activeStep);
+
       for (const item of data.items) {
         await tx.product.update({
           where: { id: item.productId },
@@ -194,8 +232,20 @@ export async function POST(req: NextRequest) {
         });
       }
 
+      trace.ok(activeStep, stepStarted);
+      activeStep = "PURCHASE_12_INVENTORY";
+      stepStarted = trace.start(activeStep);
+      trace.ok(activeStep, stepStarted);
+      activeStep = "PURCHASE_13_ACCOUNTING";
+      stepStarted = trace.start(activeStep);
+      trace.ok(activeStep, stepStarted);
+
       return created;
     });
+
+    trace.ok(activeStep, stepStarted);
+    activeStep = "PURCHASE_14_NOTIFICATION";
+    stepStarted = trace.start(activeStep);
 
     await notifySafe({
       companyId,
@@ -236,7 +286,7 @@ export async function POST(req: NextRequest) {
 
     await notifyStockLevels(
       companyId,
-      data.items.map((item) => item.productId)
+      data.items.map((item) => item.productId),
     );
 
     await auditSafe({
@@ -253,6 +303,9 @@ export async function POST(req: NextRequest) {
 
     invalidateAfterPurchase(companyId);
 
+    trace.ok(activeStep, stepStarted);
+    trace.committed("PURCHASE_15_COMMIT");
+
     return NextResponse.json({
       success: true,
       data: purchase,
@@ -260,9 +313,15 @@ export async function POST(req: NextRequest) {
     });
   } catch (error) {
     console.error("CREATE PURCHASE ERROR:", error);
+    trace.failed(activeStep, stepStarted, error);
+    const response = publicErpError(error);
     return NextResponse.json(
-      { success: false, message: "هەڵەیەک ڕوویدا." },
-      { status: 500 }
+      {
+        success: false,
+        message: response.message,
+        correlationId: trace.correlationId,
+      },
+      { status: response.status },
     );
   }
 }
