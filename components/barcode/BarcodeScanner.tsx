@@ -210,9 +210,18 @@ export default function BarcodeScanner({
     };
   }, [cameraOpen, cameraRegionId, handleCode]);
 
-  function submitSearch(e: React.FormEvent) {
-    e.preventDefault();
+  function submitSearch() {
     void handleCode(query);
+  }
+
+  function onSearchKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+
+    // BarcodeScanner is commonly rendered inside an invoice form. Keep Enter
+    // local to barcode search so it cannot submit the sale/purchase form.
+    e.preventDefault();
+    e.stopPropagation();
+    submitSearch();
   }
 
   async function onImageFile(file: File) {
@@ -240,8 +249,10 @@ export default function BarcodeScanner({
 
   return (
     <div className={`space-y-3 ${className}`}>
-      <form
-        onSubmit={submitSearch}
+      <div
+        role="search"
+        aria-label="گەڕانی بارکۆد"
+        aria-busy={busy}
         className={`flex flex-col gap-2 sm:flex-row sm:items-center ${
           compact ? "" : ""
         }`}
@@ -255,6 +266,7 @@ export default function BarcodeScanner({
             ref={inputRef}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={onSearchKeyDown}
             placeholder={placeholder}
             autoComplete="off"
             inputMode="search"
@@ -264,7 +276,8 @@ export default function BarcodeScanner({
         </div>
         <div className="flex flex-wrap gap-2">
           <button
-            type="submit"
+            type="button"
+            onClick={submitSearch}
             disabled={busy || !query.trim()}
             className="inline-flex h-11 items-center gap-2 rounded-2xl bg-primary px-4 text-sm font-bold text-primary-foreground disabled:opacity-50"
           >
@@ -301,7 +314,7 @@ export default function BarcodeScanner({
             }}
           />
         </div>
-      </form>
+      </div>
 
       {!compact ? (
         <p className="text-xs text-muted-foreground">
