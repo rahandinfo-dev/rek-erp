@@ -1658,13 +1658,15 @@ html:not(.dark) .border-zinc-200 {
 .invoice-footer > p { margin: 3px 0; }.invoice-policy { border: 1px solid #000; padding: 6px; text-align: right; }
 .invoice-signatures { display: grid; grid-template-columns: 1fr 1fr; gap: 16mm; margin-top: 12mm; }.invoice-signatures span { padding-top: 4px; border-top: 1px solid #000; }
 .invoice-print-meta { display: flex; justify-content: space-between; margin-top: 8mm; font-size: 9px; }
-.invoice-thermal { width: 80mm; max-width: 100%; margin: auto; padding: 4mm; background: #fff; color: #000; font-size: 11px; border-radius: 0; }.invoice-thermal h2, .invoice-thermal p { text-align: center; }.thermal-line { display: flex; justify-content: space-between; gap: 6px; padding: 3px 0; }
+.invoice-thermal { page: thermal; width: 80mm; max-width: 100%; margin: auto; padding: 4mm; overflow-wrap: anywhere; background: #fff; color: #000; font-size: 11px; border-radius: 0; box-shadow: none; }.invoice-thermal *, .invoice-thermal *::before, .invoice-thermal *::after { box-sizing: border-box; border-radius: 0 !important; box-shadow: none !important; }.invoice-thermal h2, .invoice-thermal p { margin: 2px 0; text-align: center; }.thermal-meta, .thermal-item, .thermal-totals > div { display: flex; justify-content: space-between; gap: 6px; padding: 3px 0; }.thermal-item span { min-width: 0; }.thermal-item b, .thermal-totals b, .thermal-totals strong { direction: ltr; white-space: nowrap; }.thermal-customer { padding: 4px 0; }
 @page { size: A4 portrait; margin: 0; }
+@page thermal { size: 80mm auto; margin: 0; }
 @media print {
   body { margin: 0 !important; background: #fff !important; }
   body * { visibility: hidden; }
   #invoice-preview, #invoice-preview * { visibility: visible; }
   #invoice-preview { position: absolute !important; inset: 0 !important; width: 100% !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
   .invoice-a4 { width: 210mm; min-height: 297mm; margin: 0; border: 0; padding: 9mm; }
+  .invoice-thermal { width: 80mm; max-width: 80mm; margin: 0; padding: 3mm; overflow: hidden; }
   nav, aside, header[data-dashboard-header], button, .no-print { display: none !important; }
 }

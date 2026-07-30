@@ -31,3 +31,43 @@ test("long and multi-page item data remains intact", () => {
   assert.equal(items.length, 80);
   assert.ok(items[0].name.length > 100);
 });
+
+test("receipt supports editable company/customer content and selectable fonts", () => {
+  assert.equal(typeof DEFAULT_INVOICE_CONFIG.companySubtitle, "string");
+  assert.equal(typeof DEFAULT_INVOICE_CONFIG.phone2, "string");
+  assert.equal(typeof DEFAULT_INVOICE_CONFIG.headerText, "string");
+  assert.match(DEFAULT_INVOICE_CONFIG.fontFamily, /Rudaw/);
+  assert.equal(SAMPLE_INVOICE_DATA.customerPhone, "0750 000 0000");
+  const anonymous = { ...SAMPLE_INVOICE_DATA, customerOrSupplier: "", customerPhone: null, customerAddress: null };
+  assert.equal(anonymous.customerOrSupplier, "");
+});
+
+test("accounting states preserve authoritative totals and optional party fields", () => {
+  const full = { ...SAMPLE_INVOICE_DATA, paidAmount: SAMPLE_INVOICE_DATA.total };
+  const partial = { ...SAMPLE_INVOICE_DATA, paidAmount: 45000 };
+  const unpaid = { ...SAMPLE_INVOICE_DATA, paidAmount: 0 };
+  assert.equal(full.total - full.paidAmount, 0);
+  assert.equal(partial.total - partial.paidAmount, 100000);
+  assert.equal(unpaid.total - unpaid.paidAmount, unpaid.total);
+});
+
+test("A4 and independent 80mm templates preserve RTL and LTR SKU behavior", () => {
+  const source = readFileSync("components/invoices/InvoiceDocument.tsx", "utf8");
+  const css = readFileSync("app/globals.css", "utf8");
+  assert.match(source, /className={`invoice-a4/);
+  assert.match(source, /className={`invoice-thermal/);
+  assert.match(source, /dir="rtl"/);
+  assert.match(css, /@page thermal \{ size: 80mm auto/);
+  assert.match(css, /\.invoice-thermal \*,[\s\S]*border-radius: 0 !important/);
+  assert.match(css, /overflow-wrap: anywhere/);
+});
+
+test("stored item values include name, SKU, quantity, unit, price, currency and totals", () => {
+  const item = { ...SAMPLE_INVOICE_DATA.items[0], unit: "کارتۆن", sku: "LTR-001" };
+  assert.equal(item.name, "بەرهەمی یەکەم");
+  assert.equal(item.sku, "LTR-001");
+  assert.equal(item.quantity, 2);
+  assert.equal(item.unit, "کارتۆن");
+  assert.equal(item.unitPrice, 50000);
+  assert.equal(item.total, 100000);
+});

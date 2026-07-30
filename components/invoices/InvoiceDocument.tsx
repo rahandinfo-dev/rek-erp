@@ -42,4 +42,14 @@ export default function InvoiceDocument({ config, size, company, data, className
   </article>;
 }
 
-function Thermal({ config, company, data, className }: Props) { return <article className={`invoice-thermal ${className || ""}`} dir="rtl"><h2>{company.name}</h2><p>{company.invoiceHeader || config.headerText}</p><p>{data.invoiceNo} · {data.date}</p><hr/>{data.items.map((item, i) => <div className="thermal-line" key={i}><span>{item.name} × {item.quantity}</span><b>{money(item.total, data.currency)}</b></div>)}<hr/><div className="thermal-line"><b>{config.labels.grandTotal}</b><b>{money(data.total, data.currency)}</b></div><p>{company.invoiceFooter || config.footerText}</p></article>; }
+function Thermal({ config, company, data, className }: Props) {
+  const paid = data.paidAmount ?? data.total;
+  return <article className={`invoice-thermal ${className || ""}`} dir="rtl">
+    <header><h2>{company.name}</h2>{config.companySubtitle ? <p>{config.companySubtitle}</p> : null}<p>{company.invoiceHeader || config.headerText}</p></header>
+    <div className="thermal-meta"><span>{data.invoiceNo}</span><span>{data.date} {data.time}</span></div>
+    {data.customerOrSupplier ? <div className="thermal-customer"><b>{config.labels.customerName}:</b> {data.customerOrSupplier}{data.customerPhone ? <><br/>{data.customerPhone}</> : null}{data.customerAddress ? <><br/>{data.customerAddress}</> : null}</div> : null}
+    <hr/>{data.items.map((item, i) => <div className="thermal-item" key={`${item.sku || item.name}-${i}`}><span>{item.name} × {item.quantity} {item.unit || "دانە"}</span><b>{money(item.total, data.currency)}</b></div>)}<hr/>
+    <div className="thermal-totals"><div><span>{config.labels.subtotal}</span><b>{money(data.subtotal, data.currency)}</b></div>{data.discount ? <div><span>{config.labels.discount}</span><b>{money(data.discount, data.currency)}</b></div> : null}{data.tax ? <div><span>{config.labels.tax}</span><b>{money(data.tax, data.currency)}</b></div> : null}<div><strong>{config.labels.grandTotal}</strong><strong>{money(data.total, data.currency)}</strong></div><div><span>{config.labels.paid}</span><b>{money(paid, data.currency)}</b></div><div><span>{config.labels.remaining}</span><b>{money(Math.max(0, data.total - paid), data.currency)}</b></div></div>
+    <footer><p>{company.invoiceFooter || config.footerText}</p>{config.termsEnabled && config.termsText ? <p>{config.termsText}</p> : null}</footer>
+  </article>;
+}

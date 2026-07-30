@@ -1,6 +1,8 @@
 "use client";
 
 import { urlBase64ToUint8Array } from "@/lib/pwa/detect";
+import { runPushEnableFlow, type PushEnableFailure } from "@/lib/pwa/push-flow";
+export type { PushEnableFailure } from "@/lib/pwa/push-flow";
 
 const SW_URL = "/sw.js";
 
@@ -50,7 +52,7 @@ export async function subscribeToPush(
 
   const res = await fetch("/api/pwa/vapid", { cache: "no-store" });
   const json = await res.json();
-  if (!json.success || !json.data?.publicKey) return null;
+  if (!res.ok || !json.success || !json.data?.publicKey) return null;
 
   const sub = await registration.pushManager.subscribe({
     userVisibleOnly: true,
@@ -93,7 +95,7 @@ async function syncSubscriptionToServer(sub: PushSubscription) {
   const json = sub.toJSON();
   if (!json.endpoint || !json.keys?.p256dh || !json.keys?.auth) return;
 
-  await fetch("/api/pwa/subscribe", {
+  const response = await fetch("/api/pwa/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -105,6 +107,30 @@ async function syncSubscriptionToServer(sub: PushSubscription) {
       userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
     }),
   });
+  if (!response.ok) throw new Error("SUBSCRIPTION_PERSIST_FAILED");
+}
+
+/** One testable enable flow; it never reads or mutates the sound preference. */
+export async function enablePush(
+  dependencies: {
+    permission: () => Promise<NotificationPermission>;
+    registration: () => Promise<ServiceWorkerRegistration | null>;
+    register: () => Promise<ServiceWorkerRegistration | null>;
+    subscribe: (registration: ServiceWorkerRegistration) => Promise<PushSubscription | null>;
+    supported: () => boolean;
+  } = {
+    permission: requestNotificationPermission,
+    registration: getRegistration,
+    register: registerServiceWorker,
+    subscribe: subscribeToPush,
+    supported: () =>
+      typeof window !== "undefined" &&
+      "serviceWorker" in navigator &&
+      "PushManager" in window &&
+      typeof Notification !== "undefined",
+  }
+): Promise<{ ok: true; subscription: PushSubscription } | { ok: false; reason: PushEnableFailure }> {
+  return runPushEnableFlow(dependencies);
 }
 
 export async function requestNotificationPermission(): Promise<NotificationPermission> {
