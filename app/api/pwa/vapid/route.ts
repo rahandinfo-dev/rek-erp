@@ -7,7 +7,7 @@ export async function GET() {
   const key = getVapidPublicKey();
   if (!key) {
     return NextResponse.json(
-      { success: false, message: tServer.t("api.pushNotConfigured") },
+      { success: false, message: tServer.t("api.pushNotConfigured"), code: "VAPID_MISSING" },
       { status: 503 }
     );
   }

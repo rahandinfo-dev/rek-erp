@@ -29,3 +29,14 @@ test("push failure path never writes soundEnabled", () => {
   const handler = panel.slice(panel.indexOf("async function togglePush"), panel.indexOf("async function testSound"));
   assert.doesNotMatch(handler, /soundEnabled/);
 });
+test("service worker is registered once and awaited before PushManager use", () => {
+  assert.match(client, /registrationPromise/);
+  assert.match(client, /navigator\.serviceWorker\.ready/);
+  assert.match(client, /awaitActiveRegistration/);
+});
+test("settings expose classified Kurdish diagnostics", () => {
+  assert.match(panel, /پشتگیری وێبگەڕ/);
+  assert.match(panel, /Service Worker/);
+  assert.match(panel, /VAPID/);
+  assert.match(panel, /کۆدی بەدواداچوون/);
+});

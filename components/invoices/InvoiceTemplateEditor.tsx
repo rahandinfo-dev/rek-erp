@@ -234,12 +234,13 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
           <FormSection title="سەرپەڕە و پێپەڕە">
             <div className="space-y-4">
               <FormField label="دەقی Header">
-                <input
+                <select
                   className={inputClassName}
                   value={config.headerText}
                   onChange={(e) => patchConfig({ headerText: e.target.value })}
-                />
+                ><option>پسوولەی فرۆشتن</option><option>پسوولەی کڕین</option><option>پسوولەی گشتی</option><option>فاتورەی فرۆشتن</option><option>فاتورەی کڕین</option>{!["پسوولەی فرۆشتن","پسوولەی کڕین","پسوولەی گشتی","فاتورەی فرۆشتن","فاتورەی کڕین"].includes(config.headerText) ? <option value={config.headerText}>{config.headerText}</option> : null}</select>
               </FormField>
+              <FormField label="ناونیشانی تایبەت"><input className={inputClassName} value={config.headerText} onChange={(e) => patchConfig({headerText: e.target.value})}/></FormField>
               <FormField label="دەقی Footer">
                 <input
                   className={inputClassName}
@@ -253,6 +254,7 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
                     ["showLogo", "لۆگۆ"],
                     ["showCompanyName", "ناوی کۆمپانیا"],
                     ["showPhone", "مۆبایل"],
+                    ["showPhone2", "مۆبایلی دووەم"],
                     ["showEmail", "ئیمەیڵ"],
                     ["showWebsite", "وێبسایت"],
                     ["showAddress", "ناونیشان"],
@@ -276,9 +278,13 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
           <FormSection title="زانیاری بازرگانی و ناونیشانەکان">
             <div className="space-y-4">
               <FormField label="ناونیشانی ژێر ناوی کۆمپانیا"><input className={inputClassName} value={config.companySubtitle} onChange={(e) => patchConfig({ companySubtitle: e.target.value })}/></FormField>
+              <FormField label="ناونیشانی کۆمپانیا (جێگرەوە)"><input className={inputClassName} value={config.addressOverride} onChange={(e) => patchConfig({ addressOverride: e.target.value })}/></FormField>
+              <FormField label="ژمارەی مۆبایلی یەکەم (جێگرەوە)"><input className={inputClassName} value={config.phone1} onChange={(e) => patchConfig({ phone1: e.target.value })}/></FormField>
               <FormField label="ژمارەی مۆبایلی دووەم"><input className={inputClassName} value={config.phone2} onChange={(e) => patchConfig({ phone2: e.target.value })}/></FormField>
+              <div className="grid gap-3 sm:grid-cols-2"><FormField label="پێشگری بەڵگە (١-٣ پیت)"><input dir="ltr" maxLength={3} className={inputClassName} value={config.documentPrefix} onChange={(e) => patchConfig({ documentPrefix: e.target.value.toUpperCase().replace(/[^A-Z]/g, "") })}/></FormField><FormField label="شێوازی کات"><select className={selectClassName} value={config.timeFormat} onChange={(e) => patchConfig({timeFormat: e.target.value as "12" | "24"})}><option value="12">12-hour (AM/PM)</option><option value="24">24-hour</option></select></FormField></div>
+              <FormField label="ئاگاداری خوارەوە"><textarea className={textareaClassName} value={config.disclaimerText} onChange={(e) => patchConfig({disclaimerText: e.target.value})}/></FormField>
               <FormField label="دەقی سوپاس"><input className={inputClassName} value={config.thankYouText} onChange={(e) => patchConfig({ thankYouText: e.target.value })}/></FormField>
-              <div className="grid grid-cols-2 gap-3 text-sm">{([['showSku','کۆدی کاڵا'],['showDiscount','داشکاندن'],['showTax','باج'],['showSignatures','واژووەکان'],['showPrintedBy','چاپکراو لەلایەن'],['showPrintedAt','کاتی چاپ']] as const).map(([key,label]) => <label key={key} className="flex items-center gap-2"><input type="checkbox" checked={config[key]} onChange={(e) => patchConfig({[key]: e.target.checked})}/>{label}</label>)}</div>
+              <div className="grid grid-cols-2 gap-3 text-sm">{([['showSku','کۆدی کاڵا'],['showDiscount','داشکاندن'],['showTax','باج'],['showSignatures','واژووەکان'],['showPrintedBy','چاپکراو لەلایەن'],['showPrintedAt','کاتی چاپ'],['showCustomerCode','کۆدی کڕیار'],['showCustomerPhone','مۆبایلی کڕیار'],['showCustomerAddress','ناونیشانی کڕیار'],['disclaimerEnabled','ئاگاداری خوارەوە']] as const).map(([key,label]) => <label key={key} className="flex items-center gap-2"><input type="checkbox" checked={config[key]} onChange={(e) => patchConfig({[key]: e.target.checked})}/>{label}</label>)}</div>
               <p className="text-sm font-bold">دەستکاری ناونیشانەکان</p>
               <div className="grid gap-3 sm:grid-cols-2">{(Object.keys(config.labels) as Array<keyof typeof config.labels>).map((key) => <FormField key={key} label={key}><input className={inputClassName} value={config.labels[key]} onChange={(e) => patchConfig({labels: {...config.labels, [key]: e.target.value}})}/></FormField>)}</div>
             </div>
@@ -334,6 +340,8 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
                   <option value="'Segoe UI', sans-serif">Segoe UI</option>
                 </select>
               </FormField>
+              <FormField label="فۆنتی ناونیشان"><select className={selectClassName} value={config.titleFontFamily} onChange={(e) => patchConfig({titleFontFamily: e.target.value})}><option value="Rudaw, Tahoma, sans-serif">Rudaw</option><option value="Tahoma, sans-serif">Tahoma</option><option value="system-ui, sans-serif">System</option></select></FormField>
+              <FormField label="فۆنتی ژمارە"><select className={selectClassName} value={config.numericFontFamily} onChange={(e) => patchConfig({numericFontFamily: e.target.value})}><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="system-ui, sans-serif">System</option></select></FormField>
               <FormField label="قەبارەی فۆنت">
                 <input
                   type="number"

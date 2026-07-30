@@ -9,6 +9,13 @@ type Props = { config: InvoiceTemplateConfig; size: InvoiceSizeOption; company: 
 const border = "1px solid #000";
 const cell: CSSProperties = { border, padding: "5px 6px", verticalAlign: "middle", borderRadius: 0 };
 function money(value: number, currency: string) { return `${new Intl.NumberFormat("en-US", { maximumFractionDigits: currency === "IQD" ? 0 : 2 }).format(value)} ${currency}`; }
+function displayTime(value: string | undefined, format: "12" | "24") {
+  if (!value || format === "24") return value;
+  const match = /^(\d{1,2}):(\d{2})/.exec(value);
+  if (!match) return value;
+  const hour = Number(match[1]);
+  return `${hour % 12 || 12}:${match[2]} ${hour < 12 ? "AM" : "PM"}`;
+}
 function InfoRow({ label, value }: { label: string; value?: string | null }) { return <div className="invoice-info-row"><b>{label}:</b><span>{value || "—"}</span></div>; }
 
 export default function InvoiceDocument({ config, size, company, data, className }: Props) {
@@ -16,26 +23,27 @@ export default function InvoiceDocument({ config, size, company, data, className
   const labels = config.labels;
   const paid = data.paidAmount ?? data.total;
   const remaining = Math.max(0, data.total - paid);
-  return <article className={`invoice-a4 ${className || ""}`} dir="rtl" style={{ fontFamily: config.fontFamily, fontSize: config.fontSize, color: "#000", background: "#fff" }}>
+  const receiptNumber = config.documentPrefix && !data.invoiceNo.startsWith(`${config.documentPrefix}-`) ? `${config.documentPrefix}-${data.invoiceNo}` : data.invoiceNo;
+  return <article className={`invoice-a4 ${className || ""}`} dir="rtl" style={{ fontFamily: config.fontFamily, fontSize: config.fontSize, color: "#000", background: "#fff", "--invoice-number-font": config.numericFontFamily } as CSSProperties}>
     <header className="invoice-company-header">
       {config.showLogo && company.logo ? <Image src={company.logo} alt={company.name} width={72} height={72} unoptimized className="invoice-logo"/> : null}
-      {config.showCompanyName ? <h1>{company.name}</h1> : null}
+      {config.showCompanyName ? <h1 style={{fontFamily: config.titleFontFamily}}>{company.name}</h1> : null}
       <p className="invoice-subtitle">{config.companySubtitle}</p>
       <div className="invoice-contact">
-        {config.showPhone && company.phone ? <span>{company.phone}</span> : null}{config.showPhone && config.phone2 ? <span>{config.phone2}</span> : null}
-        {config.showAddress && company.address ? <span>{company.address}</span> : null}{config.showEmail && company.email ? <span>{company.email}</span> : null}{config.showWebsite && company.website ? <span>{company.website}</span> : null}
+        {config.showPhone && (config.phone1 || company.phone) ? <span className="invoice-ltr">☎ {config.phone1 || company.phone}</span> : null}{config.showPhone2 && config.phone2 ? <span className="invoice-ltr">☎ {config.phone2}</span> : null}
+        {config.showAddress && (config.addressOverride || company.address) ? <span>{config.addressOverride || company.address}</span> : null}{config.showEmail && company.email ? <span className="invoice-ltr">{company.email}</span> : null}{config.showWebsite && company.website ? <span className="invoice-ltr">{company.website}</span> : null}
       </div>
     </header>
-    <h2 className="invoice-title">{company.invoiceHeader || config.headerText}</h2>
+    <h2 className="invoice-title" style={{fontFamily: config.titleFontFamily}}>{config.headerText}</h2>
     <section className="invoice-parties">
-      <div><InfoRow label={labels.customerCode} value={data.customerCode}/><InfoRow label={labels.customerName} value={data.customerOrSupplier}/><InfoRow label={labels.customerPhone} value={data.customerPhone}/><InfoRow label={labels.customerAddress} value={data.customerAddress}/></div>
-      <div><InfoRow label={labels.invoiceNo} value={data.invoiceNo}/><InfoRow label={labels.date} value={data.date}/><InfoRow label={labels.time} value={data.time}/><InfoRow label={labels.cashier} value={data.createdBy}/><InfoRow label={labels.warehouse} value={data.warehouse}/>{data.notes ? <InfoRow label={labels.reference} value={data.notes}/> : null}</div>
+      <div>{config.showCustomerCode ? <InfoRow label={labels.customerCode} value={data.customerCode}/> : null}<InfoRow label={labels.customerName} value={data.customerOrSupplier}/>{config.showCustomerPhone ? <InfoRow label={labels.customerPhone} value={data.customerPhone}/> : null}{config.showCustomerAddress ? <InfoRow label={labels.customerAddress} value={data.customerAddress}/> : null}</div>
+      <div><InfoRow label={labels.invoiceNo} value={receiptNumber}/><InfoRow label={labels.date} value={data.date}/><InfoRow label={labels.time} value={displayTime(data.time, config.timeFormat)}/><InfoRow label={labels.cashier} value={data.createdBy}/><InfoRow label={labels.warehouse} value={data.warehouse}/>{data.notes ? <InfoRow label={labels.reference} value={data.notes}/> : null}</div>
     </section>
     <table className="invoice-items"><thead><tr><th style={cell}>{labels.row}</th>{config.showSku ? <th style={cell}>{labels.sku}</th> : null}<th style={cell}>{labels.product}</th><th style={cell}>{labels.quantity}</th><th style={cell}>{labels.unit}</th><th style={cell}>{labels.unitPrice}</th>{config.showDiscount ? <th style={cell}>{labels.discount}</th> : null}{config.showTax ? <th style={cell}>{labels.tax}</th> : null}<th style={cell}>{labels.lineTotal}</th></tr></thead>
-      <tbody>{data.items.map((item, index) => <tr key={`${item.sku || item.name}-${index}`}><td style={cell}>{index + 1}</td>{config.showSku ? <td style={cell}>{item.sku || "—"}</td> : null}<td className="invoice-product" style={cell}>{item.name}</td><td style={cell}>{item.quantity}</td><td style={cell}>{item.unit || "دانە"}</td><td style={cell}>{money(item.unitPrice, data.currency)}</td>{config.showDiscount ? <td style={cell}>{money(item.discount || 0, data.currency)}</td> : null}{config.showTax ? <td style={cell}>{money(item.tax || 0, data.currency)}</td> : null}<td style={cell}>{money(item.total, data.currency)}</td></tr>)}</tbody>
+      <tbody>{data.items.map((item, index) => <tr key={`${item.sku || item.name}-${index}`}><td style={cell}>{index + 1}</td>{config.showSku ? <td className="invoice-ltr" style={cell}>{item.sku || "—"}</td> : null}<td className="invoice-product" style={cell}>{item.name}</td><td style={cell}>{item.quantity} {item.unit || "دانە"}</td><td style={cell}>{item.unit || "دانە"}</td><td style={cell}>{money(item.unitPrice, data.currency)}</td>{config.showDiscount ? <td style={cell}>{money(item.discount || 0, data.currency)}</td> : null}{config.showTax ? <td style={cell}>{money(item.tax || 0, data.currency)}</td> : null}<td style={cell}>{money(item.total, data.currency)}</td></tr>)}</tbody>
     </table>
     <section className="invoice-summary"><div className="invoice-summary-note">{data.notes || ""}</div><div className="invoice-totals"><InfoRow label={labels.subtotal} value={money(data.subtotal, data.currency)}/><InfoRow label={labels.discount} value={money(data.discount, data.currency)}/><InfoRow label={labels.tax} value={money(data.tax, data.currency)}/><InfoRow label={labels.additionalCharges} value={money(data.additionalCharges || 0, data.currency)}/><InfoRow label={labels.grandTotal} value={money(data.total, data.currency)}/><InfoRow label={labels.paid} value={money(paid, data.currency)}/><InfoRow label={labels.remaining} value={money(remaining, data.currency)}/></div></section>
-    <footer className="invoice-footer">{config.thankYouText ? <strong>{config.thankYouText}</strong> : null}{(company.invoiceFooter || config.footerText) ? <p>{company.invoiceFooter || config.footerText}</p> : null}{config.termsEnabled && config.termsText ? <p className="invoice-policy">{config.termsText}</p> : null}
+    <footer className="invoice-footer">{config.disclaimerEnabled && config.disclaimerText ? <p className="invoice-disclaimer">{config.disclaimerText}</p> : null}{config.thankYouText ? <strong>{config.thankYouText}</strong> : null}{config.footerText ? <p>{config.footerText}</p> : null}{config.termsEnabled && config.termsText ? <p className="invoice-policy">{config.termsText}</p> : null}
       {config.showSignatures && config.signatureEnabled ? <div className="invoice-signatures"><span>{labels.signature}</span><span>{labels.customerSignature}</span></div> : null}
       <div className="invoice-print-meta">{config.showPrintedBy ? <span>{labels.cashier}: {data.createdBy || "—"}</span> : null}{config.showPrintedAt ? <span>{labels.date}: {data.date} {data.time}</span> : null}</div>
     </footer>

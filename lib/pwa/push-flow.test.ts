@@ -41,4 +41,7 @@ test("registration fallback supports a successful subscription", async () => {
 test("missing/invalid VAPID and subscription errors are classified", async () => {
   assert.deepEqual(await runPushEnableFlow(deps({ subscribe: async () => null })), { ok: false, reason: "SUBSCRIPTION_FAILED" });
   assert.deepEqual(await runPushEnableFlow(deps({ subscribe: async () => { throw new Error("InvalidAccessError"); } })), { ok: false, reason: "SUBSCRIPTION_FAILED" });
+  assert.deepEqual(await runPushEnableFlow(deps({ subscribe: async () => { throw new Error("VAPID_MISSING"); } })), { ok: false, reason: "VAPID_MISSING" });
+  assert.deepEqual(await runPushEnableFlow(deps({ subscribe: async () => { throw new Error("VAPID_INVALID"); } })), { ok: false, reason: "VAPID_INVALID" });
+  assert.deepEqual(await runPushEnableFlow(deps({ subscribe: async () => { throw new Error("PERSISTENCE_FAILED"); } })), { ok: false, reason: "PERSISTENCE_FAILED" });
 });

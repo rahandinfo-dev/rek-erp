@@ -5,6 +5,7 @@ export const invoiceTemplateConfigSchema = z.object({
   showLogo: z.boolean(),
   showCompanyName: z.boolean(),
   showPhone: z.boolean(),
+  showPhone2: z.boolean(),
   showEmail: z.boolean(),
   showWebsite: z.boolean(),
   showAddress: z.boolean(),
@@ -29,7 +30,8 @@ export const invoiceTemplateConfigSchema = z.object({
   stampEnabled: z.boolean(),
   stampImage: z.string().nullable(),
   showSku: z.boolean(), showDiscount: z.boolean(), showTax: z.boolean(), showSignatures: z.boolean(),
-  showPrintedBy: z.boolean(), showPrintedAt: z.boolean(), companySubtitle: z.string(), phone2: z.string(), thankYouText: z.string(),
+  showPrintedBy: z.boolean(), showPrintedAt: z.boolean(), companySubtitle: z.string(), addressOverride: z.string(), phone1: z.string(), phone2: z.string(), showCustomerCode: z.boolean(), showCustomerPhone: z.boolean(), showCustomerAddress: z.boolean(),
+  documentPrefix: z.string().max(3).regex(/^[A-Za-z]*$/), timeFormat: z.enum(["12", "24"]), disclaimerEnabled: z.boolean(), disclaimerText: z.string().max(1000), titleFontFamily: z.string().min(1), numericFontFamily: z.string().min(1), thankYouText: z.string(),
   labels: z.object({
     customerCode: z.string(), customerName: z.string(), customerPhone: z.string(), customerAddress: z.string(),
     invoiceNo: z.string(), date: z.string(), time: z.string(), cashier: z.string(), warehouse: z.string(), reference: z.string(),

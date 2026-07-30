@@ -5,6 +5,7 @@ export type InvoiceTemplateConfig = {
   showLogo: boolean;
   showCompanyName: boolean;
   showPhone: boolean;
+  showPhone2: boolean;
   showEmail: boolean;
   showWebsite: boolean;
   showAddress: boolean;
@@ -35,7 +36,18 @@ export type InvoiceTemplateConfig = {
   showPrintedBy: boolean;
   showPrintedAt: boolean;
   companySubtitle: string;
+  addressOverride: string;
+  phone1: string;
   phone2: string;
+  documentPrefix: string;
+  timeFormat: "12" | "24";
+  showCustomerCode: boolean;
+  showCustomerPhone: boolean;
+  showCustomerAddress: boolean;
+  disclaimerEnabled: boolean;
+  disclaimerText: string;
+  titleFontFamily: string;
+  numericFontFamily: string;
   thankYouText: string;
   labels: InvoiceLabels;
 };
@@ -51,6 +63,7 @@ export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
   showLogo: true,
   showCompanyName: true,
   showPhone: true,
+  showPhone2: true,
   showEmail: true,
   showWebsite: true,
   showAddress: true,
@@ -81,7 +94,18 @@ export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
   showPrintedBy: true,
   showPrintedAt: true,
   companySubtitle: "",
+  addressOverride: "",
+  phone1: "",
   phone2: "",
+  documentPrefix: "",
+  timeFormat: "12",
+  showCustomerCode: true,
+  showCustomerPhone: true,
+  showCustomerAddress: true,
+  disclaimerEnabled: true,
+  disclaimerText: "هەڵە و لەبیرچوون دەگەڕێتەوە بۆ هەردوو لا.",
+  titleFontFamily: "Rudaw, Tahoma, sans-serif",
+  numericFontFamily: "Tahoma, Arial, sans-serif",
   thankYouText: "سوپاس بۆ بازرگانیکردنتان",
   labels: {
     customerCode: "کۆدی کڕیار", customerName: "ناوی کڕیار", customerPhone: "ژ. مۆبایل", customerAddress: "ناونیشان",

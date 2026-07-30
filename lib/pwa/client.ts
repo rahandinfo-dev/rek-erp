@@ -5,13 +5,26 @@ import { runPushEnableFlow, type PushEnableFailure } from "@/lib/pwa/push-flow";
 export type { PushEnableFailure } from "@/lib/pwa/push-flow";
 
 const SW_URL = "/sw.js";
+let registrationPromise: Promise<ServiceWorkerRegistration | null> | null = null;
+
+async function awaitActiveRegistration(registration: ServiceWorkerRegistration) {
+  if (registration.active) return registration;
+  const ready = navigator.serviceWorker.ready;
+  const timeout = new Promise<never>((_, reject) =>
+    window.setTimeout(() => reject(new Error("SERVICE_WORKER_UNAVAILABLE")), 12_000)
+  );
+  return Promise.race([ready, timeout]);
+}
 
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   if (typeof window === "undefined" || !("serviceWorker" in navigator)) {
     return null;
   }
-  try {
-    const reg = await navigator.serviceWorker.register(SW_URL, {
+  if (registrationPromise) return registrationPromise;
+  registrationPromise = (async () => {
+   try {
+    const existing = await navigator.serviceWorker.getRegistration("/");
+    const reg = existing ?? await navigator.serviceWorker.register(SW_URL, {
       scope: "/",
       updateViaCache: "none",
     });
@@ -21,11 +34,14 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
     } catch {
       /* ignore */
     }
-    return reg;
+    return await awaitActiveRegistration(reg);
   } catch (error) {
     console.error("[pwa] service worker registration failed", error);
+    registrationPromise = null;
     return null;
   }
+  })();
+  return registrationPromise;
 }
 
 export async function getRegistration(): Promise<ServiceWorkerRegistration | null> {
@@ -33,7 +49,8 @@ export async function getRegistration(): Promise<ServiceWorkerRegistration | nul
     return null;
   }
   try {
-    return (await navigator.serviceWorker.getRegistration("/")) || null;
+    const registration = await navigator.serviceWorker.getRegistration("/");
+    return registration ? await awaitActiveRegistration(registration) : null;
   } catch {
     return null;
   }
@@ -51,14 +68,20 @@ export async function subscribeToPush(
   }
 
   const res = await fetch("/api/pwa/vapid", { cache: "no-store" });
-  const json = await res.json();
-  if (!res.ok || !json.success || !json.data?.publicKey) return null;
+  const json = await res.json().catch(() => ({}));
+  if (res.status === 503 || json.code === "VAPID_MISSING") throw new Error("VAPID_MISSING");
+  if (!res.ok || !json.success || !json.data?.publicKey) throw new Error("VAPID_INVALID");
 
+  let applicationServerKey: BufferSource;
+  try {
+    applicationServerKey = urlBase64ToUint8Array(json.data.publicKey as string) as BufferSource;
+    if ((applicationServerKey as Uint8Array).byteLength !== 65) throw new Error("invalid key length");
+  } catch {
+    throw new Error("VAPID_INVALID");
+  }
   const sub = await registration.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: urlBase64ToUint8Array(
-      json.data.publicKey as string
-    ) as BufferSource,
+    applicationServerKey,
   });
 
   await syncSubscriptionToServer(sub);
@@ -107,7 +130,7 @@ async function syncSubscriptionToServer(sub: PushSubscription) {
       userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
     }),
   });
-  if (!response.ok) throw new Error("SUBSCRIPTION_PERSIST_FAILED");
+  if (!response.ok) throw new Error("PERSISTENCE_FAILED");
 }
 
 /** One testable enable flow; it never reads or mutates the sound preference. */
