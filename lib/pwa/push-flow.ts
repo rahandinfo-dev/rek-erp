@@ -2,6 +2,9 @@ export type PushEnableFailure =
   | "UNSUPPORTED_BROWSER"
   | "PERMISSION_DENIED"
   | "SERVICE_WORKER_UNAVAILABLE"
+  | "VAPID_MISSING"
+  | "VAPID_INVALID"
+  | "PERSISTENCE_FAILED"
   | "SUBSCRIPTION_FAILED";
 
 export type PushFlowDependencies<R, S> = {
@@ -23,7 +26,11 @@ export async function runPushEnableFlow<R, S>(dependencies: PushFlowDependencies
     return subscription
       ? { ok: true as const, subscription }
       : { ok: false as const, reason: "SUBSCRIPTION_FAILED" as const };
-  } catch {
+  } catch (error) {
+    const code = error instanceof Error ? error.message : "";
+    if (code === "VAPID_MISSING" || code === "VAPID_INVALID" || code === "PERSISTENCE_FAILED") {
+      return { ok: false as const, reason: code as PushEnableFailure };
+    }
     return { ok: false as const, reason: "SUBSCRIPTION_FAILED" as const };
   }
 }

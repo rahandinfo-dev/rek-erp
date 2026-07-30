@@ -40,6 +40,10 @@ test("receipt supports editable company/customer content and selectable fonts", 
   assert.equal(SAMPLE_INVOICE_DATA.customerPhone, "0750 000 0000");
   const anonymous = { ...SAMPLE_INVOICE_DATA, customerOrSupplier: "", customerPhone: null, customerAddress: null };
   assert.equal(anonymous.customerOrSupplier, "");
+  assert.equal(DEFAULT_INVOICE_CONFIG.disclaimerEnabled, true);
+  assert.match(DEFAULT_INVOICE_CONFIG.disclaimerText, /هەڵە/);
+  assert.equal(DEFAULT_INVOICE_CONFIG.timeFormat, "12");
+  assert.equal(DEFAULT_INVOICE_CONFIG.showPhone2, true);
 });
 
 test("accounting states preserve authoritative totals and optional party fields", () => {
