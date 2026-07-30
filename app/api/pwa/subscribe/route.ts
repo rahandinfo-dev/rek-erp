@@ -64,6 +64,19 @@ export async function POST(req: NextRequest) {
   const browser = parsed.data.browser || (ua ? detectBrowser(ua) : "other");
   const platform = parsed.data.platform || (ua ? detectPlatform(ua) : "other");
 
+  const endpointOwner = await db.pushSubscription.findUnique({
+    where: { endpoint: parsed.data.endpoint },
+    select: { userId: true, companyId: true },
+  });
+  // An endpoint is a bearer capability. Never let a different signed-in user
+  // claim it, even when they happen to know its URL.
+  if (endpointOwner && (endpointOwner.userId !== user.id || endpointOwner.companyId !== user.companyId)) {
+    return NextResponse.json(
+      { success: false, message: tServer.t("api.invalidSubscriptionPayload"), code: "ENDPOINT_OWNED" },
+      { status: 409 }
+    );
+  }
+
   const row = await db.pushSubscription.upsert({
     where: { endpoint: parsed.data.endpoint },
     create: {
@@ -77,8 +90,6 @@ export async function POST(req: NextRequest) {
       platform,
     },
     update: {
-      companyId: user.companyId,
-      userId: user.id,
       p256dh: parsed.data.keys.p256dh,
       auth: parsed.data.keys.auth,
       userAgent: ua?.slice(0, 512),

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Bell, Loader2, Volume2 } from "lucide-react";
 import { DEFAULT_PUSH_CATEGORIES, PUSH_CATEGORIES, PUSH_CATEGORY_LABELS, type PushCategoryMap } from "@/lib/pwa/categories";
-import { getRegistration, requestNotificationPermission, subscribeToPush, unsubscribeFromPush } from "@/lib/pwa/client";
+import { enablePush, unsubscribeFromPush } from "@/lib/pwa/client";
 import { playNotificationTone } from "@/lib/pwa/sound";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
@@ -28,7 +28,13 @@ export default function NotificationPrefsPanel({ className = "" }: { className?:
     });
   }
 
-  useEffect(() => { let active = true; void load().catch(() => {}).finally(() => { if (active) setReady(true); }); return () => { active = false; }; }, []);
+  useEffect(() => {
+    let active = true;
+    const start = window.setTimeout(() => {
+      void load().catch(() => {}).finally(() => { if (active) setReady(true); });
+    }, 0);
+    return () => { active = false; window.clearTimeout(start); };
+  }, []);
 
   async function persist(body: Record<string, unknown>) {
     const response = await fetch("/api/pwa/prefs", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
@@ -55,10 +61,8 @@ export default function NotificationPrefsPanel({ className = "" }: { className?:
     setSaving("push");
     try {
       if (next) {
-        const permission = await requestNotificationPermission();
-        if (permission !== "granted") throw new Error("PERMISSION_DENIED");
-        const registration = await getRegistration();
-        if (!registration || !(await subscribeToPush(registration))) throw new Error("SUBSCRIBE_FAILED");
+        const result = await enablePush();
+        if (!result.ok) throw new Error(result.reason);
       } else await unsubscribeFromPush();
       const saved = await persist({ pushEnabled: next });
       setPrefs((value) => ({ ...value, pushEnabled: Boolean(saved.pushEnabled ?? saved.enabled) }));
