@@ -7,7 +7,6 @@ import {
   AlertTriangle,
   Boxes,
   DollarSign,
-  HeartPulse,
   Package,
   RefreshCw,
   ShoppingBasket,
@@ -24,12 +23,9 @@ import {
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Legend,
   Line,
   LineChart,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -39,8 +35,6 @@ import type { AnalyticsPayload } from "@/lib/analytics/buildAnalytics";
 import { formatMoney } from "@/lib/utils/format";
 import { formatStockQty, STOCK_STATUS_LABELS_KU } from "@/lib/inventory/stock";
 import StatCard from "@/components/dashboard/StatCard";
-import ValuationMetricsGrid from "@/components/inventory/ValuationMetricsGrid";
-import { toValuationMetrics } from "@/lib/inventory/valuationMetrics";
 import { onNotificationsChanged } from "@/lib/notifications/bus";
 import { appToast } from "@/lib/toast";
 import { DS } from "@/lib/design-system";
@@ -51,7 +45,6 @@ import { useT } from "@/components/i18n/LocaleProvider";
 const SALES = DS.color.chart.sales;
 const PURCHASES = DS.color.chart.purchases;
 const PROFIT = DS.color.chart.profit;
-const PIE = [SALES, PURCHASES, PROFIT];
 
 type Props = {
   initialData: AnalyticsPayload;
@@ -60,11 +53,6 @@ type Props = {
 
 export default function AnalyticsClient({ initialData, companyName }: Props) {
   const { t } = useT();
-  const healthLabels = {
-    HEALTHY: t("analytics.healthy"),
-    ATTENTION: t("analytics.attention"),
-    CRITICAL: t("analytics.critical"),
-  } as const;
   const [data, setData] = useState(initialData);
   const [pending, startTransition] = useTransition();
   const [auto, setAuto] = useState(true);
@@ -160,8 +148,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
     });
   }, [refresh]);
 
-  const { summary, inventoryHealth, salesPerformance, purchasePerformance } =
-    data;
+  const { summary, salesPerformance, purchasePerformance } = data;
 
   const updatedLabel = `${formatDate(data.generatedAt)} ${formatTime(
     data.generatedAt
@@ -263,47 +250,6 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard
-          title={t("analytics.inventoryHealth")}
-          value={`${inventoryHealth.score}%`}
-          description={healthLabels[inventoryHealth.label]}
-          icon={HeartPulse}
-        />
-        <StatCard
-          title={t("analytics.lowStock")}
-          value={summary.lowStockCount}
-          description={t("analytics.atMinimum", { count: summary.atMinimumCount })}
-          icon={AlertTriangle}
-        />
-        <StatCard
-          title={t("analytics.outOfStock")}
-          value={summary.outOfStockCount}
-          description={t("analytics.availableUnits", { qty: formatStockQty(inventoryHealth.totalAvailable) })}
-          icon={Package}
-        />
-        <StatCard
-          title={t("analytics.totalUnits")}
-          value={formatStockQty(summary.inventoryUnits)}
-          description={t("analytics.productsWarehouses", { products: summary.productsCount, warehouses: summary.warehousesCount })}
-          icon={Warehouse}
-        />
-      </div>
-
-      <ValuationMetricsGrid
-        metrics={toValuationMetrics({
-          inventoryValue: summary.inventoryValue,
-          purchaseValue: summary.purchaseValue,
-          salesValue: summary.salesValue,
-          averageCost: summary.averageCost,
-          currentAssetValue: summary.currentAssetValue,
-          totalUnits: summary.inventoryUnits,
-          productsCount: summary.productsCount,
-        })}
-        title={t("analytics.valuationTitle")}
-        subtitle={t("analytics.valuationSubtitle")}
-      />
-
       <div className="grid gap-4 lg:grid-cols-2">
         <div className="rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-6">
           <div className="mb-4 flex items-center gap-2">
@@ -376,8 +322,8 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
         </div>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
-        <ChartCard title={t("analytics.monthlyChart")} className="xl:col-span-2">
+      <div className="grid gap-6">
+        <ChartCard title={t("analytics.monthlyChart")}>
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data.monthly}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -409,61 +355,9 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title={t("analytics.warehouseValueDist")}>
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={
-                  data.warehouseDistribution.length
-                    ? data.warehouseDistribution
-                    : [{ name: t("analytics.emptyWarehouse"), inventoryValue: 1 }]
-                }
-                dataKey="inventoryValue"
-                nameKey="name"
-                innerRadius={48}
-                outerRadius={82}
-                paddingAngle={3}
-              >
-                {(data.warehouseDistribution.length
-                  ? data.warehouseDistribution
-                  : [{ name: t("analytics.emptyWarehouse") }]
-                ).map((_, i) => (
-                  <Cell
-                    key={i}
-                    fill={
-                      data.warehouseDistribution.length
-                        ? PIE[i % PIE.length]
-                        : "#94a3b8"
-                    }
-                  />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={tooltipStyle}
-                formatter={(value) =>
-                  data.warehouseDistribution.length
-                    ? `${formatMoney(Number(value ?? 0))}`
-                    : t("common.empty")
-                }
-              />
-              <Legend />
-            </PieChart>
-          </ResponsiveContainer>
-        </ChartCard>
       </div>
 
       <div className="grid gap-6 xl:grid-cols-2">
-        <ChartCard title={t("analytics.inventoryValueTrend")}>
-          <ResponsiveContainer width="100%" height="100%">
-            <AreaChartLike
-              data={data.inventoryTrend}
-              dataKey="inventoryValue"
-              name={t("analytics.value")}
-              color={SALES}
-              money
-            />
-          </ResponsiveContainer>
-        </ChartCard>
         <ChartCard title={t("analytics.stockUnitsTrend")}>
           <ResponsiveContainer width="100%" height="100%">
             <AreaChartLike
@@ -518,8 +412,8 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
         </ChartCard>
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-3">
-        <ChartCard title={t("analytics.yearlyChart")} className="xl:col-span-2">
+      <div className="grid gap-6">
+        <ChartCard title={t("analytics.yearlyChart")}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data.yearly}>
               <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -594,9 +488,6 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
                         : ""}
                     </p>
                   </div>
-                  <span className="shrink-0 text-sm font-bold text-primary">
-                    {formatMoney(w.inventoryValue)}
-                  </span>
                 </Link>
               ))}
             </div>
@@ -631,41 +522,6 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
             href: `/dashboard/products/${p.id}`,
           }))}
         />
-        <div className="rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-6">
-          <div className="mb-4 flex items-center gap-2">
-            <HeartPulse size={18} className="text-primary" />
-            <h2 className="text-lg font-bold text-primary sm:text-xl">
-              {t("analytics.inventoryHealthTitle")}
-            </h2>
-          </div>
-          <div className="mb-4">
-            <p className="text-4xl font-black text-primary">
-              {inventoryHealth.score}
-              <span className="text-lg text-muted-foreground">/100</span>
-            </p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {healthLabels[inventoryHealth.label]}
-            </p>
-          </div>
-          <dl className="grid gap-2 sm:grid-cols-2">
-            <PerfRow
-              label={t("analytics.available")}
-              value={String(inventoryHealth.inStockCount)}
-            />
-            <PerfRow
-              label={t("analytics.lowStock")}
-              value={String(inventoryHealth.lowStockCount)}
-            />
-            <PerfRow
-              label={t("analytics.out")}
-              value={String(inventoryHealth.outOfStockCount)}
-            />
-            <PerfRow
-              label={t("analytics.totalUnits")}
-              value={formatStockQty(inventoryHealth.totalCurrent)}
-            />
-          </dl>
-        </div>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">

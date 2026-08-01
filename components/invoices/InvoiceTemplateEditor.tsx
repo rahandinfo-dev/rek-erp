@@ -335,15 +335,14 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
                   value={config.fontFamily}
                   onChange={(e) => patchConfig({ fontFamily: e.target.value })}
                 >
-                  <option value="Rudaw, Tahoma, sans-serif">Rudaw</option>
-                  <option value="NRT, Rudaw, Tahoma, sans-serif">NRT</option>
-                  <option value="Rabar, Rudaw, Tahoma, sans-serif">Rabar</option>
+                  <option value="NRT, Tahoma, sans-serif">NRT</option>
+                  <option value="Rabar, NRT, Tahoma, sans-serif">Rabar</option>
                   <option value="Tahoma, sans-serif">Tahoma</option>
                   <option value="Georgia, serif">Georgia</option>
                   <option value="'Segoe UI', sans-serif">Segoe UI</option>
                 </select>
               </FormField>
-              <FormField label="فۆنتی ناونیشان"><select className={selectClassName} value={config.titleFontFamily} onChange={(e) => patchConfig({titleFontFamily: e.target.value})}><option value="Rudaw, Tahoma, sans-serif">Rudaw</option><option value="Tahoma, sans-serif">Tahoma</option><option value="system-ui, sans-serif">System</option></select></FormField>
+              <FormField label="فۆنتی ناونیشان"><select className={selectClassName} value={config.titleFontFamily} onChange={(e) => patchConfig({titleFontFamily: e.target.value})}><option value="NRT, Tahoma, sans-serif">NRT</option><option value="Tahoma, sans-serif">Tahoma</option><option value="system-ui, sans-serif">System</option></select></FormField>
               <FormField label="فۆنتی ژمارە"><select className={selectClassName} value={config.numericFontFamily} onChange={(e) => patchConfig({numericFontFamily: e.target.value})}><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="system-ui, sans-serif">System</option></select></FormField>
               <FormField label="قەبارەی فۆنت">
                 <input

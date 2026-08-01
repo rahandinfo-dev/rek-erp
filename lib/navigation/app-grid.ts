@@ -1,5 +1,4 @@
 import {
-  BookOpen,
   Banknote,
   LayoutDashboard,
   Warehouse,
@@ -165,12 +164,6 @@ export const APP_GRID: AppMenuItem[] = [
     href: "/dashboard/print-center",
     icon: Printer,
     descriptionKey: "nav.descPrint",
-  },
-  {
-    titleKey: "nav.systemDocs",
-    href: "/dashboard/settings/docs",
-    icon: BookOpen,
-    descriptionKey: "nav.descSystemDocs",
   },
   {
     titleKey: "nav.settingsFull",

@@ -30,11 +30,14 @@ export default function EmployeeForm() {
     email: "",
     address: "",
     nationalId: "",
+    nationalIdImage: "",
     position: "",
     department: "",
     role: "STAFF",
     status: "ACTIVE",
     monthlySalary: 0,
+    salaryCurrency: "IQD",
+    salaryDueDay: 1,
     nextSalaryDate: "",
     dateJoined: toDateInputValue(),
     notes: "",
@@ -118,6 +121,13 @@ export default function EmployeeForm() {
         shape="circle"
       />
 
+      <ImageUpload
+        kind="employee"
+        value={form.nationalIdImage || null}
+        onChange={(url) => update("nationalIdImage", url || "")}
+        label="وێنەی کارتی نیشتیمانی (ئارەزوومەندانە)"
+      />
+
       <div className="grid gap-4 md:grid-cols-2">
         <Field label={t("employees.fullName")}>
           <input
@@ -137,6 +147,7 @@ export default function EmployeeForm() {
         </Field>
         <Field label={t("common.phone")}>
           <input
+            required
             value={form.phone || ""}
             onChange={(e) => update("phone", e.target.value)}
             className={inputClass}
@@ -144,6 +155,7 @@ export default function EmployeeForm() {
         </Field>
         <Field label={t("common.email")}>
           <input
+            required
             type="email"
             value={form.email || ""}
             onChange={(e) => update("email", e.target.value)}
@@ -159,6 +171,7 @@ export default function EmployeeForm() {
         </Field>
         <Field label={t("common.address")}>
           <input
+            required
             value={form.address || ""}
             onChange={(e) => update("address", e.target.value)}
             className={inputClass}
@@ -166,6 +179,7 @@ export default function EmployeeForm() {
         </Field>
         <Field label={t("employees.position")}>
           <input
+            required
             value={form.position || ""}
             onChange={(e) => update("position", e.target.value)}
             className={inputClass}
@@ -210,12 +224,21 @@ export default function EmployeeForm() {
         </Field>
         <Field label={t("employees.monthlySalary")}>
           <input
+            required
             type="number"
             min={0}
             value={form.monthlySalary}
             onChange={(e) => update("monthlySalary", Number(e.target.value))}
             className={inputClass}
           />
+        </Field>
+        <Field label="دراوی مووچە">
+          <select value={form.salaryCurrency} onChange={(e) => update("salaryCurrency", e.target.value)} className={inputClass}>
+            <option value="IQD">IQD</option><option value="USD">USD</option>
+          </select>
+        </Field>
+        <Field label="ڕۆژی شایستەبوونی مووچە">
+          <input required type="number" min={1} max={28} value={form.salaryDueDay} onChange={(e) => update("salaryDueDay", Number(e.target.value))} className={inputClass} />
         </Field>
         <Field label={t("employees.dateJoined")}>
           <input

@@ -1,7 +1,7 @@
 import { db } from "@/lib/prisma/db";
 import { createNotification } from "@/lib/notifications/create";
 
-const ALERT_WINDOW_DAYS = 7;
+export const ALERT_WINDOW_DAYS = 5;
 
 export type SalaryAlertResult = {
   employeeId: string;
@@ -23,7 +23,7 @@ function addUtcDays(d: Date, days: number) {
 }
 
 /**
- * Detect employees whose next salary date is overdue or within 7 days.
+ * Detect employees whose next salary date is overdue or within 5 days.
  * Deduped with a single day's notification prefetch (no N+1).
  */
 export async function runSalaryAlerts(
@@ -55,20 +55,20 @@ export async function runSalaryAlerts(
         companyId,
         entityType: "کارمەند",
         deletedAt: null,
-        createdAt: { gte: today },
         metadata: {
           path: ["kind"],
           equals: "SALARY_APPROACHING",
         },
       },
-      select: { id: true, entityId: true },
+      select: { id: true, entityId: true, metadata: true },
     }),
   ]);
 
-  const existingByEmployee = new Map(
-    existingRows
-      .filter((r) => r.entityId)
-      .map((r) => [r.entityId as string, r.id])
+  const existingByPeriod = new Map(
+    existingRows.filter((r) => r.entityId).map((r) => {
+      const metadata = r.metadata as { salaryDate?: string } | null;
+      return [`${r.entityId}:${metadata?.salaryDate || ""}`, r.id];
+    })
   );
 
   const results: SalaryAlertResult[] = [];
@@ -81,7 +81,7 @@ export async function runSalaryAlerts(
       (next.getTime() - today.getTime()) / (24 * 60 * 60 * 1000)
     );
     const salaryKey = next.toISOString().slice(0, 10);
-    const existingId = existingByEmployee.get(employee.id);
+    const existingId = existingByPeriod.get(`${employee.id}:${salaryKey}`);
 
     if (existingId) {
       results.push({

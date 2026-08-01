@@ -1,0 +1,4 @@
+import test from "node:test";import assert from "node:assert/strict";import {canSeeRelease,SEMVER_PATTERN} from "./policy.ts";
+const joined=new Date("2026-06-15T00:00:00Z");
+test("new users see releases after joining and the current joining release only",()=>{assert.equal(canSeeRelease({publishedAt:new Date("2026-06-20"),isCurrent:false,isActive:true},joined,false),true);assert.equal(canSeeRelease({publishedAt:new Date("2026-01-01"),isCurrent:false,isActive:true},joined,false),false);assert.equal(canSeeRelease({publishedAt:new Date("2026-01-01"),isCurrent:true,isActive:true},joined,false),true)});
+test("admins see full release history and versions use semver",()=>{assert.equal(canSeeRelease({publishedAt:null,isCurrent:false,isActive:false},joined,true),true);assert.match("v2.1.0",SEMVER_PATTERN);assert.doesNotMatch("release-secret-sha",SEMVER_PATTERN)});

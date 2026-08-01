@@ -1,6 +1,6 @@
 @font-face {
-  font-family: "RUDAW Regular";
-  src: url("/fonts/rudawregular2.ttf") format("truetype");
+  font-family: "NRT";
+  src: url("/fonts/NRT-Reg.ttf") format("truetype");
   font-weight: 300;
   font-style: normal;
   font-display: swap;
@@ -195,7 +195,7 @@ html.dark {
 
 html,
 body {
-  font-family: "RUDAW Regular", Tahoma, sans-serif;
+  font-family: "NRT", Tahoma, Arial, sans-serif;
   background: var(--background);
   color: var(--foreground);
   width: 100%;
