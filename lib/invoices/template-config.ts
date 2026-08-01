@@ -117,7 +117,7 @@ export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
     customerCode: "کۆدی کڕیار", customerName: "ناوی کڕیار", customerPhone: "ژ. مۆبایل", customerAddress: "ناونیشان",
     invoiceNo: "ژ.پسوولە", date: "بەروار", time: "کاتژمێر", cashier: "کاشێر", warehouse: "کۆگا", reference: "سەرچاوە",
     row: "ژ", sku: "کۆد", product: "ناوی بەرهەم", quantity: "بڕ", unit: "یەکە", unitPrice: "نرخ", discount: "داشکاندن", tax: "باج", lineTotal: "کۆی گشتی",
-    subtotal: "کۆی گشتی", additionalCharges: "خەرجی زیادە", grandTotal: "کۆی کۆتایی", paid: "پارەی دراو", remaining: "بالانسی پسوولە", signature: "واژووی فرۆشیار", customerSignature: "واژووی کڕیار",
+    subtotal: "کۆی گشتی", additionalCharges: "خەرجی زیادە", grandTotal: "کۆی کۆتایی", paid: "پارەی دراو", remaining: "پارەی ماوە / باقی", signature: "واژووی فرۆشیار", customerSignature: "واژووی کڕیار",
   },
 };
 
@@ -162,7 +162,7 @@ export const SAMPLE_INVOICE_DATA: InvoicePreviewData = {
   time: "09:00",
   customerOrSupplier: "کڕیاری نموونەیی",
   warehouse: "کۆگای سەرەکی",
-  customerCode: "C-001", customerPhone: "0750 000 0000", customerAddress: "هەولێر", currency: "IQD", paidAmount: 145000, additionalCharges: 0,
+  customerCode: "C-001", customerPhone: "0750 000 0000", customerAddress: "هەولێر، شەقامی ١٠٠ مەتری", currency: "IQD", paidAmount: 125000, additionalCharges: 0,
   notes: "تێبینی نموونەیی",
   subtotal: 150000,
   discount: 5000,
@@ -179,11 +179,12 @@ export const SAMPLE_INVOICE_DATA: InvoicePreviewData = {
       total: 100000,
     },
     {
-      name: "بەرهەمی دووەم",
+      name: "بەرهەمی دووەم بە ناوێکی درێژ بۆ تاقیکردنەوەی ڕیزبەندی و پێچانەوەی دەق",
       sku: "SKU-002",
       quantity: 1,
       unitPrice: 50000,
       total: 50000,
     },
+    { name: "بەرهەمی سێیەم", sku: "SKU-LTR-003", quantity: 3, unit: "دانە", unitPrice: 10000, total: 30000 },
   ],
 };

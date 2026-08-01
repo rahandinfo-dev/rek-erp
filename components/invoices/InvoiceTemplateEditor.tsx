@@ -9,7 +9,7 @@ import {
   type InvoiceSizeOption,
   type InvoiceTemplateConfig,
 } from "@/lib/invoices/template-config";
-import InvoiceDocument from "@/components/invoices/InvoiceDocument";
+import InvoicePreviewCanvas from "@/components/invoices/InvoicePreviewCanvas";
 import {
   FormAlert,
   FormField,
@@ -501,14 +501,13 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
           description="گۆڕانکارییەکان دەستبەجێ دەردەکەون"
           className="xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] xl:overflow-auto"
         >
-          <div ref={previewRef} className="max-w-full min-w-0 overflow-x-auto bg-slate-100 p-4">
-            <InvoiceDocument
+          <InvoicePreviewCanvas
+              receiptRef={previewRef}
               config={config}
               size={size}
               company={company}
               data={SAMPLE_INVOICE_DATA}
             />
-          </div>
         </FormSection>
       </div>
     </form>

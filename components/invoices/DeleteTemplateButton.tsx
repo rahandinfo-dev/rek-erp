@@ -23,6 +23,7 @@ export default function DeleteTemplateButton({ id }: { id: string }) {
         return;
       }
       appToast.success("قاڵب سڕایەوە.");
+      setOpen(false);
       router.refresh();
     } catch {
       appToast.error("هەڵەیەک ڕوویدا.");
@@ -50,7 +51,6 @@ export default function DeleteTemplateButton({ id }: { id: string }) {
         description="دڵنیایت لە سڕینەوەی ئەم قاڵبە؟"
         onCancel={() => setOpen(false)}
         onConfirm={async () => {
-          setOpen(false);
           await onDelete();
         }}
       />

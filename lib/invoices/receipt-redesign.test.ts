@@ -28,6 +28,40 @@ test("A4 CSS enforces sharp corners, repeated headings, and print isolation", ()
   assert.match(css, /display: table-header-group/);
   assert.match(css, /body \* \{ visibility: hidden/);
   assert.match(css, /@page \{ size: A4 portrait/);
+  assert.match(css, /\.invoice-items th, \.invoice-items td[\s\S]*vertical-align: middle/);
+  assert.match(css, /\.invoice-items th \{ height: 10mm/);
+  assert.match(css, /font-variant-numeric: tabular-nums/);
+});
+
+test("A4 totals use the full width without the obsolete invoice balance panel", () => {
+  const source = readFileSync("components/invoices/InvoiceDocument.tsx", "utf8");
+  const css = readFileSync("app/globals.css", "utf8");
+  assert.doesNotMatch(source, /className="invoice-balance"/);
+  assert.doesNotMatch(css, /\.invoice-balance/);
+  assert.match(css, /\.invoice-summary \{ width: 100%/);
+  assert.equal(DEFAULT_INVOICE_CONFIG.labels.remaining, "پارەی ماوە / باقی");
+});
+
+test("template editor scales one complete A4 renderer without clipping", () => {
+  const preview = readFileSync("components/invoices/InvoicePreviewCanvas.tsx", "utf8");
+  const editor = readFileSync("components/invoices/InvoiceTemplateEditor.tsx", "utf8");
+  assert.match(preview, /210 \* \(96 \/ 25\.4\)/);
+  assert.match(preview, /297 \* \(96 \/ 25\.4\)/);
+  assert.match(preview, /ResizeObserver/);
+  assert.match(preview, /transform: `translateX\(-50%\) scale\(\$\{scale\}\)`/);
+  assert.match(editor, /<InvoicePreviewCanvas/);
+  assert.doesNotMatch(editor, /<InvoiceDocument/);
+});
+
+test("global confirmation invokes destructive actions with non-submit buttons", () => {
+  const dialog = readFileSync("components/ui/ConfirmDialog.tsx", "utf8");
+  const deleteClient = readFileSync("lib/delete/withUndo.ts", "utf8");
+  assert.match(dialog, /<AlertDialog\.Action asChild>/);
+  assert.match(dialog, /type="button"/);
+  assert.match(dialog, /void onConfirm\(\)/);
+  assert.match(deleteClient, /method: "DELETE"/);
+  assert.match(deleteClient, /res\.status === 409/);
+  assert.match(deleteClient, /correlationId/);
 });
 
 test("long and multi-page item data remains intact", () => {
