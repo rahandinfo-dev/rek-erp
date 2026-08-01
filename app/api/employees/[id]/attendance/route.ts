@@ -8,6 +8,8 @@ import {
 } from "@/lib/employees/history";
 import { ATTENDANCE_STATUS_LABELS } from "@/lib/employees/labels";
 
+function parseTime(value?: string | null) { return value ? new Date(value) : null; }
+
 type Params = { params: Promise<{ id: string }> };
 
 export async function GET(req: NextRequest, { params }: Params) {
@@ -117,10 +119,20 @@ export async function POST(req: NextRequest, { params }: Params) {
         date,
         status: parsed.data.status,
         notes: parsed.data.notes || null,
+        checkIn: parseTime(parsed.data.checkIn),
+        checkOut: parseTime(parsed.data.checkOut),
+        lateMinutes: parsed.data.lateMinutes,
+        isAbsent: parsed.data.status === "ABSENT",
+        isLeave: parsed.data.status === "LEAVE",
       },
       update: {
         status: parsed.data.status,
         notes: parsed.data.notes || null,
+        checkIn: parseTime(parsed.data.checkIn),
+        checkOut: parseTime(parsed.data.checkOut),
+        lateMinutes: parsed.data.lateMinutes,
+        isAbsent: parsed.data.status === "ABSENT",
+        isLeave: parsed.data.status === "LEAVE",
       },
     });
 

@@ -100,42 +100,14 @@ export async function POST(req: NextRequest, { params }: Params) {
     const paymentDate = parseOptionalDate(data.paymentDate);
     const nextSalaryDate = parseOptionalDate(data.nextSalaryDate);
 
-    const payment = await db.salaryPayment.upsert({
-      where: {
-        employeeId_month_year: {
-          employeeId: id,
-          month: data.month,
-          year: data.year,
-        },
-      },
-      create: {
-        companyId: user.companyId,
-        employeeId: id,
-        amount: data.amount,
-        month: data.month,
-        year: data.year,
-        paymentDate,
-        nextSalaryDate,
-        status: data.status,
-        notes: data.notes || null,
-      },
-      update: {
-        amount: data.amount,
-        paymentDate,
-        nextSalaryDate,
-        status: data.status,
-        notes: data.notes || null,
-      },
+    const payment = await db.salaryPayment.create({
+      data: { companyId: user.companyId, employeeId: id, amount: data.amount,
+        remainingAmount: data.remainingAmount, currency: data.currency, paymentMethod: data.paymentMethod,
+        month: data.month, year: data.year, paymentDate, nextSalaryDate, status: data.status, notes: data.notes || null },
     });
 
-    if (nextSalaryDate || data.amount) {
-      await db.employee.update({
-        where: { id },
-        data: {
-          monthlySalary: data.amount,
-          ...(nextSalaryDate ? { nextSalaryDate } : {}),
-        },
-      });
+    if (nextSalaryDate) {
+      await db.employee.update({ where: { id }, data: { nextSalaryDate } });
     }
 
     await logEmployeeHistory({

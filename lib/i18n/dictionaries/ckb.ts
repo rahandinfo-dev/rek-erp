@@ -151,6 +151,7 @@ export const ckbMessages = {
     drafts: "ناوەندی ڕەشنووس",
     recycleBin: "سەبەتەی زبڵ",
     versionHistory: "مێژووی وەشان",
+    releases: "وەشان",
     bulk: "کردارە کۆمەڵایەتییەکان",
     recent: "دوایین بینراوەکان",
     recovery: "ناوەندی گەڕاندنەوە",
@@ -160,7 +161,6 @@ export const ckbMessages = {
     settings: "ڕێکخستن",
     settingsFull: "ڕێکخستنەکان",
     numbering: "ژمارەدانی خۆکار",
-    systemDocs: "فێرکاری سیستەم",
     templates: "قاڵبی پسوولە",
     apps: "ئەپەکان",
     searchMenu: "گەڕان لە مێنیو…",
@@ -644,6 +644,7 @@ export const ckbMessages = {
     draftName: "ناوی ڕەشنووس",
     draftPreview: "پێشبینینی ڕەشنووس",
     versionHistory: "مێژووی وەشان",
+    releases: "وەشان",
     deleteConfirm:
       "ئەم ڕەشنووسە دەسڕدرێتەوە. هێشتا دەتوانیت وێنەی دانیشتن لە ناوەندی گەڕاندنەوە بگەڕێنیتەوە.",
     useResume: "بۆ بڕگەکانی گەڕاندنەوەی دانیشتن «بەردەوامبوون» بەکاربهێنە",
@@ -1552,10 +1553,6 @@ export const ckbMessages = {
     templatesSubtitle: "چەند قاڵب دروست بکە — A4، Thermal، Receipt",
     templatesEmpty: "هیچ قاڵبێک نییە. یەکەم قاڵب دروست بکە.",
     entityType: "ڕێکخستنەکان",
-    systemDocs: "فێرکاری سیستەم",
-    systemDocsBody:
-      "ڕێنمایی فەرمی و تەواوی ڕێک ERP بە کوردی سۆرانی — هەموو مۆدیول، هەنگاو بە هەنگاو، نموونە و چارەسەری کێشە.",
-    openDocs: "کردنەوەی فێرکاری",
   },
   barcode: {
     title: "بارکۆد",

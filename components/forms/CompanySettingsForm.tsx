@@ -79,7 +79,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
       stamp: company.stamp ?? "",
       themeColor: settings?.themeColor || "#FFAE42",
       accentColor: settings?.accentColor || "#FFF8EF",
-      fontFamily: settings?.fontFamily || "Rudaw",
+      fontFamily: settings?.fontFamily || "NRT",
       currency: resolveCurrencyCode(settings?.currency),
     }),
     [company, settings]
@@ -375,7 +375,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
               onChange={(e) => setFontFamily(e.target.value)}
               className={inputClassName}
             >
-              <option value="Rudaw">Rudaw</option>
+              <option value="NRT">NRT</option>
               <option value="Tahoma">Tahoma</option>
               <option value="Segoe UI">Segoe UI</option>
             </select>

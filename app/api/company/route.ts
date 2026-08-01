@@ -46,7 +46,7 @@ export async function GET() {
           language: "ku",
           themeColor: "#FFAE42",
           accentColor: "#FFF8EF",
-          fontFamily: "Rudaw",
+          fontFamily: "NRT",
         },
       },
     });
@@ -129,7 +129,7 @@ export async function PUT(req: NextRequest) {
           companyId: user.companyId,
           themeColor: data.themeColor || "#FFAE42",
           accentColor: data.accentColor || "#FFF8EF",
-          fontFamily: data.fontFamily || "Rudaw",
+          fontFamily: data.fontFamily || "NRT",
           currency: data.currency || "IQD",
         },
         update: {

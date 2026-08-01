@@ -13,6 +13,10 @@ export const employeeStatuses = [
   "ACTIVE",
   "INACTIVE",
   "SUSPENDED",
+  "ON_LEAVE",
+  "ABSENT",
+  "LATE",
+  "TERMINATED",
 ] as const;
 
 export const attendanceStatuses = [
@@ -49,23 +53,24 @@ export const employeeSchema = z.object({
         .string()
         .min(2, "ناوی بەکارهێنەر پێویستە.")
         .regex(/^[a-zA-Z0-9._-]+$/, "ناوی بەکارهێنەر نادروستە."),
-    ])
-    .optional(),
-  phone: z.string().optional().nullable(),
+    ]),
+  phone: z.string().min(7, "ژمارەی مۆبایل پێویستە."),
   email: z
     .union([
       z.string().email("ئیمەیڵ دروست نییە."),
       z.literal(""),
-      z.null(),
     ])
     .optional(),
-  address: z.string().optional().nullable(),
+  address: z.string().min(2, "ناونیشان پێویستە."),
   nationalId: z.string().optional().nullable(),
-  position: z.string().optional().nullable(),
+  nationalIdImage: z.string().optional().nullable(),
+  position: z.string().min(2, "ناونیشانی کار پێویستە."),
   department: z.string().optional().nullable(),
   role: z.enum(employeeRoles).default("STAFF"),
   status: z.enum(employeeStatuses).default("ACTIVE"),
-  monthlySalary: z.number().nonnegative().default(0),
+  monthlySalary: z.number().nonnegative(),
+  salaryCurrency: z.string().min(3).max(3).default("IQD"),
+  salaryDueDay: z.number().int().min(1).max(28).default(1),
   nextSalaryDate: z.string().optional().nullable(),
   dateJoined: z.string().optional().nullable(),
   notes: z.string().optional().nullable(),
@@ -74,6 +79,9 @@ export const employeeSchema = z.object({
 export const attendanceSchema = z.object({
   date: z.string().min(1, "بەروار پێویستە."),
   status: z.enum(attendanceStatuses),
+  checkIn: z.string().optional().nullable(),
+  checkOut: z.string().optional().nullable(),
+  lateMinutes: z.number().int().nonnegative().default(0),
   notes: z.string().optional().nullable(),
 });
 
@@ -95,6 +103,9 @@ export const salarySchema = z.object({
   paymentDate: z.string().optional().nullable(),
   nextSalaryDate: z.string().optional().nullable(),
   status: z.enum(salaryStatuses).default("PENDING"),
+  remainingAmount: z.number().nonnegative().default(0),
+  currency: z.string().min(3).max(3).default("IQD"),
+  paymentMethod: z.enum(["CASH","CARD","TRANSFER","CREDIT","DIGITAL","OTHER"]).default("CASH"),
   notes: z.string().optional().nullable(),
 });
 

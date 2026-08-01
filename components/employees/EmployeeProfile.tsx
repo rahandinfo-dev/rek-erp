@@ -176,6 +176,8 @@ export default function EmployeeProfile({
     role: employee.role as EmployeeFormValues["role"],
     status: employee.status as EmployeeFormValues["status"],
     monthlySalary: employee.monthlySalary,
+    salaryCurrency: "IQD",
+    salaryDueDay: 1,
     nextSalaryDate: toInputDate(employee.nextSalaryDate),
     dateJoined: toInputDate(employee.dateJoined),
     notes: employee.notes || "",

@@ -1,7 +1,6 @@
 import {
   Banknote,
   Barcode,
-  BookOpen,
   Boxes,
   Calculator,
   ChartColumnIncreasing,
@@ -172,6 +171,12 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
         keywords: ["audit"],
       },
       {
+        href: "/dashboard/releases",
+        labelKey: "nav.releases",
+        icon: Sparkles,
+        keywords: ["release", "version", "وەشان"],
+      },
+      {
         href: "/dashboard/version-history",
         labelKey: "nav.versionHistory",
         icon: History,
@@ -266,12 +271,6 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
         labelKey: "nav.calculator",
         icon: Calculator,
         keywords: ["calculator", "calc", "ژمێرەر"],
-      },
-      {
-        href: "/dashboard/settings/docs",
-        labelKey: "nav.systemDocs",
-        icon: BookOpen,
-        keywords: ["docs", "help", "manual", "فێرکاری", "ڕێنمایی", "فێرکاری سیستەم"],
       },
       {
         href: "/dashboard/settings",

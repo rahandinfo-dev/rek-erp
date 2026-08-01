@@ -7,7 +7,7 @@ import UserAvatarForm from "@/components/forms/UserAvatarForm";
 import AutoSaveSettingsPanel from "@/components/unsaved/AutoSaveSettingsPanel";
 import NotificationPrefsPanel from "@/components/pwa/NotificationPrefsPanel";
 import RecordVersionHistorySection from "@/components/versions/RecordVersionHistorySection";
-import { BookOpen, FileText, Hash, Plus } from "lucide-react";
+import { FileText, Hash, Plus } from "lucide-react";
 import Image from "next/image";
 import { tServer } from "@/lib/i18n";
 
@@ -39,13 +39,6 @@ export default async function SettingsPage() {
 
         <div className="flex flex-wrap gap-2">
           <Link
-            href="/dashboard/settings/docs"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#FFAE42]/30 bg-gradient-to-br from-[#FFAE42]/10 to-white px-5 py-3 font-bold text-[#FFAE42] shadow-sm transition hover:border-[#FFAE42]/50 hover:shadow-md"
-          >
-            <BookOpen size={18} />
-            {t("settings.systemDocs")}
-          </Link>
-          <Link
             href="/dashboard/settings/numbering"
             className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#FFAE42]/20 bg-white px-5 py-3 font-bold text-[#FFAE42] hover:bg-[#FFAE42]/5"
           >
@@ -61,30 +54,6 @@ export default async function SettingsPage() {
           </Link>
         </div>
       </div>
-
-      <Link
-        href="/dashboard/settings/docs"
-        className="group block overflow-hidden rounded-3xl border border-[#FFAE42]/25 bg-gradient-to-br from-[#FFAE42]/8 via-white to-amber-50/40 p-6 shadow-sm transition hover:border-[#FFAE42]/40 hover:shadow-md sm:p-8"
-      >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-start gap-4">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-[#FFAE42]/15 text-[#FFAE42] transition group-hover:scale-105">
-              <BookOpen size={28} />
-            </div>
-            <div>
-              <h2 className="text-xl font-black text-[#FFAE42] sm:text-2xl">
-                {t("settings.systemDocs")}
-              </h2>
-              <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-base">
-                {t("settings.systemDocsBody")}
-              </p>
-            </div>
-          </div>
-          <span className="inline-flex shrink-0 items-center justify-center rounded-2xl bg-[#FFAE42] px-6 py-3 text-sm font-bold text-white shadow-sm transition group-hover:bg-[#e89d35]">
-            {t("settings.openDocs")}
-          </span>
-        </div>
-      </Link>
 
       <CompanySettingsForm
         company={{
