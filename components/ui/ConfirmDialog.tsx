@@ -11,7 +11,7 @@ type Props = {
   confirmText?: string;
   cancelText?: string;
   loading?: boolean;
-  onConfirm: () => void;
+  onConfirm: () => unknown;
   onCancel: () => void;
 };
 
@@ -55,14 +55,19 @@ export default function ConfirmDialog({
               </Button>
             </AlertDialog.Cancel>
 
-            <Button
-              type="button"
-              variant="destructive"
-              disabled={loading}
-              onClick={onConfirm}
-            >
-              {loading ? t("common.pleaseWait") : resolvedConfirm}
-            </Button>
+            <AlertDialog.Action asChild>
+              <button
+                type="button"
+                disabled={loading}
+                onClick={(event) => {
+                  event.preventDefault();
+                  void onConfirm();
+                }}
+                className="inline-flex h-11 items-center justify-center border border-transparent bg-destructive px-5 text-sm font-bold text-white transition hover:brightness-95 disabled:pointer-events-none disabled:opacity-50"
+              >
+                {loading ? t("common.pleaseWait") : resolvedConfirm}
+              </button>
+            </AlertDialog.Action>
           </div>
         </AlertDialog.Content>
       </AlertDialog.Portal>

@@ -39,11 +39,19 @@ async function httpDelete(url: string) {
     return { ok: true, message: t("deleteUndo.queuedOffline") };
   }
   const res = await fetch(url, { method: "DELETE" });
-  const json = (await res.json()) as { success?: boolean; message?: string };
+  const json = await readDeleteResponse(res);
   return {
     ok: res.ok && json.success !== false,
-    message: json.message,
+    message: res.status === 409
+      ? (json.message || "ناتوانرێت ئەم تۆمارە بسڕدرێتەوە چونکە بە تۆمارێکی ترەوە بەستراوەتەوە.")
+      : json.message,
   };
+}
+
+async function readDeleteResponse(res: Response): Promise<{ success?: boolean; message?: string }> {
+  const contentType = res.headers.get("content-type") || "";
+  if (!contentType.includes("application/json")) return {};
+  return (await res.json()) as { success?: boolean; message?: string };
 }
 
 async function httpRestore(url: string) {
@@ -58,7 +66,7 @@ async function httpRestore(url: string) {
     return { ok: true, message: t("deleteUndo.queuedOffline") };
   }
   const res = await fetch(url, { method: "POST" });
-  const json = (await res.json()) as { success?: boolean; message?: string };
+  const json = await readDeleteResponse(res);
   return {
     ok: res.ok && json.success !== false,
     message: json.message,
@@ -123,8 +131,10 @@ export async function softDeleteWithUndo(
 
     return { ok: true, message: deleted.message };
   } catch {
-    appToast.error("نەتوانرا کردارەکە تەواو بکرێت.", "دووبارە هەوڵبدەرەوە.");
-    return { ok: false };
+    const correlationId = globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
+    const message = `هەڵەیەک لە سڕینەوەی تۆمارەکە ڕوویدا. کۆدی بەدواداچوون: ${correlationId}`;
+    appToast.error(message, "دووبارە هەوڵبدەرەوە.");
+    return { ok: false, message };
   }
 }
 
