@@ -1,7 +1,11 @@
 @font-face {
   font-family: "NRT";
   src: url("/fonts/NRT-Reg.ttf") format("truetype");
+<<<<<<< HEAD
   font-weight: 300;
+=======
+  font-weight: 400;
+>>>>>>> d9ea802 (Apply NRT Kurdish font globally)
   font-style: normal;
   font-display: swap;
 }
