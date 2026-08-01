@@ -1262,6 +1262,11 @@ model PurchaseItem {
 
   currency String @default("IQD")
 
+  /// Immutable print snapshot. Nullable for pre-migration purchases.
+  productNameSnapshot String?
+  productSkuSnapshot  String?
+  unitSnapshot        String?
+
   createdAt DateTime @default(now())
 
   @@index([purchaseId])
@@ -1510,6 +1515,10 @@ model InvoiceItem {
   productId   String?
   productName String
   productSku  String?
+  unit         String?
+  currency     String @default("IQD")
+  discount     Decimal @default(0) @db.Decimal(12, 2)
+  tax          Decimal @default(0) @db.Decimal(12, 2)
 
   quantity  Decimal @db.Decimal(12, 2)
   unitPrice Decimal @db.Decimal(12, 2)

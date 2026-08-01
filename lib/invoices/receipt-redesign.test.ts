@@ -2,13 +2,15 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { DEFAULT_INVOICE_CONFIG, SAMPLE_INVOICE_DATA } from "./template-config.ts";
+import { formatReceiptDate, formatReceiptMoney, formatReceiptTime } from "./receipt-format.ts";
 
 test("receipt defaults expose editable labels and optional accounting columns", () => {
   assert.equal(DEFAULT_INVOICE_CONFIG.showSku, true);
   assert.equal(DEFAULT_INVOICE_CONFIG.showDiscount, true);
   assert.equal(DEFAULT_INVOICE_CONFIG.showTax, true);
   assert.equal(DEFAULT_INVOICE_CONFIG.labels.customerName, "ناوی کڕیار");
-  assert.equal(DEFAULT_INVOICE_CONFIG.labels.grandTotal, "پارەی دراو");
+  assert.equal(DEFAULT_INVOICE_CONFIG.labels.grandTotal, "کۆی کۆتایی");
+  assert.equal(DEFAULT_INVOICE_CONFIG.labels.paid, "پارەی دراو");
 });
 
 test("currency is rendered from stored context without conversion", () => {
@@ -16,6 +18,8 @@ test("currency is rendered from stored context without conversion", () => {
   const usd = { ...SAMPLE_INVOICE_DATA, currency: "USD", total: 12.5 };
   assert.equal(usd.total, 12.5);
   assert.equal(usd.currency, "USD");
+  assert.equal(formatReceiptMoney(12.5, "USD"), "$12.50");
+  assert.equal(formatReceiptMoney(40000, "IQD"), "40,000 IQD");
 });
 
 test("A4 CSS enforces sharp corners, repeated headings, and print isolation", () => {
@@ -43,7 +47,23 @@ test("receipt supports editable company/customer content and selectable fonts", 
   assert.equal(DEFAULT_INVOICE_CONFIG.disclaimerEnabled, true);
   assert.match(DEFAULT_INVOICE_CONFIG.disclaimerText, /هەڵە/);
   assert.equal(DEFAULT_INVOICE_CONFIG.timeFormat, "12");
+  assert.equal(formatReceiptTime("14:46:00", "12"), "2:46:00 PM");
+  assert.equal(formatReceiptDate("01/08/2026", "YYYY/MM/DD"), "2026/08/01");
   assert.equal(DEFAULT_INVOICE_CONFIG.showPhone2, true);
+});
+
+test("a transaction cannot mix persisted document currencies", () => {
+  const saleValidator = readFileSync("lib/validators/sale.ts", "utf8");
+  const purchaseValidator = readFileSync("lib/validators/purchase.ts", "utf8");
+  assert.match(saleValidator, /currencies\.size > 1/);
+  assert.match(purchaseValidator, /currencies\.size > 1/);
+});
+
+test("purchase detail is company-scoped and prefers immutable item snapshots", () => {
+  const page = readFileSync("app/dashboard/purchases/[id]/page.tsx", "utf8");
+  assert.match(page, /where: \{ id, companyId \}/);
+  assert.match(page, /productNameSnapshot \|\| item\.product\.name/);
+  assert.match(page, /mode: "PURCHASE"/);
 });
 
 test("accounting states preserve authoritative totals and optional party fields", () => {

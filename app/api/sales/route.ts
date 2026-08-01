@@ -143,7 +143,7 @@ export async function POST(req: NextRequest) {
         db.invoiceTemplate.findFirst({
           where: {
             companyId,
-            OR: [{ isDefault: true }, { docType: "SALE" }],
+            docType: "SALE",
           },
           orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
           select: { id: true },
@@ -277,7 +277,7 @@ export async function POST(req: NextRequest) {
         include: {
           customer: true,
           warehouse: true,
-          items: { include: { product: true } },
+          items: { include: { product: { include: { unit: true } } } },
         },
       });
 

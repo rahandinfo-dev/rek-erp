@@ -148,6 +148,7 @@ export async function POST(req: NextRequest) {
         id: { in: productIds },
         active: true,
       },
+      include: { unit: true },
     });
 
     if (products.length !== new Set(productIds).size) {
@@ -203,6 +204,9 @@ export async function POST(req: NextRequest) {
               unitPrice: item.unitPrice,
               total: roundMoney(item.quantity * item.unitPrice),
               currency: item.currency || "IQD",
+              productNameSnapshot: products.find((product) => product.id === item.productId)?.name,
+              productSkuSnapshot: products.find((product) => product.id === item.productId)?.sku,
+              unitSnapshot: products.find((product) => product.id === item.productId)?.unit.symbol || products.find((product) => product.id === item.productId)?.unit.name,
             })),
           },
         },

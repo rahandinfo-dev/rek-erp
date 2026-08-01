@@ -32,6 +32,8 @@ export type InvoiceTemplateConfig = {
   showSku: boolean;
   showDiscount: boolean;
   showTax: boolean;
+  showUnit: boolean;
+  showNotes: boolean;
   showSignatures: boolean;
   showPrintedBy: boolean;
   showPrintedAt: boolean;
@@ -41,6 +43,7 @@ export type InvoiceTemplateConfig = {
   phone2: string;
   documentPrefix: string;
   timeFormat: "12" | "24";
+  dateFormat: "DD/MM/YYYY" | "YYYY/MM/DD" | "MM/DD/YYYY";
   showCustomerCode: boolean;
   showCustomerPhone: boolean;
   showCustomerAddress: boolean;
@@ -90,6 +93,8 @@ export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
   showSku: true,
   showDiscount: true,
   showTax: true,
+  showUnit: true,
+  showNotes: true,
   showSignatures: true,
   showPrintedBy: true,
   showPrintedAt: true,
@@ -99,6 +104,7 @@ export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
   phone2: "",
   documentPrefix: "",
   timeFormat: "12",
+  dateFormat: "DD/MM/YYYY",
   showCustomerCode: true,
   showCustomerPhone: true,
   showCustomerAddress: true,
@@ -109,13 +115,14 @@ export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
   thankYouText: "سوپاس بۆ بازرگانیکردنتان",
   labels: {
     customerCode: "کۆدی کڕیار", customerName: "ناوی کڕیار", customerPhone: "ژ. مۆبایل", customerAddress: "ناونیشان",
-    invoiceNo: "ژمارەی پسوولە", date: "بەروار", time: "کات", cashier: "کاشێر", warehouse: "کۆگا", reference: "سەرچاوە",
+    invoiceNo: "ژ.پسوولە", date: "بەروار", time: "کاتژمێر", cashier: "کاشێر", warehouse: "کۆگا", reference: "سەرچاوە",
     row: "ژ", sku: "کۆد", product: "ناوی بەرهەم", quantity: "بڕ", unit: "یەکە", unitPrice: "نرخ", discount: "داشکاندن", tax: "باج", lineTotal: "کۆی گشتی",
-    subtotal: "کۆی ناوەڕاست", additionalCharges: "خەرجی زیادە", grandTotal: "پارەی دراو", paid: "دراو", remaining: "ماوە", signature: "واژووی فرۆشیار", customerSignature: "واژووی کڕیار",
+    subtotal: "کۆی گشتی", additionalCharges: "خەرجی زیادە", grandTotal: "کۆی کۆتایی", paid: "پارەی دراو", remaining: "بالانسی پسوولە", signature: "واژووی فرۆشیار", customerSignature: "واژووی کڕیار",
   },
 };
 
 export type InvoicePreviewData = {
+  mode?: "SALE" | "PURCHASE";
   invoiceNo: string;
   date: string;
   time?: string;
