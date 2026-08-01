@@ -28,6 +28,7 @@ export const createPurchaseSchema = z
   })
   .superRefine((data, ctx) => {
     const ids = new Set<string>();
+    const currencies = new Set<string>();
     let subtotal = 0;
     for (const [index, item] of data.items.entries()) {
       if (ids.has(item.productId)) ctx.addIssue({
@@ -36,8 +37,10 @@ export const createPurchaseSchema = z
         path: ["items", index, "productId"],
       });
       ids.add(item.productId);
+      currencies.add(item.currency);
       subtotal += item.quantity * item.unitPrice;
     }
+    if (currencies.size > 1) ctx.addIssue({ code: z.ZodIssueCode.custom, message: "هەموو دێڕەکان دەبێت یەک دراو بەکاربهێنن.", path: ["items"] });
     if (subtotal - data.discount + data.tax < 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

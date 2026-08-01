@@ -31,7 +31,8 @@ type SaleForInvoice = {
     quantity: Prisma.Decimal | number;
     unitPrice: Prisma.Decimal | number;
     total: Prisma.Decimal | number;
-    product: { name: string; sku: string };
+    currency: string;
+    product: { name: string; sku: string; unit: { name: string; symbol: string } };
   }>;
 };
 
@@ -109,6 +110,8 @@ export async function createInvoiceFromSale(
           productId: item.productId,
           productName: item.product.name,
           productSku: item.product.sku,
+          unit: item.product.unit.symbol || item.product.unit.name,
+          currency: item.currency,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
           total: item.total,

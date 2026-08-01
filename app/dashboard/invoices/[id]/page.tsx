@@ -39,7 +39,7 @@ export default async function InvoiceDetailPage({
       pdfHistory: { orderBy: { createdAt: "desc" }, take: 50 },
       template: true,
       sale: { select: { id: true, status: true } },
-      company: { select: { settings: { select: { currency: true } } } },
+      company: true,
     },
   });
 
@@ -52,7 +52,7 @@ export default async function InvoiceDetailPage({
   };
 
   const size = (invoice.template?.size || "A4") as InvoiceSizeOption;
-  const preview = mapInvoiceToPreview({ ...invoice, currency: invoice.company.settings?.currency || "IQD" });
+  const preview = mapInvoiceToPreview({ ...invoice, mode: "SALE", currency: invoice.items[0]?.currency || "IQD" });
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -104,13 +104,13 @@ export default async function InvoiceDetailPage({
         invoiceId={invoice.id}
         invoiceNo={invoice.invoiceNo}
         company={{
-          name: invoice.companyName,
-          email: invoice.companyEmail,
-          phone: invoice.companyPhone,
-          address: invoice.companyAddress,
-          website: invoice.companyWebsite,
-          logo: invoice.companyLogo,
-          taxNumber: invoice.companyTaxNumber,
+          name: invoice.company.name,
+          email: invoice.company.email,
+          phone: invoice.company.phone,
+          address: invoice.company.address,
+          website: invoice.company.website,
+          logo: invoice.company.logo,
+          taxNumber: invoice.company.taxNumber,
           invoiceHeader: invoice.companyInvoiceHeader,
           invoiceFooter: invoice.companyInvoiceFooter,
           signature: invoice.companySignature,

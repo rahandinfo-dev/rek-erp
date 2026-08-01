@@ -282,9 +282,10 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
               <FormField label="ژمارەی مۆبایلی یەکەم (جێگرەوە)"><input className={inputClassName} value={config.phone1} onChange={(e) => patchConfig({ phone1: e.target.value })}/></FormField>
               <FormField label="ژمارەی مۆبایلی دووەم"><input className={inputClassName} value={config.phone2} onChange={(e) => patchConfig({ phone2: e.target.value })}/></FormField>
               <div className="grid gap-3 sm:grid-cols-2"><FormField label="پێشگری بەڵگە (١-٣ پیت)"><input dir="ltr" maxLength={3} className={inputClassName} value={config.documentPrefix} onChange={(e) => patchConfig({ documentPrefix: e.target.value.toUpperCase().replace(/[^A-Z]/g, "") })}/></FormField><FormField label="شێوازی کات"><select className={selectClassName} value={config.timeFormat} onChange={(e) => patchConfig({timeFormat: e.target.value as "12" | "24"})}><option value="12">12-hour (AM/PM)</option><option value="24">24-hour</option></select></FormField></div>
+              <FormField label="شێوازی بەروار"><select className={selectClassName} value={config.dateFormat} onChange={(e) => patchConfig({dateFormat: e.target.value as InvoiceTemplateConfig["dateFormat"]})}><option>DD/MM/YYYY</option><option>YYYY/MM/DD</option><option>MM/DD/YYYY</option></select></FormField>
               <FormField label="ئاگاداری خوارەوە"><textarea className={textareaClassName} value={config.disclaimerText} onChange={(e) => patchConfig({disclaimerText: e.target.value})}/></FormField>
               <FormField label="دەقی سوپاس"><input className={inputClassName} value={config.thankYouText} onChange={(e) => patchConfig({ thankYouText: e.target.value })}/></FormField>
-              <div className="grid grid-cols-2 gap-3 text-sm">{([['showSku','کۆدی کاڵا'],['showDiscount','داشکاندن'],['showTax','باج'],['showSignatures','واژووەکان'],['showPrintedBy','چاپکراو لەلایەن'],['showPrintedAt','کاتی چاپ'],['showCustomerCode','کۆدی کڕیار'],['showCustomerPhone','مۆبایلی کڕیار'],['showCustomerAddress','ناونیشانی کڕیار'],['disclaimerEnabled','ئاگاداری خوارەوە']] as const).map(([key,label]) => <label key={key} className="flex items-center gap-2"><input type="checkbox" checked={config[key]} onChange={(e) => patchConfig({[key]: e.target.checked})}/>{label}</label>)}</div>
+              <div className="grid grid-cols-2 gap-3 text-sm">{([['showSku','کۆدی کاڵا'],['showUnit','یەکە'],['showNotes','تێبینی'],['showDiscount','داشکاندن'],['showTax','باج'],['showSignatures','واژووەکان'],['showPrintedBy','چاپکراو لەلایەن'],['showPrintedAt','کاتی چاپ'],['showCustomerCode','کۆدی کڕیار'],['showCustomerPhone','مۆبایلی کڕیار'],['showCustomerAddress','ناونیشانی کڕیار'],['disclaimerEnabled','ئاگاداری خوارەوە']] as const).map(([key,label]) => <label key={key} className="flex items-center gap-2"><input type="checkbox" checked={config[key]} onChange={(e) => patchConfig({[key]: e.target.checked})}/>{label}</label>)}</div>
               <p className="text-sm font-bold">دەستکاری ناونیشانەکان</p>
               <div className="grid gap-3 sm:grid-cols-2">{(Object.keys(config.labels) as Array<keyof typeof config.labels>).map((key) => <FormField key={key} label={key}><input className={inputClassName} value={config.labels[key]} onChange={(e) => patchConfig({labels: {...config.labels, [key]: e.target.value}})}/></FormField>)}</div>
             </div>
@@ -335,6 +336,8 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
                   onChange={(e) => patchConfig({ fontFamily: e.target.value })}
                 >
                   <option value="Rudaw, Tahoma, sans-serif">Rudaw</option>
+                  <option value="NRT, Rudaw, Tahoma, sans-serif">NRT</option>
+                  <option value="Rabar, Rudaw, Tahoma, sans-serif">Rabar</option>
                   <option value="Tahoma, sans-serif">Tahoma</option>
                   <option value="Georgia, serif">Georgia</option>
                   <option value="'Segoe UI', sans-serif">Segoe UI</option>
