@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma/db";
+import { canonicalLineTotal, decimalAdd, decimalCompare, decimalSubtract } from "@/lib/invoices/decimal";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { createSaleSchema } from "@/lib/validators/sale";
-import { formatMoney, roundMoney } from "@/lib/utils/format";
+import { formatMoney } from "@/lib/utils/format";
 import { notifySafe } from "@/lib/notifications/create";
 import { notifyStockLevels } from "@/lib/notifications/stock";
 import { createInvoiceFromSale } from "@/lib/invoices/create-from-sale";
@@ -224,14 +225,12 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const subtotal = roundMoney(
-      data.items.reduce(
-        (sum, item) => sum + roundMoney(item.quantity * item.unitPrice - item.discount),
-        0,
-      ),
+    const lineTotals = data.items.map((item) =>
+      canonicalLineTotal(item.quantity, item.unitPrice, item.discount),
     );
-    const total = roundMoney(subtotal - data.discount + data.tax);
-    const remainingBalance = roundMoney(total - data.paidAmount);
+    const subtotal = lineTotals.reduce(decimalAdd, "0");
+    const total = decimalAdd(decimalSubtract(subtotal, data.discount), data.tax);
+    const remainingBalance = decimalSubtract(total, data.paidAmount);
 
     trace.ok(activeStep, stepStarted);
     activeStep = "SALE_PRE_21_NUMBERING_START";
@@ -273,7 +272,7 @@ export async function POST(req: NextRequest) {
               quantity: item.quantity,
               unitPrice: item.unitPrice,
               discount: item.discount,
-              total: roundMoney(item.quantity * item.unitPrice - item.discount),
+              total: canonicalLineTotal(item.quantity, item.unitPrice, item.discount),
               currency: item.currency || "IQD",
             })),
           },
@@ -334,7 +333,7 @@ export async function POST(req: NextRequest) {
         paidAmount: persistedPaidAmount,
         remainingBalance:
           created.remainingBalance ??
-          roundMoney(Number(created.total) - Number(persistedPaidAmount)),
+          decimalSubtract(created.total, persistedPaidAmount),
       };
       const createdInvoice = await createInvoiceFromSale(
         tx,
@@ -391,7 +390,7 @@ export async function POST(req: NextRequest) {
       data.items.map((item) => item.productId),
     );
 
-    if (total >= 1_000_000) {
+    if (decimalCompare(total, 1_000_000) >= 0) {
       await notifySafe({
         companyId,
         userId: user.id,

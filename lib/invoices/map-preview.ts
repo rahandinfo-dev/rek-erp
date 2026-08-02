@@ -2,6 +2,9 @@ import { PAYMENT_METHOD_LABELS } from "./payment.ts";
 import type { InvoicePreviewData } from "./template-config.ts";
 import type { PaymentMethod } from "../prisma/client.ts";
 import { formatDate, formatTime } from "../utils/datetime.ts";
+import { decimalString, type DecimalValue } from "./decimal.ts";
+
+const persisted = (value: unknown) => decimalString(value as DecimalValue);
 
 type InvoiceLike = {
   mode?: "SALE" | "PURCHASE";
@@ -79,24 +82,24 @@ export function mapInvoiceToPreview(invoice: InvoiceLike): InvoicePreviewData {
     currency: invoice.currency ?? invoice.items[0]?.currency ?? "",
     warehouse: invoice.warehouseName,
     notes: invoice.notes,
-    subtotal: Number(invoice.subtotal),
-    discount: Number(invoice.discount),
-    tax: Number(invoice.tax),
-    total: Number(invoice.grandTotal),
-    paidAmount: invoice.paidAmount === null ? undefined : Number(invoice.paidAmount),
-    remainingBalance: invoice.remainingBalance === null ? undefined : Number(invoice.remainingBalance),
+    subtotal: persisted(invoice.subtotal),
+    discount: persisted(invoice.discount),
+    tax: persisted(invoice.tax),
+    total: persisted(invoice.grandTotal),
+    paidAmount: invoice.paidAmount === null ? undefined : persisted(invoice.paidAmount),
+    remainingBalance: invoice.remainingBalance === null ? undefined : persisted(invoice.remainingBalance),
     paymentMethod: PAYMENT_METHOD_LABELS[invoice.paymentMethod],
     createdBy: invoice.createdByName,
     items: invoice.items.map((item) => ({
       name: item.productName,
       sku: item.productSku || undefined,
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-      total: Number(item.total),
+      quantity: persisted(item.quantity),
+      unitPrice: persisted(item.unitPrice),
+      total: persisted(item.total),
       unit: item.unit || undefined,
       currency: item.currency,
-      discount: Number(item.discount),
-      tax: Number(item.tax ?? 0),
+      discount: persisted(item.discount),
+      tax: persisted(item.tax ?? 0),
     })),
   };
 }
@@ -119,20 +122,20 @@ export function mapPurchaseToPreview(purchase: PurchaseLike): InvoicePreviewData
     currency: purchase.items[0]?.currency ?? "",
     warehouse: purchase.warehouse.name,
     notes: purchase.notes,
-    subtotal: Number(purchase.subtotal),
-    discount: Number(purchase.discount),
-    tax: Number(purchase.tax),
-    total: Number(purchase.total),
-    paidAmount: purchase.paidAmount === null ? undefined : Number(purchase.paidAmount),
-    remainingBalance: purchase.remainingBalance === null ? undefined : Number(purchase.remainingBalance),
+    subtotal: persisted(purchase.subtotal),
+    discount: persisted(purchase.discount),
+    tax: persisted(purchase.tax),
+    total: persisted(purchase.total),
+    paidAmount: purchase.paidAmount === null ? undefined : persisted(purchase.paidAmount),
+    remainingBalance: purchase.remainingBalance === null ? undefined : persisted(purchase.remainingBalance),
     items: purchase.items.map((item) => ({
       name: item.productNameSnapshot ?? "—",
       sku: item.productSkuSnapshot ?? undefined,
       unit: item.unitSnapshot ?? undefined,
-      quantity: Number(item.quantity),
-      unitPrice: Number(item.unitPrice),
-      total: Number(item.total),
-      discount: Number(item.discount),
+      quantity: persisted(item.quantity),
+      unitPrice: persisted(item.unitPrice),
+      total: persisted(item.total),
+      discount: persisted(item.discount),
     })),
   };
 }

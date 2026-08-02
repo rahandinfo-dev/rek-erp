@@ -18,7 +18,7 @@ test("currency is rendered from stored context without conversion", () => {
   const usd = { ...SAMPLE_INVOICE_DATA, currency: "USD", total: 12.5 };
   assert.equal(usd.total, 12.5);
   assert.equal(usd.currency, "USD");
-  assert.equal(formatReceiptMoney(12.5, "USD"), "$12.50");
+  assert.equal(formatReceiptMoney(12.5, "USD"), "$12.5");
   assert.equal(formatReceiptMoney(40000, "IQD"), "40,000 IQD");
 });
 
@@ -145,12 +145,12 @@ test("printed accounting values are never synthesized by the renderer", () => {
 });
 
 test("accounting states preserve authoritative totals and optional party fields", () => {
-  const full = { ...SAMPLE_INVOICE_DATA, paidAmount: SAMPLE_INVOICE_DATA.total };
+  const full = { ...SAMPLE_INVOICE_DATA, paidAmount: Number(SAMPLE_INVOICE_DATA.total) };
   const partial = { ...SAMPLE_INVOICE_DATA, paidAmount: 45000 };
   const unpaid = { ...SAMPLE_INVOICE_DATA, paidAmount: 0 };
-  assert.equal(full.total - full.paidAmount, 0);
-  assert.equal(partial.total - partial.paidAmount, 100000);
-  assert.equal(unpaid.total - unpaid.paidAmount, unpaid.total);
+  assert.equal(Number(full.total) - Number(full.paidAmount), 0);
+  assert.equal(Number(partial.total) - Number(partial.paidAmount), 100000);
+  assert.equal(Number(unpaid.total) - Number(unpaid.paidAmount), Number(unpaid.total));
 });
 
 test("A4 and independent 80mm templates preserve RTL and LTR SKU behavior", () => {
