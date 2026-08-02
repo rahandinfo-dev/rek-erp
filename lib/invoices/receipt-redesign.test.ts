@@ -95,6 +95,10 @@ test("receipt typography and optional party heading are print-safe", () => {
   assert.match(css, /\.invoice-a4,[\s\S]*\.invoice-thermal[\s\S]*font-family: "NRT"/);
   assert.doesNotMatch(css.slice(css.indexOf("Canonical receipt renderer")), /letter-spacing:\s*-/);
   assert.match(exporter, /await ensureInvoiceAssets\(element, document\)/);
+  assert.match(exporter, /fetch\(NRT_FONT_URL\)/);
+  assert.match(exporter, /new targetWindow\.FontFace\("NRT", await loadNrtFontBytes\(\)/);
+  assert.match(exporter, /targetDocument\.fonts\.add\(font\)/);
+  assert.match(exporter, /font\.status !== "loaded"/);
   assert.match(exporter, /fontSet\?\.load\('16px "NRT"'/);
   assert.match(exporter, /querySelector<HTMLElement>\("\.invoice-a4, \.invoice-thermal"\)/);
   assert.match(exporter, /await ensureInvoiceAssets\([\s\S]*printWindow\.document/);
