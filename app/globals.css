@@ -1931,8 +1931,7 @@ html:not(.dark) .border-zinc-200 {
   overflow: auto;
   background: #e2e8f0;
 }
-.invoice-preview-stage { position: relative; margin-inline: auto; }
-.invoice-preview-canvas { position: absolute; inset: 0 auto auto 50%; transform-origin: top center; }
+.invoice-preview-document { width: max-content; min-width: 100%; }
 
 .invoice-thermal {
   page: thermal;

@@ -42,13 +42,11 @@ test("A4 totals use the full width without the obsolete invoice balance panel", 
   assert.equal(DEFAULT_INVOICE_CONFIG.labels.remaining, "پارەی ماوە / باقی");
 });
 
-test("template editor scales one complete A4 renderer without clipping", () => {
+test("template editor uses the canonical A4 renderer without scaling or reflow", () => {
   const preview = readFileSync("components/invoices/InvoicePreviewCanvas.tsx", "utf8");
   const editor = readFileSync("components/invoices/InvoiceTemplateEditor.tsx", "utf8");
-  assert.match(preview, /210 \* \(96 \/ 25\.4\)/);
-  assert.match(preview, /297 \* \(96 \/ 25\.4\)/);
-  assert.match(preview, /ResizeObserver/);
-  assert.match(preview, /transform: `translateX\(-50%\) scale\(\$\{scale\}\)`/);
+  assert.match(preview, /className="invoice-preview-document"/);
+  assert.doesNotMatch(preview, /ResizeObserver|transform:|scale\(/);
   assert.match(editor, /<InvoicePreviewCanvas/);
   assert.doesNotMatch(editor, /<InvoiceDocument/);
 });
@@ -100,6 +98,8 @@ test("receipt typography and optional party heading are print-safe", () => {
   assert.match(exporter, /fontSet\?\.load\('16px "NRT"'/);
   assert.match(exporter, /querySelector<HTMLElement>\("\.invoice-a4, \.invoice-thermal"\)/);
   assert.match(exporter, /await ensureInvoiceAssets\([\s\S]*printWindow\.document/);
+  assert.match(exporter, /receipt\.outerHTML/);
+  assert.doesNotMatch(exporter, /html2canvas|jsPDF|canvas\.toDataURL/);
 });
 
 test("invoice output has one bundled font and stable Kurdish wrapping metrics", () => {
