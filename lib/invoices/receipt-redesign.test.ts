@@ -96,9 +96,25 @@ test("receipt typography and optional party heading are print-safe", () => {
   assert.match(source, /config\.showCustomerHeading && config\.customerHeading\.trim\(\)/);
   assert.match(css, /\.invoice-a4,[\s\S]*\.invoice-thermal[\s\S]*font-family: "NRT"/);
   assert.doesNotMatch(css.slice(css.indexOf("Shared print typography")), /letter-spacing:\s*-/);
-  assert.match(exporter, /await document\.fonts\?\.ready/);
+  assert.match(exporter, /await ensureInvoiceAssets\(element, document\)/);
+  assert.match(exporter, /fontSet\?\.load\('16px "NRT"'/);
   assert.match(exporter, /querySelector<HTMLElement>\("\.invoice-a4, \.invoice-thermal"\)/);
-  assert.match(exporter, /printWindow\.document\.fonts\.ready/);
+  assert.match(exporter, /await ensureInvoiceAssets\([\s\S]*printWindow\.document/);
+});
+
+test("invoice output has one bundled font and stable Kurdish wrapping metrics", () => {
+  const css = readFileSync("app/globals.css", "utf8");
+  const config = readFileSync("lib/invoices/template-config.ts", "utf8");
+  const editor = readFileSync("components/invoices/InvoiceTemplateEditor.tsx", "utf8");
+  const invoiceCss = css.slice(css.indexOf("Shared print typography"));
+
+  assert.doesNotMatch(invoiceCss, /font-family:\s*"NRT"\s*,/);
+  assert.doesNotMatch(invoiceCss, /letter-spacing/);
+  assert.match(invoiceCss, /\.invoice-a4 \*,[\s\S]*font-family: "NRT" !important/);
+  assert.match(invoiceCss, /overflow-wrap: break-word; word-break: normal/);
+  assert.match(invoiceCss, /font-variant-ligatures: contextual common-ligatures/);
+  assert.doesNotMatch(config, /NRT, Tahoma|numericFontFamily: "Tahoma/);
+  assert.doesNotMatch(editor, /<option value="(?:Tahoma|Arial|system-ui)/);
 });
 
 test("a transaction cannot mix persisted document currencies", () => {
