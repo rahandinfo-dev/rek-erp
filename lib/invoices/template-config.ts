@@ -47,6 +47,8 @@ export type InvoiceTemplateConfig = {
   showCustomerCode: boolean;
   showCustomerPhone: boolean;
   showCustomerAddress: boolean;
+  showCustomerHeading: boolean;
+  customerHeading: string;
   disclaimerEnabled: boolean;
   disclaimerText: string;
   titleFontFamily: string;
@@ -76,7 +78,7 @@ export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
   accentColor: "#FFF8EF",
   textColor: "#0f172a",
   backgroundColor: "#ffffff",
-  fontFamily: "Rudaw, Tahoma, sans-serif",
+  fontFamily: "NRT, Tahoma, Arial, sans-serif",
   fontSize: 12,
   watermarkEnabled: false,
   watermarkText: "REK",
@@ -108,9 +110,11 @@ export const DEFAULT_INVOICE_CONFIG: InvoiceTemplateConfig = {
   showCustomerCode: true,
   showCustomerPhone: true,
   showCustomerAddress: true,
+  showCustomerHeading: false,
+  customerHeading: "زانیاری کڕیار",
   disclaimerEnabled: true,
   disclaimerText: "هەڵە و لەبیرچوون دەگەڕێتەوە بۆ هەردوو لا.",
-  titleFontFamily: "Rudaw, Tahoma, sans-serif",
+  titleFontFamily: "NRT, Tahoma, Arial, sans-serif",
   numericFontFamily: "Tahoma, Arial, sans-serif",
   thankYouText: "سوپاس بۆ بازرگانیکردنتان",
   labels: {
