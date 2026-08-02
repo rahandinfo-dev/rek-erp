@@ -1,3 +1,5 @@
+import type { DecimalValue } from "./decimal.ts";
+
 export type InvoiceSizeOption = "A4" | "THERMAL" | "RECEIPT";
 export type InvoiceDocTypeOption = "SALE" | "PURCHASE" | "GENERIC";
 
@@ -135,28 +137,28 @@ export type InvoicePreviewData = {
   customerPhone?: string | null;
   customerAddress?: string | null;
   currency: string;
-  paidAmount?: number;
-  remainingBalance?: number;
-  additionalCharges?: number;
+  paidAmount?: DecimalValue;
+  remainingBalance?: DecimalValue;
+  additionalCharges?: DecimalValue;
   warehouse: string;
   notes?: string | null;
-  subtotal: number;
-  discount: number;
-  tax: number;
-  total: number;
+  subtotal: DecimalValue;
+  discount: DecimalValue;
+  tax: DecimalValue;
+  total: DecimalValue;
   paymentMethod?: string;
   createdBy?: string | null;
   items: Array<{
     name: string;
     sku?: string;
-    quantity: number;
+    quantity: DecimalValue;
     unit?: string;
     /** Present only when the transaction line persisted this value. */
-    discount?: number;
+    discount?: DecimalValue;
     /** Present only when the transaction line persisted this value. */
-    tax?: number;
-    unitPrice: number;
-    total: number;
+    tax?: DecimalValue;
+    unitPrice: DecimalValue;
+    total: DecimalValue;
   }>;
 };
 

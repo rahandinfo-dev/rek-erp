@@ -1,8 +1,8 @@
-export function formatReceiptMoney(value: number, currency: string) {
-  const amount = new Intl.NumberFormat("en-US", {
-    minimumFractionDigits: currency === "IQD" ? 0 : 2,
-    maximumFractionDigits: currency === "IQD" ? 0 : 2,
-  }).format(value);
+import { decimalString, type DecimalValue } from "./decimal.ts";
+
+export function formatReceiptMoney(value: DecimalValue, currency: string) {
+  const [integer, fraction] = decimalString(value).split(".");
+  const amount = `${BigInt(integer).toLocaleString("en-US")}${fraction ? `.${fraction}` : ""}`;
   return currency === "USD" ? `$${amount}` : `${amount} ${currency}`;
 }
 

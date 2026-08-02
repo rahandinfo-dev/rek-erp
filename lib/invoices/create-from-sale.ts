@@ -9,12 +9,12 @@ type SaleForInvoice = {
   warehouseId: string;
   companyId: string;
   saleDate: Date;
-  subtotal: Prisma.Decimal | number;
-  discount: Prisma.Decimal | number;
-  tax: Prisma.Decimal | number;
-  total: Prisma.Decimal | number;
-  paidAmount: Prisma.Decimal | number;
-  remainingBalance: Prisma.Decimal | number;
+  subtotal: Prisma.Decimal | number | string;
+  discount: Prisma.Decimal | number | string;
+  tax: Prisma.Decimal | number | string;
+  total: Prisma.Decimal | number | string;
+  paidAmount: Prisma.Decimal | number | string;
+  remainingBalance: Prisma.Decimal | number | string;
   notes: string | null;
   paymentMethod: PaymentMethod;
   customer: {
@@ -30,10 +30,10 @@ type SaleForInvoice = {
   };
   items: Array<{
     productId: string;
-    quantity: Prisma.Decimal | number;
-    unitPrice: Prisma.Decimal | number;
-    total: Prisma.Decimal | number;
-    discount: Prisma.Decimal | number;
+    quantity: Prisma.Decimal | number | string;
+    unitPrice: Prisma.Decimal | number | string;
+    total: Prisma.Decimal | number | string;
+    discount: Prisma.Decimal | number | string;
     currency: string;
     product: { name: string; sku: string; unit: { name: string; symbol: string } };
   }>;

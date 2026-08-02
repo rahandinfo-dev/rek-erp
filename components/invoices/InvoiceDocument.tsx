@@ -4,6 +4,7 @@ import Image from "next/image";
 import type { ReactNode } from "react";
 import type { InvoicePreviewData, InvoiceSizeOption, InvoiceTemplateConfig } from "@/lib/invoices/template-config";
 import { formatReceiptDate, formatReceiptMoney, formatReceiptTime } from "@/lib/invoices/receipt-format";
+import { decimalCompare, decimalString } from "@/lib/invoices/decimal";
 
 export type ReceiptCompany = { name: string; email: string; phone?: string | null; address?: string | null; website?: string | null; logo?: string | null; taxNumber?: string | null; invoiceHeader?: string | null; invoiceFooter?: string | null };
 type Props = { config: InvoiceTemplateConfig; size: InvoiceSizeOption; company: ReceiptCompany; data: InvoicePreviewData; className?: string };
@@ -64,7 +65,7 @@ function A4Receipt({ config, company, data, className }: Props) {
       <tbody>{data.items.map((item, index) => <tr key={`${item.sku || item.name}-${index}`}>
         <td className="invoice-ltr" dir="ltr">{index + 1}</td>{config.showSku ? <td className="invoice-ltr" dir="ltr">{item.sku || "—"}</td> : null}<td className="invoice-product">{item.name}</td>
         <td className="invoice-ltr" dir="ltr">{formatReceiptMoney(item.unitPrice, data.currency)}</td>
-        <td className="invoice-quantity"><bdi>{item.quantity}</bdi>{config.showUnit && item.unit ? ` ${item.unit}` : ""}</td>
+        <td className="invoice-quantity"><bdi>{decimalString(item.quantity)}</bdi>{config.showUnit && item.unit ? ` ${item.unit}` : ""}</td>
         {config.showDiscount && hasLineDiscount ? <td className="invoice-ltr" dir="ltr">{formatReceiptMoney(item.discount!, data.currency)}</td> : null}
         {config.showTax && hasLineTax ? <td className="invoice-ltr" dir="ltr">{formatReceiptMoney(item.tax!, data.currency)}</td> : null}
         <td className="invoice-ltr" dir="ltr">{formatReceiptMoney(item.total, data.currency)}</td>
@@ -74,8 +75,8 @@ function A4Receipt({ config, company, data, className }: Props) {
     <section className="invoice-summary">
       <div className="invoice-totals">
         <Field label={labels.subtotal} ltr>{formatReceiptMoney(data.subtotal, data.currency)}</Field>
-        {config.showDiscount && data.discount !== 0 ? <Field label={labels.discount} ltr>{formatReceiptMoney(data.discount, data.currency)}</Field> : null}
-        {config.showTax && data.tax !== 0 ? <Field label={labels.tax} ltr>{formatReceiptMoney(data.tax, data.currency)}</Field> : null}
+        {config.showDiscount && decimalCompare(data.discount, 0) !== 0 ? <Field label={labels.discount} ltr>{formatReceiptMoney(data.discount, data.currency)}</Field> : null}
+        {config.showTax && decimalCompare(data.tax, 0) !== 0 ? <Field label={labels.tax} ltr>{formatReceiptMoney(data.tax, data.currency)}</Field> : null}
         {data.paidAmount !== undefined ? <Field label={labels.paid} ltr>{formatReceiptMoney(data.paidAmount, data.currency)}</Field> : null}
         {data.remainingBalance !== undefined ? <Field label={remainingLabel} ltr>{formatReceiptMoney(data.remainingBalance, data.currency)}</Field> : null}
         <Field label={labels.grandTotal} ltr>{formatReceiptMoney(data.total, data.currency)}</Field>
@@ -93,8 +94,8 @@ function ThermalReceipt({ config, company, data, className }: Props) {
     <header><h2>{company.name}</h2>{config.companySubtitle ? <p>{config.companySubtitle}</p> : null}<strong>{config.headerText}</strong></header>
     <div className="thermal-meta"><span className="invoice-ltr" dir="ltr">{data.invoiceNo}</span><span className="invoice-ltr" dir="ltr">{data.date} {formatReceiptTime(data.time, config.timeFormat)}</span></div>
     {data.customerOrSupplier ? <div className="thermal-customer">{config.showCustomerHeading && config.customerHeading.trim() ? <h3 className="thermal-customer-heading">{config.customerHeading}</h3> : null}<b>{labels.customerName}: </b>{data.customerOrSupplier}{config.showCustomerPhone && data.customerPhone ? <div className="invoice-ltr">{data.customerPhone}</div> : null}</div> : null}
-    <div className="thermal-items">{data.items.map((item, index) => <div className="thermal-item" key={`${item.sku || item.name}-${index}`}><span>{index + 1}. {item.name}<small><bdi>{item.quantity}</bdi>{config.showUnit && item.unit ? ` ${item.unit}` : ""} × <bdi>{formatReceiptMoney(item.unitPrice, data.currency)}</bdi>{config.showDiscount && item.discount !== undefined ? ` · ${labels.discount}: ${formatReceiptMoney(item.discount, data.currency)}` : ""}</small></span><b dir="ltr">{formatReceiptMoney(item.total, data.currency)}</b></div>)}</div>
-    <div className="thermal-totals"><div><span>{labels.subtotal}</span><b dir="ltr">{formatReceiptMoney(data.subtotal, data.currency)}</b></div>{config.showDiscount && data.discount !== 0 ? <div><span>{labels.discount}</span><b dir="ltr">{formatReceiptMoney(data.discount, data.currency)}</b></div> : null}{config.showTax && data.tax !== 0 ? <div><span>{labels.tax}</span><b dir="ltr">{formatReceiptMoney(data.tax, data.currency)}</b></div> : null}<div><span>{labels.grandTotal}</span><strong dir="ltr">{formatReceiptMoney(data.total, data.currency)}</strong></div>{data.paidAmount !== undefined ? <div><span>{labels.paid}</span><b dir="ltr">{formatReceiptMoney(data.paidAmount, data.currency)}</b></div> : null}{data.remainingBalance !== undefined ? <div><span>{remainingLabel}</span><b dir="ltr">{formatReceiptMoney(data.remainingBalance, data.currency)}</b></div> : null}</div>
+    <div className="thermal-items">{data.items.map((item, index) => <div className="thermal-item" key={`${item.sku || item.name}-${index}`}><span>{index + 1}. {item.name}<small><bdi>{decimalString(item.quantity)}</bdi>{config.showUnit && item.unit ? ` ${item.unit}` : ""} × <bdi>{formatReceiptMoney(item.unitPrice, data.currency)}</bdi>{config.showDiscount && item.discount !== undefined ? ` · ${labels.discount}: ${formatReceiptMoney(item.discount, data.currency)}` : ""}</small></span><b dir="ltr">{formatReceiptMoney(item.total, data.currency)}</b></div>)}</div>
+    <div className="thermal-totals"><div><span>{labels.subtotal}</span><b dir="ltr">{formatReceiptMoney(data.subtotal, data.currency)}</b></div>{config.showDiscount && decimalCompare(data.discount, 0) !== 0 ? <div><span>{labels.discount}</span><b dir="ltr">{formatReceiptMoney(data.discount, data.currency)}</b></div> : null}{config.showTax && decimalCompare(data.tax, 0) !== 0 ? <div><span>{labels.tax}</span><b dir="ltr">{formatReceiptMoney(data.tax, data.currency)}</b></div> : null}<div><span>{labels.grandTotal}</span><strong dir="ltr">{formatReceiptMoney(data.total, data.currency)}</strong></div>{data.paidAmount !== undefined ? <div><span>{labels.paid}</span><b dir="ltr">{formatReceiptMoney(data.paidAmount, data.currency)}</b></div> : null}{data.remainingBalance !== undefined ? <div><span>{remainingLabel}</span><b dir="ltr">{formatReceiptMoney(data.remainingBalance, data.currency)}</b></div> : null}</div>
     {config.disclaimerEnabled ? <footer>{config.disclaimerText}</footer> : null}
   </article>;
 }
