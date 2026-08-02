@@ -102,6 +102,18 @@ test("receipt typography and optional party heading are print-safe", () => {
   assert.doesNotMatch(exporter, /html2canvas|jsPDF|canvas\.toDataURL/);
 });
 
+test("PDF export embeds NRT and rejects typography that differs from preview", () => {
+  const exporter = readFileSync("lib/export/index.ts", "utf8");
+  assert.match(exporter, /new FontFaceConstructor\([\s\S]*NRT-Reg\.ttf/);
+  assert.match(exporter, /await nrt\.load\(\)/);
+  assert.match(exporter, /fontSet\.add\(loadedNrt\)/);
+  assert.match(exporter, /await fontSet\?\.ready/);
+  assert.match(exporter, /fontSet\.check\('16px NRT'/);
+  assert.match(exporter, /family !== "NRT"/);
+  assert.match(exporter, /previewTypography\.some\(\(value, index\) => value !== printTypography\[index\]\)/);
+  assert.match(exporter, /font-display: block/);
+});
+
 test("invoice output has one bundled font and stable Kurdish wrapping metrics", () => {
   const css = readFileSync("app/globals.css", "utf8");
   const config = readFileSync("lib/invoices/template-config.ts", "utf8");
