@@ -126,11 +126,22 @@ test("a transaction cannot mix persisted document currencies", () => {
   assert.match(purchaseValidator, /currencies\.size > 1/);
 });
 
-test("purchase detail is company-scoped and prefers immutable item snapshots", () => {
+test("purchase detail is company-scoped and uses the canonical persisted mapper", () => {
   const page = readFileSync("app/dashboard/purchases/[id]/page.tsx", "utf8");
+  const mapper = readFileSync("lib/invoices/map-preview.ts", "utf8");
   assert.match(page, /where: \{ id, companyId \}/);
-  assert.match(page, /productNameSnapshot \|\| item\.product\.name/);
-  assert.match(page, /mode: "PURCHASE"/);
+  assert.match(page, /data=\{mapPurchaseToPreview\(purchase\)\}/);
+  assert.match(mapper, /productNameSnapshot \?\? "—"/);
+  assert.doesNotMatch(page, /item\.product\./);
+  assert.doesNotMatch(page, /paidAmount: Number\(purchase\.total\)/);
+});
+
+test("printed accounting values are never synthesized by the renderer", () => {
+  const source = readFileSync("components/invoices/InvoiceDocument.tsx", "utf8");
+  assert.doesNotMatch(source, /paidAmount \?\? data\.total/);
+  assert.doesNotMatch(source, /data\.total - paid/);
+  assert.match(source, /data\.remainingBalance !== undefined/);
+  assert.match(source, /item\.discount !== undefined/);
 });
 
 test("accounting states preserve authoritative totals and optional party fields", () => {

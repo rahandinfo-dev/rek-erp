@@ -52,6 +52,10 @@ export async function GET(_req: NextRequest, { params }: Props) {
     const config: InvoiceTemplateConfig = {
       ...DEFAULT_INVOICE_CONFIG,
       ...((invoice.template?.config as Partial<InvoiceTemplateConfig>) || {}),
+      labels: {
+        ...DEFAULT_INVOICE_CONFIG.labels,
+        ...(((invoice.template?.config as Partial<InvoiceTemplateConfig>) || {}).labels || {}),
+      },
     };
 
     return NextResponse.json({
