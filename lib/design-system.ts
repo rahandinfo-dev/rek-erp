@@ -62,7 +62,7 @@ export const DS = {
     12: "3rem",
   },
   typography: {
-    fontFamily: '"RUDAW Regular", Tahoma, sans-serif',
+    fontFamily: '"NRT", Tahoma, sans-serif',
     pageTitle:
       "text-[1.75rem] font-black tracking-tight text-foreground sm:text-3xl lg:text-[2rem]",
     sectionTitle: "text-lg font-black text-foreground sm:text-xl",
