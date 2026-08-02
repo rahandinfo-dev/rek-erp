@@ -91,12 +91,61 @@ export async function exportElementToPdf(
 
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
-  const ratio = Math.min(pageWidth / canvas.width, pageHeight / canvas.height);
-  const width = canvas.width * ratio;
-  const height = canvas.height * ratio;
-  const x = (pageWidth - width) / 2;
+  if (thermal) {
+    pdf.addImage(imgData, "PNG", 0, 0, pageWidth, pageHeight);
+  } else {
+    // Preserve the browser's A4 width and paginate vertically instead of
+    // shrinking a long invoice (which changes text metrics and readability).
+    const sourcePageHeight = Math.floor(canvas.width * pageHeight / pageWidth);
+    const receiptBounds = receipt.getBoundingClientRect();
+    const captureScale = canvas.width / receiptBounds.width;
+    const protectedBlocks = Array.from(
+      receipt.querySelectorAll<HTMLElement>(
+        ".invoice-items tr, .invoice-summary, .invoice-footer"
+      )
+    ).map((node) => {
+      const bounds = node.getBoundingClientRect();
+      return {
+        start: Math.round((bounds.top - receiptBounds.top) * captureScale),
+        end: Math.round((bounds.bottom - receiptBounds.top) * captureScale),
+      };
+    });
 
-  pdf.addImage(imgData, "PNG", x, thermal ? 0 : 20, width, height);
+    for (let top = 0, page = 0; top < canvas.height; page += 1) {
+      const desiredBottom = Math.min(top + sourcePageHeight, canvas.height);
+      const crossingBlock = protectedBlocks.find(
+        ({ start, end }) => start > top && start < desiredBottom && end > desiredBottom
+      );
+      const bottom = crossingBlock && crossingBlock.start - top > sourcePageHeight * 0.35
+        ? crossingBlock.start
+        : desiredBottom;
+      const sliceHeight = bottom - top;
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = sliceHeight;
+      pageCanvas.getContext("2d")?.drawImage(
+        canvas,
+        0,
+        top,
+        canvas.width,
+        sliceHeight,
+        0,
+        0,
+        canvas.width,
+        sliceHeight
+      );
+      if (page > 0) pdf.addPage("a4", "portrait");
+      pdf.addImage(
+        pageCanvas.toDataURL("image/png"),
+        "PNG",
+        0,
+        0,
+        pageWidth,
+        sliceHeight * pageWidth / canvas.width
+      );
+      top = bottom;
+    }
+  }
   pdf.save(filename);
 }
 
@@ -117,6 +166,12 @@ async function ensureInvoiceAssets(element: HTMLElement, targetDocument: Documen
             image.addEventListener("error", () => resolve(), { once: true });
           })
     )
+  );
+
+  // Give the browser one complete layout/paint cycle after fonts and images
+  // settle so html2canvas and the print window read the preview's final metrics.
+  await new Promise<void>((resolve) =>
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
   );
 }
 
@@ -161,4 +216,5 @@ export async function printElement(element: HTMLElement, title = "Print") {
   );
   printWindow.focus();
   printWindow.print();
+  printWindow.addEventListener("afterprint", () => printWindow.close(), { once: true });
 }
