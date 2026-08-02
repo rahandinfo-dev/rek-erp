@@ -110,7 +110,6 @@ test("invoice output has one bundled font and stable Kurdish wrapping metrics", 
   const css = readFileSync("app/globals.css", "utf8");
   const config = readFileSync("lib/invoices/template-config.ts", "utf8");
   const editor = readFileSync("components/invoices/InvoiceTemplateEditor.tsx", "utf8");
-  const source = readFileSync("components/invoices/InvoiceDocument.tsx", "utf8");
   const invoiceCss = css.slice(css.indexOf("Canonical receipt renderer"));
 
   assert.doesNotMatch(invoiceCss, /font-family:\s*"NRT"\s*,/);
@@ -122,8 +121,13 @@ test("invoice output has one bundled font and stable Kurdish wrapping metrics", 
   assert.doesNotMatch(invoiceCss, /margin(?:-block|-inline|-top|-bottom)?:\s*-/);
   assert.doesNotMatch(config, /NRT, Tahoma|numericFontFamily: "Tahoma/);
   assert.doesNotMatch(editor, /<option value="(?:Tahoma|Arial|system-ui)/);
-  assert.match(source, /invoice-number/);
-  assert.match(source, /invoice-money/);
+  // These are the dimensions of the last approved professional invoice.
+  // Font loading must never be coupled to changes in its table geometry.
+  assert.match(invoiceCss, /\.invoice-a4 \{[\s\S]*width: 210mm;[\s\S]*min-height: 297mm;[\s\S]*padding: 10mm;/);
+  assert.match(invoiceCss, /\.invoice-parties \{[\s\S]*grid-template-columns: repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(invoiceCss, /\.invoice-items \{[\s\S]*table-layout: fixed;[\s\S]*border-collapse: collapse/);
+  assert.match(invoiceCss, /\.invoice-col-row \{ width: 5%; \}[\s\S]*\.invoice-col-sku \{ width: 12%; \}[\s\S]*\.invoice-col-quantity \{ width: 9%; \}[\s\S]*\.invoice-col-money \{ width: 13%; \}/);
+  assert.match(invoiceCss, /font-synthesis: none/);
 });
 
 test("a transaction cannot mix persisted document currencies", () => {
