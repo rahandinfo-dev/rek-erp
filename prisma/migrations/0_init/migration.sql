@@ -520,7 +520,7 @@ CREATE TABLE "Settings" (
     "language" TEXT NOT NULL DEFAULT 'ku',
     "themeColor" TEXT NOT NULL DEFAULT '#093FB4',
     "accentColor" TEXT NOT NULL DEFAULT '#FFD8D8',
-    "fontFamily" TEXT NOT NULL DEFAULT 'Rudaw',
+    "fontFamily" TEXT NOT NULL DEFAULT 'NRT',
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -1982,4 +1982,3 @@ ALTER TABLE "AiAlert" ADD CONSTRAINT "AiAlert_companyId_fkey" FOREIGN KEY ("comp
 
 -- AddForeignKey
 ALTER TABLE "AiAutomationRule" ADD CONSTRAINT "AiAutomationRule_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-

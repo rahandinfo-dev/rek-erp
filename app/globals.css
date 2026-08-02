@@ -1651,7 +1651,7 @@ html:not(.dark) .border-zinc-200 {
 .invoice-thermal,
 .invoice-thermal * {
   font-family: "NRT" !important;
-  font-synthesis: none;
+  font-synthesis: weight;
   font-kerning: normal;
   font-variant-ligatures: contextual common-ligatures;
   letter-spacing: 0;
@@ -1659,6 +1659,14 @@ html:not(.dark) .border-zinc-200 {
 
 .invoice-a4,
 .invoice-thermal {
+  --invoice-text-sm: 11px;
+  --invoice-text-base: 12px;
+  --invoice-text-item: 12.5px;
+  --invoice-text-label: 11.5px;
+  --invoice-text-money: 13px;
+  --invoice-text-total: 15.5px;
+  --invoice-leading-tight: 1.45;
+  --invoice-leading-base: 1.65;
   box-sizing: border-box;
   direction: rtl;
   unicode-bidi: plaintext;
@@ -1686,8 +1694,8 @@ html:not(.dark) .border-zinc-200 {
   margin: 0 auto;
   padding: 10mm;
   border: 1px solid #111;
-  font-size: 12px;
-  line-height: 1.6;
+  font-size: var(--invoice-text-base);
+  line-height: var(--invoice-leading-base);
 }
 
 .invoice-company-header {
@@ -1716,18 +1724,18 @@ html:not(.dark) .border-zinc-200 {
 
 .invoice-company-header h1 {
   margin: 0;
-  font-size: 24px;
+  font-size: 25px;
   font-weight: 900;
-  line-height: 1.5;
+  line-height: var(--invoice-leading-tight);
   overflow-wrap: anywhere;
 }
 
 .invoice-subtitle,
 .invoice-address {
   margin: 1.5mm 0 0;
-  font-size: 12px;
+  font-size: var(--invoice-text-base);
   font-weight: 600;
-  line-height: 1.65;
+  line-height: var(--invoice-leading-base);
   overflow-wrap: anywhere;
 }
 
@@ -1738,8 +1746,8 @@ html:not(.dark) .border-zinc-200 {
   justify-content: center;
   gap: 1mm 5mm;
   margin-top: 1.5mm;
-  font-size: 10.5px;
-  line-height: 1.6;
+  font-size: var(--invoice-text-sm);
+  line-height: var(--invoice-leading-base);
 }
 
 .invoice-title {
@@ -1751,9 +1759,9 @@ html:not(.dark) .border-zinc-200 {
   padding: 2mm 3mm;
   border: 1.5px solid #111;
   background: #eee;
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 900;
-  line-height: 1.55;
+  line-height: var(--invoice-leading-tight);
   text-align: center;
   overflow-wrap: anywhere;
   break-inside: avoid;
@@ -1779,8 +1787,9 @@ html:not(.dark) .border-zinc-200 {
   padding: 1.5mm 2.2mm;
   border-bottom: 1px solid #111;
   background: #f3f3f3;
-  font-size: 13px;
-  line-height: 1.55;
+  font-size: 13.5px;
+  font-weight: 800;
+  line-height: var(--invoice-leading-tight);
   text-align: center;
   overflow-wrap: anywhere;
 }
@@ -1790,11 +1799,11 @@ html:not(.dark) .border-zinc-200 {
   grid-template-columns: minmax(30mm, 38%) minmax(0, 1fr);
   align-items: center;
   gap: 2mm;
-  min-height: 9mm;
-  padding: 1.8mm 2.2mm;
+  min-height: 9.5mm;
+  padding: 2mm 2.4mm;
   border-bottom: 1px solid #111;
-  font-size: 11.5px;
-  line-height: 1.6;
+  font-size: var(--invoice-text-base);
+  line-height: var(--invoice-leading-base);
   text-align: right;
 }
 
@@ -1806,6 +1815,17 @@ html:not(.dark) .border-zinc-200 {
   white-space: normal;
 }
 
+.invoice-info-row > b {
+  font-size: var(--invoice-text-label);
+  font-weight: 700;
+}
+
+.invoice-number,
+.invoice-money {
+  font-size: var(--invoice-text-money);
+  font-weight: 800;
+}
+
 .invoice-parties .invoice-info-row:last-child { border-bottom: 0; }
 
 .invoice-items {
@@ -1815,8 +1835,8 @@ html:not(.dark) .border-zinc-200 {
   border: 1.5px solid #111;
   border-collapse: collapse;
   border-spacing: 0;
-  font-size: 10px;
-  line-height: 1.6;
+  font-size: var(--invoice-text-item);
+  line-height: var(--invoice-leading-base);
 }
 
 .invoice-items thead {
@@ -1827,19 +1847,20 @@ html:not(.dark) .border-zinc-200 {
 .invoice-items th,
 .invoice-items td {
   height: auto;
-  min-height: 9mm;
-  padding: 1.8mm 1.4mm;
+  min-height: 10mm;
+  padding: 2mm 1.5mm;
   border: 1px solid #111;
   vertical-align: middle;
-  line-height: 1.6;
+  line-height: var(--invoice-leading-base);
   overflow-wrap: anywhere;
   word-break: normal;
   white-space: normal;
 }
 
 .invoice-items th {
-  min-height: 10mm;
-  font-size: 10px;
+  min-height: 10.5mm;
+  padding-block: 2.2mm;
+  font-size: 11.5px;
   font-weight: 800;
   text-align: center;
 }
@@ -1854,7 +1875,12 @@ html:not(.dark) .border-zinc-200 {
   direction: rtl;
   unicode-bidi: plaintext;
   text-align: right;
+  font-size: var(--invoice-text-item);
+  font-weight: 700;
 }
+
+.invoice-items .invoice-money { font-size: 11.5px; font-weight: 700; }
+.invoice-items .invoice-line-total { font-size: 12px; font-weight: 900; }
 
 .invoice-items td:not(.invoice-product) { text-align: center; }
 .invoice-items td.invoice-ltr,
@@ -1892,13 +1918,16 @@ html:not(.dark) .border-zinc-200 {
 .invoice-totals { width: 100%; }
 .invoice-totals .invoice-info-row {
   grid-template-columns: minmax(0, 1fr) minmax(38mm, 35%);
-  min-height: 9mm;
-  font-size: 11.5px;
+  min-height: 9.5mm;
+  font-size: var(--invoice-text-base);
 }
 .invoice-totals .invoice-info-row > span { text-align: left; }
+.invoice-totals .invoice-info-row > b { font-size: 12px; font-weight: 800; }
+.invoice-totals .invoice-money { font-size: 14px; font-weight: 900; }
 .invoice-totals .invoice-info-row:last-child {
   border-bottom: 0;
-  font-size: 13px;
+  min-height: 11mm;
+  font-size: var(--invoice-text-total);
   font-weight: 900;
 }
 
@@ -1906,8 +1935,8 @@ html:not(.dark) .border-zinc-200 {
   margin: 0;
   padding: 2.5mm;
   border-top: 1px solid #111;
-  font-size: 11px;
-  line-height: 1.65;
+  font-size: 11.5px;
+  line-height: var(--invoice-leading-base);
   text-align: right;
   overflow-wrap: anywhere;
   white-space: pre-wrap;
@@ -1915,8 +1944,8 @@ html:not(.dark) .border-zinc-200 {
 
 .invoice-footer {
   margin-top: 7mm;
-  font-size: 10.5px;
-  line-height: 1.65;
+  font-size: var(--invoice-text-sm);
+  line-height: var(--invoice-leading-base);
   text-align: center;
   break-inside: avoid;
 }
@@ -1934,13 +1963,19 @@ html:not(.dark) .border-zinc-200 {
 .invoice-preview-document { width: max-content; min-width: 100%; }
 
 .invoice-thermal {
+  --invoice-text-sm: 10.5px;
+  --invoice-text-base: 12px;
+  --invoice-text-item: 12px;
+  --invoice-text-label: 11px;
+  --invoice-text-money: 13px;
+  --invoice-text-total: 15px;
   page: thermal;
   width: 80mm;
   max-width: 100%;
   margin: auto;
   padding: 4mm;
-  font-size: 11px;
-  line-height: 1.6;
+  font-size: var(--invoice-text-base);
+  line-height: var(--invoice-leading-base);
   overflow-wrap: anywhere;
 }
 .invoice-thermal header,
@@ -1949,8 +1984,8 @@ html:not(.dark) .border-zinc-200 {
   text-align: center;
   break-inside: avoid;
 }
-.invoice-thermal header h2 { margin: 0; font-size: 17px; line-height: 1.55; }
-.invoice-thermal header strong { display: block; font-size: 13px; line-height: 1.6; }
+.invoice-thermal header h2 { margin: 0; font-size: 19px; font-weight: 900; line-height: var(--invoice-leading-tight); }
+.invoice-thermal header strong { display: block; font-size: 14px; font-weight: 800; line-height: var(--invoice-leading-base); }
 .invoice-thermal p { margin: 1mm 0; }
 
 .thermal-meta,
@@ -1960,15 +1995,16 @@ html:not(.dark) .border-zinc-200 {
   align-items: center;
   justify-content: space-between;
   gap: 2mm;
-  min-height: 8mm;
-  padding: 1.5mm 0;
+  min-height: 8.5mm;
+  padding: 1.7mm 0;
   border-bottom: 1px dashed #222;
-  line-height: 1.6;
+  line-height: var(--invoice-leading-base);
 }
 .thermal-items { border-top: 1px dashed #222; }
 .thermal-item { break-inside: avoid; }
 .thermal-item span { min-width: 0; flex: 1; overflow-wrap: anywhere; }
-.thermal-item small { display: block; font-size: 9.5px; line-height: 1.55; }
+.thermal-item > span { font-size: var(--invoice-text-item); font-weight: 700; }
+.thermal-item small { display: block; margin-top: .5mm; font-size: var(--invoice-text-sm); font-weight: 400; line-height: var(--invoice-leading-base); }
 .thermal-item b,
 .thermal-totals b,
 .thermal-totals strong {
@@ -1978,14 +2014,19 @@ html:not(.dark) .border-zinc-200 {
   unicode-bidi: isolate;
   font-variant-numeric: tabular-nums;
   overflow-wrap: anywhere;
+  font-size: var(--invoice-text-money);
+  font-weight: 800;
 }
+.thermal-totals > div:last-child strong,
+.thermal-totals strong { font-size: var(--invoice-text-total); font-weight: 900; }
 .thermal-customer { padding: 1.5mm 0; line-height: 1.65; overflow-wrap: anywhere; }
 .thermal-customer-heading {
   margin: 0 0 1mm;
   padding: 1mm;
   border-block: 1px dashed #222;
-  font-size: 12px;
-  line-height: 1.6;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: var(--invoice-leading-base);
   text-align: center;
 }
 

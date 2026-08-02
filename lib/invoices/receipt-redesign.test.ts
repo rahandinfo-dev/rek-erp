@@ -106,6 +106,7 @@ test("invoice output has one bundled font and stable Kurdish wrapping metrics", 
   const css = readFileSync("app/globals.css", "utf8");
   const config = readFileSync("lib/invoices/template-config.ts", "utf8");
   const editor = readFileSync("components/invoices/InvoiceTemplateEditor.tsx", "utf8");
+  const source = readFileSync("components/invoices/InvoiceDocument.tsx", "utf8");
   const invoiceCss = css.slice(css.indexOf("Canonical receipt renderer"));
 
   assert.doesNotMatch(invoiceCss, /font-family:\s*"NRT"\s*,/);
@@ -117,6 +118,8 @@ test("invoice output has one bundled font and stable Kurdish wrapping metrics", 
   assert.doesNotMatch(invoiceCss, /margin(?:-block|-inline|-top|-bottom)?:\s*-/);
   assert.doesNotMatch(config, /NRT, Tahoma|numericFontFamily: "Tahoma/);
   assert.doesNotMatch(editor, /<option value="(?:Tahoma|Arial|system-ui)/);
+  assert.match(source, /invoice-number/);
+  assert.match(source, /invoice-money/);
 });
 
 test("a transaction cannot mix persisted document currencies", () => {
