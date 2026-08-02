@@ -27,12 +27,12 @@ function A4Receipt({ config, company, data, className }: Props) {
   const remaining = Math.max(0, data.total - paid);
   const remainingLabel = labels.remaining === "بالانسی پسوولە" ? "پارەی ماوە / باقی" : labels.remaining;
   const receiptNumber = config.documentPrefix && !data.invoiceNo.startsWith(`${config.documentPrefix}-`) ? `${config.documentPrefix}-${data.invoiceNo}` : data.invoiceNo;
-  const style = { fontFamily: config.fontFamily, fontSize: config.fontSize, "--invoice-number-font": config.numericFontFamily } as CSSProperties;
+  const style = { fontSize: config.fontSize, "--invoice-number-font": config.numericFontFamily } as CSSProperties;
 
   return <article className={`invoice-a4 ${className || ""}`} dir="rtl" style={style} data-paper="A4">
     <header className="invoice-company-header">
       {config.showLogo && company.logo ? <Image className="invoice-logo" src={company.logo} alt="" width={68} height={68} unoptimized /> : null}
-      {config.showCompanyName ? <h1 style={{ fontFamily: config.titleFontFamily }}>{company.name}</h1> : null}
+      {config.showCompanyName ? <h1>{company.name}</h1> : null}
       {config.companySubtitle ? <p className="invoice-subtitle">{config.companySubtitle}</p> : null}
       {config.showAddress && (config.addressOverride || company.address) ? <p className="invoice-address">{config.addressOverride || company.address}</p> : null}
       <div className="invoice-contact">
@@ -43,9 +43,10 @@ function A4Receipt({ config, company, data, className }: Props) {
       </div>
     </header>
 
-    <h2 className="invoice-title" style={{ fontFamily: config.titleFontFamily }}>{config.headerText || (data.mode === "PURCHASE" ? "پسوولەی کڕین" : "پسوولەی فرۆشتن")}</h2>
+    <h2 className="invoice-title">{config.headerText || (data.mode === "PURCHASE" ? "پسوولەی کڕین" : "پسوولەی فرۆشتن")}</h2>
     <section className="invoice-parties">
       <div>
+        {config.showCustomerHeading && config.customerHeading.trim() ? <h3 className="invoice-party-heading">{config.customerHeading}</h3> : null}
         {config.showCustomerCode ? <Field label={labels.customerCode} ltr>{data.customerCode}</Field> : null}
         <Field label={labels.customerName}>{data.customerOrSupplier}</Field>
         {config.showCustomerPhone ? <Field label={labels.customerPhone} ltr>{data.customerPhone}</Field> : null}
@@ -89,10 +90,10 @@ function A4Receipt({ config, company, data, className }: Props) {
 function ThermalReceipt({ config, company, data, className }: Props) {
   const labels = partyLabels(data, config); const paid = data.paidAmount ?? data.total;
   const remainingLabel = labels.remaining === "بالانسی پسوولە" ? "پارەی ماوە / باقی" : labels.remaining;
-  return <article className={`invoice-thermal ${className || ""}`} dir="rtl" data-paper="80mm" style={{ fontFamily: config.fontFamily }}>
+  return <article className={`invoice-thermal ${className || ""}`} dir="rtl" data-paper="80mm">
     <header><h2>{company.name}</h2>{config.companySubtitle ? <p>{config.companySubtitle}</p> : null}<strong>{config.headerText}</strong></header>
     <div className="thermal-meta"><span className="invoice-ltr">{data.invoiceNo}</span><span className="invoice-ltr">{data.date} {formatReceiptTime(data.time, config.timeFormat)}</span></div>
-    {data.customerOrSupplier ? <div className="thermal-customer"><b>{labels.customerName}: </b>{data.customerOrSupplier}{config.showCustomerPhone && data.customerPhone ? <div className="invoice-ltr">{data.customerPhone}</div> : null}</div> : null}
+    {data.customerOrSupplier ? <div className="thermal-customer">{config.showCustomerHeading && config.customerHeading.trim() ? <h3 className="thermal-customer-heading">{config.customerHeading}</h3> : null}<b>{labels.customerName}: </b>{data.customerOrSupplier}{config.showCustomerPhone && data.customerPhone ? <div className="invoice-ltr">{data.customerPhone}</div> : null}</div> : null}
     <div className="thermal-items">{data.items.map((item, index) => <div className="thermal-item" key={`${item.sku || item.name}-${index}`}><span>{index + 1}. {item.name}<small>{item.quantity}{config.showUnit && item.unit ? ` ${item.unit}` : ""}</small></span><b>{formatReceiptMoney(item.total, data.currency)}</b></div>)}</div>
     <div className="thermal-totals"><div><span>{labels.grandTotal}</span><strong>{formatReceiptMoney(data.total, data.currency)}</strong></div><div><span>{labels.paid}</span><b>{formatReceiptMoney(paid, data.currency)}</b></div><div><span>{remainingLabel}</span><b>{formatReceiptMoney(Math.max(0, data.total - paid), data.currency)}</b></div></div>
     {config.disclaimerEnabled ? <footer>{config.disclaimerText}</footer> : null}

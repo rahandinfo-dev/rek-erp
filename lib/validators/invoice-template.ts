@@ -30,7 +30,7 @@ export const invoiceTemplateConfigSchema = z.object({
   stampEnabled: z.boolean(),
   stampImage: z.string().nullable(),
   showSku: z.boolean(), showDiscount: z.boolean(), showTax: z.boolean(), showUnit: z.boolean(), showNotes: z.boolean(), showSignatures: z.boolean(),
-  showPrintedBy: z.boolean(), showPrintedAt: z.boolean(), companySubtitle: z.string(), addressOverride: z.string(), phone1: z.string(), phone2: z.string(), showCustomerCode: z.boolean(), showCustomerPhone: z.boolean(), showCustomerAddress: z.boolean(),
+  showPrintedBy: z.boolean(), showPrintedAt: z.boolean(), companySubtitle: z.string(), addressOverride: z.string(), phone1: z.string(), phone2: z.string(), showCustomerCode: z.boolean(), showCustomerPhone: z.boolean(), showCustomerAddress: z.boolean(), showCustomerHeading: z.boolean(), customerHeading: z.string().max(120),
   documentPrefix: z.string().max(3).regex(/^[A-Za-z]*$/), timeFormat: z.enum(["12", "24"]), dateFormat: z.enum(["DD/MM/YYYY", "YYYY/MM/DD", "MM/DD/YYYY"]), disclaimerEnabled: z.boolean(), disclaimerText: z.string().max(1000), titleFontFamily: z.string().min(1), numericFontFamily: z.string().min(1), thankYouText: z.string(),
   labels: z.object({
     customerCode: z.string(), customerName: z.string(), customerPhone: z.string(), customerAddress: z.string(),

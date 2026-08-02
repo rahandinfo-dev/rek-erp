@@ -74,7 +74,8 @@ test("receipt supports editable company/customer content and selectable fonts", 
   assert.equal(typeof DEFAULT_INVOICE_CONFIG.companySubtitle, "string");
   assert.equal(typeof DEFAULT_INVOICE_CONFIG.phone2, "string");
   assert.equal(typeof DEFAULT_INVOICE_CONFIG.headerText, "string");
-  assert.match(DEFAULT_INVOICE_CONFIG.fontFamily, /Rudaw/);
+  assert.match(DEFAULT_INVOICE_CONFIG.fontFamily, /NRT/);
+  assert.doesNotMatch(DEFAULT_INVOICE_CONFIG.fontFamily, /Rudaw/i);
   assert.equal(SAMPLE_INVOICE_DATA.customerPhone, "0750 000 0000");
   const anonymous = { ...SAMPLE_INVOICE_DATA, customerOrSupplier: "", customerPhone: null, customerAddress: null };
   assert.equal(anonymous.customerOrSupplier, "");
@@ -84,6 +85,20 @@ test("receipt supports editable company/customer content and selectable fonts", 
   assert.equal(formatReceiptTime("14:46:00", "12"), "2:46:00 PM");
   assert.equal(formatReceiptDate("01/08/2026", "YYYY/MM/DD"), "2026/08/01");
   assert.equal(DEFAULT_INVOICE_CONFIG.showPhone2, true);
+});
+
+test("receipt typography and optional party heading are print-safe", () => {
+  const source = readFileSync("components/invoices/InvoiceDocument.tsx", "utf8");
+  const css = readFileSync("app/globals.css", "utf8");
+  const exporter = readFileSync("lib/export/index.ts", "utf8");
+  assert.equal(DEFAULT_INVOICE_CONFIG.showCustomerHeading, false);
+  assert.equal(DEFAULT_INVOICE_CONFIG.customerHeading, "زانیاری کڕیار");
+  assert.match(source, /config\.showCustomerHeading && config\.customerHeading\.trim\(\)/);
+  assert.match(css, /\.invoice-a4,[\s\S]*\.invoice-thermal[\s\S]*font-family: "NRT"/);
+  assert.doesNotMatch(css.slice(css.indexOf("Shared print typography")), /letter-spacing:\s*-/);
+  assert.match(exporter, /await document\.fonts\?\.ready/);
+  assert.match(exporter, /querySelector<HTMLElement>\("\.invoice-a4, \.invoice-thermal"\)/);
+  assert.match(exporter, /printWindow\.document\.fonts\.ready/);
 });
 
 test("a transaction cannot mix persisted document currencies", () => {

@@ -58,22 +58,25 @@ export async function exportElementToPdf(
   element: HTMLElement,
   filename: string
 ) {
+  await document.fonts?.ready;
   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
     import("html2canvas"),
     import("jspdf"),
   ]);
 
-  const canvas = await html2canvas(element, {
+  const receipt = element.querySelector<HTMLElement>(".invoice-a4, .invoice-thermal") || element;
+  const canvas = await html2canvas(receipt, {
     scale: 2,
     useCORS: true,
     backgroundColor: "#ffffff",
   });
 
   const imgData = canvas.toDataURL("image/png");
+  const thermal = receipt.classList.contains("invoice-thermal");
   const pdf = new jsPDF({
     orientation: canvas.width > canvas.height ? "landscape" : "portrait",
-    unit: "pt",
-    format: "a4",
+    format: thermal ? [80, Math.max(80, receipt.scrollHeight * 0.264583)] : "a4",
+    unit: thermal ? "mm" : "pt",
   });
 
   const pageWidth = pdf.internal.pageSize.getWidth();
@@ -83,7 +86,7 @@ export async function exportElementToPdf(
   const height = canvas.height * ratio;
   const x = (pageWidth - width) / 2;
 
-  pdf.addImage(imgData, "PNG", x, 20, width, height);
+  pdf.addImage(imgData, "PNG", x, thermal ? 0 : 20, width, height);
   pdf.save(filename);
 }
 
@@ -91,25 +94,27 @@ export function printElement(element: HTMLElement, title = "Print") {
   const printWindow = window.open("", "_blank", "width=900,height=700");
   if (!printWindow) return;
 
+  const styles = Array.from(document.head.querySelectorAll('style, link[rel="stylesheet"]'))
+    .map((node) => node.outerHTML)
+    .join("\n");
   printWindow.document.write(`
     <html>
       <head>
         <title>${title}</title>
+        ${styles}
         <style>
-          body { font-family: Tahoma, sans-serif; direction: rtl; margin: 0; padding: 16px; }
-          table { width: 100%; border-collapse: collapse; }
-          th, td { border: 1px solid #e2e8f0; padding: 8px; text-align: right; }
-          th { background: #f8fafc; }
+          @font-face { font-family: "NRT"; src: url("${window.location.origin}/fonts/NRT-Reg.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
+          html, body { font-family: "NRT", Tahoma, Arial, sans-serif; direction: rtl; margin: 0; padding: 0; background: #fff; }
+          #invoice-preview { padding: 0 !important; overflow: visible !important; background: #fff !important; }
           img { max-width: 100%; }
-          @media print { body { padding: 0; } }
         </style>
       </head>
-      <body>${element.innerHTML}</body>
+      <body><main id="invoice-preview">${element.innerHTML}</main></body>
     </html>
   `);
   printWindow.document.close();
-  printWindow.focus();
-  setTimeout(() => {
+  void printWindow.document.fonts.ready.then(() => {
+    printWindow.focus();
     printWindow.print();
-  }, 300);
+  });
 }
