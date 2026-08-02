@@ -63,7 +63,41 @@ export async function exportElementToPdf(
   await openInvoicePrintDialog(element, filename.replace(/\.pdf$/i, ""));
 }
 
+const NRT_FONT_URL = "/fonts/NRT-Reg.ttf";
+let nrtFontBytes: Promise<ArrayBuffer> | undefined;
+
+function loadNrtFontBytes() {
+  nrtFontBytes ??= fetch(NRT_FONT_URL).then(async (response) => {
+    if (!response.ok) {
+      throw new Error(`Unable to load the PDF font (${response.status}).`);
+    }
+    return response.arrayBuffer();
+  });
+  return nrtFontBytes;
+}
+
+async function embedNrtFont(targetDocument: Document) {
+  const targetWindow = targetDocument.defaultView;
+  if (!targetWindow) throw new Error("The PDF renderer is unavailable.");
+
+  // A newly opened print document does not reliably finish loading linked
+  // stylesheets before document.fonts.load() runs. Install the bundled bytes
+  // in that document's own FontFaceSet so Chromium embeds NRT in the PDF
+  // instead of silently resolving the family name to a system fallback.
+  const font = new targetWindow.FontFace("NRT", await loadNrtFontBytes(), {
+    style: "normal",
+    weight: "400",
+  });
+  targetDocument.fonts.add(font);
+  await font.load();
+
+  if (font.status !== "loaded" || !targetDocument.fonts.has(font)) {
+    throw new Error("NRT could not be embedded in the PDF renderer.");
+  }
+}
+
 async function ensureInvoiceAssets(element: HTMLElement, targetDocument: Document) {
+  await embedNrtFont(targetDocument);
   const fontSet = targetDocument.fonts;
   await fontSet?.load('16px "NRT"', "پسوولەی کڕین و فرۆشتن");
   await fontSet?.ready;
