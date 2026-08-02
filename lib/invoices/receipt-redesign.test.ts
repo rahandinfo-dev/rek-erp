@@ -27,9 +27,9 @@ test("A4 CSS enforces sharp corners, repeated headings, and print isolation", ()
   assert.match(css, /\.invoice-a4 \*,[\s\S]*border-radius: 0 !important/);
   assert.match(css, /display: table-header-group/);
   assert.match(css, /body \* \{ visibility: hidden/);
-  assert.match(css, /@page \{ size: A4 portrait/);
-  assert.match(css, /\.invoice-items th, \.invoice-items td[\s\S]*vertical-align: middle/);
-  assert.match(css, /\.invoice-items th \{ height: 10mm/);
+  assert.match(css, /@page invoiceA4 \{ size: A4 portrait/);
+  assert.match(css, /\.invoice-items th,\s*\.invoice-items td[\s\S]*vertical-align: middle/);
+  assert.doesNotMatch(css, /\.invoice-items th \{[^}]*(?:^|[;{])\s*height:\s*10mm/m);
   assert.match(css, /font-variant-numeric: tabular-nums/);
 });
 
@@ -38,7 +38,7 @@ test("A4 totals use the full width without the obsolete invoice balance panel", 
   const css = readFileSync("app/globals.css", "utf8");
   assert.doesNotMatch(source, /className="invoice-balance"/);
   assert.doesNotMatch(css, /\.invoice-balance/);
-  assert.match(css, /\.invoice-summary \{ width: 100%/);
+  assert.match(css, /\.invoice-summary \{[\s\S]*?width: 100%/);
   assert.equal(DEFAULT_INVOICE_CONFIG.labels.remaining, "پارەی ماوە / باقی");
 });
 
@@ -95,7 +95,7 @@ test("receipt typography and optional party heading are print-safe", () => {
   assert.equal(DEFAULT_INVOICE_CONFIG.customerHeading, "زانیاری کڕیار");
   assert.match(source, /config\.showCustomerHeading && config\.customerHeading\.trim\(\)/);
   assert.match(css, /\.invoice-a4,[\s\S]*\.invoice-thermal[\s\S]*font-family: "NRT"/);
-  assert.doesNotMatch(css.slice(css.indexOf("Shared print typography")), /letter-spacing:\s*-/);
+  assert.doesNotMatch(css.slice(css.indexOf("Canonical receipt renderer")), /letter-spacing:\s*-/);
   assert.match(exporter, /await ensureInvoiceAssets\(element, document\)/);
   assert.match(exporter, /fontSet\?\.load\('16px "NRT"'/);
   assert.match(exporter, /querySelector<HTMLElement>\("\.invoice-a4, \.invoice-thermal"\)/);
@@ -106,13 +106,15 @@ test("invoice output has one bundled font and stable Kurdish wrapping metrics", 
   const css = readFileSync("app/globals.css", "utf8");
   const config = readFileSync("lib/invoices/template-config.ts", "utf8");
   const editor = readFileSync("components/invoices/InvoiceTemplateEditor.tsx", "utf8");
-  const invoiceCss = css.slice(css.indexOf("Shared print typography"));
+  const invoiceCss = css.slice(css.indexOf("Canonical receipt renderer"));
 
   assert.doesNotMatch(invoiceCss, /font-family:\s*"NRT"\s*,/);
-  assert.doesNotMatch(invoiceCss, /letter-spacing/);
+  assert.match(invoiceCss, /letter-spacing:\s*0/);
   assert.match(invoiceCss, /\.invoice-a4 \*,[\s\S]*font-family: "NRT" !important/);
-  assert.match(invoiceCss, /overflow-wrap: break-word; word-break: normal/);
+  assert.match(invoiceCss, /overflow-wrap: anywhere;[\s\S]*word-break: normal/);
   assert.match(invoiceCss, /font-variant-ligatures: contextual common-ligatures/);
+  assert.doesNotMatch(invoiceCss, /overflow:\s*hidden/);
+  assert.doesNotMatch(invoiceCss, /margin(?:-block|-inline|-top|-bottom)?:\s*-/);
   assert.doesNotMatch(config, /NRT, Tahoma|numericFontFamily: "Tahoma/);
   assert.doesNotMatch(editor, /<option value="(?:Tahoma|Arial|system-ui)/);
 });
@@ -146,6 +148,7 @@ test("A4 and independent 80mm templates preserve RTL and LTR SKU behavior", () =
   assert.match(source, /className={`invoice-a4/);
   assert.match(source, /className={`invoice-thermal/);
   assert.match(source, /dir="rtl"/);
+  assert.match(source, /dir=\{ltr \? "ltr"/);
   assert.match(css, /@page thermal \{ size: 80mm auto/);
   assert.match(css, /\.invoice-thermal \*,[\s\S]*border-radius: 0 !important/);
   assert.match(css, /overflow-wrap: anywhere/);

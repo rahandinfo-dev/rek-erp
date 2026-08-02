@@ -48,9 +48,9 @@ export default function SaleInvoiceActions({
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
-          onClick={() => {
+          onClick={async () => {
             if (!ref.current) return;
-            printElement(ref.current, data.invoiceNo);
+            await printElement(ref.current, data.invoiceNo);
             void reportClientNotification({
               type: "INVOICE_PRINTED",
               title: t("invoices.printedTitle"),
@@ -67,9 +67,9 @@ export default function SaleInvoiceActions({
         </button>
         <button
           type="button"
-          onClick={() => {
+          onClick={async () => {
             if (!ref.current) return;
-            exportElementToPdf(ref.current, `${data.invoiceNo}.pdf`);
+            await exportElementToPdf(ref.current, `${data.invoiceNo}.pdf`);
             void reportClientNotification({
               type: "PDF_GENERATED",
               title: t("invoices.pdfTitle"),

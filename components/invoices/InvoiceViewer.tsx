@@ -111,7 +111,7 @@ export default function InvoiceViewer({
     if (!ref.current || busy) return;
     setBusy(true);
     try {
-      printElement(ref.current, invoiceNo);
+      await printElement(ref.current, invoiceNo);
       await recordPrint();
       markPrinted(pathname, invoiceNo, "invoices");
       appToast.invoicePrinted(`پسوولەی ${invoiceNo} چاپکرا.`);
