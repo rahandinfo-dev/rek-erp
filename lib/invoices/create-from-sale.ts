@@ -13,6 +13,8 @@ type SaleForInvoice = {
   discount: Prisma.Decimal | number;
   tax: Prisma.Decimal | number;
   total: Prisma.Decimal | number;
+  paidAmount: Prisma.Decimal | number;
+  remainingBalance: Prisma.Decimal | number;
   notes: string | null;
   paymentMethod: PaymentMethod;
   customer: {
@@ -31,6 +33,7 @@ type SaleForInvoice = {
     quantity: Prisma.Decimal | number;
     unitPrice: Prisma.Decimal | number;
     total: Prisma.Decimal | number;
+    discount: Prisma.Decimal | number;
     currency: string;
     product: { name: string; sku: string; unit: { name: string; symbol: string } };
   }>;
@@ -100,6 +103,8 @@ export async function createInvoiceFromSale(
       discount: sale.discount,
       tax: sale.tax,
       grandTotal: sale.total,
+      paidAmount: sale.paidAmount,
+      remainingBalance: sale.remainingBalance,
       paymentMethod: sale.paymentMethod,
       notes: sale.notes,
       invoiceDate: sale.saleDate,
@@ -114,6 +119,7 @@ export async function createInvoiceFromSale(
           currency: item.currency,
           quantity: item.quantity,
           unitPrice: item.unitPrice,
+          discount: item.discount,
           total: item.total,
         })),
       },

@@ -29,6 +29,7 @@ type LineItem = {
   productId: string;
   quantity: number;
   unitPrice: number;
+  discount: number;
   total: number;
   currency: "IQD" | "USD";
 };
@@ -38,6 +39,7 @@ type PurchaseDraft = {
   warehouseId: string;
   purchaseDate: string;
   discount: number;
+  paidAmount: number;
   tax: number;
   notes: string;
   items: LineItem[];
@@ -59,6 +61,7 @@ function blankLine(): LineItem {
     productId: "",
     quantity: 1,
     unitPrice: 0,
+    discount: 0,
     total: 0,
     currency: "IQD",
   };
@@ -77,6 +80,7 @@ export default function PurchaseForm() {
     toDateInputValue()
   );
   const [discount, setDiscount] = useState(0);
+  const [paidAmount, setPaidAmount] = useState(0);
   const [tax, setTax] = useState(0);
   const [notes, setNotes] = useState("");
   const [items, setItems] = useState<LineItem[]>([blankLine()]);
@@ -90,11 +94,12 @@ export default function PurchaseForm() {
       warehouseId,
       purchaseDate,
       discount,
+      paidAmount,
       tax,
       notes,
       items,
     }),
-    [supplierId, warehouseId, purchaseDate, discount, tax, notes, items]
+    [supplierId, warehouseId, purchaseDate, discount, paidAmount, tax, notes, items]
   );
 
   const {
@@ -118,6 +123,7 @@ export default function PurchaseForm() {
       data.purchaseDate || toDateInputValue()
     );
     setDiscount(Number(data.discount) || 0);
+    setPaidAmount(Number(data.paidAmount) || 0);
     setTax(Number(data.tax) || 0);
     setNotes(data.notes || "");
     setItems(
@@ -192,7 +198,7 @@ export default function PurchaseForm() {
         }
         next.total = roundMoney(
           Math.max(0, Number(next.quantity) || 0) *
-            Math.max(0, Number(next.unitPrice) || 0)
+            Math.max(0, Number(next.unitPrice) || 0) - Math.max(0, Number(next.discount) || 0)
         );
         return next;
       })
@@ -226,7 +232,7 @@ export default function PurchaseForm() {
           return {
             ...item,
             quantity,
-            total: roundMoney(quantity * item.unitPrice),
+            total: roundMoney(quantity * item.unitPrice - item.discount),
           };
         });
       }
@@ -235,6 +241,7 @@ export default function PurchaseForm() {
         productId: product.id,
         quantity: 1,
         unitPrice: product.purchasePrice,
+        discount: 0,
         total: roundMoney(product.purchasePrice),
         currency: "IQD",
       };
@@ -268,6 +275,7 @@ export default function PurchaseForm() {
           warehouseId,
           purchaseDate,
           discount,
+          paidAmount,
           tax,
           notes,
           items,
@@ -407,7 +415,7 @@ export default function PurchaseForm() {
             key={index}
             className="grid grid-cols-1 gap-2 rounded-2xl border border-border p-3 sm:grid-cols-12 sm:items-end"
           >
-            <div className="sm:col-span-4">
+            <div className="sm:col-span-3">
               <ProductPicker
                 products={products}
                 value={item.productId}
@@ -415,7 +423,7 @@ export default function PurchaseForm() {
                 priceMode="purchase"
               />
             </div>
-            <div className="sm:col-span-2">
+            <div className="sm:col-span-1">
               <input
                 type="number"
                 min={0.01}
@@ -440,6 +448,9 @@ export default function PurchaseForm() {
                 className={inputClass}
                 placeholder={t("common.cost")}
               />
+            </div>
+            <div className="sm:col-span-2">
+              <input type="number" min={0} step="any" value={item.discount} onChange={(e) => updateItem(index, { discount: Number(e.target.value) })} className={inputClass} placeholder={t("common.discount")} />
             </div>
             <div className="sm:col-span-1">
               <select
@@ -490,7 +501,7 @@ export default function PurchaseForm() {
         ))}
       </section>
 
-      <section className="rek-card grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
+      <section className="rek-card grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-5 sm:p-6">
         <div>
           <label className="mb-1.5 block text-sm font-bold">{t("common.discount")}</label>
           <input
@@ -512,6 +523,11 @@ export default function PurchaseForm() {
             onChange={(e) => setTax(Math.max(0, Number(e.target.value) || 0))}
             className={inputClass}
           />
+        </div>
+        <div>
+          <label className="mb-1.5 block text-sm font-bold">پارەی دراو</label>
+          <input type="number" min={0} max={total} step="any" value={paidAmount} onChange={(e) => setPaidAmount(Math.max(0, Number(e.target.value) || 0))} className={inputClass} required />
+          <p className="mt-1 text-xs text-muted-foreground">ماوە: {formatNumber(roundMoney(total - paidAmount))}</p>
         </div>
         <div className="rounded-2xl bg-muted/50 p-4 sm:col-span-2">
           <p className="text-xs font-bold text-muted-foreground">{t("common.total")}</p>

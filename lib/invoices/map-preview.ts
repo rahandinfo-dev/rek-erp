@@ -1,7 +1,7 @@
-import { PAYMENT_METHOD_LABELS } from "@/lib/invoices/payment";
-import type { InvoicePreviewData } from "@/lib/invoices/template-config";
-import type { PaymentMethod } from "@/lib/prisma/client";
-import { formatDate, formatTime } from "@/lib/utils/datetime";
+import { PAYMENT_METHOD_LABELS } from "./payment.ts";
+import type { InvoicePreviewData } from "./template-config.ts";
+import type { PaymentMethod } from "../prisma/client.ts";
+import { formatDate, formatTime } from "../utils/datetime.ts";
 
 type InvoiceLike = {
   mode?: "SALE" | "PURCHASE";
@@ -19,6 +19,8 @@ type InvoiceLike = {
   discount: unknown;
   tax: unknown;
   grandTotal: unknown;
+  paidAmount: unknown;
+  remainingBalance: unknown;
   paymentMethod: PaymentMethod;
   createdByName: string | null;
   items: Array<{
@@ -28,8 +30,8 @@ type InvoiceLike = {
     unitPrice: unknown;
     total: unknown;
     unit?: string | null;
-    currency?: string;
-    discount?: unknown;
+    currency: string;
+    discount: unknown;
     tax?: unknown;
   }>;
 };
@@ -50,6 +52,8 @@ type PurchaseLike = {
   discount: unknown;
   tax: unknown;
   total: unknown;
+  paidAmount: unknown;
+  remainingBalance: unknown;
   items: Array<{
     productNameSnapshot: string | null;
     productSkuSnapshot: string | null;
@@ -58,6 +62,7 @@ type PurchaseLike = {
     quantity: unknown;
     unitPrice: unknown;
     total: unknown;
+    discount: unknown;
   }>;
 };
 
@@ -78,6 +83,8 @@ export function mapInvoiceToPreview(invoice: InvoiceLike): InvoicePreviewData {
     discount: Number(invoice.discount),
     tax: Number(invoice.tax),
     total: Number(invoice.grandTotal),
+    paidAmount: invoice.paidAmount === null ? undefined : Number(invoice.paidAmount),
+    remainingBalance: invoice.remainingBalance === null ? undefined : Number(invoice.remainingBalance),
     paymentMethod: PAYMENT_METHOD_LABELS[invoice.paymentMethod],
     createdBy: invoice.createdByName,
     items: invoice.items.map((item) => ({
@@ -88,7 +95,7 @@ export function mapInvoiceToPreview(invoice: InvoiceLike): InvoicePreviewData {
       total: Number(item.total),
       unit: item.unit || undefined,
       currency: item.currency,
-      discount: Number(item.discount ?? 0),
+      discount: Number(item.discount),
       tax: Number(item.tax ?? 0),
     })),
   };
@@ -116,6 +123,8 @@ export function mapPurchaseToPreview(purchase: PurchaseLike): InvoicePreviewData
     discount: Number(purchase.discount),
     tax: Number(purchase.tax),
     total: Number(purchase.total),
+    paidAmount: purchase.paidAmount === null ? undefined : Number(purchase.paidAmount),
+    remainingBalance: purchase.remainingBalance === null ? undefined : Number(purchase.remainingBalance),
     items: purchase.items.map((item) => ({
       name: item.productNameSnapshot ?? "—",
       sku: item.productSkuSnapshot ?? undefined,
@@ -123,6 +132,7 @@ export function mapPurchaseToPreview(purchase: PurchaseLike): InvoicePreviewData
       quantity: Number(item.quantity),
       unitPrice: Number(item.unitPrice),
       total: Number(item.total),
+      discount: Number(item.discount),
     })),
   };
 }

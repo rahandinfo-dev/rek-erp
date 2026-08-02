@@ -31,6 +31,7 @@ type LineItem = {
   productId: string;
   quantity: number;
   unitPrice: number;
+  discount: number;
   total: number;
   currency: "IQD" | "USD";
 };
@@ -40,6 +41,7 @@ type SaleDraft = {
   warehouseId: string;
   saleDate: string;
   discount: number;
+  paidAmount: number;
   tax: number;
   paymentMethod: PaymentMethod;
   notes: string;
@@ -62,6 +64,7 @@ function blankLine(): LineItem {
     productId: "",
     quantity: 1,
     unitPrice: 0,
+    discount: 0,
     total: 0,
     currency: "IQD",
   };
@@ -84,6 +87,7 @@ export default function SaleForm() {
     toDateInputValue()
   );
   const [discount, setDiscount] = useState(0);
+  const [paidAmount, setPaidAmount] = useState(0);
   const [tax, setTax] = useState(0);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("CASH");
   const [notes, setNotes] = useState("");
@@ -98,6 +102,7 @@ export default function SaleForm() {
       warehouseId,
       saleDate,
       discount,
+      paidAmount,
       tax,
       paymentMethod,
       notes,
@@ -108,6 +113,7 @@ export default function SaleForm() {
       warehouseId,
       saleDate,
       discount,
+      paidAmount,
       tax,
       paymentMethod,
       notes,
@@ -134,6 +140,7 @@ export default function SaleForm() {
     setWarehouseId(data.warehouseId || "");
     setSaleDate(data.saleDate || toDateInputValue());
     setDiscount(Number(data.discount) || 0);
+    setPaidAmount(Number(data.paidAmount) || 0);
     setTax(Number(data.tax) || 0);
     setPaymentMethod(data.paymentMethod || "CASH");
     setNotes(data.notes || "");
@@ -228,7 +235,7 @@ export default function SaleForm() {
         }
         next.total = roundMoney(
           Math.max(0, Number(next.quantity) || 0) *
-            Math.max(0, Number(next.unitPrice) || 0)
+          Math.max(0, Number(next.unitPrice) || 0) - Math.max(0, Number(next.discount) || 0)
         );
         return next;
       })
@@ -263,7 +270,7 @@ export default function SaleForm() {
           return {
             ...item,
             quantity,
-            total: roundMoney(quantity * item.unitPrice),
+            total: roundMoney(quantity * item.unitPrice - item.discount),
           };
         });
       }
@@ -272,6 +279,7 @@ export default function SaleForm() {
         productId: product.id,
         quantity: 1,
         unitPrice: product.salePrice,
+        discount: 0,
         total: roundMoney(product.salePrice),
         currency: "IQD",
       };
@@ -309,6 +317,7 @@ export default function SaleForm() {
           warehouseId,
           saleDate,
           discount,
+          paidAmount,
           tax,
           paymentMethod,
           notes,
@@ -351,6 +360,7 @@ export default function SaleForm() {
       if (mode === "new") {
         setCustomerId("");
         setDiscount(0);
+        setPaidAmount(0);
         setTax(0);
         setPaymentMethod("CASH");
         setNotes("");
@@ -500,7 +510,7 @@ export default function SaleForm() {
                 key={index}
                 className="grid grid-cols-1 gap-2 rounded-2xl border border-border p-3 sm:grid-cols-12 sm:items-end"
               >
-                <div className="sm:col-span-4">
+                <div className="sm:col-span-3">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
                     {t("common.product")}
                   </label>
@@ -516,7 +526,7 @@ export default function SaleForm() {
                     </p>
                   ) : null}
                 </div>
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-1">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
                     {t("common.quantity")}
                   </label>
@@ -545,6 +555,10 @@ export default function SaleForm() {
                     }
                     className={inputClass}
                   />
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="mb-1 block text-xs font-bold text-muted-foreground">{t("common.discount")}</label>
+                  <input type="number" min={0} step="any" value={item.discount} onChange={(e) => updateItem(index, { discount: Number(e.target.value) })} className={inputClass} />
                 </div>
                 <div className="sm:col-span-1">
                   <label className="mb-1 block text-xs font-bold text-muted-foreground">
@@ -605,7 +619,7 @@ export default function SaleForm() {
         </div>
       </section>
 
-      <section className="rek-card grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-4 sm:p-6">
+      <section className="rek-card grid gap-4 p-4 sm:grid-cols-2 lg:grid-cols-5 sm:p-6">
         <div>
           <label className="mb-1.5 block text-sm font-bold">{t("common.discount")}</label>
           <input
@@ -641,6 +655,11 @@ export default function SaleForm() {
               </option>
             ))}
           </select>
+        </div>
+        <div>
+          <label className="mb-1.5 block text-sm font-bold">پارەی دراو</label>
+          <input type="number" min={0} max={total} step="any" value={paidAmount} onChange={(e) => setPaidAmount(Math.max(0, Number(e.target.value) || 0))} className={inputClass} required />
+          <p className="mt-1 text-xs text-muted-foreground">ماوە: {formatNumber(roundMoney(total - paidAmount))}</p>
         </div>
         <div className="rounded-2xl bg-muted/50 p-4">
           <p className="text-xs font-bold text-muted-foreground">{t("common.total")}</p>
