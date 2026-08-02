@@ -58,7 +58,7 @@ export async function exportElementToPdf(
   element: HTMLElement,
   filename: string
 ) {
-  await document.fonts?.ready;
+  await ensureInvoiceAssets(element, document);
   const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
     import("html2canvas"),
     import("jspdf"),
@@ -69,6 +69,16 @@ export async function exportElementToPdf(
     scale: 2,
     useCORS: true,
     backgroundColor: "#ffffff",
+    width: receipt.scrollWidth,
+    height: receipt.scrollHeight,
+    windowWidth: receipt.scrollWidth,
+    windowHeight: receipt.scrollHeight,
+    onclone: (clonedDocument) => {
+      const clonedReceipt = clonedDocument.querySelector<HTMLElement>(
+        ".invoice-a4, .invoice-thermal"
+      );
+      clonedReceipt?.classList.add("invoice-export-capture");
+    },
   });
 
   const imgData = canvas.toDataURL("image/png");
@@ -90,7 +100,38 @@ export async function exportElementToPdf(
   pdf.save(filename);
 }
 
-export function printElement(element: HTMLElement, title = "Print") {
+const NRT_FONT_URL = "/fonts/NRT-Reg.ttf";
+
+async function ensureInvoiceAssets(element: HTMLElement, targetDocument: Document) {
+  const fontSet = targetDocument.fonts;
+  await fontSet?.load('16px "NRT"', "پسوولەی کڕین و فرۆشتن");
+  await fontSet?.ready;
+
+  const images = Array.from(element.querySelectorAll("img"));
+  await Promise.all(
+    images.map((image) =>
+      image.complete
+        ? Promise.resolve()
+        : new Promise<void>((resolve) => {
+            image.addEventListener("load", () => resolve(), { once: true });
+            image.addEventListener("error", () => resolve(), { once: true });
+          })
+    )
+  );
+}
+
+function escapeHtml(value: string) {
+  return value.replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;",
+  })[character] || character);
+}
+
+export async function printElement(element: HTMLElement, title = "Print") {
+  await ensureInvoiceAssets(element, document);
   const printWindow = window.open("", "_blank", "width=900,height=700");
   if (!printWindow) return;
 
@@ -100,11 +141,12 @@ export function printElement(element: HTMLElement, title = "Print") {
   printWindow.document.write(`
     <html>
       <head>
-        <title>${title}</title>
+        <title>${escapeHtml(title)}</title>
         ${styles}
         <style>
-          @font-face { font-family: "NRT"; src: url("${window.location.origin}/fonts/NRT-Reg.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
-          html, body { font-family: "NRT", Tahoma, Arial, sans-serif; direction: rtl; margin: 0; padding: 0; background: #fff; }
+          @font-face { font-family: "NRT"; src: url("${window.location.origin}${NRT_FONT_URL}") format("truetype"); font-weight: 400; font-style: normal; font-display: block; }
+          html, body, .invoice-a4, .invoice-a4 *, .invoice-thermal, .invoice-thermal * { font-family: "NRT" !important; font-synthesis: none; }
+          html, body { direction: rtl; margin: 0; padding: 0; background: #fff; }
           #invoice-preview { padding: 0 !important; overflow: visible !important; background: #fff !important; }
           img { max-width: 100%; }
         </style>
@@ -113,8 +155,10 @@ export function printElement(element: HTMLElement, title = "Print") {
     </html>
   `);
   printWindow.document.close();
-  void printWindow.document.fonts.ready.then(() => {
-    printWindow.focus();
-    printWindow.print();
-  });
+  await ensureInvoiceAssets(
+    printWindow.document.querySelector<HTMLElement>("#invoice-preview")!,
+    printWindow.document
+  );
+  printWindow.focus();
+  printWindow.print();
 }

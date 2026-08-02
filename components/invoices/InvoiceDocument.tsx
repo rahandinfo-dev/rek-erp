@@ -27,9 +27,11 @@ function A4Receipt({ config, company, data, className }: Props) {
   const remaining = Math.max(0, data.total - paid);
   const remainingLabel = labels.remaining === "بالانسی پسوولە" ? "پارەی ماوە / باقی" : labels.remaining;
   const receiptNumber = config.documentPrefix && !data.invoiceNo.startsWith(`${config.documentPrefix}-`) ? `${config.documentPrefix}-${data.invoiceNo}` : data.invoiceNo;
-  const style = { fontSize: config.fontSize, "--invoice-number-font": config.numericFontFamily } as CSSProperties;
+  // Stored legacy font choices are intentionally ignored. A receipt must have one
+  // set of font metrics in the editor, browser, printer and raster PDF capture.
+  const style = { fontSize: config.fontSize, "--invoice-number-font": "NRT" } as CSSProperties;
 
-  return <article className={`invoice-a4 ${className || ""}`} dir="rtl" style={style} data-paper="A4">
+  return <article className={`invoice-a4 ${className || ""}`} dir="rtl" lang="ckb" style={style} data-paper="A4">
     <header className="invoice-company-header">
       {config.showLogo && company.logo ? <Image className="invoice-logo" src={company.logo} alt="" width={68} height={68} unoptimized /> : null}
       {config.showCompanyName ? <h1>{company.name}</h1> : null}
@@ -90,7 +92,7 @@ function A4Receipt({ config, company, data, className }: Props) {
 function ThermalReceipt({ config, company, data, className }: Props) {
   const labels = partyLabels(data, config); const paid = data.paidAmount ?? data.total;
   const remainingLabel = labels.remaining === "بالانسی پسوولە" ? "پارەی ماوە / باقی" : labels.remaining;
-  return <article className={`invoice-thermal ${className || ""}`} dir="rtl" data-paper="80mm">
+  return <article className={`invoice-thermal ${className || ""}`} dir="rtl" lang="ckb" data-paper="80mm">
     <header><h2>{company.name}</h2>{config.companySubtitle ? <p>{config.companySubtitle}</p> : null}<strong>{config.headerText}</strong></header>
     <div className="thermal-meta"><span className="invoice-ltr">{data.invoiceNo}</span><span className="invoice-ltr">{data.date} {formatReceiptTime(data.time, config.timeFormat)}</span></div>
     {data.customerOrSupplier ? <div className="thermal-customer">{config.showCustomerHeading && config.customerHeading.trim() ? <h3 className="thermal-customer-heading">{config.customerHeading}</h3> : null}<b>{labels.customerName}: </b>{data.customerOrSupplier}{config.showCustomerPhone && data.customerPhone ? <div className="invoice-ltr">{data.customerPhone}</div> : null}</div> : null}

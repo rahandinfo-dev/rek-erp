@@ -336,11 +336,11 @@ export default function InvoiceTemplateEditor({ company, initial }: Props) {
                   value={config.fontFamily}
                   onChange={(e) => patchConfig({ fontFamily: e.target.value })}
                 >
-                  <option value="NRT, Tahoma, Arial, sans-serif">NRT</option>
+                  <option value="NRT">NRT</option>
                 </select>
               </FormField>
-              <FormField label="فۆنتی ناونیشان"><select className={selectClassName} value={config.titleFontFamily} onChange={(e) => patchConfig({titleFontFamily: e.target.value})}><option value="NRT, Tahoma, Arial, sans-serif">NRT</option></select></FormField>
-              <FormField label="فۆنتی ژمارە"><select className={selectClassName} value={config.numericFontFamily} onChange={(e) => patchConfig({numericFontFamily: e.target.value})}><option value="Tahoma, Arial, sans-serif">Tahoma</option><option value="Arial, sans-serif">Arial</option><option value="system-ui, sans-serif">System</option></select></FormField>
+              <FormField label="فۆنتی ناونیشان"><select className={selectClassName} value="NRT" onChange={() => patchConfig({titleFontFamily: "NRT"})}><option value="NRT">NRT</option></select></FormField>
+              <FormField label="فۆنتی ژمارە"><select className={selectClassName} value="NRT" onChange={() => patchConfig({numericFontFamily: "NRT"})}><option value="NRT">NRT</option></select></FormField>
               <FormField label="قەبارەی فۆنت">
                 <input
                   type="number"
