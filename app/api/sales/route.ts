@@ -328,9 +328,17 @@ export async function POST(req: NextRequest) {
       stepStarted = trace.start(activeStep);
       trace.ok(activeStep, stepStarted);
 
+      const persistedPaidAmount = created.paidAmount ?? 0;
+      const invoiceSale = {
+        ...created,
+        paidAmount: persistedPaidAmount,
+        remainingBalance:
+          created.remainingBalance ??
+          roundMoney(Number(created.total) - Number(persistedPaidAmount)),
+      };
       const createdInvoice = await createInvoiceFromSale(
         tx,
-        created,
+        invoiceSale,
         company,
         { id: user.id, fullName: user.fullName },
         template?.id,
