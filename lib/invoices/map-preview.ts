@@ -34,6 +34,33 @@ type InvoiceLike = {
   }>;
 };
 
+type PurchaseLike = {
+  invoiceNo: string;
+  purchaseDate: Date | string;
+  createdAt: Date | string;
+  supplier: {
+    name: string;
+    code: string;
+    phone: string | null;
+    address: string | null;
+  };
+  warehouse: { name: string };
+  notes: string | null;
+  subtotal: unknown;
+  discount: unknown;
+  tax: unknown;
+  total: unknown;
+  items: Array<{
+    productNameSnapshot: string | null;
+    productSkuSnapshot: string | null;
+    unitSnapshot: string | null;
+    currency: string;
+    quantity: unknown;
+    unitPrice: unknown;
+    total: unknown;
+  }>;
+};
+
 export function mapInvoiceToPreview(invoice: InvoiceLike): InvoicePreviewData {
   return {
     mode: invoice.mode || "SALE",
@@ -44,7 +71,7 @@ export function mapInvoiceToPreview(invoice: InvoiceLike): InvoicePreviewData {
     customerCode: invoice.customerCode,
     customerPhone: invoice.customerPhone,
     customerAddress: invoice.customerAddress,
-    currency: invoice.currency || invoice.items[0]?.currency || "IQD",
+    currency: invoice.currency ?? invoice.items[0]?.currency ?? "",
     warehouse: invoice.warehouseName,
     notes: invoice.notes,
     subtotal: Number(invoice.subtotal),
@@ -61,8 +88,41 @@ export function mapInvoiceToPreview(invoice: InvoiceLike): InvoicePreviewData {
       total: Number(item.total),
       unit: item.unit || undefined,
       currency: item.currency,
-      discount: Number(item.discount || 0),
-      tax: Number(item.tax || 0),
+      discount: Number(item.discount ?? 0),
+      tax: Number(item.tax ?? 0),
+    })),
+  };
+}
+
+/**
+ * Map only immutable purchase fields and the persisted line snapshots.
+ * A missing legacy snapshot stays missing rather than silently substituting the
+ * product's current name, SKU, or unit (which may have changed after purchase).
+ */
+export function mapPurchaseToPreview(purchase: PurchaseLike): InvoicePreviewData {
+  return {
+    mode: "PURCHASE",
+    invoiceNo: purchase.invoiceNo,
+    date: formatDate(purchase.purchaseDate),
+    time: formatTime(purchase.createdAt),
+    customerOrSupplier: purchase.supplier.name,
+    customerCode: purchase.supplier.code,
+    customerPhone: purchase.supplier.phone,
+    customerAddress: purchase.supplier.address,
+    currency: purchase.items[0]?.currency ?? "",
+    warehouse: purchase.warehouse.name,
+    notes: purchase.notes,
+    subtotal: Number(purchase.subtotal),
+    discount: Number(purchase.discount),
+    tax: Number(purchase.tax),
+    total: Number(purchase.total),
+    items: purchase.items.map((item) => ({
+      name: item.productNameSnapshot ?? "—",
+      sku: item.productSkuSnapshot ?? undefined,
+      unit: item.unitSnapshot ?? undefined,
+      quantity: Number(item.quantity),
+      unitPrice: Number(item.unitPrice),
+      total: Number(item.total),
     })),
   };
 }

@@ -136,6 +136,7 @@ export type InvoicePreviewData = {
   customerAddress?: string | null;
   currency: string;
   paidAmount?: number;
+  remainingBalance?: number;
   additionalCharges?: number;
   warehouse: string;
   notes?: string | null;
@@ -150,7 +151,9 @@ export type InvoicePreviewData = {
     sku?: string;
     quantity: number;
     unit?: string;
+    /** Present only when the transaction line persisted this value. */
     discount?: number;
+    /** Present only when the transaction line persisted this value. */
     tax?: number;
     unitPrice: number;
     total: number;

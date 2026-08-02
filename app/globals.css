@@ -1857,13 +1857,23 @@ html:not(.dark) .border-zinc-200 {
 }
 
 .invoice-items td:not(.invoice-product) { text-align: center; }
+.invoice-items td.invoice-ltr,
+.invoice-quantity {
+  white-space: nowrap;
+  overflow-wrap: normal;
+}
+.invoice-quantity {
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-variant-numeric: tabular-nums;
+}
 .invoice-quantity bdi { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
 
 .invoice-ltr {
   direction: ltr;
   unicode-bidi: isolate;
   font-variant-numeric: tabular-nums;
-  overflow-wrap: anywhere;
+  overflow-wrap: normal;
 }
 
 .invoice-items tr {
