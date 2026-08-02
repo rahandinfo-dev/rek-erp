@@ -33,7 +33,7 @@ function DropdownMenuContent({
   return (
     <MenuPrimitive.Portal>
       <MenuPrimitive.Positioner
-        className="isolate z-50 outline-none"
+        className="rek-floating-positioner isolate outline-none"
         align={align}
         alignOffset={alignOffset}
         side={side}
