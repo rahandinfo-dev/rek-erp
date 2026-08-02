@@ -226,11 +226,12 @@ export async function POST(req: NextRequest) {
 
     const subtotal = roundMoney(
       data.items.reduce(
-        (sum, item) => sum + roundMoney(item.quantity * item.unitPrice),
+        (sum, item) => sum + roundMoney(item.quantity * item.unitPrice - item.discount),
         0,
       ),
     );
     const total = roundMoney(subtotal - data.discount + data.tax);
+    const remainingBalance = roundMoney(total - data.paidAmount);
 
     trace.ok(activeStep, stepStarted);
     activeStep = "SALE_PRE_21_NUMBERING_START";
@@ -262,6 +263,8 @@ export async function POST(req: NextRequest) {
           discount: data.discount,
           tax: data.tax,
           total,
+          paidAmount: data.paidAmount,
+          remainingBalance,
           paymentMethod: data.paymentMethod,
           notes: data.notes || null,
           items: {
@@ -269,7 +272,8 @@ export async function POST(req: NextRequest) {
               productId: item.productId,
               quantity: item.quantity,
               unitPrice: item.unitPrice,
-              total: roundMoney(item.quantity * item.unitPrice),
+              discount: item.discount,
+              total: roundMoney(item.quantity * item.unitPrice - item.discount),
               currency: item.currency || "IQD",
             })),
           },
