@@ -66,7 +66,7 @@ function A4Receipt({ config, company, data, className }: Props) {
       <tbody>{data.items.map((item, index) => <tr key={`${item.sku || item.name}-${index}`}>
         <td className="invoice-ltr" dir="ltr">{index + 1}</td>{config.showSku ? <td className="invoice-ltr" dir="ltr">{item.sku || "—"}</td> : null}<td className="invoice-product">{item.name}</td>
         <td className="invoice-ltr" dir="ltr">{formatReceiptMoney(item.unitPrice, data.currency)}</td>
-        <td>{item.quantity}{config.showUnit && item.unit ? ` ${item.unit}` : ""}</td>
+        <td className="invoice-quantity"><bdi>{item.quantity}</bdi>{config.showUnit && item.unit ? ` ${item.unit}` : ""}</td>
         {config.showDiscount ? <td className="invoice-ltr" dir="ltr">{formatReceiptMoney(item.discount || 0, data.currency)}</td> : null}
         {config.showTax ? <td className="invoice-ltr" dir="ltr">{formatReceiptMoney(item.tax || 0, data.currency)}</td> : null}
         <td className="invoice-ltr" dir="ltr">{formatReceiptMoney(item.total, data.currency)}</td>

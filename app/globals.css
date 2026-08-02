@@ -1632,6 +1632,20 @@ html:not(.dark) .border-zinc-200 {
 }
 
 /* Canonical receipt renderer: one font and one geometry for preview, print and PDF. */
+.rek-floating-layer,
+.rek-floating-positioner,
+[data-slot="dropdown-menu-portal"],
+[data-slot="dialog-portal"] {
+  z-index: 2147483000 !important;
+}
+
+.rek-floating-layer {
+  position: fixed;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-gutter: stable;
+}
+
 .invoice-a4,
 .invoice-a4 *,
 .invoice-thermal,
@@ -1832,9 +1846,9 @@ html:not(.dark) .border-zinc-200 {
 
 .invoice-col-row { width: 5%; }
 .invoice-col-sku { width: 12%; }
-.invoice-col-product { width: 31%; }
-.invoice-col-quantity { width: 10%; }
-.invoice-col-money { width: 14%; }
+.invoice-col-product { width: auto; }
+.invoice-col-quantity { width: 9%; }
+.invoice-col-money { width: 13%; }
 
 .invoice-items .invoice-product {
   direction: rtl;
@@ -1843,6 +1857,7 @@ html:not(.dark) .border-zinc-200 {
 }
 
 .invoice-items td:not(.invoice-product) { text-align: center; }
+.invoice-quantity bdi { direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
 
 .invoice-ltr {
   direction: ltr;
@@ -1969,6 +1984,7 @@ html:not(.dark) .border-zinc-200 {
 @page thermal { size: 80mm auto; margin: 0; }
 
 @media print {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
   html,
   body { margin: 0 !important; padding: 0 !important; background: #fff !important; }
   body * { visibility: hidden; }

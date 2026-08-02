@@ -1,8 +1,9 @@
 "use client";
 import { formatNumber } from "@/lib/utils/format";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Search } from "lucide-react";
+import { FloatingLayer } from "@/components/ui/FloatingLayer";
 import {
   filterProductOptions,
   isProductSelectorDebugEnabled,
@@ -31,6 +32,7 @@ export default function ProductPicker({
 }: Props) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const anchorRef = useRef<HTMLDivElement>(null);
 
   const selected = products.find((p) => p.id === value);
 
@@ -50,7 +52,7 @@ export default function ProductPicker({
 
   return (
     <div className="relative min-w-0">
-      <div className="relative">
+      <div ref={anchorRef} className="relative">
         <Search
           size={15}
           className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
@@ -78,7 +80,8 @@ export default function ProductPicker({
       </div>
 
       {open ? (
-        <ul className="absolute z-30 mt-1 max-h-56 w-full overflow-y-auto rounded-xl border border-border bg-popover shadow-[var(--shadow-md)]">
+        <FloatingLayer anchorRef={anchorRef} className="rek-floating-layer overflow-x-hidden overflow-y-auto rounded-xl border border-border bg-popover text-popover-foreground shadow-[var(--shadow-lg)]">
+          <ul role="listbox" aria-label="بەرهەمەکان">
           {filtered.length === 0 ? (
             <li className="px-3 py-4 text-center text-xs text-muted-foreground">
               هیچ بەرهەمێک نەدۆزرایەوە
@@ -97,6 +100,8 @@ export default function ProductPicker({
                 <li key={p.id}>
                   <button
                     type="button"
+                    role="option"
+                    aria-selected={p.id === value}
                     className="flex w-full flex-col gap-0.5 px-3 py-2.5 text-right text-sm hover:bg-muted"
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={() => {
@@ -117,7 +122,8 @@ export default function ProductPicker({
               );
             })
           )}
-        </ul>
+          </ul>
+        </FloatingLayer>
       ) : null}
     </div>
   );
