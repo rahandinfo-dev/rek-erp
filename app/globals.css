@@ -3,7 +3,8 @@
   src: url("/fonts/NRT-Reg.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
-  font-display: swap;
+  /* Invoice export waits for this face; never intentionally swap its metrics. */
+  font-display: block;
 }
 
 @import "tailwindcss";

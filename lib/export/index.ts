@@ -99,8 +99,31 @@ async function embedNrtFont(targetDocument: Document) {
 async function ensureInvoiceAssets(element: HTMLElement, targetDocument: Document) {
   await embedNrtFont(targetDocument);
   const fontSet = targetDocument.fonts;
+  const FontFaceConstructor = targetDocument.defaultView?.FontFace;
+  if (!fontSet || !FontFaceConstructor) {
+    throw new Error("This browser cannot embed the NRT invoice font.");
+  }
+
+  // Add the bundled face to this specific document (including the detached
+  // print document). Merely copying a stylesheet can race PDF capture and let
+  // the browser shape Kurdish with a fallback face.
+  if (!targetDocument.documentElement.dataset.invoiceNrtLoaded) {
+    const fontUrl = new URL("/fonts/NRT-Reg.ttf", window.location.origin).href;
+    const nrt = new FontFaceConstructor(
+      "NRT",
+      `url("${fontUrl}") format("truetype")`,
+      { style: "normal", weight: "400" }
+    );
+    const loadedNrt = await nrt.load();
+    fontSet.add(loadedNrt);
+    targetDocument.documentElement.dataset.invoiceNrtLoaded = "true";
+  }
+
   await fontSet?.load('16px "NRT"', "پسوولەی کڕین و فرۆشتن");
   await fontSet?.ready;
+  if (!fontSet.check('16px NRT', "پسوولەی کڕین و فرۆشتن")) {
+    throw new Error("NRT did not load; invoice PDF export was cancelled.");
+  }
 
   const images = Array.from(element.querySelectorAll("img"));
   await Promise.all(
@@ -119,6 +142,24 @@ async function ensureInvoiceAssets(element: HTMLElement, targetDocument: Documen
   await new Promise<void>((resolve) =>
     requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
   );
+}
+
+const INVOICE_TYPOGRAPHY_PROPERTIES = [
+  "fontFamily", "fontSize", "fontStyle", "fontWeight", "lineHeight",
+  "letterSpacing", "wordSpacing", "direction", "unicodeBidi",
+] as const;
+
+function invoiceTypography(element: HTMLElement) {
+  const view = element.ownerDocument.defaultView;
+  if (!view) throw new Error("Invoice document has no rendering context.");
+  return [element, ...Array.from(element.querySelectorAll<HTMLElement>("*"))].map((node) => {
+    const style = view.getComputedStyle(node);
+    const family = style.fontFamily.replace(/["']/g, "").trim();
+    if (family !== "NRT") {
+      throw new Error(`Invoice export requires NRT, but found ${style.fontFamily}.`);
+    }
+    return INVOICE_TYPOGRAPHY_PROPERTIES.map((property) => style[property]).join("|");
+  });
 }
 
 function escapeHtml(value: string) {
@@ -142,6 +183,7 @@ async function openInvoicePrintDialog(element: HTMLElement, title: string) {
       ? element
       : element.querySelector<HTMLElement>(".invoice-a4, .invoice-thermal");
   if (!receipt) return;
+  const previewTypography = invoiceTypography(receipt);
   const printWindow = window.open("", "_blank", "width=900,height=700");
   if (!printWindow) return;
 
@@ -152,6 +194,16 @@ async function openInvoicePrintDialog(element: HTMLElement, title: string) {
     <html>
       <head>
         <title>${escapeHtml(title)}</title>
+        <base href="${escapeHtml(`${window.location.origin}/`)}">
+        <style id="invoice-nrt-font">
+          @font-face {
+            font-family: "NRT";
+            src: url("/fonts/NRT-Reg.ttf") format("truetype");
+            font-weight: 400;
+            font-style: normal;
+            font-display: block;
+          }
+        </style>
         ${styles}
       </head>
       <body><main id="invoice-preview">${receipt.outerHTML}</main></body>
@@ -162,6 +214,18 @@ async function openInvoicePrintDialog(element: HTMLElement, title: string) {
     printWindow.document.querySelector<HTMLElement>("#invoice-preview")!,
     printWindow.document
   );
+  const printedReceipt = printWindow.document.querySelector<HTMLElement>(
+    ".invoice-a4, .invoice-thermal"
+  );
+  if (!printedReceipt) throw new Error("The invoice was not copied for PDF export.");
+  const printTypography = invoiceTypography(printedReceipt);
+  if (
+    previewTypography.length !== printTypography.length ||
+    previewTypography.some((value, index) => value !== printTypography[index])
+  ) {
+    printWindow.close();
+    throw new Error("PDF typography does not match the invoice preview.");
+  }
   printWindow.focus();
   printWindow.print();
   printWindow.addEventListener("afterprint", () => printWindow.close(), { once: true });
