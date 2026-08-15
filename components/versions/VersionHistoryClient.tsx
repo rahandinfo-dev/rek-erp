@@ -236,7 +236,7 @@ export default function VersionHistoryClient() {
           <span className="sr-only">{t("common.search")}</span>
           <Search
             size={16}
-            className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
           <input
@@ -246,7 +246,7 @@ export default function VersionHistoryClient() {
               setQ(e.target.value);
             }}
             placeholder={t("versionsUi.searchPlaceholder")}
-            className="h-11 w-full rounded-2xl border border-border bg-background py-2 pe-3 ps-10 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
+            className="h-11 w-full rounded-2xl border border-border bg-background py-2 pl-10 pr-3 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
           />
         </label>
         <label className="text-xs font-bold">

@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, { params }: Params) {
 
     const { id } = await params;
     const warehouse = await db.warehouse.findFirst({
-      where: { id, companyId: user.companyId },
+      where: { id, companyId: user.companyId, deletedAt: { not: null } },
     });
 
     if (!warehouse) {
@@ -28,11 +28,14 @@ export async function POST(req: NextRequest, { params }: Params) {
       );
     }
 
-    if (warehouse.active) {
+    if (!warehouse.deletedAt) {
       return NextResponse.json({ success: true, message: tServer.t("api.alreadyActive") });
     }
 
-    await db.warehouse.update({ where: { id }, data: { active: true } });
+    await db.warehouse.update({
+      where: { id },
+      data: { active: true, deletedAt: null, deletedById: null },
+    });
 
     await auditSafe({
       companyId: user.companyId,

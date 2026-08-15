@@ -72,6 +72,7 @@ export async function buildInventoryValuation(
     FROM "Product"
     WHERE "companyId" = ${companyId}
       AND active = true
+      AND "deletedAt" IS NULL
   `;
 
   const row = rows[0];
@@ -216,6 +217,7 @@ export async function buildAllWarehouseValuations(
     FROM "WarehouseStock" ws
     INNER JOIN "Product" p ON p.id = ws."productId"
     WHERE ws."companyId" = ${companyId}
+      AND p."deletedAt" IS NULL
     GROUP BY ws."warehouseId"
   `;
 

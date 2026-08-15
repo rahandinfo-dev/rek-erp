@@ -140,7 +140,7 @@ test("a transaction cannot mix persisted document currencies", () => {
 test("purchase detail is company-scoped and uses the canonical persisted mapper", () => {
   const page = readFileSync("app/dashboard/purchases/[id]/page.tsx", "utf8");
   const mapper = readFileSync("lib/invoices/map-preview.ts", "utf8");
-  assert.match(page, /where: \{ id, companyId \}/);
+  assert.match(page, /where: \{ id, companyId, deletedAt: null \}/);
   assert.match(page, /data=\{mapPurchaseToPreview\(purchase\)\}/);
   assert.match(mapper, /productNameSnapshot \?\? "—"/);
   assert.doesNotMatch(page, /item\.product\./);

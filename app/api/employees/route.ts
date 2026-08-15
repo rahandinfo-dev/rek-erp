@@ -17,7 +17,7 @@ export async function GET() {
     }
 
     const employees = await db.employee.findMany({
-      where: { companyId: user.companyId },
+      where: { companyId: user.companyId, deletedAt: null },
       include: {
         createdBy: { select: { id: true, fullName: true } },
       },

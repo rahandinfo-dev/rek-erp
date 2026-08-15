@@ -31,6 +31,7 @@ export default async function EditWerehousePage({ params }: PageProps) {
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: null,
       },
     }),
     buildWarehouseValuation(user.companyId, id),

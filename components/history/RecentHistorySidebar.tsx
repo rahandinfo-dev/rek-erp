@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Package, Pin } from "lucide-react";
+import { Package, Pin, Search } from "lucide-react";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { useNavigationHistory } from "@/lib/history/provider";
 import {
@@ -147,14 +147,17 @@ export default function RecentHistorySidebar({
       </div>
 
       <div className="mb-2 space-y-1.5 px-2">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="گەڕان لە مێژوو…"
-          aria-label={t("history.searchAria")}
-          className="h-8 w-full rounded-xl border border-transparent bg-muted/70 px-2.5 text-xs outline-none focus:border-primary/40 focus:bg-card"
-        />
+        <div className="relative">
+          <Search size={13} aria-hidden className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="گەڕان لە مێژوو…"
+            aria-label={t("history.searchAria")}
+            className="h-8 w-full rounded-xl border border-transparent bg-muted/70 pl-8 pr-2.5 text-xs outline-none focus:border-primary/40 focus:bg-card"
+          />
+        </div>
         <select
           value={moduleFilter}
           onChange={(e) =>

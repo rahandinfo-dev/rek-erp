@@ -54,6 +54,10 @@ export async function recordRecycleDelete(input: {
       input.oldValue,
       input.newValue
     );
+    const metadata = {
+      previousValue: input.oldValue ?? null,
+      deletedBy: input.userId ?? null,
+    } as Prisma.InputJsonValue;
 
     await db.recycleBinEntry.upsert({
       where: {
@@ -74,6 +78,7 @@ export async function recordRecycleDelete(input: {
         reason: input.reason ?? null,
         status: "deleted",
         relatedJson: (input.relatedJson as Prisma.InputJsonValue) || undefined,
+        metadata,
         deletedAt,
         expiresAt,
       },
@@ -85,6 +90,7 @@ export async function recordRecycleDelete(input: {
         reason: input.reason ?? null,
         status: "deleted",
         relatedJson: (input.relatedJson as Prisma.InputJsonValue) || undefined,
+        metadata,
         deletedAt,
         expiresAt,
         restoredAt: null,

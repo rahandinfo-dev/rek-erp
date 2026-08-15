@@ -139,7 +139,6 @@ export const WIDGET_CATALOG: WidgetCatalogEntry[] = [
   { key: "history-created", title: "دوایین دروستکراوەکان", description: "تۆمارە دروستکراوەکان", category: "بەرهەمدارێتی", defaultSize: "medium", defaultVisible: true },
   { key: "favorites", title: "دڵخوازەکان", description: "لاپەڕە دڵخوازەکان", category: "بەرهەمدارێتی", defaultSize: "medium", defaultVisible: true },
   { key: "quick-actions", title: "کرداری خێرا", description: "کورتەڕێی دروستکردن", category: "بەرهەمدارێتی", defaultSize: "xlarge", defaultVisible: true },
-  { key: "active-alerts", title: "ئاگاداری چالاکەکان", description: "ئاگادارییەکانی زیرەک", category: "زیرەکی دەستکرد", defaultSize: "medium", defaultVisible: true },
   { key: "system-status", title: "دۆخی سیستەم", description: "تەندروستی ERP", category: "سیستەم", defaultSize: "small", defaultVisible: false },
   { key: "live-connection", title: "پەیوەندی ڕاستەوخۆ", description: "دۆخی ئۆنلاین", category: "سیستەم", defaultSize: "small", defaultVisible: false },
 ];

@@ -1,5 +1,11 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import { defineConfig } from "prisma/config";
+
+// Match Next.js environment precedence. Loading only `.env` here caused the
+// CLI to migrate a different database from the one used by the application
+// whenever `.env.local` supplied the production connection.
+dotenv.config({ path: ".env.local" });
+dotenv.config();
 
 /**
  * CLI-only configuration (generate / migrate / db push). The application

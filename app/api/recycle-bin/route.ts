@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
             OR: [
               { name: { contains: q, mode: "insensitive" } },
               { entityType: { contains: q, mode: "insensitive" } },
+              { entityId: { contains: q, mode: "insensitive" } },
               { reason: { contains: q, mode: "insensitive" } },
               { userName: { contains: q, mode: "insensitive" } },
               { moduleKey: { contains: q, mode: "insensitive" } },

@@ -5,6 +5,7 @@ import { employeeSchema } from "@/lib/validators/employee";
 import { logEmployeeHistory, parseOptionalDate } from "@/lib/employees/history";
 import { notifySafe } from "@/lib/notifications/create";
 import { auditSafe } from "@/lib/audit/log";
+import { isCompanyAdministrator } from "@/lib/auth/authorization";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -21,7 +22,7 @@ export async function GET(_req: NextRequest, { params }: Params) {
     const { id } = await params;
 
     const employee = await db.employee.findFirst({
-      where: { id, companyId: user.companyId },
+      where: { id, companyId: user.companyId, deletedAt: null },
       include: {
         createdBy: { select: { id: true, fullName: true } },
         history: {
@@ -217,8 +218,25 @@ export async function DELETE(req: NextRequest, { params }: Params) {
     }
 
     const { id } = await params;
+    const purge = req.nextUrl.searchParams.get("purge") === "1";
     const existing = await db.employee.findFirst({
-      where: { id, companyId: user.companyId },
+      where: {
+        id,
+        companyId: user.companyId,
+        deletedAt: purge ? { not: null } : null,
+      },
+      include: {
+        _count: {
+          select: {
+            attendances: true,
+            leaveRequests: true,
+            salaryPayments: true,
+            history: true,
+            deductions: true,
+            performances: true,
+          },
+        },
+      },
     });
 
     if (!existing) {
@@ -228,9 +246,59 @@ export async function DELETE(req: NextRequest, { params }: Params) {
       );
     }
 
+    if (purge) {
+      if (!(await isCompanyAdministrator(user.companyId, user.id))) {
+        return NextResponse.json(
+          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بسڕێتەوە." },
+          { status: 403 }
+        );
+      }
+      if (!existing.deletedAt) {
+        return NextResponse.json(
+          { success: false, message: "سەرەتا تۆمارەکە بگوازەرەوە بۆ سەبەتەی زبڵ." },
+          { status: 400 }
+        );
+      }
+      if (Object.values(existing._count).some((count) => count > 0)) {
+        return NextResponse.json(
+          { success: false, message: "ناتوانرێت بە هەمیشەیی بسڕدرێتەوە؛ داتای پەیوەست و مێژوو هەیە." },
+          { status: 400 }
+        );
+      }
+      await db.employee.delete({ where: { id: existing.id } });
+      await auditSafe({
+        companyId: user.companyId,
+        userId: user.id,
+        module: "EMPLOYEE",
+        action: "DELETE",
+        entityType: "کارمەند",
+        entityId: existing.id,
+        summary: `کارمەند بە هەمیشەیی سڕایەوە: ${existing.fullName}`,
+        oldValue: { fullName: existing.fullName, username: existing.username },
+        metadata: { permanent: true },
+        req,
+      });
+      return NextResponse.json({
+        success: true,
+        permanent: true,
+        message: "کارمەند بە هەمیشەیی سڕایەوە.",
+      });
+    }
+
+    if (existing.deletedAt) {
+      return NextResponse.json(
+        { success: false, message: "ئەم کارمەندە پێشتر لە سەبەتەی زبڵدایە." },
+        { status: 400 }
+      );
+    }
+
     await db.employee.update({
       where: { id },
-      data: { status: "INACTIVE" },
+      data: {
+        status: "INACTIVE",
+        deletedAt: new Date(),
+        deletedById: user.id,
+      },
     });
 
     await notifySafe({
@@ -253,6 +321,7 @@ export async function DELETE(req: NextRequest, { params }: Params) {
       entityId: existing.id,
       summary: `کارمەند ${existing.fullName} سڕایەوە (soft)`,
       oldValue: { username: existing.username, status: existing.status },
+      newValue: { status: "INACTIVE" },
       req,
     });
 

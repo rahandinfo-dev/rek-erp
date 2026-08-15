@@ -24,6 +24,7 @@ export async function GET() {
       where: {
         companyId: user.companyId,
         active: true,
+        deletedAt: null,
       },
       orderBy: {
         createdAt: "desc",

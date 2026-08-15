@@ -21,6 +21,8 @@ export async function GET() {
     const suppliers = await db.supplier.findMany({
       where: {
         companyId,
+        active: true,
+        deletedAt: null,
       },
       orderBy: {
         createdAt: "desc",

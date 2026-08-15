@@ -21,6 +21,7 @@ import {
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
+import { isNavigationVisible } from "@/lib/navigation/visibility";
 
 export type SidebarLink = {
   href: string;
@@ -171,25 +172,6 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
         keywords: ["audit"],
       },
       {
-        href: "/dashboard/releases",
-        labelKey: "nav.releases",
-        icon: Sparkles,
-        keywords: ["release", "version", "وەشان"],
-      },
-      {
-        href: "/dashboard/version-history",
-        labelKey: "nav.versionHistory",
-        icon: History,
-        keywords: [
-          "version",
-          "history",
-          "compare",
-          "restore",
-          "وەشان",
-          "مێژوو",
-        ],
-      },
-      {
         href: "/dashboard/ai-assistant",
         labelKey: "nav.aiAssistant",
         icon: Sparkles,
@@ -248,19 +230,6 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
         keywords: ["bulk", "multi", "batch", "select", "کۆمەڵ", "هەڵبژاردن"],
       },
       {
-        href: "/dashboard/settings/numbering",
-        labelKey: "nav.numbering",
-        icon: Settings,
-        keywords: [
-          "numbering",
-          "sequence",
-          "invoice number",
-          "sku",
-          "ژمارە",
-          "سیری",
-        ],
-      },
-      {
         href: "/dashboard/recovery",
         labelKey: "nav.recovery",
         icon: History,
@@ -287,11 +256,12 @@ export function filterSidebarGroups(
   t: (key: string) => string
 ): SidebarGroup[] {
   const q = query.trim().toLowerCase();
-  if (!q) return SIDEBAR_GROUPS;
 
   return SIDEBAR_GROUPS.map((group) => ({
     ...group,
     items: group.items.filter((item) => {
+      if (!isNavigationVisible(item.href)) return false;
+      if (!q) return true;
       const hay = [
         t(item.labelKey),
         t(group.labelKey),

@@ -458,12 +458,12 @@ export async function buildAnalytics(companyId: string): Promise<AnalyticsPayloa
       },
       _sum: { total: true },
     }),
-    db.product.count({ where: { companyId } }),
-    db.customer.count({ where: { companyId } }),
-    db.supplier.count({ where: { companyId } }),
-    db.warehouse.count({ where: { companyId } }),
+    db.product.count({ where: { companyId, deletedAt: null } }),
+    db.customer.count({ where: { companyId, deletedAt: null } }),
+    db.supplier.count({ where: { companyId, deletedAt: null } }),
+    db.warehouse.count({ where: { companyId, deletedAt: null } }),
     db.product.findMany({
-      where: { companyId, active: true },
+      where: { companyId, active: true, deletedAt: null },
       select: {
         id: true,
         name: true,
@@ -522,7 +522,7 @@ export async function buildAnalytics(companyId: string): Promise<AnalyticsPayloa
       _sum: { total: true },
     }),
     db.warehouse.findMany({
-      where: { companyId },
+      where: { companyId, deletedAt: null },
       select: { id: true, name: true, isMain: true },
       orderBy: [{ isMain: "desc" }, { name: "asc" }],
     }),

@@ -2,6 +2,7 @@
 
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Button } from "@/components/ui/button";
+import { CompactAlertDialogContent } from "@/components/ui/CompactAlertDialog";
 import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
@@ -36,11 +37,8 @@ export default function ConfirmDialog({
         if (!value) onCancel();
       }}
     >
-      <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-[2px] animate-in fade-in duration-200" />
-
-        <AlertDialog.Content className="rek-dialog fixed top-1/2 left-1/2 z-50 w-[95%] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 animate-in fade-in zoom-in-95 duration-200">
-          <AlertDialog.Title className="text-2xl font-bold text-foreground">
+      <CompactAlertDialogContent className="animate-in fade-in zoom-in-95 duration-200">
+          <AlertDialog.Title className="text-xl font-bold text-foreground">
             {title}
           </AlertDialog.Title>
 
@@ -48,9 +46,9 @@ export default function ConfirmDialog({
             {description}
           </AlertDialog.Description>
 
-          <div className="mt-8 flex justify-end gap-3">
+          <div dir="ltr" className="mt-6 grid grid-cols-2 gap-3">
             <AlertDialog.Cancel asChild>
-              <Button type="button" variant="outline">
+              <Button type="button" dir="rtl" variant="outline" className="w-full">
                 {resolvedCancel}
               </Button>
             </AlertDialog.Cancel>
@@ -58,19 +56,19 @@ export default function ConfirmDialog({
             <AlertDialog.Action asChild>
               <button
                 type="button"
+                dir="rtl"
                 disabled={loading}
                 onClick={(event) => {
                   event.preventDefault();
                   void onConfirm();
                 }}
-                className="inline-flex h-11 items-center justify-center border border-transparent bg-destructive px-5 text-sm font-bold text-white transition hover:brightness-95 disabled:pointer-events-none disabled:opacity-50"
+                className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-transparent bg-primary px-5 text-sm font-bold text-primary-foreground transition hover:brightness-95 focus-visible:ring-[3px] focus-visible:ring-ring/35 disabled:pointer-events-none disabled:opacity-50"
               >
                 {loading ? t("common.pleaseWait") : resolvedConfirm}
               </button>
             </AlertDialog.Action>
           </div>
-        </AlertDialog.Content>
-      </AlertDialog.Portal>
+      </CompactAlertDialogContent>
     </AlertDialog.Root>
   );
 }

@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { applyStockMovement } from "@/lib/inventory/movements";
 import { auditSafe } from "@/lib/audit/log";
 import { notifySafe } from "@/lib/notifications/create";
+import { requiredPreviousStateValue } from "@/lib/recycle/state";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -25,7 +26,7 @@ export async function POST(req: NextRequest, { params }: Props) {
     const { id } = await params;
 
     const sale = await db.sale.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: { not: null } },
       include: { items: true, invoice: { select: { id: true } } },
     });
 
@@ -43,8 +44,24 @@ export async function POST(req: NextRequest, { params }: Props) {
       );
     }
 
+    const trashEntry = await db.recycleBinEntry.findFirst({
+      where: { companyId, moduleKey: "sales", entityId: id, status: "deleted" },
+      select: { metadata: true },
+    });
+    const previousStatus = requiredPreviousStateValue(
+      trashEntry?.metadata,
+      "status",
+      ["DRAFT", "COMPLETED"] as const
+    );
+    if (!previousStatus) {
+      return NextResponse.json(
+        { success: false, message: "دۆخی پێشووی ئەم فرۆشتنە لە سەبەتەی زبڵدا نەدۆزرایەوە؛ گەڕاندنەوە وەستێنرا بۆ پاراستنی داتا." },
+        { status: 409 }
+      );
+    }
+
     await db.$transaction(async (tx) => {
-      for (const item of sale.items) {
+      if (previousStatus === "COMPLETED") for (const item of sale.items) {
         await applyStockMovement(tx, {
           companyId,
           productId: item.productId,
@@ -64,7 +81,7 @@ export async function POST(req: NextRequest, { params }: Props) {
 
       await tx.sale.update({
         where: { id },
-        data: { status: "COMPLETED" },
+        data: { status: previousStatus, deletedAt: null, deletedById: null },
       });
 
       if (sale.invoice) {

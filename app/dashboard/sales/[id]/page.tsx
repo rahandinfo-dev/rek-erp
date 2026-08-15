@@ -20,7 +20,7 @@ export default async function SaleDetailPage({ params }: Props) {
   const { id } = await params;
 
   const sale = await db.sale.findFirst({
-    where: { id, companyId: user.companyId },
+    where: { id, companyId: user.companyId, deletedAt: null },
     include: {
       customer: true,
       warehouse: true,

@@ -507,13 +507,13 @@ export default function DraftCenter() {
         <div className="relative min-w-0 flex-1">
           <Search
             size={15}
-            className="pointer-events-none absolute top-1/2 start-3 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
           />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={t("drafts.searchPlaceholder")}
-            className="h-11 w-full rounded-2xl border border-border bg-card pe-3 ps-9 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/30"
+            className="h-11 w-full rounded-2xl border border-border bg-card pl-9 pr-3 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-ring/30"
             aria-label={t("drafts.searchPlaceholder")}
           />
         </div>

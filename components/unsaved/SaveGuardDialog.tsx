@@ -2,6 +2,7 @@
 
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Button } from "@/components/ui/button";
+import { CompactAlertDialogContent } from "@/components/ui/CompactAlertDialog";
 import { useT } from "@/components/i18n/LocaleProvider";
 
 type Props = {
@@ -29,10 +30,8 @@ export default function SaveGuardDialog({
         if (!value) onCancel();
       }}
     >
-      <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-[100] bg-[var(--overlay)] backdrop-blur-[2px] animate-in fade-in duration-200" />
-        <AlertDialog.Content
-          className="rek-dialog fixed top-1/2 left-1/2 z-[101] w-[95%] max-w-md -translate-x-1/2 -translate-y-1/2 p-6 animate-in fade-in zoom-in-95 duration-200"
+      <CompactAlertDialogContent
+          className="animate-in fade-in zoom-in-95 duration-200"
           onEscapeKeyDown={(e) => {
             e.preventDefault();
             onCancel();
@@ -82,8 +81,7 @@ export default function SaveGuardDialog({
               {saving ? t("common.saving") : t("unsaved.saveContinue")}
             </Button>
           </div>
-        </AlertDialog.Content>
-      </AlertDialog.Portal>
+      </CompactAlertDialogContent>
     </AlertDialog.Root>
   );
 }

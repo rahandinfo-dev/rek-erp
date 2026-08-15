@@ -50,13 +50,13 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
         "rek-sidebar hidden h-full shrink-0 flex-col transition-[width] duration-300 ease-out md:flex",
         collapsed
           ? "w-[68px] lg:w-[72px]"
-          : "w-[220px] lg:w-[240px] xl:w-[260px]"
+          : "w-[260px] lg:w-[300px] xl:w-[320px]"
       )}
     >
       <div className="flex items-center justify-between gap-2 border-b border-sidebar-border px-3 py-3.5">
         <Link
           href="/dashboard"
-          className="flex min-w-0 items-center gap-2.5"
+          className="flex min-w-0 flex-1 items-center gap-2.5"
           title={user.company.name}
         >
           <Image
@@ -70,9 +70,13 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
             priority
           />
           {!collapsed && (
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-1.5">
-                <p className="truncate text-sm font-black text-foreground">
+                <p
+                  dir="auto"
+                  title={user.company.name}
+                  className="rek-company-name truncate text-sm font-black text-foreground"
+                >
                   {user.company.name}
                 </p>
                 <UnsavedDotBadge />
@@ -105,7 +109,7 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
           <label className="relative block">
             <Search
               size={15}
-              className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+              className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
               aria-hidden
             />
             <input
@@ -114,7 +118,7 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
               onChange={(e) => setNavQuery(e.target.value)}
               placeholder={t("nav.searchMenu")}
               aria-label={t("nav.searchMenuAria")}
-              className="h-9 w-full rounded-xl border border-transparent bg-muted/70 pr-9 pl-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/40 focus:bg-card focus-visible:ring-[3px] focus-visible:ring-ring/25"
+              className="h-9 w-full rounded-xl border border-transparent bg-muted/70 pl-9 pr-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus:border-primary/40 focus:bg-card focus-visible:ring-[3px] focus-visible:ring-ring/25"
             />
           </label>
         </div>
@@ -182,11 +186,15 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
             {user.fullName.charAt(0)}
           </div>
           {!collapsed && (
-            <div className="min-w-0">
+            <div className="min-w-0 flex-1">
               <p className="truncate text-xs font-bold text-foreground">
                 {user.fullName}
               </p>
-              <p className="truncate text-[10px] text-muted-foreground">
+              <p
+                dir="auto"
+                title={user.company.name}
+                className="rek-company-name truncate text-[10px] text-muted-foreground"
+              >
                 {user.company.name}
               </p>
             </div>

@@ -190,12 +190,6 @@ export const APP_GRID: AppMenuItem[] = [
     descriptionKey: "nav.descAudit",
   },
   {
-    titleKey: "nav.versionHistory",
-    href: "/dashboard/version-history",
-    icon: History,
-    descriptionKey: "nav.descVersions",
-  },
-  {
     titleKey: "nav.aiAssistant",
     href: "/dashboard/ai-assistant",
     icon: Sparkles,

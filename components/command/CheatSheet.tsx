@@ -224,14 +224,14 @@ export default function CheatSheetHost() {
           <div className="relative min-w-0 flex-1">
             <Search
               size={14}
-              className="pointer-events-none absolute top-1/2 start-2.5 -translate-y-1/2 text-muted-foreground"
+              className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
             />
             <input
               autoFocus
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="گەڕان لە قەدبڕەکان…"
-              className="h-9 w-full rounded-xl border-0 bg-muted/70 pe-3 ps-8 text-sm outline-none"
+              className="h-9 w-full rounded-xl border-0 bg-muted/70 pl-8 pr-3 text-sm outline-none"
             />
           </div>
           <select

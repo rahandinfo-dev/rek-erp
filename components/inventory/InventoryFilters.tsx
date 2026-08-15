@@ -60,7 +60,7 @@ function InventoryFilters({
     <div className="space-y-3 rounded-3xl border border-border bg-card p-3 sm:p-4">
       <div className="relative">
         <Search
-          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+          className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
           size={16}
         />
         <input
@@ -68,7 +68,7 @@ function InventoryFilters({
           value={q}
           onChange={(e) => onChange({ q: e.target.value })}
           placeholder="گەڕان بە ناو، SKU یان بارکۆد..."
-          className="w-full rounded-2xl border border-border bg-background py-2.5 pr-10 pl-3 text-sm outline-none focus:border-primary"
+          className="w-full rounded-2xl border border-border bg-background py-2.5 pl-10 pr-3 text-sm outline-none focus:border-primary"
         />
       </div>
 

@@ -25,7 +25,7 @@ export async function GET(_req: NextRequest, { params }: Props) {
     const { id } = await params;
 
     const sale = await db.sale.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: null },
       include: {
         customer: true,
         warehouse: true,
@@ -117,7 +117,7 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
 
       await tx.sale.update({
         where: { id },
-        data: { status: "CANCELLED" },
+        data: { status: "CANCELLED", deletedAt: new Date(), deletedById: userId },
       });
 
       if (sale.invoice) {

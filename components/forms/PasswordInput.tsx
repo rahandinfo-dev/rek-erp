@@ -42,7 +42,7 @@ export default function PasswordInput({
         <Input
           type={visible ? "text" : "password"}
           value={value}
-          className={cn(inputClassName, "h-12 pe-11", className)}
+          className={cn(inputClassName, "h-12 pl-11 pr-3", className)}
           aria-invalid={Boolean(error)}
           aria-describedby={showStrength ? describedBy : undefined}
           {...props}
@@ -50,10 +50,9 @@ export default function PasswordInput({
         <button
           type="button"
           onClick={() => setVisible((prev) => !prev)}
-          className="absolute inset-y-0 end-0 flex w-11 items-center justify-center text-muted-foreground transition hover:text-foreground"
+          className="absolute inset-y-0 left-0 flex w-11 items-center justify-center text-muted-foreground transition hover:text-foreground"
           aria-label={visible ? "شاردنەوەی وشەی نهێنی" : "پیشاندانی وشەی نهێنی"}
           aria-pressed={visible}
-          tabIndex={-1}
         >
           {visible ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>

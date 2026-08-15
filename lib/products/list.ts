@@ -47,11 +47,12 @@ export async function listProductsPage(input: {
 
   const where = {
     companyId: input.companyId,
+    deletedAt: null,
     ...(activeParam === "true"
       ? { active: true }
       : activeParam === "false"
         ? { active: false }
-        : {}),
+        : { active: true }),
     ...(q
       ? {
           OR: [

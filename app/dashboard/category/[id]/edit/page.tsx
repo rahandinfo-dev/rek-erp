@@ -27,6 +27,7 @@ export default async function EditCategoryPage({ params }: Props) {
     where: {
       id,
       companyId: user.companyId,
+      deletedAt: null,
     },
   });
 

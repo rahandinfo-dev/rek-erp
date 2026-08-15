@@ -2,8 +2,8 @@
 import { formatNumber } from "@/lib/utils/format";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Search } from "lucide-react";
 import { FloatingLayer } from "@/components/ui/FloatingLayer";
+import { SearchInput } from "@/components/ui/SearchInput";
 import {
   filterProductOptions,
   isProductSelectorDebugEnabled,
@@ -52,13 +52,11 @@ export default function ProductPicker({
 
   return (
     <div className="relative min-w-0">
-      <div ref={anchorRef} className="relative">
-        <Search
-          size={15}
-          className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
-          aria-hidden
-        />
-        <input
+      <div ref={anchorRef}>
+        <SearchInput
+          wrapperClassName="w-full"
+          iconSize={15}
+          iconClassName="text-muted-foreground"
           value={open ? query : selected ? `${selected.name} (${selected.sku})` : ""}
           onChange={(e) => {
             setQuery(e.target.value);
@@ -73,7 +71,7 @@ export default function ProductPicker({
             window.setTimeout(() => setOpen(false), 150);
           }}
           placeholder={placeholder}
-          className="h-11 w-full rounded-xl border border-border bg-card pr-9 pl-3 text-sm outline-none focus:border-primary/50"
+          className="h-11 w-full rounded-xl border border-border bg-card text-sm outline-none focus:border-primary/50"
           aria-label="هەڵبژاردنی بەرهەم"
           autoComplete="off"
         />

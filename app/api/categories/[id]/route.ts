@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { auditSafe } from "@/lib/audit/log";
+import { isCompanyAdministrator } from "@/lib/auth/authorization";
 type Params = Promise<{
   id: string;
 }>;
@@ -30,6 +31,7 @@ export async function GET(
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: null,
       },
     });
 
@@ -104,6 +106,7 @@ export async function PUT(
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: null,
       },
     });
 
@@ -199,6 +202,7 @@ export async function DELETE(
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: purge ? { not: null } : null,
       },
       include: { _count: { select: { suppliers: true } } },
     });
@@ -216,7 +220,13 @@ export async function DELETE(
     }
 
     if (purge) {
-      if (category.active) {
+      if (!(await isCompanyAdministrator(user.companyId, user.id))) {
+        return NextResponse.json(
+          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بسڕێتەوە." },
+          { status: 403 }
+        );
+      }
+      if (!category.deletedAt) {
         return NextResponse.json(
           {
             success: false,
@@ -254,12 +264,21 @@ export async function DELETE(
       });
     }
 
+    if (category.deletedAt) {
+      return NextResponse.json(
+        { success: false, message: "ئەم تۆمارە پێشتر گوازراوەتەوە بۆ سەبەتەی زبڵ." },
+        { status: 400 }
+      );
+    }
+
     await db.category.update({
       where: {
         id,
       },
       data: {
         active: false,
+        deletedAt: new Date(),
+        deletedById: user.id,
       },
     });
 

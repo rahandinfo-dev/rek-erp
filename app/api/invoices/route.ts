@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
 
     const where: Prisma.InvoiceWhereInput = {
       companyId: user.companyId,
+      deletedAt: null,
     };
 
     if (status === "ACTIVE" || status === "VOID") {

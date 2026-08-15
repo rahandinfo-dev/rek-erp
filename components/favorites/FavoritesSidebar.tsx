@@ -14,6 +14,7 @@ import {
   Pin,
   PinOff,
   Plus,
+  Search,
   Star,
   Trash2,
   Upload,
@@ -29,6 +30,7 @@ import {
 import { appToast } from "@/lib/toast";
 import RecentHistorySidebar from "@/components/history/RecentHistorySidebar";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { useConfirmation } from "@/components/ui/ConfirmationProvider";
 
 function ColorDot({ color }: { color: FavoriteColor | null }) {
   if (!color) return null;
@@ -277,6 +279,7 @@ export default function FavoritesSidebar({
   collapsed: boolean;
 }) {
   const { t } = useT();
+  const confirmAction = useConfirmation();
   const {
     ui,
     setSection,
@@ -441,10 +444,13 @@ export default function FavoritesSidebar({
                     type="button"
                     title={t("favorites.deleteWorkspace")}
                     className="rounded-lg bg-muted p-1.5 text-destructive"
-                    onClick={() => {
-                      if (window.confirm(t("favorites.deleteWorkspaceConfirm"))) {
-                        deleteWorkspace(activeWorkspace.id);
-                      }
+                    onClick={async () => {
+                      const accepted = await confirmAction({
+                        title: t("common.confirm"),
+                        description: t("favorites.deleteWorkspaceConfirm"),
+                        confirmText: t("common.delete"),
+                      });
+                      if (accepted) deleteWorkspace(activeWorkspace.id);
                     }}
                   >
                     <Trash2 size={13} />
@@ -453,13 +459,16 @@ export default function FavoritesSidebar({
               </div>
 
               <div className="px-2">
-                <input
-                  type="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder={t("favorites.searchPlaceholder")}
-                  className="h-8 w-full rounded-xl border-0 bg-muted/70 px-2.5 text-xs outline-none focus:ring-2 focus:ring-ring/30"
-                />
+                <div className="relative">
+                  <Search size={13} aria-hidden className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground" />
+                  <input
+                    type="search"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    placeholder={t("favorites.searchPlaceholder")}
+                    className="h-8 w-full rounded-xl border-0 bg-muted/70 pl-8 pr-2.5 text-xs outline-none focus:ring-2 focus:ring-ring/30"
+                  />
+                </div>
               </div>
 
               <div className="flex gap-1 px-2">
@@ -585,16 +594,15 @@ export default function FavoritesSidebar({
                         type="button"
                         className="rounded p-0.5 text-destructive hover:bg-destructive/10"
                         title={t("favorites.deleteGroup")}
-                        onClick={() => {
-                          if (
-                            window.confirm(
-                              t("favorites.deleteGroupConfirm", {
-                                name: group.name,
-                              })
-                            )
-                          ) {
-                            deleteGroup(group.id);
-                          }
+                        onClick={async () => {
+                          const accepted = await confirmAction({
+                            title: t("common.confirm"),
+                            description: t("favorites.deleteGroupConfirm", {
+                              name: group.name,
+                            }),
+                            confirmText: t("common.delete"),
+                          });
+                          if (accepted) deleteGroup(group.id);
                         }}
                       >
                         <Trash2 size={10} />

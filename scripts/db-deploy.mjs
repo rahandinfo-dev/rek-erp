@@ -12,8 +12,12 @@
 
 // Match the Prisma CLI, which loads .env via prisma.config.ts. Without this the
 // step would skip locally even when DATABASE_URL is configured.
-import "dotenv/config";
+import dotenv from "dotenv";
 import { spawnSync } from "node:child_process";
+
+// Keep migrations pointed at the exact database Next.js will use at runtime.
+dotenv.config({ path: ".env.local" });
+dotenv.config();
 
 const isCI = Boolean(process.env.VERCEL || process.env.CI);
 const migrationUrl = process.env.DIRECT_URL || process.env.DATABASE_URL;

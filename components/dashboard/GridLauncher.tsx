@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import { APP_GRID } from "@/lib/navigation/app-grid";
+import { isNavigationVisible } from "@/lib/navigation/visibility";
 import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { useT } from "@/components/i18n/LocaleProvider";
@@ -94,7 +95,7 @@ export default function GridLauncher({ open, onClose }: Props) {
 
         <div className="max-h-[calc(80vh-88px)] overflow-y-auto bg-card p-4 sm:p-6">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-            {APP_GRID.map((item) => {
+            {APP_GRID.filter((item) => isNavigationVisible(item.href)).map((item) => {
               const Icon = item.icon;
               const active =
                 pathname === item.href ||

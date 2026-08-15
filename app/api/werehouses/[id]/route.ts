@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { notifySafe } from "@/lib/notifications/create";
 import { auditSafe } from "@/lib/audit/log";
+import { isCompanyAdministrator } from "@/lib/auth/authorization";
 
 type Params = Promise<{
   id: string;
@@ -33,6 +34,7 @@ export async function GET(
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: null,
       },
     });
 
@@ -116,6 +118,7 @@ export async function PUT(
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: null,
       },
     });
 
@@ -240,6 +243,7 @@ export async function DELETE(
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: purge ? { not: null } : null,
       },
       include: {
         _count: {
@@ -248,6 +252,9 @@ export async function DELETE(
             purchases: true,
             invoices: true,
             warehouseStocks: true,
+            inventoryTransactions: true,
+            transfersFrom: true,
+            transfersTo: true,
           },
         },
       },
@@ -266,7 +273,13 @@ export async function DELETE(
     }
 
     if (purge) {
-      if (warehouse.active) {
+      if (!(await isCompanyAdministrator(user.companyId, user.id))) {
+        return NextResponse.json(
+          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بسڕێتەوە." },
+          { status: 403 }
+        );
+      }
+      if (!warehouse.deletedAt) {
         return NextResponse.json(
           {
             success: false,
@@ -288,7 +301,10 @@ export async function DELETE(
         warehouse._count.sales > 0 ||
         warehouse._count.purchases > 0 ||
         warehouse._count.invoices > 0 ||
-        warehouse._count.warehouseStocks > 0
+        warehouse._count.warehouseStocks > 0 ||
+        warehouse._count.inventoryTransactions > 0 ||
+        warehouse._count.transfersFrom > 0 ||
+        warehouse._count.transfersTo > 0
       ) {
         return NextResponse.json(
           {
@@ -316,6 +332,13 @@ export async function DELETE(
         message: "کۆگا بە هەمیشەیی سڕایەوە.",
         permanent: true,
       });
+    }
+
+    if (warehouse.deletedAt) {
+      return NextResponse.json(
+        { success: false, message: "ئەم تۆمارە پێشتر گوازراوەتەوە بۆ سەبەتەی زبڵ." },
+        { status: 400 }
+      );
     }
 
     const totalWarehouses = await db.warehouse.count({
@@ -354,7 +377,9 @@ export async function DELETE(
         id,
       },
       data: {
-        active: false,
+          active: false,
+          deletedAt: new Date(),
+          deletedById: user.id,
       },
     });
 

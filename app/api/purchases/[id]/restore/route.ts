@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/auth/current-user";
 import { applyStockMovement } from "@/lib/inventory/movements";
 import { auditSafe } from "@/lib/audit/log";
 import { notifySafe } from "@/lib/notifications/create";
+import { requiredPreviousStateValue } from "@/lib/recycle/state";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest, { params }: Props) {
     const { id } = await params;
 
     const purchase = await db.purchase.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: { not: null } },
       include: { items: true },
     });
 
@@ -40,8 +41,24 @@ export async function POST(req: NextRequest, { params }: Props) {
       );
     }
 
+    const trashEntry = await db.recycleBinEntry.findFirst({
+      where: { companyId, moduleKey: "purchases", entityId: id, status: "deleted" },
+      select: { metadata: true },
+    });
+    const previousStatus = requiredPreviousStateValue(
+      trashEntry?.metadata,
+      "status",
+      ["DRAFT", "COMPLETED"] as const
+    );
+    if (!previousStatus) {
+      return NextResponse.json(
+        { success: false, message: "دۆخی پێشووی ئەم کڕینە لە سەبەتەی زبڵدا نەدۆزرایەوە؛ گەڕاندنەوە وەستێنرا بۆ پاراستنی داتا." },
+        { status: 409 }
+      );
+    }
+
     await db.$transaction(async (tx) => {
-      for (const item of purchase.items) {
+      if (previousStatus === "COMPLETED") for (const item of purchase.items) {
         await applyStockMovement(tx, {
           companyId,
           productId: item.productId,
@@ -61,7 +78,7 @@ export async function POST(req: NextRequest, { params }: Props) {
 
       await tx.purchase.update({
         where: { id },
-        data: { status: "COMPLETED" },
+        data: { status: previousStatus, deletedAt: null, deletedById: null },
       });
     });
 

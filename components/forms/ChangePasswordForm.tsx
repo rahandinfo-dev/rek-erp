@@ -4,6 +4,7 @@ import { useState } from "react";
 import { passwordRequirements } from "@/lib/utils/passwordRequirements";
 import { appToast } from "@/lib/toast";
 import EmailCodePasswordReset from "@/components/forms/EmailCodePasswordReset";
+import PasswordInput from "@/components/forms/PasswordInput";
 
 export default function ChangePasswordForm() {
   const [form, setForm] = useState({
@@ -93,21 +94,18 @@ export default function ChangePasswordForm() {
 
         <Field
           label="وشەی نهێنی ئێستا"
-          type="password"
           value={form.currentPassword}
           onChange={(v) => setForm((p) => ({ ...p, currentPassword: v }))}
           autoComplete="current-password"
         />
         <Field
           label="وشەی نهێنی نوێ"
-          type="password"
           value={form.newPassword}
           onChange={(v) => setForm((p) => ({ ...p, newPassword: v }))}
           autoComplete="new-password"
         />
         <Field
           label="دووپاتکردنەوەی وشەی نهێنی"
-          type="password"
           value={form.confirmPassword}
           onChange={(v) => setForm((p) => ({ ...p, confirmPassword: v }))}
           autoComplete="new-password"
@@ -138,13 +136,11 @@ export default function ChangePasswordForm() {
 
 function Field({
   label,
-  type,
   value,
   onChange,
   autoComplete,
 }: {
   label: string;
-  type: string;
   value: string;
   onChange: (v: string) => void;
   autoComplete?: string;
@@ -152,12 +148,11 @@ function Field({
   return (
     <label className="block">
       <span className="mb-2 block text-sm font-bold">{label}</span>
-      <input
-        type={type}
+      <PasswordInput
         value={value}
         autoComplete={autoComplete}
         onChange={(e) => onChange(e.target.value)}
-        className="h-11 w-full border border-border px-3 outline-none focus:border-primary/50"
+        className="h-11 border-border"
       />
     </label>
   );

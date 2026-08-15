@@ -6,6 +6,7 @@ import {
 } from "@/lib/auth/current-user";
 import { supplierSchema } from "@/lib/validators/supplier";
 import { auditSafe } from "@/lib/audit/log";
+import { isCompanyAdministrator } from "@/lib/auth/authorization";
 
 type Props = {
   params: Promise<{
@@ -18,7 +19,8 @@ export async function GET(
   { params }: Props
 ) {
   try {
-    const companyId = await getCurrentCompanyId();
+    const user = await getCurrentUser();
+    const companyId = user?.companyId;
 
     if (!companyId) {
       return NextResponse.json(
@@ -38,6 +40,7 @@ export async function GET(
       where: {
         id,
         companyId,
+        deletedAt: null,
       },
     });
 
@@ -114,6 +117,7 @@ export async function PUT(
       where: {
         id,
         companyId,
+        deletedAt: null,
       },
     });
 
@@ -218,7 +222,8 @@ export async function PUT(
 }
 export async function DELETE(req: NextRequest, { params }: Props) {
   try {
-    const companyId = await getCurrentCompanyId();
+    const user = await getCurrentUser();
+    const companyId = user?.companyId;
 
     if (!companyId) {
       return NextResponse.json(
@@ -239,6 +244,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
       where: {
         id,
         companyId,
+        deletedAt: purge ? { not: null } : null,
       },
       include: { _count: { select: { purchases: true } } },
     });
@@ -256,7 +262,13 @@ export async function DELETE(req: NextRequest, { params }: Props) {
     }
 
     if (purge) {
-      if (supplier.active) {
+      if (!(await isCompanyAdministrator(companyId, user.id))) {
+        return NextResponse.json(
+          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بسڕێتەوە." },
+          { status: 403 }
+        );
+      }
+      if (!supplier.deletedAt) {
         return NextResponse.json(
           {
             success: false,
@@ -277,6 +289,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
       await db.supplier.delete({ where: { id } });
       await auditSafe({
         companyId,
+        userId: user.id,
         module: "SUPPLIER",
         action: "DELETE",
         entityType: "دابینکەر",
@@ -293,7 +306,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
       });
     }
 
-    if (!supplier.active) {
+    if (supplier.deletedAt) {
       return NextResponse.json(
         { success: false, message: "ئەم دابینکەرە پێشتر soft delete کراوە." },
         { status: 400 }
@@ -302,11 +315,12 @@ export async function DELETE(req: NextRequest, { params }: Props) {
 
     await db.supplier.update({
       where: { id },
-      data: { active: false },
+      data: { active: false, deletedAt: new Date(), deletedById: user.id },
     });
 
     await auditSafe({
       companyId,
+      userId: user.id,
       module: "SUPPLIER",
       action: "DELETE",
       entityType: "دابینکەر",

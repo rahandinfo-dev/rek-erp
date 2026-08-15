@@ -124,6 +124,7 @@ export async function runEnterpriseSearch(input: {
           where: {
             companyId,
             active: true,
+            deletedAt: null,
             OR: [
               ...orContains(["name", "sku", "barcode", "notes"], variants),
             ],
@@ -163,6 +164,7 @@ export async function runEnterpriseSearch(input: {
           where: {
             companyId,
             active: true,
+            deletedAt: null,
             OR: [
               ...orContains(
                 ["name", "code", "phone", "email", "address", "notes"],
@@ -189,6 +191,7 @@ export async function runEnterpriseSearch(input: {
           where: {
             companyId,
             active: true,
+            deletedAt: null,
             OR: [
               ...orContains(
                 ["name", "code", "phone", "email", "address", "notes"],
@@ -215,6 +218,7 @@ export async function runEnterpriseSearch(input: {
           where: {
             companyId,
             active: true,
+            deletedAt: null,
             OR: [...orContains(["name", "code", "address"], variants)],
           },
           select: {
@@ -234,6 +238,7 @@ export async function runEnterpriseSearch(input: {
           where: {
             companyId,
             active: true,
+            deletedAt: null,
             OR: [...orContains(["name", "symbol"], variants)],
           },
           select: {
@@ -251,6 +256,7 @@ export async function runEnterpriseSearch(input: {
           where: {
             companyId,
             status: { not: "INACTIVE" },
+            deletedAt: null,
             OR: [
               ...orContains(
                 [
@@ -381,6 +387,7 @@ export async function runEnterpriseSearch(input: {
           where: {
             companyId,
             active: true,
+            deletedAt: null,
             name: contains(primary),
           },
           select: { id: true, name: true, updatedAt: true },
@@ -392,6 +399,7 @@ export async function runEnterpriseSearch(input: {
           where: {
             companyId,
             active: true,
+            deletedAt: null,
             OR: [
               { name: contains(primary) },
               { description: contains(primary) },
@@ -792,7 +800,7 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
   const [products, customers, suppliers, warehouses, employees, invoices] =
     await Promise.all([
       db.product.findMany({
-        where: { companyId, active: true },
+        where: { companyId, active: true, deletedAt: null },
         select: {
           id: true,
           name: true,
@@ -805,7 +813,7 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
         orderBy: { updatedAt: "desc" },
       }),
       db.customer.findMany({
-        where: { companyId, active: true },
+        where: { companyId, active: true, deletedAt: null },
         select: {
           id: true,
           name: true,
@@ -818,7 +826,7 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
         orderBy: { updatedAt: "desc" },
       }),
       db.supplier.findMany({
-        where: { companyId, active: true },
+        where: { companyId, active: true, deletedAt: null },
         select: {
           id: true,
           name: true,
@@ -830,13 +838,13 @@ export async function buildSearchIndex(companyId: string): Promise<SearchHit[]> 
         orderBy: { updatedAt: "desc" },
       }),
       db.warehouse.findMany({
-        where: { companyId, active: true },
+        where: { companyId, active: true, deletedAt: null },
         select: { id: true, name: true, code: true, updatedAt: true },
         take: 60,
         orderBy: { updatedAt: "desc" },
       }),
       db.employee.findMany({
-        where: { companyId, status: { not: "INACTIVE" } },
+        where: { companyId, status: { not: "INACTIVE" }, deletedAt: null },
         select: {
           id: true,
           fullName: true,

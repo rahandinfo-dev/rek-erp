@@ -134,13 +134,13 @@ export default function AuditLogClient({
         <div className="relative">
           <Search
             size={16}
-            className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
           />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="گەڕان: کەس، IP، مۆدیول، action، entity…"
-            className={`${inputClassName} pr-10`}
+            className={`${inputClassName} pl-10 pr-3`}
           />
         </div>
 

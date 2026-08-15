@@ -8,7 +8,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Columns3,
-  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
@@ -22,6 +21,7 @@ import {
 import type { QuickActionRecord } from "@/lib/quick-actions/types";
 import SelectionQuickActions from "@/components/quick-actions/SelectionQuickActions";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { SearchInput } from "@/components/ui/SearchInput";
 import { useT } from "@/components/i18n/LocaleProvider";
 
 export type DataTableColumn<T> = {
@@ -242,23 +242,19 @@ function DataTableInner<T>({
         />
       ) : null}
       <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-        <div className="relative w-full max-w-md">
-          <Search
-            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
-            size={18}
-            aria-hidden
-          />
-          <input
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
-            placeholder={resolvedSearchPlaceholder}
-            aria-label={t("table.searchAria")}
-            className="h-11 w-full rounded-2xl border border-border bg-card py-2 pr-4 pl-10 text-sm text-foreground shadow-[var(--shadow-xs)] outline-none transition focus:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/35"
-          />
-        </div>
+        <SearchInput
+          wrapperClassName="w-full max-w-md"
+          iconSize={18}
+          iconClassName="text-muted-foreground"
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }}
+          placeholder={resolvedSearchPlaceholder}
+          aria-label={t("table.searchAria")}
+          className="h-11 w-full rounded-2xl border border-border bg-card py-2 text-sm text-foreground shadow-[var(--shadow-xs)] outline-none transition focus:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/35"
+        />
 
         <div className="flex flex-wrap items-center gap-2">
           {toolbar}

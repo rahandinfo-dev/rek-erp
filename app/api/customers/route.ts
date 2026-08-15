@@ -16,7 +16,7 @@ export async function GET() {
     }
 
     const customers = await db.customer.findMany({
-      where: { companyId },
+      where: { companyId, active: true, deletedAt: null },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,

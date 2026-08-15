@@ -1,4 +1,5 @@
 import type { CommandItem } from "@/lib/command/types";
+import { isNavigationVisible } from "@/lib/navigation/visibility";
 
 function nav(
   partial: Omit<CommandItem, "section" | "keywords"> & {
@@ -232,23 +233,6 @@ export const COMMAND_NAVIGATE: CommandItem[] = [
     category: "سیستەم",
   }),
   nav({
-    id: "nav-version-history",
-    title: "کردنەوەی مێژووی وەشان",
-    subtitle: "بەراورد · گەڕاندنەوەی وەشان",
-    href: "/dashboard/version-history",
-    keywords: [
-      "version",
-      "history",
-      "compare",
-      "restore",
-      "وەشان",
-      "مێژوو",
-      "diff",
-    ],
-    icon: "history",
-    category: "سیستەم",
-  }),
-  nav({
     id: "nav-ai-assistant",
     title: "کردنەوەی یاریدەدەری زیرەک",
     subtitle: "تێڕوانین · ئاگاداری · خۆکارکردن",
@@ -313,16 +297,6 @@ export const COMMAND_NAVIGATE: CommandItem[] = [
     href: "/dashboard/bulk",
     keywords: ["bulk", "batch", "multi", "select", "کۆمەڵ"],
     icon: "search",
-    category: "سیستەم",
-  }),
-  nav({
-    id: "nav-numbering",
-    title: "کردنەوەی ژمارەدانی خۆکار",
-    subtitle: "ژمارەی بەڵگەنامە · SKU",
-    description: "ڕێکخستنی فۆرماتی ژمارەدانی خۆکار",
-    href: "/dashboard/settings/numbering",
-    keywords: ["numbering", "sequence", "sku", "invoice", "ژمارە"],
-    icon: "settings",
     category: "سیستەم",
   }),
   nav({
@@ -562,7 +536,9 @@ export const COMMAND_ACTIONS: CommandItem[] = [
 
 export const ALL_STATIC_COMMANDS: CommandItem[] = [
   ...COMMAND_ACTIONS,
-  ...COMMAND_NAVIGATE,
+  ...COMMAND_NAVIGATE.filter(
+    (item) => !item.href || isNavigationVisible(item.href)
+  ),
 ];
 
 export function commandsForPath(pathname: string): CommandItem[] {

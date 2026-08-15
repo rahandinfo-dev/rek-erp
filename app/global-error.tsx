@@ -29,6 +29,9 @@ export default function GlobalError({
           <p className="mt-2 text-sm text-[#6B645C]">
             ئەپەکە تووشی کێشەیەک بوو. تکایە پەڕەکە نوێ بکەرەوە.
           </p>
+          <p className="mt-3 font-mono text-[11px] text-[#6B645C]">
+            کۆدی بەدواداچوون: {error.digest || "CLIENT-GLOBAL"}
+          </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <button
               type="button"

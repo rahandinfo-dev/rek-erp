@@ -7,14 +7,12 @@ import Image from "next/image";
 
 import {
   Mail,
-  Lock,
-  Eye,
-  EyeOff,
   ShieldCheck,
   Zap,
   Database,
 } from "lucide-react";
 import { useT } from "@/components/i18n/LocaleProvider";
+import PasswordInput from "@/components/forms/PasswordInput";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -22,8 +20,6 @@ export default function LoginForm() {
 
   const [login, setLogin] = useState("");
   const [password, setPassword] = useState("");
-
-  const [showPassword, setShowPassword] = useState(false);
 
   const [loading, setLoading] = useState(false);
 
@@ -238,7 +234,7 @@ export default function LoginForm() {
                       onChange={(e) => setLogin(e.target.value)}
                       placeholder={t("auth.emailOrUsername")}
                       aria-invalid={Boolean(error)}
-                      className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-5 pl-14 outline-none transition focus:border-[#FFAE42] focus-visible:ring-[3px] focus-visible:ring-[#FFAE42]/35"
+                      className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 pl-14 outline-none transition focus:border-[#FFAE42] focus-visible:ring-[3px] focus-visible:ring-[#FFAE42]/35"
                     />
                   </div>
                 </div>
@@ -251,36 +247,14 @@ export default function LoginForm() {
                     {t("auth.password")}
                   </label>
 
-                  <div className="relative">
-                    <Lock
-                      size={22}
-                      className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"
-                      aria-hidden
-                    />
-
-                    <input
+                  <PasswordInput
                       id="login-password"
-                      type={showPassword ? "text" : "password"}
                       autoComplete="current-password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       placeholder="********"
-                      className="h-14 w-full rounded-2xl border border-slate-200 bg-white pr-5 pl-14 outline-none transition focus:border-[#FFAE42] focus-visible:ring-[3px] focus-visible:ring-[#FFAE42]/35"
+                      className="h-14 w-full rounded-2xl border-slate-200 bg-white text-base focus:border-[#FFAE42] focus-visible:ring-[#FFAE42]/35"
                     />
-
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      aria-label={
-                        showPassword
-                          ? t("auth.hidePassword")
-                          : t("auth.showPassword")
-                      }
-                      className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400"
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
                 </div>
 
                 <div className="flex items-center justify-between">

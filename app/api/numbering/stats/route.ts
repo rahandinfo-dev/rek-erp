@@ -26,7 +26,7 @@ export async function GET() {
       db.$queryRaw<Array<{ sku: string; c: bigint }>>`
         SELECT sku, COUNT(*)::bigint AS c
         FROM "Product"
-        WHERE "companyId" = ${companyId}
+        WHERE "companyId" = ${companyId} AND "deletedAt" IS NULL
         GROUP BY sku
         HAVING COUNT(*) > 1
         LIMIT 10
@@ -34,7 +34,9 @@ export async function GET() {
       db.$queryRaw<Array<{ barcode: string; c: bigint }>>`
         SELECT barcode, COUNT(*)::bigint AS c
         FROM "Product"
-        WHERE "companyId" = ${companyId} AND barcode IS NOT NULL AND barcode <> ''
+        WHERE "companyId" = ${companyId}
+          AND "deletedAt" IS NULL
+          AND barcode IS NOT NULL AND barcode <> ''
         GROUP BY barcode
         HAVING COUNT(*) > 1
         LIMIT 10

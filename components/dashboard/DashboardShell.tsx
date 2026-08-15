@@ -20,6 +20,7 @@ import { useT } from "@/components/i18n/LocaleProvider";
 import { CurrencyProvider } from "@/components/currency/CurrencyProvider";
 import { setRuntimeCurrency } from "@/lib/currency/runtime";
 import type { CurrencyCode } from "@/lib/currency/catalog";
+import { ConfirmationProvider } from "@/components/ui/ConfirmationProvider";
 
 const GridLauncher = dynamic(
   () => import("@/components/dashboard/GridLauncher"),
@@ -128,6 +129,7 @@ export default function DashboardShell({
         userId={user.id}
         companyId={user.companyId}
       >
+      <ConfirmationProvider>
       <PwaProvider>
       <div className="rek-shell flex min-w-0 overflow-hidden bg-background text-foreground">
         <NotificationSync />
@@ -168,6 +170,7 @@ export default function DashboardShell({
         <AiAssistantPanel />
       </div>
       </PwaProvider>
+      </ConfirmationProvider>
       </KeyboardProductivityProvider>
       </QuickActionsProvider>
       </SaveGuardProvider>

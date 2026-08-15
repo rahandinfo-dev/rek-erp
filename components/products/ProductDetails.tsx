@@ -386,13 +386,13 @@ export default function ProductDetails({
       {/* Hero */}
       <section className="rek-product-hero rek-card overflow-hidden">
         <div className="grid gap-0 lg:grid-cols-[minmax(0,360px)_1fr]">
-          <div className="relative min-h-[240px] bg-gradient-to-br from-secondary via-white to-muted lg:min-h-[360px]">
+          <div className="relative aspect-[4/3] min-h-[240px] bg-gradient-to-br from-secondary via-white to-muted lg:aspect-auto lg:min-h-[360px]">
             {(editing ? form.image : product.image) ? (
               <Image
                 src={(editing ? form.image : product.image) || ""}
                 alt={form.name}
                 fill
-                className="object-cover"
+                className="object-contain p-4 sm:p-6"
                 sizes="360px"
               />
             ) : (

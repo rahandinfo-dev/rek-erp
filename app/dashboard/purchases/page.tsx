@@ -12,7 +12,7 @@ export default async function PurchasesPage() {
   const t = tServer.t.bind(tServer);
 
   const purchases = await db.purchase.findMany({
-    where: { companyId },
+    where: { companyId, deletedAt: null },
     select: {
       id: true,
       invoiceNo: true,

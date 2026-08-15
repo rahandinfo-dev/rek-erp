@@ -10,6 +10,7 @@ export const RECYCLE_MODULES = [
   "brands",
   "categories",
   "units",
+  "invoice-templates",
 ] as const;
 
 export type RecycleModule = (typeof RECYCLE_MODULES)[number];
@@ -18,6 +19,7 @@ export type RecycleStatus = "deleted" | "restored" | "purged";
 
 export type RecycleBinItem = {
   id: string;
+  companyId: string;
   name: string;
   moduleKey: RecycleModule | string;
   moduleLabel: string;
@@ -43,6 +45,7 @@ export type RecycleBinPrefs = {
 export const RETENTION_OPTIONS = [30, 60, 90] as const;
 
 export const MODULE_LABELS: Record<string, string> = {
+  "invoice-templates": "قالبەکانی پسووڵە",
   products: "بەرهەمەکان",
   sales: "فرۆشتن",
   purchases: "کڕین",

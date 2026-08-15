@@ -28,7 +28,7 @@ export async function GET() {
     }
 
     const purchases = await db.purchase.findMany({
-      where: { companyId },
+      where: { companyId, deletedAt: null },
       select: {
         id: true,
         invoiceNo: true,

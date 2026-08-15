@@ -19,6 +19,8 @@ export async function loadCustomerPartyStats(
   const customers = await db.customer.findMany({
     where: {
       companyId,
+      active: true,
+      deletedAt: null,
       NOT: { code: { startsWith: "WALKIN-" } },
     },
     orderBy: { createdAt: "desc" },
@@ -90,6 +92,8 @@ export async function loadSupplierPartyStats(
   const suppliers = await db.supplier.findMany({
     where: {
       companyId,
+      active: true,
+      deletedAt: null,
       NOT: { code: { startsWith: "WALKIN-" } },
     },
     orderBy: { createdAt: "desc" },

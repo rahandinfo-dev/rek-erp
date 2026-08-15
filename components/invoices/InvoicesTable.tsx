@@ -18,6 +18,7 @@ import { PAYMENT_METHOD_LABELS } from "@/lib/invoices/payment";
 import type { PaymentMethod } from "@/lib/prisma/client";
 import BulkActionBar from "@/components/bulk/BulkActionBar";
 import { useBulkSelection } from "@/lib/bulk/useSelection";
+import { useConfirmation } from "@/components/ui/ConfirmationProvider";
 
 export type InvoiceRow = {
   id: string;
@@ -43,6 +44,7 @@ export default function InvoicesTable({
   const [rows, setRows] = useState(initialData);
   const [busyId, setBusyId] = useState<string | null>(null);
   const selection = useBulkSelection();
+  const confirmAction = useConfirmation();
   const [idsMeta, setIdsMeta] = useState({
     allIds: [] as string[],
     filteredIds: [] as string[],
@@ -70,13 +72,12 @@ export default function InvoicesTable({
 
   async function handleDelete(row: InvoiceRow) {
     if (row.status === "VOID") return;
-    if (
-      !confirm(
-        `پسوولەی ${row.invoiceNo} هەڵبوەشێنیتەوە؟ کۆگا دەگەڕێتەوە ئەگەر فرۆشتن تەواو بووبێت.`
-      )
-    ) {
-      return;
-    }
+    const accepted = await confirmAction({
+      title: "هەڵوەشاندنەوەی پسوولە",
+      description: `پسوولەی ${row.invoiceNo} هەڵبوەشێنیتەوە؟ کۆگا دەگەڕێتەوە ئەگەر فرۆشتن تەواو بووبێت.`,
+      confirmText: "هەڵوەشاندنەوە",
+    });
+    if (!accepted) return;
 
     setBusyId(row.id);
     try {

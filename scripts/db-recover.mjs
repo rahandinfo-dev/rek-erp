@@ -40,6 +40,7 @@ if (envFile) {
   }
   console.log(`[recover] Loaded environment from ${envFile}`);
 } else {
+  dotenv.config({ path: ".env.local" });
   dotenv.config();
 }
 

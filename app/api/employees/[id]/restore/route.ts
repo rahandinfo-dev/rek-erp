@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { auditSafe } from "@/lib/audit/log";
 import { tServer } from "@/lib/i18n";
+import { requiredPreviousStateValue } from "@/lib/recycle/state";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -18,7 +19,7 @@ export async function POST(req: NextRequest, { params }: Params) {
 
     const { id } = await params;
     const employee = await db.employee.findFirst({
-      where: { id, companyId: user.companyId },
+      where: { id, companyId: user.companyId, deletedAt: { not: null } },
     });
 
     if (!employee) {
@@ -28,13 +29,38 @@ export async function POST(req: NextRequest, { params }: Params) {
       );
     }
 
-    if (employee.status === "ACTIVE") {
+    if (!employee.deletedAt) {
       return NextResponse.json({ success: true, message: tServer.t("api.alreadyActive") });
+    }
+
+    const trashEntry = await db.recycleBinEntry.findFirst({
+      where: {
+        companyId: user.companyId,
+        entityId: id,
+        moduleKey: "employees",
+        status: "deleted",
+      },
+      select: { metadata: true },
+    });
+    const restoreStatus = requiredPreviousStateValue(
+      trashEntry?.metadata,
+      "status",
+      ["ACTIVE", "INACTIVE", "SUSPENDED", "ON_LEAVE", "ABSENT", "LATE", "TERMINATED"] as const
+    );
+    if (!restoreStatus) {
+      return NextResponse.json(
+        { success: false, message: "دۆخی پێشووی ئەم کارمەندە لە سەبەتەی زبڵدا نەدۆزرایەوە؛ گەڕاندنەوە وەستێنرا بۆ پاراستنی داتا." },
+        { status: 409 }
+      );
     }
 
     await db.employee.update({
       where: { id },
-      data: { status: "ACTIVE" },
+      data: {
+        status: restoreStatus,
+        deletedAt: null,
+        deletedById: null,
+      },
     });
 
     await auditSafe({

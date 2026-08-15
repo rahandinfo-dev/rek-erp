@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { auditSafe } from "@/lib/audit/log";
 import { tServer } from "@/lib/i18n";
+import { isCompanyAdministrator } from "@/lib/auth/authorization";
 
 type Params = {
   params: Promise<{
@@ -33,6 +34,7 @@ export async function GET(
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: null,
       },
     });
 
@@ -101,6 +103,7 @@ export async function PUT(
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: null,
       },
     });
 
@@ -208,6 +211,7 @@ export async function DELETE(
       where: {
         id,
         companyId: user.companyId,
+        deletedAt: purge ? { not: null } : null,
       },
       include: {
         products: true,
@@ -225,7 +229,13 @@ export async function DELETE(
     }
 
     if (purge) {
-      if (unit.active) {
+      if (!(await isCompanyAdministrator(user.companyId, user.id))) {
+        return NextResponse.json(
+          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بسڕێتەوە." },
+          { status: 403 }
+        );
+      }
+      if (!unit.deletedAt) {
         return NextResponse.json(
           {
             success: false,
@@ -262,9 +272,16 @@ export async function DELETE(
       });
     }
 
+    if (unit.deletedAt) {
+      return NextResponse.json(
+        { success: false, message: "ئەم تۆمارە پێشتر گوازراوەتەوە بۆ سەبەتەی زبڵ." },
+        { status: 400 }
+      );
+    }
+
     await db.unit.update({
       where: { id },
-      data: { active: false },
+      data: { active: false, deletedAt: new Date(), deletedById: user.id },
     });
 
     await auditSafe({

@@ -238,13 +238,13 @@ export default function BarcodeWorkbench({
             <label className="relative block">
               <Search
                 size={16}
-                className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+                className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
               />
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder="گەڕان بە ناو / SKU / بارکۆد..."
-                className="h-11 w-full rounded-2xl border border-border bg-card pr-10 pl-4 outline-none focus:border-primary/50"
+                className="h-11 w-full rounded-2xl border border-border bg-card pl-10 pr-4 outline-none focus:border-primary/50"
               />
             </label>
             <div className="flex flex-wrap gap-1.5">

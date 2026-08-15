@@ -1,5 +1,6 @@
 import { fuzzyScore } from "@/lib/search/fuzzy";
 import type { SearchHit } from "@/lib/search/types";
+import { isNavigationVisible } from "@/lib/navigation/visibility";
 
 export type SearchCatalogItem = {
   id: string;
@@ -138,23 +139,6 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
     type: "reports",
     group: "reports",
     keywords: ["audit", "log", "چاودێری", "تۆمار", "ip", "device"],
-  },
-  {
-    id: "version-history",
-    title: "مێژووی وەشان",
-    subtitle: "Compare · Restore · Change log",
-    href: "/dashboard/version-history",
-    type: "reports",
-    group: "reports",
-    keywords: [
-      "version",
-      "history",
-      "compare",
-      "restore",
-      "وەشان",
-      "مێژوو",
-      "diff",
-    ],
   },
   {
     id: "ai-assistant",
@@ -320,15 +304,6 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
     keywords: ["bulk", "batch", "multi", "select", "کۆمەڵ"],
   },
   {
-    id: "auto-numbering",
-    title: "Smart Auto Numbering",
-    subtitle: "Document & SKU formats",
-    href: "/dashboard/settings/numbering",
-    type: "module",
-    group: "tools",
-    keywords: ["numbering", "sequence", "sku", "invoice", "barcode", "ژمارە"],
-  },
-  {
     id: "favorites",
     title: "دڵخوازەکان",
     subtitle: "دڵخوازەکان",
@@ -430,7 +405,7 @@ export function matchCatalog(
   const q = query.trim();
   if (!q) return [];
 
-  return SEARCH_CATALOG.map((item) => {
+  return SEARCH_CATALOG.filter((item) => isNavigationVisible(item.href)).map((item) => {
     const score = Math.max(
       fuzzyScore(q, item.title),
       fuzzyScore(q, item.subtitle),

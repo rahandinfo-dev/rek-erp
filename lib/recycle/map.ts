@@ -5,6 +5,9 @@ export function moduleFromAudit(
   entityType?: string | null
 ): RecycleModule | string {
   const t = `${module} ${entityType || ""}`.toLowerCase();
+  if (t.includes("invoicetemplate") || t.includes("invoice template")) {
+    return "invoice-templates";
+  }
   if (t.includes("product")) return "products";
   if (t.includes("sale")) return "sales";
   if (t.includes("purchase")) return "purchases";
@@ -46,6 +49,8 @@ export function restoreUrlFor(
       return `/api/categories/${entityId}/restore`;
     case "units":
       return `/api/units/${entityId}/restore`;
+    case "invoice-templates":
+      return `/api/invoice-templates/${entityId}/restore`;
     default:
       return null;
   }
@@ -68,6 +73,10 @@ export function purgeUrlFor(moduleKey: string, entityId: string): string | null 
       return `/api/units/${entityId}?purge=1`;
     case "warehouses":
       return `/api/werehouses/${entityId}?purge=1`;
+    case "employees":
+      return `/api/employees/${entityId}?purge=1`;
+    case "invoice-templates":
+      return `/api/invoice-templates/${entityId}?purge=1`;
     default:
       return null;
   }
@@ -100,6 +109,8 @@ export function detailHrefFor(
       return `/dashboard/category/${entityId}/edit`;
     case "units":
       return `/dashboard/units/${entityId}/edit`;
+    case "invoice-templates":
+      return `/dashboard/settings/templates/${entityId}`;
     default:
       return null;
   }

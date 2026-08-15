@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Package, Pin } from "lucide-react";
+import { Package, Pin, Search } from "lucide-react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import HistoryItemActions, {
   HistoryActionBadge,
@@ -122,16 +122,19 @@ export default function RecentlyViewedPage() {
       ) : null}
 
       <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setVisible(PAGE_SIZE);
-          }}
-          placeholder={t("history.searchPlaceholder")}
-          className="h-11 flex-1 rounded-xl border border-border bg-card px-3 text-sm outline-none focus:ring-2 focus:ring-ring/30"
-        />
+        <div className="relative flex-1">
+          <Search size={16} aria-hidden className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setVisible(PAGE_SIZE);
+            }}
+            placeholder={t("history.searchPlaceholder")}
+            className="h-11 w-full rounded-xl border border-border bg-card py-2 pl-10 pr-3 text-sm outline-none focus:ring-2 focus:ring-ring/30"
+          />
+        </div>
         <select
           value={moduleFilter}
           onChange={(e) => {

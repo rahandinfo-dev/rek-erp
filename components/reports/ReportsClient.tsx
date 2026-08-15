@@ -24,7 +24,7 @@ import {
   DollarSign,
   TrendingUp,
 } from "lucide-react";
-import { formatMoney } from "@/lib/utils/format";
+import { formatMoney, formatQuantityWithUnit } from "@/lib/utils/format";
 import {
   exportElementToPdf,
   exportToCsv,
@@ -506,7 +506,7 @@ export default function ReportsClient({ companyName, initialData }: Props) {
                 <Row
                   key={p.id}
                   title={p.name}
-                  subtitle={t("reports.productMeta", { sku: p.sku, qty: formatMoney(p.quantity) })}
+                  subtitle={`${p.sku} · ${formatQuantityWithUnit(p.quantity, "دانە")}`}
                   value={`${formatMoney(p.revenue)}`}
                   href={`/dashboard/products/${p.id}`}
                 />

@@ -16,6 +16,8 @@ export default async function CategoryPage() {
   const categories = await db.category.findMany({
     where: {
       companyId: user.companyId,
+      active: true,
+      deletedAt: null,
     },
     orderBy: {
       createdAt: "desc",

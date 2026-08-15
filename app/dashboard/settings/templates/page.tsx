@@ -11,7 +11,7 @@ export default async function TemplatesPage() {
   const t = tServer.t;
 
   const templates = await db.invoiceTemplate.findMany({
-    where: { companyId },
+    where: { companyId, deletedAt: null },
     orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
   });
 

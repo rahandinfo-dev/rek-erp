@@ -11,7 +11,7 @@ export async function relatedForEntity(
   try {
     switch (moduleKey) {
       case "products": {
-        const [sales, purchases, stocks] = await Promise.all([
+        const [sales, purchases, stocks, movements, transfers] = await Promise.all([
           db.saleItem.count({
             where: { productId: entityId, sale: { companyId } },
           }),
@@ -21,11 +21,19 @@ export async function relatedForEntity(
           db.warehouseStock.count({
             where: { companyId, productId: entityId },
           }),
+          db.inventoryTransaction.count({
+            where: { companyId, productId: entityId },
+          }),
+          db.stockTransferItem.count({
+            where: { productId: entityId, transfer: { companyId } },
+          }),
         ]);
         return [
           { label: "Sale lines", count: sales },
           { label: "Purchase lines", count: purchases },
           { label: "Warehouse stock rows", count: stocks },
+          { label: "Inventory movements", count: movements },
+          { label: "Stock transfers", count: transfers },
         ].filter((r) => r.count > 0);
       }
       case "customers": {
@@ -47,15 +55,31 @@ export async function relatedForEntity(
         );
       }
       case "warehouses": {
-        const [stocks, sales, purchases] = await Promise.all([
+        const [
+          stocks,
+          sales,
+          purchases,
+          invoices,
+          movements,
+          transfersFrom,
+          transfersTo,
+        ] = await Promise.all([
           db.warehouseStock.count({
             where: { companyId, warehouseId: entityId },
           }),
           db.sale.count({ where: { companyId, warehouseId: entityId } }),
           db.purchase.count({ where: { companyId, warehouseId: entityId } }),
+          db.invoice.count({ where: { companyId, warehouseId: entityId } }),
+          db.inventoryTransaction.count({ where: { companyId, warehouseId: entityId } }),
+          db.stockTransfer.count({ where: { companyId, fromWarehouseId: entityId } }),
+          db.stockTransfer.count({ where: { companyId, toWarehouseId: entityId } }),
         ]);
         return [
           { label: "Stock rows", count: stocks },
+          { label: "Invoices", count: invoices },
+          { label: "Inventory movements", count: movements },
+          { label: "Outgoing transfers", count: transfersFrom },
+          { label: "Incoming transfers", count: transfersTo },
           { label: "فرۆشتن", count: sales },
           { label: "کڕین", count: purchases },
         ].filter((r) => r.count > 0);
@@ -85,16 +109,30 @@ export async function relatedForEntity(
         );
       }
       case "employees": {
-        const [attendance, leave, salary] = await Promise.all([
-          db.attendance.count({ where: { employeeId: entityId } }),
-          db.leaveRequest.count({ where: { employeeId: entityId } }),
-          db.salaryPayment.count({ where: { employeeId: entityId } }),
+        const [attendance, leave, salary, history, deductions, performances] = await Promise.all([
+          db.attendance.count({ where: { companyId, employeeId: entityId } }),
+          db.leaveRequest.count({ where: { companyId, employeeId: entityId } }),
+          db.salaryPayment.count({ where: { companyId, employeeId: entityId } }),
+          db.employeeHistory.count({ where: { companyId, employeeId: entityId } }),
+          db.salaryDeduction.count({ where: { companyId, employeeId: entityId } }),
+          db.employeePerformance.count({ where: { companyId, employeeId: entityId } }),
         ]);
         return [
           { label: "Attendance", count: attendance },
           { label: "Leave requests", count: leave },
           { label: "Salary payments", count: salary },
+          { label: "Employee history", count: history },
+          { label: "Salary deductions", count: deductions },
+          { label: "Performance reviews", count: performances },
         ].filter((r) => r.count > 0);
+      }
+      case "invoice-templates": {
+        const invoices = await db.invoice.count({
+          where: { companyId, templateId: entityId },
+        });
+        return [{ label: "Invoices", count: invoices }].filter(
+          (row) => row.count > 0
+        );
       }
       default:
         return [];

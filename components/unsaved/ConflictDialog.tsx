@@ -2,6 +2,7 @@
 
 import * as AlertDialog from "@radix-ui/react-alert-dialog";
 import { Button } from "@/components/ui/button";
+import { CompactAlertDialogContent } from "@/components/ui/CompactAlertDialog";
 import type { ConflictPayload } from "@/lib/unsaved/types";
 
 type Props = {
@@ -29,9 +30,7 @@ export default function ConflictDialog({
         if (!v) onCancel();
       }}
     >
-      <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-[100] bg-[var(--overlay)] backdrop-blur-[2px]" />
-        <AlertDialog.Content className="rek-dialog fixed top-1/2 left-1/2 z-[101] w-[95%] max-w-lg -translate-x-1/2 -translate-y-1/2 p-6">
+      <CompactAlertDialogContent>
           <AlertDialog.Title className="text-xl font-bold">
             پێکدادانی وەشان
           </AlertDialog.Title>
@@ -60,8 +59,7 @@ export default function ConflictDialog({
               </Button>
             </AlertDialog.Cancel>
           </div>
-        </AlertDialog.Content>
-      </AlertDialog.Portal>
+      </CompactAlertDialogContent>
     </AlertDialog.Root>
   );
 }

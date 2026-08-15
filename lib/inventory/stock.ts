@@ -1,3 +1,5 @@
+import { formatQuantityWithUnit } from "@/lib/utils/format";
+
 export type StockStatus = "IN_STOCK" | "LOW_STOCK" | "OUT_OF_STOCK";
 
 export type StockSnapshot = {
@@ -80,10 +82,11 @@ export const STOCK_STATUS_LABELS_EN: Record<StockStatus, string> = {
   OUT_OF_STOCK: "کۆگا بەتاڵە",
 };
 
-export function formatStockQty(quantity: number, unit?: string | null) {
-  const qty = num(quantity).toLocaleString();
-  const u = (unit || "").trim();
-  return u ? `${qty} ${u}` : qty;
+export function formatStockQty(
+  quantity: number,
+  unit?: string | null
+) {
+  return formatQuantityWithUnit(num(quantity), unit);
 }
 
 /** Green / Orange / Red inventory status badges */

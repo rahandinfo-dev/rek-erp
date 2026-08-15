@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Mail, ShieldCheck } from "lucide-react";
 import { passwordRequirements } from "@/lib/utils/passwordRequirements";
 import { appToast } from "@/lib/toast";
+import PasswordInput from "@/components/forms/PasswordInput";
 
 type Step = "idle" | "sent" | "verified" | "done";
 
@@ -183,24 +184,22 @@ export default function EmailCodePasswordReset() {
         <form onSubmit={completeReset} className="space-y-3">
           <label className="block">
             <span className="mb-2 block text-sm font-bold">وشەی نهێنی نوێ</span>
-            <input
-              type="password"
+            <PasswordInput
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               autoComplete="new-password"
-              className="h-11 w-full border border-border px-3 outline-none focus:border-primary/50"
+              className="h-11 border-border"
             />
           </label>
           <label className="block">
             <span className="mb-2 block text-sm font-bold">
               دووپاتکردنەوەی وشەی نهێنی
             </span>
-            <input
-              type="password"
+            <PasswordInput
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               autoComplete="new-password"
-              className="h-11 w-full border border-border px-3 outline-none focus:border-primary/50"
+              className="h-11 border-border"
             />
           </label>
           <ul className="grid gap-1 text-xs sm:grid-cols-2">

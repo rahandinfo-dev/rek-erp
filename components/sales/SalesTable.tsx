@@ -9,6 +9,7 @@ import { formatMoney } from "@/lib/utils/format";
 import BulkActionBar from "@/components/bulk/BulkActionBar";
 import { useBulkSelection } from "@/lib/bulk/useSelection";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { useConfirmation } from "@/components/ui/ConfirmationProvider";
 
 export type SaleRow = {
   id: string;
@@ -23,6 +24,7 @@ export type SaleRow = {
 
 export default function SalesTable({ initialData }: { initialData: SaleRow[] }) {
   const { t } = useT();
+  const confirmAction = useConfirmation();
   const [sales, setSales] = useState(initialData);
   const [, startTransition] = useTransition();
   const selection = useBulkSelection();
@@ -43,7 +45,12 @@ export default function SalesTable({ initialData }: { initialData: SaleRow[] }) 
   );
 
   async function cancelSale(id: string) {
-    if (!confirm(t("sales.cancelConfirm"))) return;
+    const accepted = await confirmAction({
+      title: t("common.confirm"),
+      description: t("sales.cancelConfirm"),
+      confirmText: t("common.confirm"),
+    });
+    if (!accepted) return;
 
     const { softDeleteWithUndo } = await import("@/lib/delete/withUndo");
     const result = await softDeleteWithUndo({

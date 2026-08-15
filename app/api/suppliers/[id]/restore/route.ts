@@ -18,8 +18,8 @@ export async function POST(_req: NextRequest, { params }: Props) {
 
     const { id } = await params;
     const supplier = await db.supplier.findFirst({
-      where: { id, companyId },
-      select: { id: true, name: true, active: true },
+      where: { id, companyId, deletedAt: { not: null } },
+      select: { id: true, name: true, active: true, deletedAt: true },
     });
 
     if (!supplier) {
@@ -29,7 +29,7 @@ export async function POST(_req: NextRequest, { params }: Props) {
       );
     }
 
-    if (supplier.active) {
+    if (!supplier.deletedAt) {
       return NextResponse.json(
         { success: false, message: "ئەم دابینکەرە چالاکە." },
         { status: 400 }
@@ -38,7 +38,7 @@ export async function POST(_req: NextRequest, { params }: Props) {
 
     await db.supplier.update({
       where: { id },
-      data: { active: true },
+      data: { active: true, deletedAt: null, deletedById: null },
     });
 
     await auditSafe({

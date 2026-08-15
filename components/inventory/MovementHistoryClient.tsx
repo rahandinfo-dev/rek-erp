@@ -135,13 +135,13 @@ export default function MovementHistoryClient({
           <div className="relative">
             <Search
               size={16}
-              className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+              className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
             />
             <input
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="بەرهەم، SKU، ئاماژە، هۆکار..."
-              className={`${inputClassName} pr-9`}
+              className={`${inputClassName} pl-9 pr-3`}
             />
           </div>
         </label>

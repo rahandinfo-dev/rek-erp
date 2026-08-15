@@ -32,7 +32,7 @@ export default async function InvoiceDetailPage({
   const autoPdf = query.pdf === "1";
 
   const invoice = await db.invoice.findFirst({
-    where: { id, companyId: user.companyId },
+    where: { id, companyId: user.companyId, deletedAt: null },
     include: {
       items: { orderBy: { createdAt: "asc" } },
       printHistory: { orderBy: { createdAt: "desc" }, take: 50 },

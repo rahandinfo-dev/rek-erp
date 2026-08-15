@@ -260,7 +260,7 @@ export default function BarcodeScanner({
         <div className="relative min-w-0 flex-1">
           <Search
             size={16}
-            className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
           />
           <input
             ref={inputRef}
@@ -270,7 +270,7 @@ export default function BarcodeScanner({
             placeholder={placeholder}
             autoComplete="off"
             inputMode="search"
-            className={`${inputClassName} pr-9`}
+            className={`${inputClassName} pl-9 pr-3`}
             aria-label="گەڕانی بارکۆد"
           />
         </div>

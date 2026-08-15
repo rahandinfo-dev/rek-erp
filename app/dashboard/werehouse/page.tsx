@@ -33,6 +33,8 @@ export default async function WarehousesPage({
     db.warehouse.findMany({
       where: {
         companyId: user.companyId,
+        active: true,
+        deletedAt: null,
         ...(search
           ? {
               OR: [

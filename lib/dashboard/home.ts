@@ -58,7 +58,9 @@ export async function loadDashboardHome(companyId: string) {
         (
           SELECT COUNT(*)::int
           FROM "Product"
-          WHERE "companyId" = ${companyId} AND active = true
+          WHERE "companyId" = ${companyId}
+            AND active = true
+            AND "deletedAt" IS NULL
         ) AS "productsCount",
         (
           SELECT COALESCE(SUM(total), 0)
@@ -76,7 +78,7 @@ export async function loadDashboardHome(companyId: string) {
         ) AS "todaySalesCount"
     `,
     db.sale.findMany({
-      where: { companyId, status: "COMPLETED" },
+      where: { companyId, status: "COMPLETED", deletedAt: null },
       orderBy: [{ saleDate: "desc" }, { createdAt: "desc" }],
       take: 5,
       select: {
@@ -89,7 +91,7 @@ export async function loadDashboardHome(companyId: string) {
       },
     }),
     db.invoice.findMany({
-      where: { companyId },
+      where: { companyId, deletedAt: null },
       orderBy: [{ invoiceDate: "desc" }, { createdAt: "desc" }],
       take: 5,
       select: {

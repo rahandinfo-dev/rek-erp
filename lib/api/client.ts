@@ -10,6 +10,7 @@ const t = tServer.t.bind(tServer);
 export type ApiResult<T = unknown> = {
   success: boolean;
   message?: string;
+  reference?: string;
   data?: T;
   [key: string]: unknown;
 };
@@ -91,7 +92,7 @@ export async function apiFetch<T = unknown>(
 
       if (!res.ok || body?.success === false) {
         const retryable = res.status === 429 || res.status >= 500;
-        const message =
+        const baseMessage =
           body?.message ||
           (res.status === 401
             ? t("errors.unauthorized")
@@ -104,6 +105,10 @@ export async function apiFetch<T = unknown>(
                   : res.status >= 500
                     ? t("api.serverError")
                     : t("errors.generic"));
+        const message =
+          body?.reference && !baseMessage.includes(body.reference)
+            ? `${baseMessage} کۆدی بەدواداچوون: ${body.reference}`
+            : baseMessage;
         throw new ApiClientError(message, res.status, body, retryable);
       }
 

@@ -15,7 +15,12 @@ export type ApiFailure = {
   message: string;
   code?: string;
   errors?: unknown;
+  reference?: string;
 };
+
+function errorReference() {
+  return crypto.randomUUID().replaceAll("-", "").slice(0, 12).toUpperCase();
+}
 
 /** Standard JSON success response */
 export function apiOk<T = unknown>(
@@ -35,17 +40,26 @@ export function apiOk<T = unknown>(
 export function apiFail(
   message: string,
   status = 400,
-  extra?: { code?: string; errors?: unknown; headers?: HeadersInit }
+  extra?: {
+    code?: string;
+    errors?: unknown;
+    headers?: HeadersInit;
+    reference?: string;
+  }
 ) {
+  const reference = status >= 500 ? extra?.reference || errorReference() : undefined;
+  const headers = new Headers(extra?.headers);
+  if (reference) headers.set("X-Error-Reference", reference);
   const body: ApiFailure = {
     success: false,
     message,
     ...(extra?.code ? { code: extra.code } : {}),
     ...(extra?.errors !== undefined ? { errors: extra.errors } : {}),
+    ...(reference ? { reference } : {}),
   };
   return NextResponse.json(body, {
     status,
-    headers: extra?.headers,
+    headers,
   });
 }
 
@@ -101,11 +115,16 @@ export function withApiHandler(
     try {
       return await handler(req, ctx);
     } catch (err) {
+      const reference = errorReference();
       monitorError(area, err, {
         durationMs: Date.now() - started,
-        meta: { method: req.method, url: req.url },
+        meta: { method: req.method, url: req.url, reference },
       });
-      return apiServerError();
+      return apiFail(
+        "نەتوانرا داواکارییەکە تەواو بکرێت. تکایە دووبارە هەوڵ بدەرەوە.",
+        500,
+        { code: "INTERNAL", reference }
+      );
     }
   };
 }

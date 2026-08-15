@@ -18,7 +18,7 @@ export async function POST(req: NextRequest, { params }: Params) {
 
     const { id } = await params;
     const unit = await db.unit.findFirst({
-      where: { id, companyId: user.companyId },
+      where: { id, companyId: user.companyId, deletedAt: { not: null } },
     });
 
     if (!unit) {
@@ -28,11 +28,14 @@ export async function POST(req: NextRequest, { params }: Params) {
       );
     }
 
-    if (unit.active) {
+    if (!unit.deletedAt) {
       return NextResponse.json({ success: true, message: tServer.t("api.alreadyActive") });
     }
 
-    await db.unit.update({ where: { id }, data: { active: true } });
+    await db.unit.update({
+      where: { id },
+      data: { active: true, deletedAt: null, deletedById: null },
+    });
 
     await auditSafe({
       companyId: user.companyId,

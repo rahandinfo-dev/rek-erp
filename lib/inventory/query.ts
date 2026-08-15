@@ -70,6 +70,7 @@ async function idsForStockStatus(
     const rows = await db.$queryRaw<{ id: string }[]>`
       SELECT id FROM "Product"
       WHERE "companyId" = ${companyId}
+        AND "deletedAt" IS NULL
         AND "currentStock"::numeric <= 0
     `;
     return rows.map((r) => r.id);
@@ -79,6 +80,7 @@ async function idsForStockStatus(
     const rows = await db.$queryRaw<{ id: string }[]>`
       SELECT id FROM "Product"
       WHERE "companyId" = ${companyId}
+        AND "deletedAt" IS NULL
         AND "currentStock"::numeric > 0
         AND "currentStock"::numeric <= "minimumStock"::numeric
     `;
@@ -89,6 +91,7 @@ async function idsForStockStatus(
   const rows = await db.$queryRaw<{ id: string }[]>`
     SELECT id FROM "Product"
     WHERE "companyId" = ${companyId}
+      AND "deletedAt" IS NULL
       AND "currentStock"::numeric > 0
       AND "currentStock"::numeric > "minimumStock"::numeric
       AND ("currentStock"::numeric - "reservedStock"::numeric) > 0
@@ -158,6 +161,7 @@ export async function buildInventorySummary(
         )::bigint AS "outOfStockCount"
       FROM "Product"
       WHERE "companyId" = ${companyId}
+        AND "deletedAt" IS NULL
     `,
     db.product.aggregate({
       where: { companyId },

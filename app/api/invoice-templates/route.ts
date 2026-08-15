@@ -15,7 +15,7 @@ export async function GET() {
     }
 
     const templates = await db.invoiceTemplate.findMany({
-      where: { companyId },
+      where: { companyId, deletedAt: null },
       orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
     });
 
@@ -70,7 +70,7 @@ export async function POST(req: NextRequest) {
         });
       }
 
-      const count = await tx.invoiceTemplate.count({ where: { companyId } });
+      const count = await tx.invoiceTemplate.count({ where: { companyId, deletedAt: null } });
 
       return tx.invoiceTemplate.create({
         data: {

@@ -16,7 +16,7 @@ export default async function ProductDetailsPage({ params }: Props) {
 
   const [product, mainWarehouse, units, warehouseBalances] = await Promise.all([
     db.product.findFirst({
-      where: { id, companyId: user.companyId },
+      where: { id, companyId: user.companyId, deletedAt: null },
       select: {
         id: true,
         name: true,

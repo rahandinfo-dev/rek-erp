@@ -12,6 +12,7 @@ import {
   ensureProductWarehouseBalance,
 } from "@/lib/inventory/movements";
 import { auditSafe } from "@/lib/audit/log";
+import { isCompanyAdministrator } from "@/lib/auth/authorization";
 
 type Params = {
   params: Promise<{
@@ -53,6 +54,7 @@ export async function GET(
         where: {
           id,
           companyId,
+          deletedAt: null,
         },
         select: {
           id: true,
@@ -62,6 +64,7 @@ export async function GET(
           image: true,
           notes: true,
           active: true,
+          deletedAt: true,
           unitId: true,
           purchasePrice: true,
           costPrice: true,
@@ -156,9 +159,9 @@ export async function PUT(
 
     const data = normalizeProductPayload(parsed.data);
 
-    const [product, unit, duplicateSku, duplicateBarcode] = await Promise.all([
+      const [product, unit, duplicateSku, duplicateBarcode] = await Promise.all([
       db.product.findFirst({
-        where: { id, companyId },
+        where: { id, companyId, deletedAt: null },
         select: {
           id: true,
           name: true,
@@ -419,18 +422,21 @@ export async function DELETE(
     const purge = _req.nextUrl.searchParams.get("purge") === "1";
 
     const product = await db.product.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: purge ? { not: null } : null },
       select: {
         id: true,
         name: true,
         sku: true,
         active: true,
+        deletedAt: true,
         currentStock: true,
         _count: {
           select: {
             saleItems: true,
             purchaseItems: true,
             inventoryTransactions: true,
+            warehouseStocks: true,
+            stockTransferItems: true,
           },
         },
       },
@@ -449,7 +455,13 @@ export async function DELETE(
     }
 
     if (purge) {
-      if (product.active) {
+      if (!(await isCompanyAdministrator(companyId, userId))) {
+        return NextResponse.json(
+          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بسڕێتەوە." },
+          { status: 403 }
+        );
+      }
+      if (!product.deletedAt) {
         return NextResponse.json(
           {
             success: false,
@@ -461,7 +473,9 @@ export async function DELETE(
       if (
         product._count.saleItems > 0 ||
         product._count.purchaseItems > 0 ||
-        product._count.inventoryTransactions > 0
+        product._count.inventoryTransactions > 0 ||
+        product._count.warehouseStocks > 0 ||
+        product._count.stockTransferItems > 0
       ) {
         return NextResponse.json(
           {
@@ -492,7 +506,7 @@ export async function DELETE(
       });
     }
 
-    if (!product.active) {
+    if (product.deletedAt) {
       return NextResponse.json(
         {
           success: false,
@@ -550,7 +564,7 @@ export async function DELETE(
 
       await tx.product.update({
         where: { id: product.id },
-        data: { active: false },
+        data: { active: false, deletedAt: new Date(), deletedById: userId },
       });
     });
 

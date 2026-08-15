@@ -3,6 +3,7 @@ import { formatDate } from "@/lib/utils/datetime";
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { Search } from "lucide-react";
 import DeleteUnitButton from "./DeleteUnitButton";
 import { useT } from "@/components/i18n/LocaleProvider";
 
@@ -67,16 +68,23 @@ export default function UnitTable() {
   return (
     <div className="rek-table-shell">
       <div className="border-b border-border p-3 sm:p-4">
-        <input
-          type="text"
-          placeholder={t("units.searchPlaceholder")}
-          value={search}
-          onChange={(e) => {
-            setPage(1);
-            setSearch(e.target.value);
-          }}
-          className="w-full max-w-full rounded-2xl border border-border bg-background p-3 text-foreground outline-none focus:border-primary"
-        />
+        <div className="relative">
+          <Search
+            size={16}
+            aria-hidden
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
+          />
+          <input
+            type="search"
+            placeholder={t("units.searchPlaceholder")}
+            value={search}
+            onChange={(e) => {
+              setPage(1);
+              setSearch(e.target.value);
+            }}
+            className="w-full max-w-full rounded-2xl border border-border bg-background py-3 pl-10 pr-3 text-foreground outline-none focus:border-primary"
+          />
+        </div>
       </div>
 
       {loading ? (

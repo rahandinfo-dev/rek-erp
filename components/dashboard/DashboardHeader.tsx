@@ -51,14 +51,14 @@ function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
 
   return (
     <header className="rek-header w-full shrink-0 px-3 sm:px-4 md:px-6 lg:px-8">
-      <div className="flex min-h-14 max-w-full flex-wrap items-center justify-between gap-x-2 gap-y-2 py-1 md:h-15 md:py-0 lg:h-16">
-        <div className="flex min-w-0 flex-1 basis-[min(100%,280px)] items-center gap-2 md:basis-auto md:gap-3">
+      <div className="flex h-14 min-w-0 max-w-full flex-nowrap items-center gap-2 py-1 md:h-15 md:gap-3 md:py-0 lg:h-16">
+        <div className="flex min-w-0 flex-1 items-center gap-2 md:gap-3">
           <Button
             type="button"
             variant="outline"
             onClick={onOpenLauncher}
             aria-label={t("nav.openAppsMenu")}
-            className="h-10 shrink-0 gap-2 rounded-xl border-border bg-card px-3 shadow-none"
+            className="h-10 flex-none gap-2 rounded-xl border-border bg-card px-3 shadow-none"
           >
             <LayoutGrid size={18} aria-hidden />
             <span className="hidden text-sm font-bold sm:inline">
@@ -66,10 +66,12 @@ function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
             </span>
           </Button>
 
-          <GlobalSearch className="hidden min-w-0 flex-1 md:block md:max-w-[min(100%,340px)] lg:max-w-[min(100%,440px)] xl:max-w-[520px]" />
+          <div className="hidden min-w-0 flex-1 md:block md:max-w-[340px] lg:max-w-[440px] xl:max-w-[520px]">
+            <GlobalSearch className="w-full max-w-none" />
+          </div>
         </div>
 
-        <div className="flex shrink-0 flex-wrap items-center justify-end gap-1.5 sm:gap-2 md:gap-3">
+        <div className="flex flex-none flex-nowrap items-center justify-end gap-1.5 sm:gap-2 md:gap-3">
           <FavoriteStarButton iconOnly className="hidden sm:inline-flex" />
           <HeaderSaveStatus className="hidden md:inline-flex" />
           <InstallAppButton className="hidden lg:inline-flex" />
@@ -88,12 +90,16 @@ function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
           </Button>
           <NotificationBell />
 
-          <div className="flex min-w-0 max-w-[36vw] items-center gap-2 border-r border-border pr-2 sm:max-w-none sm:gap-2.5 sm:pr-3">
-            <div className="hidden min-w-0 text-right lg:block">
-              <p className="max-w-[9rem] truncate text-sm font-bold text-foreground xl:max-w-[12rem]">
+          <div className="flex min-w-0 max-w-[42vw] items-center gap-2 border-r border-border pr-2 sm:max-w-none sm:gap-2.5 sm:pr-3">
+            <div className="hidden min-w-0 text-start lg:block lg:w-[18rem] xl:w-[24rem]">
+              <p dir="auto" className="truncate text-sm font-bold text-foreground">
                 {user.fullName}
               </p>
-              <p className="max-w-[9rem] truncate text-xs text-muted-foreground xl:max-w-[12rem]">
+              <p
+                dir="auto"
+                title={user.company.name}
+                className="rek-company-name truncate text-xs text-muted-foreground"
+              >
                 {user.company.name}
               </p>
             </div>

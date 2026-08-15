@@ -25,7 +25,7 @@ export async function GET(_req: NextRequest, { params }: Props) {
     const { id } = await params;
 
     const purchase = await db.purchase.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: null },
       include: {
         supplier: true,
         warehouse: true,
@@ -142,7 +142,7 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
 
       await tx.purchase.update({
         where: { id },
-        data: { status: "CANCELLED" },
+        data: { status: "CANCELLED", deletedAt: new Date(), deletedById: userId },
       });
     });
 

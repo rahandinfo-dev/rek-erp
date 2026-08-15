@@ -7,10 +7,11 @@ type SyncCandidate = {
   entityId: string;
   name: string;
   deletedAt: Date;
+  deletedById: string | null;
 };
 
 /**
- * Upsert soft-deleted master/transaction rows that are not yet in the bin.
+ * Upsert authoritative rows carrying an explicit trash marker.
  * Safe to call opportunistically on list (bounded).
  */
 export async function syncRecycleBinFromDb(
@@ -29,64 +30,70 @@ export async function syncRecycleBinFromDb(
       brands,
       categories,
       units,
+      employees,
       sales,
       purchases,
       invoices,
-      employees,
+      invoiceTemplates,
     ] = await Promise.all([
       db.product.findMany({
-        where: { companyId, active: false },
-        select: { id: true, name: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, name: true, deletedAt: true, deletedById: true },
         take: 200,
       }),
       db.customer.findMany({
-        where: { companyId, active: false },
-        select: { id: true, name: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, name: true, deletedAt: true, deletedById: true },
         take: 200,
       }),
       db.supplier.findMany({
-        where: { companyId, active: false },
-        select: { id: true, name: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, name: true, deletedAt: true, deletedById: true },
         take: 200,
       }),
       db.warehouse.findMany({
-        where: { companyId, active: false },
-        select: { id: true, name: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, name: true, deletedAt: true, deletedById: true },
         take: 100,
       }),
       db.brand.findMany({
-        where: { companyId, active: false },
-        select: { id: true, name: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, name: true, deletedAt: true, deletedById: true },
         take: 100,
       }),
       db.category.findMany({
-        where: { companyId, active: false },
-        select: { id: true, name: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, name: true, deletedAt: true, deletedById: true },
         take: 100,
       }),
       db.unit.findMany({
-        where: { companyId, active: false },
-        select: { id: true, name: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, name: true, deletedAt: true, deletedById: true },
+        take: 100,
+      }),
+      db.employee.findMany({
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, fullName: true, deletedAt: true, deletedById: true },
         take: 100,
       }),
       db.sale.findMany({
-        where: { companyId, status: "CANCELLED" },
-        select: { id: true, invoiceNo: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, invoiceNo: true, deletedAt: true, deletedById: true },
         take: 200,
       }),
       db.purchase.findMany({
-        where: { companyId, status: "CANCELLED" },
-        select: { id: true, invoiceNo: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, invoiceNo: true, deletedAt: true, deletedById: true },
         take: 200,
       }),
       db.invoice.findMany({
-        where: { companyId, status: "VOID" },
-        select: { id: true, invoiceNo: true, updatedAt: true },
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, invoiceNo: true, deletedAt: true, deletedById: true },
         take: 200,
       }),
-      db.employee.findMany({
-        where: { companyId, status: "INACTIVE" },
-        select: { id: true, fullName: true, updatedAt: true },
+      db.invoiceTemplate.findMany({
+        where: { companyId, deletedAt: { not: null } },
+        select: { id: true, name: true, deletedAt: true, deletedById: true },
         take: 100,
       }),
     ]);
@@ -97,77 +104,96 @@ export async function syncRecycleBinFromDb(
         entityType: "Product",
         entityId: p.id,
         name: p.name,
-        deletedAt: p.updatedAt,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
       })),
       ...customers.map((p) => ({
         moduleKey: "customers",
         entityType: "کڕیار",
         entityId: p.id,
         name: p.name,
-        deletedAt: p.updatedAt,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
       })),
       ...suppliers.map((p) => ({
         moduleKey: "suppliers",
         entityType: "دابینکەر",
         entityId: p.id,
         name: p.name,
-        deletedAt: p.updatedAt,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
       })),
       ...warehouses.map((p) => ({
         moduleKey: "warehouses",
         entityType: "کۆگا",
         entityId: p.id,
         name: p.name,
-        deletedAt: p.updatedAt,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
       })),
       ...brands.map((p) => ({
         moduleKey: "brands",
         entityType: "Brand",
         entityId: p.id,
         name: p.name,
-        deletedAt: p.updatedAt,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
       })),
       ...categories.map((p) => ({
         moduleKey: "categories",
         entityType: "Category",
         entityId: p.id,
         name: p.name,
-        deletedAt: p.updatedAt,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
       })),
       ...units.map((p) => ({
         moduleKey: "units",
         entityType: "Unit",
         entityId: p.id,
         name: p.name,
-        deletedAt: p.updatedAt,
-      })),
-      ...sales.map((p) => ({
-        moduleKey: "sales",
-        entityType: "Sale",
-        entityId: p.id,
-        name: p.invoiceNo,
-        deletedAt: p.updatedAt,
-      })),
-      ...purchases.map((p) => ({
-        moduleKey: "purchases",
-        entityType: "Purchase",
-        entityId: p.id,
-        name: p.invoiceNo,
-        deletedAt: p.updatedAt,
-      })),
-      ...invoices.map((p) => ({
-        moduleKey: "invoices",
-        entityType: "پسوولە",
-        entityId: p.id,
-        name: p.invoiceNo,
-        deletedAt: p.updatedAt,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
       })),
       ...employees.map((p) => ({
         moduleKey: "employees",
         entityType: "کارمەند",
         entityId: p.id,
         name: p.fullName,
-        deletedAt: p.updatedAt,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
+      })),
+      ...sales.map((p) => ({
+        moduleKey: "sales",
+        entityType: "Sale",
+        entityId: p.id,
+        name: p.invoiceNo,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
+      })),
+      ...purchases.map((p) => ({
+        moduleKey: "purchases",
+        entityType: "Purchase",
+        entityId: p.id,
+        name: p.invoiceNo,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
+      })),
+      ...invoices.map((p) => ({
+        moduleKey: "invoices",
+        entityType: "پسوولە",
+        entityId: p.id,
+        name: p.invoiceNo,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
+      })),
+      ...invoiceTemplates.map((p) => ({
+        moduleKey: "invoice-templates",
+        entityType: "InvoiceTemplate",
+        entityId: p.id,
+        name: p.name,
+        deletedAt: p.deletedAt!,
+        deletedById: p.deletedById,
       })),
     ];
 
@@ -204,6 +230,7 @@ export async function syncRecycleBinFromDb(
         },
         create: {
           companyId,
+          userId: c.deletedById,
           moduleKey: c.moduleKey,
           entityType: c.entityType,
           entityId: c.entityId,
@@ -214,6 +241,7 @@ export async function syncRecycleBinFromDb(
         },
         update: {
           moduleKey: c.moduleKey,
+          userId: c.deletedById,
           name: c.name.slice(0, 200),
           status: "deleted",
           deletedAt: c.deletedAt,

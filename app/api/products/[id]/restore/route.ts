@@ -27,12 +27,13 @@ export async function POST(_req: NextRequest, { params }: Params) {
     const { id } = await params;
 
     const product = await db.product.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: { not: null } },
       select: {
         id: true,
         name: true,
         sku: true,
         active: true,
+        deletedAt: true,
         currentStock: true,
       },
     });
@@ -44,7 +45,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
       );
     }
 
-    if (product.active) {
+    if (!product.deletedAt) {
       return NextResponse.json(
         { success: false, message: "ئەم بەرهەمە چالاکە." },
         { status: 400 }
@@ -98,7 +99,7 @@ export async function POST(_req: NextRequest, { params }: Params) {
 
       await tx.product.update({
         where: { id: product.id },
-        data: { active: true },
+        data: { active: true, deletedAt: null, deletedById: null },
       });
     });
 

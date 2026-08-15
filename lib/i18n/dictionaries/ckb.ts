@@ -1466,7 +1466,7 @@ export const ckbMessages = {
     critical: "مەترسیدار",
     outBanner: "تەواوبوونی کۆگا — {name}",
     lowBanner: "کۆگای کەم — {name}",
-    bannerMeta: "کۆگا: {warehouse} · ماوە: {qty} {unit}",
+    bannerMeta: "کۆگا: {warehouse} · ماوە: {qty}",
   },
   reports: {
     title: "ڕاپۆرتەکان",

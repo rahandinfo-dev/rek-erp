@@ -3,6 +3,7 @@ import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { applyStockMovement } from "@/lib/inventory/movements";
 import { auditSafe } from "@/lib/audit/log";
+import { requiredPreviousStateValue } from "@/lib/recycle/state";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest, { params }: Props) {
     const { id } = await params;
 
     const invoice = await db.invoice.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: { not: null } },
       include: { sale: { include: { items: true } } },
     });
 
@@ -40,9 +41,24 @@ export async function POST(req: NextRequest, { params }: Props) {
     }
 
     const sale = invoice.sale;
+    const trashEntry = await db.recycleBinEntry.findFirst({
+      where: { companyId, moduleKey: "invoices", entityId: id, status: "deleted" },
+      select: { metadata: true },
+    });
+    const previousSaleStatus = requiredPreviousStateValue(
+      trashEntry?.metadata,
+      "saleStatus",
+      ["DRAFT", "COMPLETED"] as const
+    );
+    if (!previousSaleStatus) {
+      return NextResponse.json(
+        { success: false, message: "دۆخی پێشووی ئەم پسووڵەیە لە سەبەتەی زبڵدا نەدۆزرایەوە؛ گەڕاندنەوە وەستێنرا بۆ پاراستنی داتا." },
+        { status: 409 }
+      );
+    }
 
     await db.$transaction(async (tx) => {
-      for (const item of sale.items) {
+      if (previousSaleStatus === "COMPLETED") for (const item of sale.items) {
         await applyStockMovement(tx, {
           companyId,
           productId: item.productId,
@@ -62,12 +78,12 @@ export async function POST(req: NextRequest, { params }: Props) {
 
       await tx.sale.update({
         where: { id: sale.id },
-        data: { status: "COMPLETED" },
+        data: { status: previousSaleStatus },
       });
 
       await tx.invoice.update({
         where: { id: invoice.id },
-        data: { status: "ACTIVE" },
+        data: { status: "ACTIVE", deletedAt: null, deletedById: null },
       });
     });
 

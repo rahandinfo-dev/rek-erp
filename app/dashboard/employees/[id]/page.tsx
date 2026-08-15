@@ -17,7 +17,7 @@ export default async function EmployeeDetailsPage({ params }: Props) {
   const { id } = await params;
 
   const employee = await db.employee.findFirst({
-    where: { id, companyId: user.companyId },
+    where: { id, companyId: user.companyId, deletedAt: null },
     include: {
       createdBy: { select: { id: true, fullName: true } },
       attendances: {

@@ -11,7 +11,7 @@ export default async function InvoicesPage() {
   const t = tServer.t.bind(tServer);
 
   const invoices = await db.invoice.findMany({
-    where: { companyId: user.companyId },
+    where: { companyId: user.companyId, deletedAt: null },
     orderBy: [{ invoiceDate: "desc" }, { invoiceTime: "desc" }],
     take: 250,
     select: {

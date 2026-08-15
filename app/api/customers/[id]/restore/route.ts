@@ -18,8 +18,8 @@ export async function POST(_req: NextRequest, { params }: Props) {
 
     const { id } = await params;
     const customer = await db.customer.findFirst({
-      where: { id, companyId },
-      select: { id: true, name: true, active: true },
+      where: { id, companyId, deletedAt: { not: null } },
+      select: { id: true, name: true, active: true, deletedAt: true },
     });
 
     if (!customer) {
@@ -29,7 +29,7 @@ export async function POST(_req: NextRequest, { params }: Props) {
       );
     }
 
-    if (customer.active) {
+    if (!customer.deletedAt) {
       return NextResponse.json(
         { success: false, message: "ئەم کڕیارە چالاکە." },
         { status: 400 }
@@ -38,7 +38,7 @@ export async function POST(_req: NextRequest, { params }: Props) {
 
     await db.customer.update({
       where: { id },
-      data: { active: true },
+      data: { active: true, deletedAt: null, deletedById: null },
     });
 
     await auditSafe({

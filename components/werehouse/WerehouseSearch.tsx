@@ -1,10 +1,11 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDebouncedValue } from "@/lib/hooks/useDebouncedValue";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { SearchInput } from "@/components/ui/SearchInput";
 
 export default function WerehouseSearch() {
   const { t } = useT();
@@ -27,34 +28,26 @@ export default function WerehouseSearch() {
   }, [debounced, router, searchParams]);
 
   return (
-    <div className="relative w-full max-w-md">
-      <Search
-        className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-slate-400"
-        size={20}
-        aria-hidden
-      />
-
-      <label htmlFor="warehouse-search" className="sr-only">
-        {t("warehouses.searchLabel")}
-      </label>
-      <input
-        id="warehouse-search"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder={t("warehouses.searchPlaceholder")}
-        className="h-12 w-full rounded-2xl border border-slate-300 bg-white pr-12 pl-12 outline-none transition focus:border-[#FFAE42]"
-      />
-
-      {search ? (
+    <SearchInput
+      wrapperClassName="w-full max-w-md"
+      iconSize={20}
+      iconClassName="text-slate-400"
+      id="warehouse-search"
+      aria-label={t("warehouses.searchLabel")}
+      value={search}
+      onChange={(e) => setSearch(e.target.value)}
+      placeholder={t("warehouses.searchPlaceholder")}
+      className="h-12 w-full rounded-2xl border border-slate-300 bg-white outline-none transition focus:border-[#FFAE42]"
+      endAdornment={search ? (
         <button
           type="button"
           aria-label={t("common.clearSearch")}
           onClick={() => setSearch("")}
-          className="absolute top-1/2 right-4 -translate-y-1/2 rounded-lg p-1 text-slate-500 hover:bg-slate-100"
+          className="rounded-lg p-1 text-slate-500 hover:bg-slate-100"
         >
           <X size={18} />
         </button>
       ) : null}
-    </div>
+    />
   );
 }

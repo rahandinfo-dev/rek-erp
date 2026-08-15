@@ -16,7 +16,7 @@ export const DEFAULT_UNITS: Array<{ name: string; symbol: string }> = [
 export async function ensureDefaultUnits(companyId: string) {
   const existing = await db.unit.findMany({
     where: { companyId },
-    select: { id: true, name: true, symbol: true, active: true },
+    select: { id: true, name: true, symbol: true, active: true, deletedAt: true },
   });
 
   const bySymbol = new Map(
@@ -28,6 +28,7 @@ export async function ensureDefaultUnits(companyId: string) {
     const hit =
       bySymbol.get(unit.symbol.toLowerCase()) || byName.get(unit.name);
     if (hit) {
+      if (hit.deletedAt) continue;
       if (!hit.active) {
         await db.unit.update({
           where: { id: hit.id },
@@ -51,7 +52,7 @@ export async function ensureDefaultUnits(companyId: string) {
   }
 
   return db.unit.findMany({
-    where: { companyId, active: true },
+    where: { companyId, active: true, deletedAt: null },
     select: { id: true, name: true, symbol: true },
     orderBy: { name: "asc" },
   });

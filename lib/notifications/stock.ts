@@ -320,6 +320,7 @@ export async function runInventoryAlerts(
         FROM "Product"
         WHERE "companyId" = ${companyId}
           AND active = true
+          AND "deletedAt" IS NULL
       `,
       db.$queryRaw<
         Array<{
@@ -335,6 +336,7 @@ export async function runInventoryAlerts(
         FROM "Product"
         WHERE "companyId" = ${companyId}
           AND active = true
+          AND "deletedAt" IS NULL
           AND (
             "currentStock"::numeric <= 0
             OR (

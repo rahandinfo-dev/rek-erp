@@ -323,14 +323,14 @@ export default function RecycleBin() {
         <div className="relative flex-1">
           <Search
             size={16}
-            className="pointer-events-none absolute start-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
             aria-hidden
           />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="گەڕان بە ناو، مۆدیوول، هۆکار، سڕاو لەلایەن…"
-            className="w-full rounded-2xl border border-border bg-background py-2.5 ps-10 pe-3 text-sm font-medium focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
+            className="w-full rounded-2xl border border-border bg-background py-2.5 pl-10 pr-3 text-sm font-medium focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
             aria-label="گەڕان لە سەبەتەی زبڵ"
           />
         </div>
@@ -585,6 +585,22 @@ export default function RecycleBin() {
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">مۆدیوول</dt>
                 <dd className="font-bold">{details.moduleLabel}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">جۆری تۆمار</dt>
+                <dd className="font-bold">{details.entityType}</dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">ناسنامەی ڕەسەن</dt>
+                <dd className="max-w-[70%] break-all font-mono text-xs font-bold" dir="ltr">
+                  {details.entityId}
+                </dd>
+              </div>
+              <div className="flex justify-between gap-4">
+                <dt className="text-muted-foreground">کۆمپانیا</dt>
+                <dd className="max-w-[70%] break-all font-mono text-xs font-bold" dir="ltr">
+                  {details.companyId}
+                </dd>
               </div>
               <div className="flex justify-between gap-4">
                 <dt className="text-muted-foreground">سڕاوە لەلایەن</dt>

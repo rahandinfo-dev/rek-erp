@@ -26,6 +26,7 @@ import type {
   NotificationPriority,
 } from "@/lib/prisma/client";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { useConfirmation } from "@/components/ui/ConfirmationProvider";
 
 type NotificationItem = {
   id: string;
@@ -49,6 +50,7 @@ type Pagination = {
 
 export default function NotificationCenter() {
   const { t } = useT();
+  const confirmAction = useConfirmation();
   const [items, setItems] = useState<NotificationItem[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
@@ -155,7 +157,12 @@ export default function NotificationCenter() {
   }
 
   async function deleteAll() {
-    if (!window.confirm(t("notifications.deleteAllConfirm"))) return;
+    const accepted = await confirmAction({
+      title: t("common.confirm"),
+      description: t("notifications.deleteAllConfirm"),
+      confirmText: t("common.delete"),
+    });
+    if (!accepted) return;
     setBusy(true);
     try {
       await fetch("/api/notifications", {
@@ -211,13 +218,13 @@ export default function NotificationCenter() {
         <label className="relative block md:col-span-2 xl:col-span-1">
           <Search
             size={16}
-            className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-[#FFAE42]/50"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-[#FFAE42]/50"
           />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("notifications.searchPlaceholder")}
-            className="h-11 w-full rounded-2xl border border-[rgba(255, 174, 66,0.12)] bg-[#FFF8EF] pr-10 pl-4 outline-none focus:border-[#FFAE42] focus:bg-white"
+            className="h-11 w-full rounded-2xl border border-[rgba(255, 174, 66,0.12)] bg-[#FFF8EF] pr-4 pl-10 outline-none focus:border-[#FFAE42] focus:bg-white"
           />
         </label>
 

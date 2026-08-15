@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Trash2 } from "lucide-react";
 import { softDeleteWithUndo } from "@/lib/delete/withUndo";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { useConfirmation } from "@/components/ui/ConfirmationProvider";
 
 type Props = {
   id: string;
@@ -19,12 +20,16 @@ export default function DeleteCustomerButton({
   onRestored,
 }: Props) {
   const { t } = useT();
+  const confirmAction = useConfirmation();
   const [loading, setLoading] = useState(false);
 
   async function handleDelete() {
-    if (!confirm(t("common.softDeleteConfirm"))) {
-      return;
-    }
+    const accepted = await confirmAction({
+      title: t("common.confirm"),
+      description: t("common.softDeleteConfirm"),
+      confirmText: t("common.delete"),
+    });
+    if (!accepted) return;
 
     try {
       setLoading(true);

@@ -38,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { inputClassName } from "@/components/ui/FormPrimitives";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { tServer } from "@/lib/i18n";
+import { useConfirmation } from "@/components/ui/ConfirmationProvider";
 
 type UserOpt = { id: string; fullName: string };
 
@@ -59,6 +60,7 @@ export default function ActivityTimeline({
   viewerId,
 }: Props) {
   const { t } = useT();
+  const confirmAction = useConfirmation();
   const { userId } = useDraftOwner();
   const searchParams = useSearchParams();
   const [items, setItems] = useState(initialItems);
@@ -316,8 +318,12 @@ export default function ActivityTimeline({
       appToast.warning(t("activity.restoreUnavailable"));
       return;
     }
-    if (!window.confirm(t("activity.restoreConfirm")))
-      return;
+    const accepted = await confirmAction({
+      title: t("common.confirm"),
+      description: t("activity.restoreConfirm"),
+      confirmText: t("common.restore"),
+    });
+    if (!accepted) return;
     try {
       const res = await fetch("/api/audit-logs/restore", {
         method: "POST",
@@ -403,13 +409,13 @@ export default function ActivityTimeline({
         <div className="relative">
           <Search
             size={16}
-            className="pointer-events-none absolute top-1/2 end-3 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
           />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder={t("activity.searchPlaceholder")}
-            className={`${inputClassName} pe-10`}
+            className={`${inputClassName} pl-10 pr-3`}
             aria-label={t("activity.searchLabel")}
           />
         </div>

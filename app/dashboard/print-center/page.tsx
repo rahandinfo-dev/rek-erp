@@ -9,7 +9,7 @@ export default async function PrintCenterPage() {
   if (!user) return null;
 
   const recent = await db.invoice.findMany({
-    where: { companyId: user.companyId, status: "ACTIVE" },
+    where: { companyId: user.companyId, status: "ACTIVE", deletedAt: null },
     orderBy: { createdAt: "desc" },
     take: 8,
     select: {

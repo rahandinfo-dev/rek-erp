@@ -16,10 +16,10 @@ export default async function PurchaseDetailPage({ params }: Props) {
   const { id } = await params;
   const [purchase, template] = await Promise.all([
     db.purchase.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: null },
       include: { supplier: true, warehouse: true, company: true, items: { orderBy: { createdAt: "asc" } } },
     }),
-    db.invoiceTemplate.findFirst({ where: { companyId, docType: "PURCHASE" }, orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }] }),
+    db.invoiceTemplate.findFirst({ where: { companyId, docType: "PURCHASE", deletedAt: null }, orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }] }),
   ]);
   if (!purchase) notFound();
   const saved = (template?.config as Partial<InvoiceTemplateConfig>) || {};

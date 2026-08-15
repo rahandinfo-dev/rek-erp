@@ -92,13 +92,13 @@ export async function createAuditLog(input: AuditLogInput) {
       input.entityId
     ) {
       if (isPermanent) {
-        void recordRecyclePurged({
+        await recordRecyclePurged({
           companyId: input.companyId,
           entityType: input.entityType || String(input.module),
           entityId: input.entityId,
         });
       } else {
-        void recordRecycleDelete({
+        await recordRecycleDelete({
           companyId: input.companyId,
           userId: input.userId,
           userName,
@@ -116,7 +116,7 @@ export async function createAuditLog(input: AuditLogInput) {
       (input.status || "success") === "success" &&
       input.entityId
     ) {
-      void recordRecycleRestore({
+      await recordRecycleRestore({
         companyId: input.companyId,
         entityType: input.entityType,
         entityId: input.entityId,

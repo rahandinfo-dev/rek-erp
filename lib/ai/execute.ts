@@ -9,6 +9,7 @@ import {
 } from "@/lib/ai/types";
 import { buildRecommendations } from "@/lib/ai/recommendations";
 import { listOpenAlerts } from "@/lib/ai/alerts";
+import { formatQuantityWithUnit } from "@/lib/utils/format";
 import {
   getCustomerDebt,
   getExpensesTotal,
@@ -228,7 +229,7 @@ export async function executeAiIntent(
       const lines = m.items
         .map(
           (p) =>
-            `• ${p.name} (${p.sku}) — ${numKu(p.currentStock)}/${numKu(p.minimumStock)} ${p.unit}`
+            `• ${p.name} (${p.sku}) — ${formatQuantityWithUnit(p.currentStock, p.unit)}/${formatQuantityWithUnit(p.minimumStock, p.unit)}`
         )
         .join("\n");
       return {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { db } from "@/lib/prisma/db";
 import { getCurrentUser } from "@/lib/auth/current-user";
+import { isCompanyAdministrator } from "@/lib/auth/authorization";
 import { purgeUrlFor } from "@/lib/recycle/map";
 import { tServer } from "@/lib/i18n";
 import {
@@ -23,6 +24,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { success: false, message: tServer.t("api.unauthorized") },
         { status: 401 }
+      );
+    }
+
+    if (!(await isCompanyAdministrator(user.companyId, user.id))) {
+      return NextResponse.json(
+        { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت سەبەتەی زبڵ بەتاڵ بکاتەوە." },
+        { status: 403 }
       );
     }
 

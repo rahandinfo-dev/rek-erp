@@ -29,7 +29,7 @@ export async function GET() {
     }
 
     const sales = await db.sale.findMany({
-      where: { companyId: user.companyId },
+      where: { companyId: user.companyId, deletedAt: null },
       select: {
         id: true,
         invoiceNo: true,
@@ -145,6 +145,7 @@ export async function POST(req: NextRequest) {
           where: {
             companyId,
             docType: "SALE",
+            deletedAt: null,
           },
           orderBy: [{ isDefault: "desc" }, { updatedAt: "desc" }],
           select: { id: true },

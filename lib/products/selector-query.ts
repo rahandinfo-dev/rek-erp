@@ -22,7 +22,7 @@ export async function listProductSelectorOptions(companyId: string) {
   }
 
   const products = await db.product.findMany({
-    where: { companyId, active: true },
+    where: { companyId, active: true, deletedAt: null },
     select: PRODUCT_SELECTOR_SELECT,
     orderBy: [{ name: "asc" }, { id: "asc" }],
   });

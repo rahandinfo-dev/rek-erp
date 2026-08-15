@@ -25,11 +25,9 @@ export default function DashboardError({
         نەتوانرا ئەم بەشە بار بکرێت. تکایە دووبارە هەوڵ بدەرەوە. ئەگەر
         بەردەوام بوو، پەیوەندی بە پشتگیری بکە.
       </p>
-      {error.digest ? (
-        <p className="mt-3 font-mono text-[11px] text-muted-foreground/80">
-          کۆد: {error.digest}
-        </p>
-      ) : null}
+      <p className="mt-3 font-mono text-[11px] text-muted-foreground/80">
+        کۆدی بەدواداچوون: {error.digest || "CLIENT-RENDER"}
+      </p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <button
           type="button"

@@ -7,7 +7,7 @@ import UserAvatarForm from "@/components/forms/UserAvatarForm";
 import AutoSaveSettingsPanel from "@/components/unsaved/AutoSaveSettingsPanel";
 import NotificationPrefsPanel from "@/components/pwa/NotificationPrefsPanel";
 import RecordVersionHistorySection from "@/components/versions/RecordVersionHistorySection";
-import { FileText, Hash, Plus } from "lucide-react";
+import { FileText, Plus } from "lucide-react";
 import Image from "next/image";
 import { tServer } from "@/lib/i18n";
 
@@ -38,13 +38,6 @@ export default async function SettingsPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Link
-            href="/dashboard/settings/numbering"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#FFAE42]/20 bg-white px-5 py-3 font-bold text-[#FFAE42] hover:bg-[#FFAE42]/5"
-          >
-            <Hash size={18} />
-            {t("settings.autoNumbering")}
-          </Link>
           <Link
             href="/dashboard/settings/templates"
             className="inline-flex items-center justify-center gap-2 rounded-2xl border border-[#FFAE42]/20 bg-white px-5 py-3 font-bold text-[#FFAE42] hover:bg-[#FFAE42]/5"

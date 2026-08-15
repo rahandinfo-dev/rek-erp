@@ -88,7 +88,7 @@ function ProductCard({ product, onUpdated, onDeleted }: Props) {
     >
       <Link
         href={`/dashboard/products/${product.id}`}
-        className="relative aspect-[16/10] block overflow-hidden bg-muted outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        className="relative aspect-[4/3] block overflow-hidden bg-muted outline-none focus-visible:ring-2 focus-visible:ring-primary sm:aspect-[16/11]"
         prefetch={false}
       >
         {product.image ? (
@@ -96,7 +96,7 @@ function ProductCard({ product, onUpdated, onDeleted }: Props) {
             src={product.image}
             alt={product.name}
             fill
-            className="object-cover transition duration-300 group-hover:scale-[1.02]"
+            className="object-contain p-2 transition duration-300 group-hover:scale-[1.02]"
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 25vw"
             loading="lazy"
           />

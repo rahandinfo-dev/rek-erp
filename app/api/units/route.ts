@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
 
     const where = {
       companyId: user.companyId,
+      deletedAt: null,
       ...(activeParam === "false"
         ? { active: false }
         : { active: true }),

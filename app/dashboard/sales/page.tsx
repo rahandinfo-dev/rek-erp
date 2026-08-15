@@ -14,7 +14,7 @@ export default async function SalesPage() {
   const t = tServer.t.bind(tServer);
 
   const sales = await db.sale.findMany({
-    where: { companyId },
+    where: { companyId, deletedAt: null },
     select: {
       id: true,
       invoiceNo: true,

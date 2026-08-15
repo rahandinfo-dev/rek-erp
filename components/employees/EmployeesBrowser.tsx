@@ -43,13 +43,13 @@ export default function EmployeesBrowser({ initialData }: Props) {
         <div className="relative min-w-0 flex-1">
           <Search
             size={16}
-            className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2 text-muted-foreground"
           />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder={t("employees.searchPlaceholder")}
-            className="h-11 w-full rounded-2xl border border-border bg-card pr-9 pl-4 text-sm outline-none focus:border-primary/50"
+            className="h-11 w-full rounded-2xl border border-border bg-card pr-4 pl-9 text-sm outline-none focus:border-primary/50"
           />
         </div>
         <div className="flex flex-wrap gap-1.5">

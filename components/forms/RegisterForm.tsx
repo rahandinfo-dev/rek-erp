@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { validatePassword } from "@/lib/validators/password";
 import { getPasswordStrength } from "@/lib/utils/passwordStrength";
+import PasswordInput from "@/components/forms/PasswordInput";
 import { useT } from "@/components/i18n/LocaleProvider";
 
 export default function RegisterForm() {
@@ -250,13 +251,12 @@ export default function RegisterForm() {
                   className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base outline-none transition-all focus:border-[#FFAE42] focus:ring-4 focus:ring-[#FFAE42]/15"
                 />
 
-                <input
-                  type="password"
+                <PasswordInput
                   placeholder={t("auth.password")}
                   autoComplete="new-password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base outline-none transition-all focus:border-[#FFAE42] focus:ring-4 focus:ring-[#FFAE42]/15"
+                  className="h-14 w-full rounded-2xl border-slate-200 bg-white text-base focus:border-[#FFAE42] focus-visible:ring-[#FFAE42]/35"
                 />
                 <div className="mt-2">
                   <div className="h-2 w-full overflow-hidden rounded-full bg-gray-200">
@@ -284,13 +284,12 @@ export default function RegisterForm() {
                     </span>
                   </div>
                 </div>
-                <input
-                  type="password"
+                <PasswordInput
                   placeholder={t("auth.confirmPassword")}
                   autoComplete="new-password"
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base outline-none transition-all focus:border-[#FFAE42] focus:ring-4 focus:ring-[#FFAE42]/15"
+                  className="h-14 w-full rounded-2xl border-slate-200 bg-white text-base focus:border-[#FFAE42] focus-visible:ring-[#FFAE42]/35"
                 />
 
                 <button

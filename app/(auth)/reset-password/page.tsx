@@ -6,12 +6,11 @@ import { validatePassword } from "@/lib/validators/password";
 import { getPasswordStrength } from "@/lib/utils/passwordStrength";
 import { passwordRequirements } from "@/lib/utils/passwordRequirements";
 import { useT } from "@/components/i18n/LocaleProvider";
+import PasswordInput from "@/components/forms/PasswordInput";
 
 import {
   CheckCircle,
   XCircle,
-  Eye,
-  EyeOff,
   ShieldCheck,
 } from "lucide-react";
 
@@ -49,8 +48,6 @@ function ResetPasswordForm() {
           ? t("validation.strengthFair")
           : t("validation.strengthVeryStrong");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const requirements = passwordRequirements(password);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -120,29 +117,13 @@ function ResetPasswordForm() {
           {t("auth.resetPassword")}
         </h1>
 
-        <div className="relative mb-4">
-          <input
-            type={showPassword ? "text" : "password"}
+        <div className="mb-4">
+          <PasswordInput
             placeholder={t("auth.newPassword")}
-            className="w-full rounded-lg border p-3 pr-12"
+            className="w-full rounded-lg border border-gray-300 bg-white"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            aria-label={
-              showPassword ? t("auth.hidePassword") : t("auth.showPassword")
-            }
-            className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500"
-          >
-            {showPassword ? (
-              <EyeOff className="h-5 w-5" />
-            ) : (
-              <Eye className="h-5 w-5" />
-            )}
-          </button>
         </div>
 
         <div className="mt-3">
@@ -223,31 +204,13 @@ function ResetPasswordForm() {
             </span>
           </div>
         </div>
-        <div className="relative mb-4">
-          <input
-            type={showConfirmPassword ? "text" : "password"}
+        <div className="mb-4">
+          <PasswordInput
             placeholder={t("auth.confirmPassword")}
-            className="w-full rounded-lg border p-3 pr-12"
+            className="w-full rounded-lg border border-gray-300 bg-white"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
-
-          <button
-            type="button"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            aria-label={
-              showConfirmPassword
-                ? t("auth.hidePassword")
-                : t("auth.showPassword")
-            }
-            className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-500 transition-colors hover:text-[#FFAE42]"
-          >
-            {showConfirmPassword ? (
-              <EyeOff className="h-5 w-5" />
-            ) : (
-              <Eye className="h-5 w-5" />
-            )}
-          </button>
         </div>
 
         <button

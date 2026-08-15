@@ -13,6 +13,7 @@ import type { RelatedCount } from "@/lib/recycle/related";
 
 export type RecycleBinRow = {
   id: string;
+  companyId: string;
   name: string;
   moduleKey: string;
   entityType: string;
@@ -38,6 +39,7 @@ export function serializeRecycleEntry(
 
   return {
     id: row.id,
+    companyId: row.companyId,
     name: row.name,
     moduleKey: row.moduleKey,
     moduleLabel: MODULE_LABELS[row.moduleKey] || row.moduleKey,

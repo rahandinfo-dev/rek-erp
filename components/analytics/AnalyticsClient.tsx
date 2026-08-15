@@ -32,7 +32,7 @@ import {
   YAxis,
 } from "recharts";
 import type { AnalyticsPayload } from "@/lib/analytics/buildAnalytics";
-import { formatMoney } from "@/lib/utils/format";
+import { formatMoney, formatQuantityWithUnit } from "@/lib/utils/format";
 import { formatStockQty, STOCK_STATUS_LABELS_KU } from "@/lib/inventory/stock";
 import StatCard from "@/components/dashboard/StatCard";
 import { onNotificationsChanged } from "@/lib/notifications/bus";
@@ -504,7 +504,7 @@ export default function AnalyticsClient({ initialData, companyName }: Props) {
             id: p.id,
             title: p.name,
             subtitle: p.sku,
-            meta: t("analytics.qtyPieces", { qty: formatMoney(p.quantity) }),
+            meta: formatQuantityWithUnit(p.quantity, "دانە"),
             value: `${formatMoney(p.revenue)}`,
             href: `/dashboard/products/${p.id}`,
           }))}

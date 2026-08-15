@@ -26,18 +26,20 @@ export async function loadStockAlertProducts(
       u.symbol AS "unitSymbol",
       COALESCE(w.name, 'کۆگا') AS "warehouseName"
     FROM "Product" p
-    INNER JOIN "Unit" u ON u.id = p."unitId"
+    INNER JOIN "Unit" u ON u.id = p."unitId" AND u."deletedAt" IS NULL
     LEFT JOIN LATERAL (
       SELECT wh.name
       FROM "WarehouseStock" ws
       INNER JOIN "Warehouse" wh ON wh.id = ws."warehouseId"
       WHERE ws."productId" = p.id
         AND ws."companyId" = p."companyId"
+        AND wh."deletedAt" IS NULL
       ORDER BY wh."isMain" DESC, ws.quantity::numeric DESC
       LIMIT 1
     ) w ON true
     WHERE p."companyId" = ${companyId}
       AND p.active = true
+      AND p."deletedAt" IS NULL
       AND (
         p."currentStock"::numeric <= 0
         OR (

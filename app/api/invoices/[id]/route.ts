@@ -26,7 +26,7 @@ export async function GET(_req: NextRequest, { params }: Props) {
     const { id } = await params;
 
     const invoice = await db.invoice.findFirst({
-      where: { id, companyId: user.companyId },
+      where: { id, companyId: user.companyId, deletedAt: null },
       include: {
         items: { orderBy: { createdAt: "asc" } },
         printHistory: {
@@ -155,7 +155,7 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
 
       await tx.invoice.update({
         where: { id: invoice.id },
-        data: { status: "VOID" },
+        data: { status: "VOID", deletedAt: new Date(), deletedById: userId },
       });
     });
 
@@ -186,7 +186,11 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
       entityType: "پسوولە",
       entityId: invoice.id,
       summary: `پسوولە soft delete: ${invoice.invoiceNo}`,
-      oldValue: { status: invoice.status, invoiceNo: invoice.invoiceNo },
+      oldValue: {
+        status: invoice.status,
+        saleStatus: sale.status,
+        invoiceNo: invoice.invoiceNo,
+      },
       newValue: { status: "VOID" },
       req: _req,
     });

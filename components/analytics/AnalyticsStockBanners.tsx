@@ -39,8 +39,7 @@ export default function AnalyticsStockBanners({
             <p className="mt-0.5 text-sm opacity-90">
               {t("analytics.bannerMeta", {
                 warehouse: item.warehouseName || "—",
-                qty: formatStockQty(item.availableStock),
-                unit: item.unit,
+                qty: formatStockQty(item.availableStock, item.unit),
               })}
             </p>
           </div>
@@ -62,8 +61,7 @@ export default function AnalyticsStockBanners({
             <p className="mt-0.5 text-sm opacity-90">
               {t("analytics.bannerMeta", {
                 warehouse: item.warehouseName || "—",
-                qty: formatStockQty(item.availableStock),
-                unit: item.unit,
+                qty: formatStockQty(item.availableStock, item.unit),
               })}
             </p>
           </div>

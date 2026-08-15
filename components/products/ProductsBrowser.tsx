@@ -153,7 +153,7 @@ function ProductsBrowser({
 
       <div className="relative">
         <Search
-          className="pointer-events-none absolute top-1/2 right-4 -translate-y-1/2 text-muted-foreground"
+          className="pointer-events-none absolute top-1/2 left-4 -translate-y-1/2 text-muted-foreground"
           size={18}
           aria-hidden
         />
@@ -167,7 +167,7 @@ function ProductsBrowser({
             setPage(1);
           }}
           aria-label={t("products.searchAria")}
-          className="w-full rounded-2xl border border-border bg-card py-3 pr-12 pl-4 text-foreground shadow-[var(--shadow-xs)] outline-none transition focus:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/35"
+          className="w-full rounded-2xl border border-border bg-card py-3 pr-4 pl-12 text-foreground shadow-[var(--shadow-xs)] outline-none transition focus:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/35"
         />
       </div>
 

@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/prisma/db";
-import { getCurrentCompanyId } from "@/lib/auth/current-user";
+import { getCurrentCompanyId, getCurrentUser } from "@/lib/auth/current-user";
 import { invoiceTemplateSchema } from "@/lib/validators/invoice-template";
+import { isCompanyAdministrator } from "@/lib/auth/authorization";
+import { auditSafe } from "@/lib/audit/log";
 
 type Props = { params: Promise<{ id: string }> };
 
@@ -17,7 +19,7 @@ export async function GET(_req: NextRequest, { params }: Props) {
 
     const { id } = await params;
     const template = await db.invoiceTemplate.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: null },
     });
 
     if (!template) {
@@ -59,7 +61,7 @@ export async function PUT(req: NextRequest, { params }: Props) {
     }
 
     const existing = await db.invoiceTemplate.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: null },
     });
 
     if (!existing) {
@@ -122,17 +124,20 @@ export async function PUT(req: NextRequest, { params }: Props) {
 
 export async function DELETE(_req: NextRequest, { params }: Props) {
   try {
-    const companyId = await getCurrentCompanyId();
-    if (!companyId) {
+    const user = await getCurrentUser();
+    if (!user) {
       return NextResponse.json(
         { success: false, message: "تکایە سەرەتا بچۆ ژوورەوە." },
         { status: 401 }
       );
     }
 
+    const companyId = user.companyId;
     const { id } = await params;
+    const purge = _req.nextUrl.searchParams.get("purge") === "1";
     const existing = await db.invoiceTemplate.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: purge ? { not: null } : null },
+      include: { _count: { select: { invoices: true } } },
     });
 
     if (!existing) {
@@ -142,11 +147,56 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
       );
     }
 
-    await db.invoiceTemplate.delete({ where: { id } });
+    if (purge) {
+      if (!(await isCompanyAdministrator(companyId, user.id))) {
+        return NextResponse.json(
+          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بسڕێتەوە." },
+          { status: 403 }
+        );
+      }
+      if (!existing.deletedAt) {
+        return NextResponse.json(
+          { success: false, message: "سەرەتا قالبەکە بگوازەرەوە بۆ سەبەتەی زبڵ." },
+          { status: 400 }
+        );
+      }
+      if (existing._count.invoices > 0) {
+        return NextResponse.json(
+          { success: false, message: "ناتوانرێت بە هەمیشەیی بسڕدرێتەوە؛ پسووڵەی پەیوەست هەیە." },
+          { status: 400 }
+        );
+      }
+      await db.invoiceTemplate.delete({ where: { id } });
+      await auditSafe({
+        companyId,
+        userId: user.id,
+        module: "INVOICE",
+        action: "DELETE",
+        entityType: "InvoiceTemplate",
+        entityId: existing.id,
+        summary: `Invoice template permanently deleted: ${existing.name}`,
+        oldValue: { name: existing.name, isDefault: existing.isDefault },
+        metadata: { permanent: true },
+        req: _req,
+      });
+      return NextResponse.json({ success: true, permanent: true });
+    }
+
+    if (existing.deletedAt) {
+      return NextResponse.json(
+        { success: false, message: "ئەم قالبە پێشتر گوازراوەتەوە بۆ سەبەتەی زبڵ." },
+        { status: 400 }
+      );
+    }
+
+    await db.invoiceTemplate.update({
+      where: { id },
+      data: { isDefault: false, deletedAt: new Date(), deletedById: user.id },
+    });
 
     if (existing.isDefault) {
       const next = await db.invoiceTemplate.findFirst({
-        where: { companyId },
+        where: { companyId, deletedAt: null },
         orderBy: { updatedAt: "desc" },
       });
       if (next) {
@@ -156,6 +206,19 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
         });
       }
     }
+
+    await auditSafe({
+      companyId,
+      userId: user.id,
+      module: "INVOICE",
+      action: "DELETE",
+      entityType: "InvoiceTemplate",
+      entityId: existing.id,
+      summary: `Invoice template moved to trash: ${existing.name}`,
+      oldValue: { name: existing.name, isDefault: existing.isDefault },
+      newValue: { deletedAt: true },
+      req: _req,
+    });
 
     return NextResponse.json({
       success: true,

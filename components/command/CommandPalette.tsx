@@ -88,6 +88,7 @@ import SearchPreviewPanel from "@/components/search/SearchPreviewPanel";
 import SearchQuickActions from "@/components/search/SearchQuickActions";
 import { appToast } from "@/lib/toast";
 import { cn } from "@/lib/utils";
+import { useConfirmation } from "@/components/ui/ConfirmationProvider";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { tServer } from "@/lib/i18n";
 
@@ -235,6 +236,7 @@ export function CommandPaletteHost() {
   const draftOwner = useDraftOwner();
   const keyboard = useKeyboardProductivity();
   const saveGuard = useSaveGuard();
+  const confirmAction = useConfirmation();
   const userId = draftOwner?.userId || favorites.bundle.userId || "";
 
   const listId = useId();
@@ -892,7 +894,12 @@ export function CommandPaletteHost() {
       appToast.error(t("command.deleteUnavailable"));
       return;
     }
-    if (!window.confirm(t("command.deleteConfirm", { title: item.title }))) return;
+    const accepted = await confirmAction({
+      title: t("common.confirm"),
+      description: t("command.deleteConfirm", { title: item.title }),
+      confirmText: t("common.delete"),
+    });
+    if (!accepted) return;
     try {
       const res = await fetch(url, { method: "DELETE" });
       const json = await res.json();
@@ -936,10 +943,12 @@ export function CommandPaletteHost() {
       />
 
       <div className="rek-cmd-palette relative z-10 flex w-full max-w-[min(860px,100%)] flex-col overflow-hidden border border-border bg-card text-card-foreground shadow-[0_24px_80px_rgba(15,10,20,0.28)]">
-        <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
+        <div dir="ltr" className="flex flex-row items-center gap-3 border-b border-border px-4 py-3.5">
           <Search size={18} className="shrink-0 text-muted-foreground" />
           <input
             ref={inputRef}
+            type="search"
+            dir="auto"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={onKeyDown}
@@ -1274,11 +1283,12 @@ export default function CommandPaletteTrigger({
     <button
       type="button"
       onClick={() => openCommandPalette()}
-      className={`rek-cmd-trigger flex h-11 w-full items-center gap-2 rounded-2xl border border-border bg-secondary/70 px-3 text-right text-sm text-muted-foreground transition hover:border-primary/35 hover:bg-card sm:h-12 sm:px-4 ${className}`}
+      dir="ltr"
+      className={`rek-cmd-trigger flex h-11 w-full flex-row items-center gap-2 rounded-2xl border border-border bg-secondary/70 px-3 text-sm text-muted-foreground transition hover:border-primary/35 hover:bg-card sm:h-12 sm:px-4 ${className}`}
       aria-label={t("command.openSmartSearch")}
     >
       <Search size={18} className="shrink-0 text-primary" aria-hidden />
-      <span className="min-w-0 flex-1 truncate">
+      <span dir="rtl" className="min-w-0 flex-1 truncate text-right">
         {mobile ? "گەڕان…" : "بگەڕێ یان بڕۆ بۆ…"}
       </span>
       {!mobile ? (

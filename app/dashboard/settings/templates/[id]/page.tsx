@@ -17,7 +17,7 @@ export default async function EditTemplatePage({ params }: Props) {
 
   const { id } = await params;
   const template = await db.invoiceTemplate.findFirst({
-    where: { id, companyId: user.companyId },
+    where: { id, companyId: user.companyId, deletedAt: null },
   });
 
   if (!template) notFound();

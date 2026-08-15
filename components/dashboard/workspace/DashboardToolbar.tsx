@@ -4,9 +4,11 @@ import { LayoutGrid, Plus, RotateCcw, Star } from "lucide-react";
 import { useDashboardWorkspace } from "@/lib/dashboard/workspace/provider";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { cn } from "@/lib/utils";
+import { useConfirmation } from "@/components/ui/ConfirmationProvider";
 
 export default function DashboardToolbar() {
   const { t } = useT();
+  const confirmAction = useConfirmation();
   const {
     editMode,
     setEditMode,
@@ -81,10 +83,13 @@ export default function DashboardToolbar() {
               <button
                 type="button"
                 className="h-10 rounded-xl border border-border px-3 text-xs font-bold text-destructive"
-                onClick={() => {
-                  if (window.confirm(t("dashboard.deleteDashboardConfirm"))) {
-                    deleteDashboard(active.id);
-                  }
+                onClick={async () => {
+                  const accepted = await confirmAction({
+                    title: t("common.confirm"),
+                    description: t("dashboard.deleteDashboardConfirm"),
+                    confirmText: t("common.delete"),
+                  });
+                  if (accepted) deleteDashboard(active.id);
                 }}
               >
                 {t("common.delete")}
@@ -111,10 +116,13 @@ export default function DashboardToolbar() {
         <button
           type="button"
           className="inline-flex h-10 items-center gap-1.5 rounded-xl border border-border bg-card px-3 text-xs font-bold"
-          onClick={() => {
-            if (window.confirm(t("dashboard.restoreLayoutConfirm"))) {
-              restoreDefaultLayout();
-            }
+          onClick={async () => {
+            const accepted = await confirmAction({
+              title: t("common.confirm"),
+              description: t("dashboard.restoreLayoutConfirm"),
+              confirmText: t("dashboard.restore"),
+            });
+            if (accepted) restoreDefaultLayout();
           }}
         >
           <RotateCcw size={14} /> {t("dashboard.restore")}

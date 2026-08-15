@@ -26,6 +26,7 @@ if (envFile) {
   }
   console.log(`[verify] Loaded environment from ${envFile}`);
 } else {
+  dotenv.config({ path: ".env.local" });
   dotenv.config();
 }
 

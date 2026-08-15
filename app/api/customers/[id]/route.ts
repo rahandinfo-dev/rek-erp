@@ -6,6 +6,7 @@ import {
 } from "@/lib/auth/current-user";
 import { customerSchema } from "@/lib/validators/customer";
 import { auditSafe } from "@/lib/audit/log";
+import { isCompanyAdministrator } from "@/lib/auth/authorization";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -13,7 +14,8 @@ type Props = {
 
 export async function GET(_req: NextRequest, { params }: Props) {
   try {
-    const companyId = await getCurrentCompanyId();
+    const user = await getCurrentUser();
+    const companyId = user?.companyId;
 
     if (!companyId) {
       return NextResponse.json(
@@ -25,7 +27,7 @@ export async function GET(_req: NextRequest, { params }: Props) {
     const { id } = await params;
 
     const customer = await db.customer.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: null },
       select: {
         id: true,
         name: true,
@@ -82,7 +84,7 @@ export async function PUT(req: NextRequest, { params }: Props) {
     const data = validation.data;
 
     const customer = await db.customer.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: null },
     });
 
     if (!customer) {
@@ -167,7 +169,8 @@ export async function PUT(req: NextRequest, { params }: Props) {
 
 export async function DELETE(req: NextRequest, { params }: Props) {
   try {
-    const companyId = await getCurrentCompanyId();
+    const user = await getCurrentUser();
+    const companyId = user?.companyId;
 
     if (!companyId) {
       return NextResponse.json(
@@ -180,7 +183,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
     const purge = req.nextUrl.searchParams.get("purge") === "1";
 
     const customer = await db.customer.findFirst({
-      where: { id, companyId },
+      where: { id, companyId, deletedAt: purge ? { not: null } : null },
       include: { _count: { select: { sales: true, invoices: true } } },
     });
 
@@ -193,7 +196,13 @@ export async function DELETE(req: NextRequest, { params }: Props) {
 
     // Permanent delete later — only when already soft-deleted and history-safe.
     if (purge) {
-      if (customer.active) {
+      if (!(await isCompanyAdministrator(companyId, user.id))) {
+        return NextResponse.json(
+          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بسڕێتەوە." },
+          { status: 403 }
+        );
+      }
+      if (!customer.deletedAt) {
         return NextResponse.json(
           {
             success: false,
@@ -215,6 +224,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
       await db.customer.delete({ where: { id } });
       await auditSafe({
         companyId,
+        userId: user.id,
         module: "CUSTOMER",
         action: "DELETE",
         entityType: "کڕیار",
@@ -231,7 +241,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
       });
     }
 
-    if (!customer.active) {
+    if (customer.deletedAt) {
       return NextResponse.json(
         { success: false, message: "ئەم کڕیارە پێشتر soft delete کراوە." },
         { status: 400 }
@@ -241,11 +251,12 @@ export async function DELETE(req: NextRequest, { params }: Props) {
     // Soft delete first — related sales/invoices history stays.
     await db.customer.update({
       where: { id },
-      data: { active: false },
+      data: { active: false, deletedAt: new Date(), deletedById: user.id },
     });
 
     await auditSafe({
       companyId,
+      userId: user.id,
       module: "CUSTOMER",
       action: "DELETE",
       entityType: "کڕیار",

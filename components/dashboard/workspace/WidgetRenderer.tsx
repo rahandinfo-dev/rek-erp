@@ -163,11 +163,6 @@ const NumberingStatisticsWidget = dynamic(
     ),
   { loading: widgetFallback, ssr: false }
 );
-const ActiveAiAlertsWidget = dynamic(
-  () =>
-    import("@/components/ai/AiWidgets").then((m) => m.ActiveAiAlertsWidget),
-  { loading: widgetFallback, ssr: false }
-);
 
 export type DashboardHomeData = Awaited<ReturnType<typeof loadDashboardHome>>;
 
@@ -381,8 +376,6 @@ export default function WidgetRenderer({
       return <MostEditedRecordsWidget />;
     case "restore-history":
       return <RestoreHistoryWidget />;
-    case "active-alerts":
-      return <ActiveAiAlertsWidget />;
     case "quick-actions":
       return (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">

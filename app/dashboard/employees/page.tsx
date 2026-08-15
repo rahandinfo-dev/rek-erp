@@ -13,7 +13,7 @@ export default async function EmployeesPage() {
   const t = tServer.t.bind(tServer);
 
   const employees = await db.employee.findMany({
-    where: { companyId: user.companyId },
+    where: { companyId: user.companyId, deletedAt: null },
     orderBy: { createdAt: "desc" },
     select: {
       id: true,
