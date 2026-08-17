@@ -3,19 +3,21 @@
 import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
+import { LockKeyhole, X } from "lucide-react";
 import { APP_GRID } from "@/lib/navigation/app-grid";
 import { isNavigationVisible } from "@/lib/navigation/visibility";
 import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { isSubscriptionProtectedHref } from "@/lib/subscriptions/paths";
 
 type Props = {
   open: boolean;
   onClose: () => void;
+  subscriptionActive: boolean;
 };
 
-export default function GridLauncher({ open, onClose }: Props) {
+export default function GridLauncher({ open, onClose, subscriptionActive }: Props) {
   const pathname = usePathname();
   const { t } = useT();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -97,6 +99,7 @@ export default function GridLauncher({ open, onClose }: Props) {
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
             {APP_GRID.filter((item) => isNavigationVisible(item.href)).map((item) => {
               const Icon = item.icon;
+              const locked = !subscriptionActive && isSubscriptionProtectedHref(item.href);
               const active =
                 pathname === item.href ||
                 (item.href !== "/dashboard" &&
@@ -105,11 +108,12 @@ export default function GridLauncher({ open, onClose }: Props) {
               return (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={locked ? "/dashboard/payment-online" : item.href}
                   onClick={onClose}
                   className={cn(
                     "rek-grid-tile flex flex-col items-start gap-3 p-4 sm:p-5",
-                    active && "border-primary bg-secondary shadow-lg"
+                    active && "border-primary bg-secondary shadow-lg",
+                    locked && "opacity-65"
                   )}
                 >
                   <span
@@ -120,7 +124,7 @@ export default function GridLauncher({ open, onClose }: Props) {
                         : "bg-secondary text-primary"
                     )}
                   >
-                    <Icon size={22} aria-hidden />
+                    {locked ? <LockKeyhole size={22} aria-hidden /> : <Icon size={22} aria-hidden />}
                   </span>
                   <div>
                     <p className="font-bold text-foreground">

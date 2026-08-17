@@ -21,12 +21,16 @@ export type Translator = {
 export function createTranslator(localeInput?: string | null): Translator {
   const locale = resolveLocale(localeInput);
   const table = catalogs[locale] || catalogs[DEFAULT_LOCALE];
+  const fallbackTable = catalogs[DEFAULT_LOCALE];
 
   return {
     locale,
     has: (key) => Boolean(table[key]),
     t: (key, params) => {
-      const raw = table[key];
+      // A locale is always resolved before rendering. Falling back to the
+      // default catalog prevents a transient/stale client catalog from ever
+      // replacing server-rendered navigation text with the raw message key.
+      const raw = table[key] ?? fallbackTable[key];
       if (raw == null) {
         if (process.env.NODE_ENV !== "production") {
           console.warn(`[i18n] missing key: ${key}`);

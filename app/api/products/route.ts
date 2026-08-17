@@ -188,7 +188,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: "کۆگا نادروستە. تکایە سەرەتا کۆگا دروست بکە.",
+          message: "کۆگا نادروستە، تکایە سەرەتا کۆگا دروست بکە.",
         },
         { status: 400 }
       );

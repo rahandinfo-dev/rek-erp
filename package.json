@@ -18,6 +18,7 @@
     "db:status": "prisma migrate status",
     "db:verify": "node scripts/verify-db.mjs",
     "db:recover": "node scripts/db-recover.mjs",
+    "admin:bootstrap": "node --experimental-strip-types scripts/bootstrap-super-admin.ts",
     "pwa:icons": "node scripts/generate-pwa-icons.mjs",
     "pwa:vapid": "node -e \"const w=require('web-push');const k=w.generateVAPIDKeys();console.log('NEXT_PUBLIC_VAPID_PUBLIC_KEY='+k.publicKey);console.log('VAPID_PRIVATE_KEY='+k.privateKey);console.log('VAPID_SUBJECT=mailto:admin@rek.app');\""
   },

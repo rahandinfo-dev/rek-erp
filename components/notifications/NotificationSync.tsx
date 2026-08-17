@@ -67,6 +67,7 @@ export default function NotificationSync() {
           "/api/notifications?status=active&pageSize=30&page=1",
           { cache: "no-store" }
         );
+        if (!res.ok) return;
         const json = await res.json();
         if (!active || !json.success || !json.data) return;
 
@@ -107,8 +108,8 @@ export default function NotificationSync() {
 
         if (maxTs > lastTs) writeLastTs(maxTs);
         emitNotificationsChanged({ reason: "poll" });
-      } catch (error) {
-        console.error("NotificationSync error:", error);
+      } catch {
+        // Temporary network/API failures are retried by the next poll.
       } finally {
         pullingRef.current = false;
       }
@@ -121,6 +122,7 @@ export default function NotificationSync() {
         const res = await fetch("/api/notifications/inventory-alerts", {
           cache: "no-store",
         });
+        if (!res.ok) return;
         const json = await res.json();
         if (!json.success) return;
 
@@ -147,8 +149,8 @@ export default function NotificationSync() {
             .map((a) => a.notificationId)
             .filter((id): id is string => Boolean(id)),
         });
-      } catch (error) {
-        console.error(error);
+      } catch {
+        // Temporary network/API failures are retried by the next scheduled scan.
       } finally {
         busyRef.current = false;
       }

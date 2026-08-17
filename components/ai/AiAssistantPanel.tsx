@@ -111,7 +111,7 @@ export default function AiAssistantPanel() {
           <Sparkles size={18} className="text-primary" aria-hidden />
           <div className="min-w-0">
             <h2 id={titleId} className="truncate text-sm font-black">
-              یاریدەدەری زیرەک
+             یاریدەدەری زیرەکی سیستەمی ڕێک
             </h2>
             <p className="truncate text-[11px] text-muted-foreground">
               تەنها داتای ڕاستەقینە · کوردی سۆرانی

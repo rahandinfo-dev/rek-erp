@@ -150,7 +150,7 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
     if (purge) {
       if (!(await isCompanyAdministrator(companyId, user.id))) {
         return NextResponse.json(
-          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بسڕێتەوە." },
+          { success: false, message: "تەنها بەڕێوەبەری کۆمپانیا دەتوانێت بە هەمیشەیی بیسڕێتەوە." },
           { status: 403 }
         );
       }
@@ -162,7 +162,7 @@ export async function DELETE(_req: NextRequest, { params }: Props) {
       }
       if (existing._count.invoices > 0) {
         return NextResponse.json(
-          { success: false, message: "ناتوانرێت بە هەمیشەیی بسڕدرێتەوە؛ پسووڵەی پەیوەست هەیە." },
+          { success: false, message: "ناتوانرێت بە هەمیشەیی بسڕدرێتەوە، لەبەر ئەوەی پسوولەی پێوە بەستراوە" },
           { status: 400 }
         );
       }

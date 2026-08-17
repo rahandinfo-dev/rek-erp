@@ -7,6 +7,8 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/prisma/db";
 import { resolveCurrencyCode } from "@/lib/currency/catalog";
 import { setRuntimeCurrency } from "@/lib/currency/runtime";
+import { getSubscriptionEntitlement } from "@/lib/subscriptions/service";
+import SubscriptionWarning from "@/components/subscriptions/SubscriptionWarning";
 
 export default async function DashboardLayout({
   children,
@@ -21,10 +23,10 @@ export default async function DashboardLayout({
 
   const collapsed = cookieStore.get(SIDEBAR_COLLAPSE_COOKIE)?.value === "1";
 
-  const settings = await db.settings.findUnique({
-    where: { companyId: user.companyId },
-    select: { currency: true },
-  });
+  const [settings, entitlement] = await Promise.all([
+    db.settings.findUnique({ where: { companyId: user.companyId }, select: { currency: true } }),
+    getSubscriptionEntitlement(user.companyId),
+  ]);
   const currency = resolveCurrencyCode(settings?.currency);
   setRuntimeCurrency(currency);
 
@@ -44,7 +46,9 @@ export default async function DashboardLayout({
       user={currentUser}
       initialCollapsed={collapsed}
       initialCurrency={currency}
+      subscriptionActive={entitlement.active}
     >
+      <SubscriptionWarning entitlement={entitlement} />
       {children}
     </DashboardShell>
   );

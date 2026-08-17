@@ -19,6 +19,7 @@ import {
   Shield,
   History,
   Sparkles,
+  WalletCards,
   type LucideIcon,
 } from "lucide-react";
 
@@ -33,6 +34,11 @@ export type AppMenuItem = {
 
 /** Grid launcher apps — order matches product IA. Titles are message keys. */
 export const APP_GRID: AppMenuItem[] = [
+  {
+    titleKey: "nav.paymentOnline",
+    href: "/dashboard/payment-online",
+    icon: WalletCards,
+  },
   {
     titleKey: "nav.dashboard",
     href: "/dashboard",

@@ -136,6 +136,44 @@ enum PaymentMethod {
   OTHER
 }
 
+/// Commercial subscription period carried by a redeemed license code.
+enum SubscriptionPlan {
+  ONE_MONTH
+  THREE_MONTHS
+  ONE_YEAR
+  LIFETIME
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+  CANCELLED
+  SUSPENDED
+}
+
+enum SubscriptionActionSource {
+  CUSTOMER
+  ADMIN
+  SYSTEM
+}
+
+/// A code is never reusable after it leaves UNUSED, including after revocation.
+enum LicenseCodeStatus {
+  UNUSED
+  USED
+  EXPIRED
+  REVOKED
+}
+
+enum SubscriptionLifecycleEventType {
+  ACTIVATED
+  RENEWED
+  EXPIRED
+  CANCELLED
+  REVOKED
+}
+
 model Company {
   id      String  @id @default(cuid())
   name    String
@@ -211,6 +249,10 @@ model Company {
   appReleases           AppRelease[]
   salaryDeductions      SalaryDeduction[]
   employeePerformances  EmployeePerformance[]
+  subscription          CompanySubscription?
+  licenseCodes          LicenseCode[]
+  subscriptionWarningState SubscriptionWarningState?
+  subscriptionLifecycleEvents SubscriptionLifecycleEvent[]
 }
 
 model User {
@@ -273,6 +315,182 @@ model User {
   releaseReads          AppReleaseRead[]
   salaryDeductionsCreated SalaryDeduction[] @relation("SalaryDeductionCreator")
   performanceReviewsCreated EmployeePerformance[] @relation("PerformanceReviewer")
+  consumedLicenseCodes LicenseCode[] @relation("LicenseCodeUsedByUser")
+  cancelledSubscriptions CompanySubscription[] @relation("SubscriptionCancelledBy")
+  subscriptionLifecycleEvents SubscriptionLifecycleEvent[]
+}
+
+/// Platform administrator. This identity is deliberately separate from tenant
+/// User records and can never inherit company access.
+model SuperAdmin {
+  id String @id @default(cuid())
+  email String @unique
+  passwordHash String
+  mustChangePassword Boolean @default(true)
+  active Boolean @default(true)
+  lastLoginAt DateTime?
+  passwordChangedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  sessions SuperAdminSession[]
+  auditLogs SuperAdminAuditLog[]
+  licenseCodesCreated LicenseCode[] @relation("LicenseCodeCreatedBySuperAdmin")
+  notifications SuperAdminNotification[]
+}
+
+model SuperAdminSession {
+  id String @id @default(cuid())
+  superAdminId String
+  superAdmin SuperAdmin @relation(fields: [superAdminId], references: [id], onDelete: Cascade)
+  tokenHash String @unique
+  expiresAt DateTime
+  lastSeenAt DateTime @default(now())
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([superAdminId, expiresAt])
+  @@index([expiresAt])
+}
+
+model SuperAdminAuditLog {
+  id String @id @default(cuid())
+  superAdminId String?
+  superAdmin SuperAdmin? @relation(fields: [superAdminId], references: [id], onDelete: SetNull)
+  action String
+  targetType String?
+  targetId String?
+  status String @default("success")
+  metadata Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+
+  @@index([superAdminId, createdAt])
+  @@index([action, createdAt])
+  @@index([targetType, targetId])
+}
+
+/// One current entitlement per tenant. Historical issuance and activation data
+/// stays in LicenseCode and in the immutable AuditLog ledger.
+model CompanySubscription {
+  id String @id @default(cuid())
+
+  companyId String @unique
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  plan SubscriptionPlan
+  status SubscriptionStatus @default(ACTIVE)
+  activatedAt DateTime @default(now())
+  expiresAt DateTime?
+
+  /// The code that most recently established or extended the entitlement.
+  licenseCodeId String? @unique
+  licenseCode LicenseCode? @relation("CurrentSubscriptionLicense", fields: [licenseCodeId], references: [id], onDelete: SetNull)
+
+  cancelledAt DateTime?
+  cancelledByUserId String?
+  cancelledByUser User? @relation("SubscriptionCancelledBy", fields: [cancelledByUserId], references: [id], onDelete: SetNull)
+  cancelledFromPlan SubscriptionPlan?
+  cancelledFromStatus SubscriptionStatus?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, expiresAt])
+}
+
+/// Only a keyed one-way hash is persisted. Plaintext codes exist only in the
+/// server response that creates an export and are never written to application data.
+model LicenseCode {
+  id String @id @default(cuid())
+
+  codeHash String @unique
+  plan SubscriptionPlan
+
+  companyId String?
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  usedByUserId String?
+  usedByUser User? @relation("LicenseCodeUsedByUser", fields: [usedByUserId], references: [id], onDelete: SetNull)
+
+  status LicenseCodeStatus @default(UNUSED)
+  activatedAt DateTime?
+  expiresAt DateTime?
+  usedAt DateTime?
+
+  createdBySuperAdminId String?
+  createdBySuperAdmin SuperAdmin? @relation("LicenseCodeCreatedBySuperAdmin", fields: [createdBySuperAdminId], references: [id], onDelete: SetNull)
+  currentSubscription CompanySubscription? @relation("CurrentSubscriptionLicense")
+  lifecycleEvents SubscriptionLifecycleEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, plan, createdAt])
+  @@index([companyId, status])
+  @@index([usedByUserId, usedAt])
+  @@index([expiresAt])
+}
+
+/// Persistent de-duplication state for the once-per-day five-day renewal warning.
+model SubscriptionWarningState {
+  id String @id @default(cuid())
+  companyId String @unique
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  subscriptionId String?
+  warningBucket String?
+  lastNotifiedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Immutable subscription lifecycle evidence. No ERP business records are touched.
+model SubscriptionLifecycleEvent {
+  id String @id @default(cuid())
+  companyId String
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId String?
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+  licenseCodeId String?
+  licenseCode LicenseCode? @relation(fields: [licenseCodeId], references: [id], onDelete: SetNull)
+  subscriptionId String?
+  type SubscriptionLifecycleEventType
+  actionSource SubscriptionActionSource @default(SYSTEM)
+  previousPlan SubscriptionPlan?
+  previousStatus SubscriptionStatus?
+  plan SubscriptionPlan?
+  status SubscriptionStatus?
+  activatedAt DateTime?
+  expiresAt DateTime?
+  finalizedAt DateTime?
+  durationDays Int?
+  bonusDays Int @default(0)
+  codeFingerprint String?
+  reason String?
+  metadata Json?
+  createdAt DateTime @default(now())
+
+  @@index([companyId, createdAt])
+  @@index([licenseCodeId, createdAt])
+  @@index([subscriptionId, createdAt])
+}
+
+/// Platform-admin inbox entries. These never include plaintext activation codes.
+model SuperAdminNotification {
+  id String @id @default(cuid())
+  superAdminId String?
+  superAdmin SuperAdmin? @relation(fields: [superAdminId], references: [id], onDelete: Cascade)
+  kind String
+  title String
+  message String
+  metadata Json?
+  readAt DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([superAdminId, createdAt])
+  @@index([kind, createdAt])
 }
 
 /// Soft-deleted records awaiting restore or permanent purge

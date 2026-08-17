@@ -117,6 +117,7 @@ export const ckbMessages = {
     cost: "تێچوو",
   },
   nav: {
+    paymentOnline: "پارەدانی ئۆنلاین",
     home: "سەرەکی",
     dashboard: "داشبۆرد",
     currency: "دراو",

@@ -272,7 +272,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
         return NextResponse.json(
           {
             success: false,
-            message: "سەرەتا soft delete بکە، دواتر permanent delete.",
+            message: "سەرەتا سڕینەوە بکە، دواتر سڕینەوەی هەمیشەیی.",
           },
           { status: 400 }
         );
@@ -281,7 +281,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
         return NextResponse.json(
           {
             success: false,
-            message: "ناتوانرێت permanently بسڕدرێتەوە — مێژووی کڕین هەیە.",
+            message: "ناتوانرێت بە هەمیشەیی بسڕدرێتەوە — مێژووی کڕین هەیە.",
           },
           { status: 400 }
         );
@@ -294,7 +294,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
         action: "DELETE",
         entityType: "دابینکەر",
         entityId: supplier.id,
-        summary: `دابینکەر permanent delete: ${supplier.name}`,
+        summary: `دابینکەر سڕینەوەی هەمیشەیی: ${supplier.name}`,
         oldValue: { name: supplier.name, code: supplier.code },
         metadata: { permanent: true },
         req,
@@ -308,7 +308,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
 
     if (supplier.deletedAt) {
       return NextResponse.json(
-        { success: false, message: "ئەم دابینکەرە پێشتر soft delete کراوە." },
+        { success: false, message: "ئەم دابینکەرە پێشتر سڕینەوە کراوە." },
         { status: 400 }
       );
     }
@@ -325,7 +325,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
       action: "DELETE",
       entityType: "دابینکەر",
       entityId: supplier.id,
-      summary: `دابینکەر soft delete: ${supplier.name}`,
+      summary: `دابینکەر سڕینەوە: ${supplier.name}`,
       oldValue: { active: true, name: supplier.name, code: supplier.code },
       newValue: { active: false },
       req,
@@ -333,7 +333,7 @@ export async function DELETE(req: NextRequest, { params }: Props) {
 
     return NextResponse.json({
       success: true,
-      message: "دابینکەر soft delete کرا — Undo بەردەستە · مێژوو پارێزراوە.",
+      message: "دابینکەر سڕینەوە کرا — پاشگەزبوونەوە بەردەستە · مێژوو پارێزراوە.",
       soft: true,
     });
   } catch (error) {

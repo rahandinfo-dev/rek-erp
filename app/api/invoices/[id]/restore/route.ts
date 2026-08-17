@@ -35,7 +35,7 @@ export async function POST(req: NextRequest, { params }: Props) {
 
     if (invoice.status !== "VOID") {
       return NextResponse.json(
-        { success: false, message: "ئەم پسوولەیە VOID نییە." },
+        { success: false, message: "ئەم پسوولەیە بەتاڵ نییە" },
         { status: 400 }
       );
     }
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest, { params }: Props) {
     );
     if (!previousSaleStatus) {
       return NextResponse.json(
-        { success: false, message: "دۆخی پێشووی ئەم پسووڵەیە لە سەبەتەی زبڵدا نەدۆزرایەوە؛ گەڕاندنەوە وەستێنرا بۆ پاراستنی داتا." },
+        { success: false, message: "دۆخی پێشووی ئەم پسووڵەیە لە سەبەتەی زبڵدا نەدۆزرایەوە، گەڕاندنەوە وەستێنرا بۆ پاراستنی داتا." },
         { status: 409 }
       );
     }

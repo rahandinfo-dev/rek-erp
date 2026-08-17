@@ -20,7 +20,7 @@ export default function FavoritePagesWidget() {
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
         <div className="flex items-center gap-2">
           <Star size={18} className="fill-amber-400 text-amber-500" aria-hidden />
-          <h2 className="text-lg font-black text-foreground">Favorite Pages</h2>
+          <h2 className="text-lg font-black text-foreground">پەڕە دڵخوازەکان</h2>
         </div>
         <span className="text-xs font-bold text-muted-foreground">
           {top.length} / 8
@@ -29,7 +29,7 @@ export default function FavoritePagesWidget() {
 
       {top.length === 0 ? (
         <p className="px-5 py-8 text-sm text-muted-foreground">
-          Star pages and records to pin them here for one-click access.
+          نیشانەکردنی پەڕە و تۆمارەکان بۆ جێگیرکردن و دەستگەیشتنی خێرا بە یەک کلیک.
         </p>
       ) : (
         <ul className="grid gap-0 sm:grid-cols-2">

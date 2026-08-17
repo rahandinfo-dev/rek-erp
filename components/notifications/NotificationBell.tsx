@@ -55,13 +55,14 @@ export default function NotificationBell() {
       const res = await fetch(
         "/api/notifications?status=active&pageSize=8&page=1"
       );
+      if (!res.ok) return;
       const json = (await res.json()) as ApiResponse;
       if (json.success && json.data) {
         setItems(json.data.items);
         setUnreadCount(json.data.unreadCount);
       }
-    } catch (error) {
-      console.error(error);
+    } catch {
+      // Preserve the last successful notification state until the next poll.
     } finally {
       if (showLoading) setLoading(false);
     }
@@ -75,12 +76,13 @@ export default function NotificationBell() {
         const res = await fetch(
           "/api/notifications?status=active&pageSize=8&page=1"
         );
+        if (!res.ok) return;
         const json = (await res.json()) as ApiResponse;
         if (!active || !json.success || !json.data) return;
         setItems(json.data.items);
         setUnreadCount(json.data.unreadCount);
-      } catch (error) {
-        console.error(error);
+      } catch {
+        // Preserve the last successful notification state until the next poll.
       }
     }
 
@@ -126,11 +128,12 @@ export default function NotificationBell() {
 
   async function markRead(id: string) {
     try {
-      await fetch(`/api/notifications/${id}`, {
+      const res = await fetch(`/api/notifications/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isRead: true }),
       });
+      if (!res.ok) return;
       setItems((prev) =>
         prev.map((item) =>
           item.id === id ? { ...item, isRead: true } : item
@@ -138,19 +141,20 @@ export default function NotificationBell() {
       );
       setUnreadCount((count) => Math.max(0, count - 1));
       emitNotificationsChanged({ reason: "mark-read", ids: [id] });
-    } catch (error) {
-      console.error(error);
+    } catch {
+      // Keep current UI state when a transient mark-read request fails.
     }
   }
 
   async function markAllRead() {
     try {
-      await fetch("/api/notifications/mark-all-read", { method: "POST" });
+      const res = await fetch("/api/notifications/mark-all-read", { method: "POST" });
+      if (!res.ok) return;
       setItems((prev) => prev.map((item) => ({ ...item, isRead: true })));
       setUnreadCount(0);
       emitNotificationsChanged({ reason: "mark-read" });
-    } catch (error) {
-      console.error(error);
+    } catch {
+      // Keep current UI state when a transient bulk update request fails.
     }
   }
 

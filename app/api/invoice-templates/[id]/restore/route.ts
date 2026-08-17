@@ -44,7 +44,7 @@ export async function POST(req: NextRequest, { params }: Props) {
         : null;
     if (typeof previousValue?.isDefault !== "boolean") {
       return NextResponse.json(
-        { success: false, message: "دۆخی پێشووی قالبەکە نەدۆزرایەوە؛ گەڕاندنەوە وەستێنرا بۆ پاراستنی داتا." },
+        { success: false, message: "دۆخی پێشووی قالبەکە نەدۆزرایەوە، گەڕاندنەوە وەستێنرا بۆ پاراستنی داتا." },
         { status: 409 }
       );
     }

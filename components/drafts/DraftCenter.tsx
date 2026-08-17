@@ -652,7 +652,7 @@ export default function DraftCenter() {
                     <div className="absolute end-0 z-20 mt-1 w-44 rounded-xl border border-border bg-card p-1 shadow-lg">
                       {[
                         {
-                          label: d.pinned ? "لابردنی هەڵواسین" : "هەڵواسین",
+                          label: d.pinned ? "لادان لە جێگیرکردن" : "جێگیرکردن",
                           icon: Pin,
                           run: () =>
                             void patchDraft(d.key, d.pinned ? "unpin" : "pin"),
@@ -907,7 +907,7 @@ export default function DraftCenter() {
 
       <ConfirmDialog
         open={Boolean(deleteKey)}
-        title="سڕینەوەی ڕەشنووس"
+        title="پاشگەزبوونەوە و سڕینەوە"
         description={t("drafts.deleteConfirm")}
         confirmText="سڕینەوە"
         cancelText="هەڵوەشاندنەوە"

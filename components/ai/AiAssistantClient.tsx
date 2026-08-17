@@ -53,7 +53,7 @@ export default function AiAssistantClient() {
       <header>
         <h1 className="flex items-center gap-2 text-3xl font-black text-primary">
           <Sparkles aria-hidden />
-          یاریدەدەری زیرەک
+          یاریدەدەری زیرەکی سیستەمی ڕێک
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           پرسیارێک هەڵبژێرە — وەڵام تەنها لە داتای ڕاستەقینەی کۆمپانیاکەت

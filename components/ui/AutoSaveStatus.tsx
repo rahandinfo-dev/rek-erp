@@ -105,7 +105,7 @@ export function AutoSaveStatus({
         aria-live="polite"
       >
         <Check size={12} />
-        ڕەشنووس گەڕێندرایەوە
+        پاشەکەوتەکە گەڕێندرایەوە
       </span>
     );
   }

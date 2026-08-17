@@ -19,6 +19,7 @@ import {
   Ruler,
   History,
   Sparkles,
+  WalletCards,
   type LucideIcon,
 } from "lucide-react";
 import { isNavigationVisible } from "@/lib/navigation/visibility";
@@ -191,6 +192,12 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
     id: "system",
     labelKey: "nav.systemGroup",
     items: [
+      {
+        href: "/dashboard/payment-online",
+        labelKey: "nav.paymentOnline",
+        icon: WalletCards,
+        keywords: ["payment", "subscription", "license", "پارەدان"],
+      },
       {
         href: "/dashboard/notifications",
         labelKey: "nav.notifications",

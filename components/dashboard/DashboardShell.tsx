@@ -74,11 +74,13 @@ export default function DashboardShell({
   user,
   initialCollapsed = false,
   initialCurrency = "IQD",
+  subscriptionActive = false,
   children,
 }: {
   user: UserInfo;
   initialCollapsed?: boolean;
   initialCurrency?: string;
+  subscriptionActive?: boolean;
   children: React.ReactNode;
 }) {
   const { t } = useT();
@@ -137,6 +139,7 @@ export default function DashboardShell({
           user={user}
           collapsed={collapsed}
           onToggle={toggleCollapsed}
+          subscriptionActive={subscriptionActive}
         />
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">
@@ -163,6 +166,7 @@ export default function DashboardShell({
           <GridLauncher
             open={launcherOpen}
             onClose={() => setLauncherOpen(false)}
+            subscriptionActive={subscriptionActive}
           />
         ) : null}
         <CommandPaletteHost />

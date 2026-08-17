@@ -4,7 +4,7 @@ import { memo, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, LogOut, Search } from "lucide-react";
+import { ChevronLeft, ChevronRight, LockKeyhole, LogOut, Search } from "lucide-react";
 import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import FavoritesSidebar from "@/components/favorites/FavoritesSidebar";
 import { UnsavedDotBadge } from "@/components/unsaved/HeaderSaveStatus";
 import { useSaveGuard } from "@/lib/unsaved/provider";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { isSubscriptionProtectedHref } from "@/lib/subscriptions/paths";
 
 type Props = {
   user: {
@@ -21,9 +22,10 @@ type Props = {
   };
   collapsed: boolean;
   onToggle: () => void;
+  subscriptionActive: boolean;
 };
 
-function DashboardRail({ user, collapsed, onToggle }: Props) {
+function DashboardRail({ user, collapsed, onToggle, subscriptionActive }: Props) {
   const pathname = usePathname();
   const router = useRouter();
   const saveGuard = useSaveGuard();
@@ -145,21 +147,27 @@ function DashboardRail({ user, collapsed, onToggle }: Props) {
               <ul className="space-y-0.5">
                 {group.items.map((item) => {
                   const Icon = item.icon;
-                  const label = t(item.labelKey);
+                  const translatedLabel = t(item.labelKey);
+                  // Keep text nodes stable through hydration if an in-flight
+                  // client refresh ever observes an incomplete catalog.
+                  const label = translatedLabel === item.labelKey ? "" : translatedLabel;
                   const active = isSidebarActive(pathname, item.href);
+                  const locked = !subscriptionActive && isSubscriptionProtectedHref(item.href);
                   return (
                     <li key={item.href}>
                       <Link
-                        href={item.href}
-                        title={label}
+                        href={locked ? "/dashboard/payment-online" : item.href}
+                        title={locked ? "بۆ بەکارهێنانی ئەم بەشە پێویستە بەشداربوونت چالاک بێت." : label}
                         prefetch
                         data-active={active}
+                        aria-disabled={locked || undefined}
                         className={cn(
                           "rek-nav-item",
-                          collapsed && "justify-center px-0"
+                          collapsed && "justify-center px-0",
+                          locked && "opacity-65"
                         )}
                       >
-                        <Icon size={18} className="shrink-0" aria-hidden />
+                        {locked ? <LockKeyhole size={18} className="shrink-0" aria-hidden /> : <Icon size={18} className="shrink-0" aria-hidden />}
                         {!collapsed && (
                           <span className="truncate text-[13px] font-semibold">
                             {label}
