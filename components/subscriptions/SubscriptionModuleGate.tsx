@@ -2,6 +2,7 @@ import Link from "next/link";
 import { LockKeyhole } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { getSubscriptionEntitlement, SUBSCRIPTION_LOCK_MESSAGE } from "@/lib/subscriptions/service";
+import { tServer } from "@/lib/i18n";
 
 export default async function SubscriptionModuleGate({ children }: { children: React.ReactNode }) {
   const user = await getCurrentUser();
@@ -16,7 +17,7 @@ export default async function SubscriptionModuleGate({ children }: { children: R
         <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-primary/12 text-primary"><LockKeyhole size={23} aria-hidden /></span>
         <h2 className="mt-4 text-xl font-black text-foreground">بەشەکە داخراوە</h2>
         <p id="subscription-lock-message" className="mt-2 text-sm leading-7 text-muted-foreground">{SUBSCRIPTION_LOCK_MESSAGE}</p>
-        <Link href="/dashboard/payment-online" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-2xl bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground transition hover:brightness-95">Payment Online</Link>
+        <Link href="/dashboard/payment-online" className="mt-5 inline-flex min-h-11 items-center justify-center rounded-2xl bg-primary px-5 py-2.5 text-sm font-black text-primary-foreground transition hover:brightness-95">{tServer.t("nav.paymentOnline")}</Link>
       </section>
     </div>
   );

@@ -20,6 +20,7 @@ import {
   History,
   Sparkles,
   WalletCards,
+  Info,
   type LucideIcon,
 } from "lucide-react";
 
@@ -212,5 +213,11 @@ export const APP_GRID: AppMenuItem[] = [
     href: "/dashboard/analytics",
     icon: ChartColumnIncreasing,
     descriptionKey: "nav.descAnalytics",
+  },
+  {
+    titleKey: "nav.aboutUs",
+    href: "/dashboard/about",
+    icon: Info,
+    descriptionKey: "nav.descAboutUs",
   },
 ];

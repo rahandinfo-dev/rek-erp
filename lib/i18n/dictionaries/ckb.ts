@@ -117,7 +117,8 @@ export const ckbMessages = {
     cost: "تێچوو",
   },
   nav: {
-    paymentOnline: "پارەدانی ئۆنلاین",
+    paymentOnline: "کڕینی سیستەمی ڕێک",
+    aboutUs: "دەربارەی ئێمە",
     home: "سەرەکی",
     dashboard: "داشبۆرد",
     currency: "دراو",
@@ -210,6 +211,7 @@ export const ckbMessages = {
     descAi: "تێڕوانین · ئاگاداری · خۆکارکردن",
     descBarcode: "بارکۆد",
     descAnalytics: "شیکاری",
+    descAboutUs: "دەربارەی REK و REK ERP",
   },
   auth: {
     loginTitle: "چوونەژوورەوە",

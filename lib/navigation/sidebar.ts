@@ -20,6 +20,7 @@ import {
   History,
   Sparkles,
   WalletCards,
+  Info,
   type LucideIcon,
 } from "lucide-react";
 import { isNavigationVisible } from "@/lib/navigation/visibility";
@@ -46,6 +47,12 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
     id: "home",
     labelKey: "nav.home",
     items: [
+      {
+        href: "/dashboard/payment-online",
+        labelKey: "nav.paymentOnline",
+        icon: WalletCards,
+        keywords: ["payment", "subscription", "license", "کڕینی سیستەم"],
+      },
       {
         href: "/dashboard",
         labelKey: "nav.dashboard",
@@ -193,12 +200,6 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
     labelKey: "nav.systemGroup",
     items: [
       {
-        href: "/dashboard/payment-online",
-        labelKey: "nav.paymentOnline",
-        icon: WalletCards,
-        keywords: ["payment", "subscription", "license", "پارەدان"],
-      },
-      {
         href: "/dashboard/notifications",
         labelKey: "nav.notifications",
         icon: Bell,
@@ -253,6 +254,12 @@ export const SIDEBAR_GROUPS: SidebarGroup[] = [
         labelKey: "nav.settings",
         icon: Settings,
         keywords: ["settings", "ڕێکخستن"],
+      },
+      {
+        href: "/dashboard/about",
+        labelKey: "nav.aboutUs",
+        icon: Info,
+        keywords: ["about", "rek", "rekapps", "دەربارە"],
       },
     ],
   },
