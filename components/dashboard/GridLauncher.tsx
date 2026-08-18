@@ -10,14 +10,16 @@ import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { isSubscriptionProtectedHref } from "@/lib/subscriptions/paths";
+import type { NavigationStyle } from "@/lib/navigation/styles";
 
 type Props = {
   open: boolean;
   onClose: () => void;
   subscriptionActive: boolean;
+  style?: NavigationStyle;
 };
 
-export default function GridLauncher({ open, onClose, subscriptionActive }: Props) {
+export default function GridLauncher({ open, onClose, subscriptionActive, style = "GRID" }: Props) {
   const pathname = usePathname();
   const { t } = useT();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -73,7 +75,7 @@ export default function GridLauncher({ open, onClose, subscriptionActive }: Prop
         role="dialog"
         aria-modal="true"
         aria-label={t("nav.appsMenu")}
-        className="absolute inset-x-3 top-[max(8%,env(safe-area-inset-top))] mx-auto max-h-[min(82vh,900px)] w-full max-w-3xl overflow-hidden rounded-[28px] border border-border bg-card text-card-foreground shadow-[0_30px_80px_var(--shadow-brand)] animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-300 sm:inset-x-auto sm:left-1/2 sm:right-auto sm:w-[min(920px,92vw)] sm:-translate-x-1/2"
+        className={cn("absolute inset-x-3 top-[max(8%,env(safe-area-inset-top))] mx-auto max-h-[min(82vh,900px)] w-full max-w-3xl overflow-hidden rounded-[28px] border border-border bg-card text-card-foreground shadow-[0_30px_80px_var(--shadow-brand)] animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-300 sm:inset-x-auto sm:left-1/2 sm:right-auto sm:w-[min(920px,92vw)] sm:-translate-x-1/2", style === "SHEET" && "top-auto bottom-0 rounded-b-none sm:bottom-4 sm:rounded-[28px]", style === "THREE_DOTS" && "max-w-sm", style === "RUDDER" && "max-w-2xl")}
       >
         <div className="flex items-center justify-between border-b border-border bg-secondary px-5 py-4 sm:px-7">
           <div>
@@ -96,7 +98,7 @@ export default function GridLauncher({ open, onClose, subscriptionActive }: Prop
         </div>
 
         <div className="max-h-[calc(80vh-88px)] overflow-y-auto bg-card p-4 sm:p-6">
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+          <div className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4", style === "THREE_DOTS" && "grid-cols-1 sm:grid-cols-1", style === "RECTANGULAR" && "grid-cols-1 sm:grid-cols-2", style === "RUDDER" && "sm:grid-cols-3") }>
             {APP_GRID.filter((item) => isNavigationVisible(item.href)).map((item) => {
               const Icon = item.icon;
               const locked = !subscriptionActive && isSubscriptionProtectedHref(item.href);
@@ -112,6 +114,8 @@ export default function GridLauncher({ open, onClose, subscriptionActive }: Prop
                   onClick={onClose}
                   className={cn(
                     "rek-grid-tile flex flex-col items-start gap-3 p-4 sm:p-5",
+                    style === "RECTANGULAR" && "flex-row items-center",
+                    style === "RUDDER" && "items-center text-center rounded-full aspect-square justify-center",
                     active && "border-primary bg-secondary shadow-lg",
                     locked && "opacity-65"
                   )}

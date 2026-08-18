@@ -3,7 +3,7 @@
 import { memo } from "react";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { LayoutGrid, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { BRAND } from "@/lib/brand";
 import ThemeToggle from "@/components/theme/ThemeToggle";
 import { Button } from "@/components/ui/button";
@@ -43,29 +43,15 @@ type DashboardHeaderProps = {
       logo: string | null;
     };
   };
-  onOpenLauncher: () => void;
 };
 
-function DashboardHeader({ user, onOpenLauncher }: DashboardHeaderProps) {
+function DashboardHeader({ user }: DashboardHeaderProps) {
   const { t } = useT();
 
   return (
     <header className="rek-header w-full shrink-0 px-3 sm:px-4 md:px-6 lg:px-8">
       <div className="flex h-14 min-w-0 max-w-full flex-nowrap items-center gap-2 py-1 md:h-15 md:gap-3 md:py-0 lg:h-16">
         <div className="flex min-w-0 flex-1 items-center gap-2 md:gap-3">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onOpenLauncher}
-            aria-label={t("nav.openAppsMenu")}
-            className="h-10 flex-none gap-2 rounded-xl border-border bg-card px-3 shadow-none"
-          >
-            <LayoutGrid size={18} aria-hidden />
-            <span className="hidden text-sm font-bold sm:inline">
-              {t("nav.apps")}
-            </span>
-          </Button>
-
           <div className="hidden min-w-0 flex-1 md:block md:max-w-[340px] lg:max-w-[440px] xl:max-w-[520px]">
             <GlobalSearch className="w-full max-w-none" />
           </div>

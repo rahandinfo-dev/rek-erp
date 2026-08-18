@@ -22,6 +22,7 @@ export const getCurrentUser = cache(async () => {
       fullName: true,
       username: true,
       email: true,
+      navigationStyle: true,
       avatar: true,
       verified: true,
       emailVerifiedAt: true,

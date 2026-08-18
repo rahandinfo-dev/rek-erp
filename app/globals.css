@@ -2078,6 +2078,15 @@ html:not(.dark) .border-zinc-200 {
 @page invoiceA4 { size: A4 portrait; margin: 0; }
 @page thermal { size: 80mm auto; margin: 0; }
 
+.nav-style-preview i,
+.nav-style-preview b {
+  display: block;
+  min-height: 0.55rem;
+  flex: 1;
+  border-radius: 0.35rem;
+  background: color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
 @media print {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html,

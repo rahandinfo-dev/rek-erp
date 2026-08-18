@@ -278,7 +278,7 @@ export default function RecycleBin() {
     <div className="space-y-5">
       <header className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-2xl font-black text-foreground">سەبەتەی زبڵ</h1>
+          <h1 className="text-2xl font-black text-foreground">ئەرشیفی سڕاوەکانی سیستەم</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             تۆمارە سڕاوەکان · گەڕاندنەوە بۆ ماوەی {retentionDays} ڕۆژ · {total}{" "}
             بڕگە

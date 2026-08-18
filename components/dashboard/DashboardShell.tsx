@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useMediaQuery } from "@/lib/hooks/useBrowserStore";
 import DashboardRail from "@/components/dashboard/DashboardRail";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
+import NavigationPresenter from "@/components/dashboard/NavigationPresenter";
 import NotificationSync from "@/components/notifications/NotificationSync";
 import PwaProvider from "@/components/pwa/PwaProvider";
 import { DraftOwnerProvider } from "@/lib/drafts/owner";
@@ -21,11 +22,8 @@ import { CurrencyProvider } from "@/components/currency/CurrencyProvider";
 import { setRuntimeCurrency } from "@/lib/currency/runtime";
 import type { CurrencyCode } from "@/lib/currency/catalog";
 import { ConfirmationProvider } from "@/components/ui/ConfirmationProvider";
-
-const GridLauncher = dynamic(
-  () => import("@/components/dashboard/GridLauncher"),
-  { ssr: false }
-);
+import { DEFAULT_NAVIGATION_STYLE, type NavigationStyle } from "@/lib/navigation/styles";
+import { cn } from "@/lib/utils";
 
 const CommandPaletteHost = dynamic(
   () =>
@@ -75,17 +73,25 @@ export default function DashboardShell({
   initialCollapsed = false,
   initialCurrency = "IQD",
   subscriptionActive = false,
+  initialNavigationStyle = DEFAULT_NAVIGATION_STYLE,
   children,
 }: {
   user: UserInfo;
   initialCollapsed?: boolean;
   initialCurrency?: string;
   subscriptionActive?: boolean;
+  initialNavigationStyle?: NavigationStyle;
   children: React.ReactNode;
 }) {
   const { t } = useT();
-  const [launcherOpen, setLauncherOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(initialCollapsed);
+  const [navigationStyle, setNavigationStyle] = useState<NavigationStyle>(initialNavigationStyle);
+
+  useEffect(() => {
+    const update = (event: Event) => setNavigationStyle((event as CustomEvent<NavigationStyle>).detail || DEFAULT_NAVIGATION_STYLE);
+    window.addEventListener("rek:navigation-style", update);
+    return () => window.removeEventListener("rek:navigation-style", update);
+  }, []);
 
   useEffect(() => {
     setRuntimeCurrency(initialCurrency);
@@ -101,14 +107,6 @@ export default function DashboardShell({
     setLastNarrow(narrow);
     if (narrow) setCollapsed(true);
   }
-
-  useEffect(() => {
-    function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") setLauncherOpen(false);
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, []);
 
   const toggleCollapsed = useCallback(() => {
     setCollapsed((prev) => {
@@ -135,23 +133,23 @@ export default function DashboardShell({
       <PwaProvider>
       <div className="rek-shell flex min-w-0 overflow-hidden bg-background text-foreground">
         <NotificationSync />
-        <DashboardRail
+        {navigationStyle === "SIDE_MENU" ? <DashboardRail
           user={user}
           collapsed={collapsed}
           onToggle={toggleCollapsed}
           subscriptionActive={subscriptionActive}
-        />
+        /> : null}
+        {navigationStyle !== "SIDE_MENU" ? <NavigationPresenter style={navigationStyle} subscriptionActive={subscriptionActive} /> : null}
 
         <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background">
           <DashboardHeader
             user={user}
-            onOpenLauncher={() => setLauncherOpen(true)}
           />
 
           <main
             id="main-content"
             tabIndex={-1}
-            className="rek-page rek-page-enter min-h-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain bg-background p-3 text-foreground outline-none sm:p-4 md:p-5 lg:p-6 xl:p-8"
+            className={cn("rek-page rek-page-enter min-h-0 flex-1 overflow-y-auto overflow-x-clip overscroll-y-contain bg-background p-3 text-foreground outline-none sm:p-4 md:p-5 lg:p-6 xl:p-8", navigationStyle === "TAB_BAR" && "pb-28")}
           >
             <ErrorBoundary
               area="dashboard.main"
@@ -162,13 +160,6 @@ export default function DashboardShell({
           </main>
         </div>
 
-        {launcherOpen ? (
-          <GridLauncher
-            open={launcherOpen}
-            onClose={() => setLauncherOpen(false)}
-            subscriptionActive={subscriptionActive}
-          />
-        ) : null}
         <CommandPaletteHost />
         <CheatSheetHost />
         <AiAssistantPanel />

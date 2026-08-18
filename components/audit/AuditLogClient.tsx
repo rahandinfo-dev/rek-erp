@@ -8,6 +8,7 @@ import {
   RefreshCw,
   Search,
   Shield,
+  Boxes,
 } from "lucide-react";
 import type { AuditLogRow } from "@/lib/audit/query";
 import {
@@ -60,6 +61,7 @@ export default function AuditLogClient({
   const [to, setTo] = useState("");
   const [page, setPage] = useState(1);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const auditCategories = AUDIT_MODULES.filter((item) => ["AUTH", "SALE", "PURCHASE", "INVENTORY", "WAREHOUSE", "SETTINGS", "SYSTEM", "EMPLOYEE"].includes(item));
 
   const load = useCallback(
     async (nextPage = page) => {
@@ -129,6 +131,8 @@ export default function AuditLogClient({
           نوێکردنەوە
         </button>
       </div>
+
+      <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4" aria-label="پۆلەکانی تۆماری چاودێری">{auditCategories.map((category) => <button key={category} type="button" onClick={() => setModule(category)} className={`rounded-2xl border p-4 text-start transition hover:border-primary/40 ${module === category ? "border-primary bg-primary/10" : "bg-card"}`}><Boxes size={19} className="text-primary" /><p className="mt-3 font-black">{AUDIT_MODULE_LABELS[category] || category}</p><p className="mt-1 text-xs text-muted-foreground">تەنها تۆمارە ڕاستەقینەکان فلتەر دەکرێن</p></button>)}</section>
 
       <div className="rek-card space-y-3 p-4 sm:p-5">
         <div className="relative">

@@ -265,6 +265,7 @@ model User {
   username String @unique
   email    String @unique
   password String
+  navigationStyle String @default("SIDE_MENU")
 
   /// Profile avatar (Vercel Blob URL)
   avatar String?
