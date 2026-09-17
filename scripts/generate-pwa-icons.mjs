@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Resize public/logo.png into every PWA / Apple / maskable icon size.
+ * Resize the official RekApps mark into every PWA / Apple / maskable icon size.
  * Safe to re-run; overwrites files under public/icons and apple-touch-icon.
  */
 
@@ -10,11 +10,11 @@ import { fileURLToPath } from "node:url";
 import sharp from "sharp";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const source = resolve(root, "public/logo.png");
+const source = resolve(root, "public/icons/rekapps-light.png");
 const outDir = resolve(root, "public/icons");
 
 if (!existsSync(source)) {
-  console.error("[pwa-icons] Missing public/logo.png");
+  console.error("[pwa-icons] Missing public/icons/rekapps-light.png");
   process.exit(1);
 }
 
@@ -46,7 +46,7 @@ async function writeMaskable(size) {
       width: size,
       height: size,
       channels: 4,
-      background: { r: 254, g: 244, b: 232, alpha: 1 },
+      background: { r: 232, g: 227, b: 206, alpha: 1 },
     },
   })
     .composite([{ input: logo, gravity: "centre" }])
@@ -60,9 +60,9 @@ async function writeApple(size) {
   await sharp(source)
     .resize(size, size, {
       fit: "contain",
-      background: { r: 254, g: 244, b: 232, alpha: 1 },
+      background: { r: 232, g: 227, b: 206, alpha: 1 },
     })
-    .flatten({ background: { r: 254, g: 244, b: 232 } })
+    .flatten({ background: { r: 232, g: 227, b: 206 } })
     .png()
     .toFile(dest);
   console.log(`  ✓ ${dest}`);
@@ -107,7 +107,7 @@ async function writeFavicons() {
   console.log("  ✓ public/apple-touch-icon.png");
 }
 
-console.log("[pwa-icons] Generating from public/logo.png …");
+console.log("[pwa-icons] Generating from public/icons/rekapps-light.png …");
 for (const size of ANY_SIZES) await writeAny(size);
 for (const size of [192, 512]) await writeMaskable(size);
 for (const size of APPLE_SIZES) await writeApple(size);

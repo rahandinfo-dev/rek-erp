@@ -8,15 +8,15 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground shadow-[0_6px_16px_var(--shadow-brand)] hover:bg-[var(--brand-hover)]",
+          "border-transparent bg-primary text-primary-foreground shadow-[var(--shadow-sm)] hover:bg-[var(--brand-hover)]",
         outline:
-          "border-border bg-card text-foreground shadow-[var(--shadow-xs)] hover:border-primary/40 hover:bg-muted",
+          "rek-glass-control text-foreground shadow-[var(--shadow-xs)] hover:border-primary/40 hover:bg-muted",
         secondary:
           "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost:
           "border-transparent bg-transparent text-foreground hover:bg-muted",
         destructive:
-          "border-transparent bg-destructive text-white shadow-[0_6px_16px_rgba(180,35,24,0.22)] hover:brightness-95",
+          "border-transparent bg-destructive text-destructive-foreground shadow-[var(--shadow-sm)] hover:brightness-95",
         link: "border-transparent bg-transparent text-primary underline-offset-4 hover:underline shadow-none",
       },
       size: {

@@ -7,6 +7,7 @@ import { auditSafe } from "@/lib/audit/log";
 
 const companyUpdateSchema = z.object({
   name: z.string().min(2, "ناوی کۆمپانیا پێویستە."),
+  code: z.string().trim().max(12).regex(/^[A-Za-z0-9_-]*$/).optional().nullable(),
   email: z.string().email("ئیمەیڵ دروست نییە."),
   phone: z.string().optional().nullable(),
   address: z.string().optional().nullable(),
@@ -110,6 +111,7 @@ export async function PUT(req: NextRequest) {
         where: { id: user.companyId },
         data: {
           name: data.name,
+          code: data.code?.trim().toUpperCase() || null,
           email: data.email,
           phone: data.phone || null,
           address: data.address || null,
@@ -164,6 +166,7 @@ export async function PUT(req: NextRequest) {
       oldValue: before
         ? {
             name: before.name,
+            code: before.code,
             email: before.email,
             phone: before.phone,
             themeColor: before.settings?.themeColor,
@@ -172,6 +175,7 @@ export async function PUT(req: NextRequest) {
         : null,
       newValue: {
         name: company.name,
+        code: company.code,
         email: company.email,
         phone: company.phone,
         themeColor: data.themeColor,

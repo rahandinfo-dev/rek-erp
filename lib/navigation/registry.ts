@@ -1,7 +1,7 @@
 import {
-  Banknote, Barcode, Bell, Boxes, Calculator, ChartColumnIncreasing, FileText,
+  Banknote, Barcode, Bell, Boxes, Calculator, ChartColumnIncreasing, CreditCard, FileText,
   History, IdCard, Info, LayoutDashboard, Package, Printer, Ruler, Settings,
-  Shield, ShoppingBasket, ShoppingCart, Sparkles, Truck, Users, WalletCards,
+  Shield, ShoppingBasket, ShoppingCart, Sparkles, Truck, Users,
   Warehouse, type LucideIcon,
 } from "lucide-react";
 import { isNavigationVisible } from "@/lib/navigation/visibility";
@@ -39,7 +39,7 @@ export const NAVIGATION_GROUP_LABELS: Record<NavigationGroup, string> = {
 };
 
 export const NAVIGATION_REGISTRY: readonly NavigationItem[] = [
-  { id: "payment", href: "/dashboard/payment-online", labelKey: "nav.paymentOnline", icon: WalletCards, group: "home", order: 1 },
+  { id: "payment", href: "/dashboard/payment-online", labelKey: "nav.paymentOnline", icon: CreditCard, group: "home", order: 1 },
   { id: "dashboard", href: "/dashboard", labelKey: "nav.dashboard", descriptionKey: "nav.descHome", icon: LayoutDashboard, group: "home", order: 2 },
   { id: "currency", href: "/dashboard/currency", labelKey: "nav.currency", descriptionKey: "nav.descCurrency", icon: Banknote, group: "home", order: 3 },
   { id: "inventory", href: "/dashboard/inventory", labelKey: "nav.inventory", descriptionKey: "nav.descInventory", icon: Warehouse, group: "inventory", order: 10 },

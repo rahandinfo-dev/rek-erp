@@ -118,6 +118,6 @@ export const inputClassName =
   "rek-input";
 
 export const textareaClassName =
-  "min-h-28 w-full rounded-xl border border-input bg-background p-4 text-sm text-foreground outline-none transition hover:border-primary/35 focus:border-ring focus:ring-[3px] focus:ring-ring/30";
+  "rek-glass-control min-h-28 w-full rounded-xl border p-4 text-sm text-foreground outline-none transition duration-150 hover:border-primary/30 focus:border-ring focus:ring-2 focus:ring-ring/25";
 
 export const selectClassName = inputClassName;

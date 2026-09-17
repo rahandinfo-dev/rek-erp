@@ -209,7 +209,7 @@ export default function ImageUpload({
             </div>
           )}
           {busy ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background/70 px-3 text-center backdrop-blur-[1px]">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-background px-3 text-center">
               <Loader2 className="animate-spin text-primary" size={22} />
               {statusLabel ? (
                 <p className="text-[11px] font-bold text-foreground">

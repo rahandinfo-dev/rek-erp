@@ -208,7 +208,7 @@ export const COMMAND_NAVIGATE: CommandItem[] = [
   }),
   nav({
     id: "nav-activity",
-    title: "کردنەوەی تێمڵاینی چالاکی",
+    title: "کردنەوەی مێژووی چالاکییەکان",
     subtitle: "مێژووی سیستەم",
     href: "/dashboard/activity",
     keywords: [

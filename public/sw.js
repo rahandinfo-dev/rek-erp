@@ -22,7 +22,8 @@ const PRECACHE = [
   "/icons/maskable-192x192.png",
   "/icons/maskable-512x512.png",
   "/icons/favicon-32x32.png",
-  "/logo.png",
+  "/icons/rekapps-dark.png",
+  "/icons/rekapps-light.png",
 ];
 
 const NEVER_CACHE_PATHS = [
@@ -138,7 +139,8 @@ self.addEventListener("fetch", (event) => {
     url.pathname === "/manifest.webmanifest" ||
     url.pathname === "/offline.html" ||
     url.pathname === "/apple-touch-icon.png" ||
-    url.pathname === "/logo.png" ||
+    url.pathname === "/icons/rekapps-dark.png" ||
+    url.pathname === "/icons/rekapps-light.png" ||
     /\.(?:woff2?|ttf|otf)$/i.test(url.pathname)
   ) {
     event.respondWith(cacheFirst(request, SHELL_CACHE));

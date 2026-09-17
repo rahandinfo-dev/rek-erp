@@ -253,7 +253,7 @@ function DataTableInner<T>({
           }}
           placeholder={resolvedSearchPlaceholder}
           aria-label={t("table.searchAria")}
-          className="h-11 w-full rounded-2xl border border-border bg-card py-2 text-sm text-foreground shadow-[var(--shadow-xs)] outline-none transition focus:border-primary/50 focus-visible:ring-[3px] focus-visible:ring-ring/35"
+          className="rek-glass-control h-11 w-full rounded-xl border py-2 text-sm text-foreground shadow-none outline-none transition duration-150 focus:border-primary/50 focus-visible:ring-2 focus-visible:ring-ring/25"
         />
 
         <div className="flex flex-wrap items-center gap-2">
@@ -275,7 +275,7 @@ function DataTableInner<T>({
             {columnsOpen ? (
               <div
                 role="listbox"
-                className="absolute left-0 z-20 mt-2 w-56 rounded-2xl border border-border bg-popover p-2 text-popover-foreground shadow-[var(--shadow-md)]"
+                className="rek-liquid-glass absolute left-0 z-20 mt-2 w-56 rounded-xl border p-2 text-popover-foreground shadow-sm"
               >
                 {columns.map((col) => (
                   <label
@@ -304,7 +304,7 @@ function DataTableInner<T>({
       <div className="rek-table-shell min-w-0">
         <div className="rek-table-wrap max-h-[min(70vh,640px)] overflow-x-auto">
           <table className="w-full min-w-[520px] border-separate border-spacing-0 sm:min-w-[640px] md:min-w-[720px]">
-            <thead className="sticky top-0 z-10 bg-muted/95 backdrop-blur-sm">
+            <thead className="sticky top-0 z-10 bg-muted/95">
               <tr className="text-right text-[13px] text-muted-foreground">
                 {selection ? (
                   <th
@@ -451,7 +451,7 @@ function DataTableInner<T>({
               setPageSize(Number(e.target.value));
               setPage(1);
             }}
-            className="h-10 rounded-xl border border-border bg-card px-3 text-sm shadow-[var(--shadow-xs)] outline-none focus-visible:ring-[3px] focus-visible:ring-ring/35"
+            className="rek-glass-control h-10 rounded-xl border px-3 text-sm shadow-none outline-none focus-visible:ring-2 focus-visible:ring-ring/25"
           >
             {pageSizeOptions.map((size) => (
               <option key={size} value={size}>

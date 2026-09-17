@@ -152,7 +152,9 @@ export async function deliverNotificationPush(input: {
         category: pushCategory,
         icon: "/icons/icon-192x192.png",
         badge: "/icons/favicon-48x48.png",
-        silent: quiet || silent,
+        // Browser/OS sound is controlled by the user's persisted preference.
+        // The service worker still shows the notification when muted.
+        silent: quiet || silent || !prefs.soundEnabled,
         renotify: false,
         badgeCount,
         actions: [

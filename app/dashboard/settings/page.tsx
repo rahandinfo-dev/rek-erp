@@ -1,19 +1,16 @@
 import Link from "next/link";
-import { Bell, Building2, FileText, History, ImageIcon, KeyRound, LayoutGrid, Save, UserRound } from "lucide-react";
+import { Bell, Building2, CircleHelp, FileText, KeyRound, Save, UserRound } from "lucide-react";
 import { getCurrentUser } from "@/lib/auth/current-user";
 import { tServer } from "@/lib/i18n";
 
 const SETTINGS_SECTIONS = [
   { href: "/dashboard/settings/company", label: "پڕۆفایلی کۆمپانیا", icon: Building2 },
-  { href: "/dashboard/settings/company", label: "وێنەی کۆمپانیا", icon: ImageIcon },
   { href: "/dashboard/settings/templates", label: "قالبی پسووڵە", icon: FileText },
   { href: "/dashboard/settings/user", label: "زانیاری بەکارهێنەر", icon: UserRound },
-  { href: "/dashboard/settings/user", label: "وێنەی بەکارهێنەر", icon: ImageIcon },
   { href: "/dashboard/settings/auto-save", label: "پاشەکەوتی خۆکار", icon: Save },
   { href: "/dashboard/settings/notifications", label: "ڕێکخستنی ئاگادارکردنەوە", icon: Bell },
   { href: "/dashboard/settings/password", label: "گۆڕینی وشەی نهێنی", icon: KeyRound },
-  { href: "/dashboard/settings/versions", label: "مێژووی وەشان", icon: History },
-  { href: "/dashboard/settings/navigation-style", label: "ڕێکخستنی ستایلی سیستەم", icon: LayoutGrid },
+  { href: "/dashboard/settings/help", label: "ڕێنمایی بەکارهێنانی سیستەم", icon: CircleHelp },
 ] as const;
 
 export default async function SettingsPage() {

@@ -77,6 +77,7 @@ input[type="search"] {
   --color-input: var(--input);
   --color-border: var(--border);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
   --color-warning: var(--warning);
@@ -96,13 +97,13 @@ input[type="search"] {
   --color-brand: var(--brand);
   --color-brand-hover: var(--brand-hover);
   --color-cream: var(--cream);
-  --radius-sm: calc(var(--radius) * 0.55);
-  --radius-md: calc(var(--radius) * 0.75);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.35);
-  --radius-2xl: calc(var(--radius) * 1.7);
-  --radius-3xl: calc(var(--radius) * 2.1);
-  --radius-4xl: calc(var(--radius) * 2.5);
+  --radius-sm: var(--rek-radius-sm);
+  --radius-md: var(--rek-radius-md);
+  --radius-lg: var(--rek-radius-lg);
+  --radius-xl: var(--rek-radius-lg);
+  --radius-2xl: var(--rek-radius-lg);
+  --radius-3xl: var(--rek-radius-lg);
+  --radius-4xl: var(--rek-radius-lg);
   --shadow-xs: var(--shadow-xs);
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
@@ -110,110 +111,157 @@ input[type="search"] {
   --shadow-brand: var(--shadow-brand);
 }
 
+/* Rectangular REK surfaces are deliberately sharp. Semantic circles keep
+   their explicit rounded-full treatment. */
+.rounded-sm,
+.rounded,
+.rounded-md,
+.rounded-lg,
+.rounded-xl,
+.rounded-2xl,
+.rounded-3xl,
+.rounded-4xl,
+.rounded-t,
+.rounded-b,
+.rounded-s,
+.rounded-e,
+[class*="rounded-["] { border-radius: 0 !important; }
+
 /* ─── Light tokens (premium SaaS) ─── */
 :root {
-  --brand: #ffae42;
-  --brand-hover: #e8942a;
-  --cream: #fff4e5;
-  --background: #ffffff;
-  --foreground: #171412;
-  --card: #ffffff;
-  --card-foreground: #171412;
-  --popover: #ffffff;
-  --popover-foreground: #171412;
-  --primary: #ffae42;
-  --primary-foreground: #ffffff;
-  --secondary: #fff4e5;
-  --secondary-foreground: #171412;
-  --muted: #f7f5f2;
-  --muted-foreground: #6b645c;
-  --accent: #fff4e5;
-  --accent-foreground: #171412;
+  --brand: #13204f;
+  --brand-hover: #0d183d;
+  --cream: #e8e3ce;
+  --background: #e8e3ce;
+  --foreground: #13204f;
+  --card: #f8f4e5;
+  --card-foreground: #13204f;
+  --popover: #fffcef;
+  --popover-foreground: #13204f;
+  --primary: #13204f;
+  --primary-foreground: #e8e3ce;
+  --secondary: #ddd7c1;
+  --secondary-foreground: #13204f;
+  --muted: #e1dcc8;
+  --muted-foreground: #53607d;
+  --accent: #d6d0b9;
+  --accent-foreground: #13204f;
   --destructive: #b42318;
+  --destructive-foreground: #fffcef;
   --success: #2f6b3a;
   --success-foreground: #ffffff;
   --warning: #a15c12;
   --warning-foreground: #ffffff;
-  --border: #e8e2da;
-  --input: #e8e2da;
-  --ring: #ffae42;
-  --chart-sales: #ffae42;
-  --chart-purchases: #e8942a;
-  --chart-1: #ffae42;
-  --chart-2: #e8942a;
-  --chart-3: #ffc574;
-  --chart-4: #fff4e5;
-  --chart-5: #6b645c;
-  --radius: 0;
-  --sidebar: #ffffff;
-  --sidebar-foreground: #171412;
-  --sidebar-primary: #ffae42;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #fff4e5;
-  --sidebar-accent-foreground: #171412;
-  --sidebar-border: #e8e2da;
-  --sidebar-ring: #ffae42;
-  --shadow-xs: 0 1px 2px rgba(23, 20, 18, 0.04);
-  --shadow-sm: 0 4px 12px rgba(23, 20, 18, 0.06);
-  --shadow-md: 0 8px 24px rgba(23, 20, 18, 0.08);
-  --shadow-lg: 0 16px 40px rgba(23, 20, 18, 0.1);
-  --shadow-brand: rgba(255, 174, 66, 0.18);
-  --surface-soft: #f7f5f2;
-  --icon: #ffae42;
-  --overlay: rgba(23, 20, 18, 0.4);
+  --border: #8a8a75;
+  --input: #747560;
+  --ring: #13204f;
+  --chart-sales: #13204f;
+  --chart-purchases: #53607d;
+  --chart-1: #13204f;
+  --chart-2: #53607d;
+  --chart-3: #747d96;
+  --chart-4: #c7c1a8;
+  --chart-5: #53607d;
+  --rek-radius-xs: 0px;
+  --rek-radius-sm: 0px;
+  --rek-radius-md: 0px;
+  --rek-radius-lg: 0px;
+  --radius: var(--rek-radius-lg);
+  --sidebar: #13204f;
+  --sidebar-foreground: #e8e3ce;
+  --sidebar-muted: #c7c3ae;
+  --sidebar-primary: #e8e3ce;
+  --sidebar-primary-foreground: #13204f;
+  --sidebar-accent: #1c2b60;
+  --sidebar-accent-foreground: #e8e3ce;
+  --sidebar-border: #31406f;
+  --sidebar-ring: #e8e3ce;
+  --sidebar-destructive: #ffb4ae;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-brand: transparent;
+  --surface-soft: #e1dcc8;
+  --surface: #f8f4e5;
+  --surface-secondary: #e1dcc8;
+  --disabled: #cbc6ae;
+  --disabled-foreground: #66708a;
+  --icon: #13204f;
+  --overlay: rgba(19, 32, 79, 0.48);
   --space-page: 1.5rem;
   --space-section: 2rem;
+  --glass-surface: var(--card);
+  --glass-surface-strong: var(--popover);
+  --glass-liquid: var(--sidebar);
+  --glass-border: var(--border);
+  --glass-highlight: transparent;
+  --glass-edge-shadow: transparent;
+  --glass-transition: 160ms ease;
 }
 
 .dark {
-  --brand: #ffae42;
-  --brand-hover: #ffc574;
-  --cream: #2a241c;
-  --background: #12100e;
-  --foreground: #faf8f5;
-  --card: #1a1714;
-  --card-foreground: #faf8f5;
-  --popover: #1a1714;
-  --popover-foreground: #faf8f5;
-  --primary: #ffae42;
-  --primary-foreground: #171412;
-  --secondary: #2a241c;
-  --secondary-foreground: #faf8f5;
-  --muted: #241f1a;
-  --muted-foreground: #b0a79c;
-  --accent: #2a241c;
-  --accent-foreground: #faf8f5;
-  --destructive: #f04438;
-  --success: #3d9a52;
+  --brand: #e8e3ce;
+  --brand-hover: #f6f1de;
+  --cream: #e8e3ce;
+  --background: #0b1430;
+  --foreground: #e8e3ce;
+  --card: #111d41;
+  --card-foreground: #e8e3ce;
+  --popover: #182851;
+  --popover-foreground: #e8e3ce;
+  --primary: #e8e3ce;
+  --primary-foreground: #13204f;
+  --secondary: #1b2a58;
+  --secondary-foreground: #e8e3ce;
+  --muted: #172550;
+  --muted-foreground: #b7b8a8;
+  --accent: #20305f;
+  --accent-foreground: #e8e3ce;
+  --destructive: #d92d20;
+  --destructive-foreground: #fffcef;
+  --success: #2f7d3e;
   --success-foreground: #ffffff;
   --warning: #f5a524;
   --warning-foreground: #171412;
-  --border: rgba(255, 174, 66, 0.22);
-  --input: rgba(255, 174, 66, 0.28);
-  --ring: #ffae42;
-  --chart-sales: #ffae42;
-  --chart-purchases: #ffc574;
-  --chart-1: #ffae42;
-  --chart-2: #ffc574;
-  --chart-3: #e8942a;
-  --chart-4: #6b645c;
-  --chart-5: #faf8f5;
-  --sidebar: #161310;
-  --sidebar-foreground: #faf8f5;
-  --sidebar-primary: #ffae42;
-  --sidebar-primary-foreground: #171412;
-  --sidebar-accent: #2a241c;
-  --sidebar-accent-foreground: #faf8f5;
-  --sidebar-border: rgba(255, 174, 66, 0.2);
-  --sidebar-ring: #ffae42;
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
-  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.5);
-  --shadow-brand: rgba(0, 0, 0, 0.45);
-  --surface-soft: #241f1a;
-  --icon: #ffae42;
-  --overlay: rgba(0, 0, 0, 0.55);
+  --border: #5c6b95;
+  --input: #6878a4;
+  --ring: #e8e3ce;
+  --chart-sales: #e8e3ce;
+  --chart-purchases: #aeb4c6;
+  --chart-1: #e8e3ce;
+  --chart-2: #aeb4c6;
+  --chart-3: #7885a5;
+  --chart-4: #53607d;
+  --chart-5: #e8e3ce;
+  --sidebar: #13204f;
+  --sidebar-foreground: #e8e3ce;
+  --sidebar-muted: #c7c3ae;
+  --sidebar-primary: #e8e3ce;
+  --sidebar-primary-foreground: #13204f;
+  --sidebar-accent: #1c2b60;
+  --sidebar-accent-foreground: #e8e3ce;
+  --sidebar-border: #31406f;
+  --sidebar-ring: #e8e3ce;
+  --sidebar-destructive: #ffb4ae;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-brand: transparent;
+  --surface-soft: #172550;
+  --surface: #111d41;
+  --surface-secondary: #172550;
+  --disabled: #24335f;
+  --disabled-foreground: #a6aa9c;
+  --icon: #e8e3ce;
+  --overlay: rgba(3, 9, 30, 0.62);
+  --glass-surface: var(--card);
+  --glass-surface-strong: var(--popover);
+  --glass-liquid: var(--sidebar);
+  --glass-border: var(--border);
+  --glass-highlight: transparent;
+  --glass-edge-shadow: transparent;
 }
 
 html {
@@ -250,6 +298,7 @@ body {
   min-height: 100%;
   min-height: 100dvh;
   position: relative;
+  background-image: none;
 }
 
 /* Skip link — keyboard users jump to main content */
@@ -495,19 +544,50 @@ iframe {
    ═══════════════════════════════════════════════════════════ */
 
 .rek-surface {
-  background: var(--card);
+  background: var(--glass-surface);
   color: var(--card-foreground);
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-sm);
+}
+
+/* Material 01: dense, calm content. It intentionally has no blur. */
+.rek-glass,
+.rek-surface,
+.rek-card {
+  background: var(--card);
+  border-color: var(--border);
+}
+
+/* Material 02: restrained frosted layers for dialogs and compact panels. */
+.rek-glass-elevated,
+.rek-dialog {
+  background: var(--popover);
+  border-color: var(--border);
+  box-shadow: none;
+}
+
+/* Shared navigation chrome is a solid navy surface. */
+.rek-liquid-glass,
+.rek-header,
+.rek-sidebar {
+  background: var(--sidebar);
+  border-color: var(--sidebar-border);
+  box-shadow: none;
+}
+
+.rek-glass-control {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: none;
 }
 
 .rek-card {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-2xl);
-  border: 1px solid var(--border);
-  background: var(--card);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-surface);
   color: var(--card-foreground);
   box-shadow: var(--shadow-xs);
   transition:
@@ -516,16 +596,16 @@ iframe {
 }
 
 .rek-card:hover {
-  border-color: color-mix(in srgb, var(--primary) 22%, var(--border));
-  box-shadow: var(--shadow-sm);
+  border-color: color-mix(in srgb, var(--primary) 16%, var(--border));
+  box-shadow: none;
 }
 
 .rek-stat-card {
   position: relative;
   overflow: hidden;
   border-radius: var(--radius-2xl);
-  border: 1px solid var(--border);
-  background: var(--card);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-surface);
   color: var(--card-foreground);
   padding: 1.15rem 1.25rem;
   box-shadow: var(--shadow-xs);
@@ -546,7 +626,7 @@ iframe {
   inset-inline: 0;
   top: 0;
   height: 2px;
-  background: color-mix(in srgb, var(--primary) 70%, transparent);
+  background: color-mix(in srgb, var(--primary) 56%, transparent);
 }
 
 .rek-stat-card:hover {
@@ -586,7 +666,7 @@ iframe {
   color: var(--primary-foreground);
   font-weight: 700;
   font-size: 0.925rem;
-  box-shadow: 0 6px 16px var(--shadow-brand);
+  box-shadow: 0 2px 7px var(--shadow-brand);
   transition:
     background 0.18s ease,
     transform 0.18s ease,
@@ -594,16 +674,13 @@ iframe {
     border-color 0.18s ease;
 }
 
-.rek-btn:hover {
-  background: var(--brand-hover);
-  transform: translateY(-1px);
-}
+.rek-btn:hover { background: var(--brand-hover); }
 
 .rek-btn:focus-visible {
   outline: none;
   box-shadow:
-    0 0 0 3px color-mix(in srgb, var(--ring) 35%, transparent),
-    0 6px 16px var(--shadow-brand);
+    0 0 0 2px color-mix(in srgb, var(--ring) 32%, transparent),
+    0 2px 7px var(--shadow-brand);
 }
 
 .rek-btn:disabled {
@@ -636,7 +713,7 @@ iframe {
 .rek-btn-danger {
   background: var(--destructive);
   color: #ffffff;
-  box-shadow: 0 6px 16px rgba(180, 35, 24, 0.22);
+  box-shadow: 0 2px 7px rgba(180, 35, 24, 0.18);
 }
 
 .rek-btn-danger:hover {
@@ -647,8 +724,8 @@ iframe {
   height: 2.75rem;
   width: 100%;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--input);
-  background: var(--background);
+  border: 1px solid var(--glass-border);
+  background: color-mix(in srgb, var(--glass-surface-strong) 92%, transparent);
   color: var(--foreground);
   padding-inline: 0.95rem;
   font-size: 0.925rem;
@@ -682,6 +759,7 @@ iframe {
   font-weight: 700;
   line-height: 1.4;
   white-space: nowrap;
+  border: 1px solid color-mix(in srgb, currentColor 16%, transparent);
 }
 
 .rek-badge-primary {
@@ -788,17 +866,17 @@ iframe {
   min-width: 0;
   overflow: hidden;
   border-radius: var(--radius-2xl);
-  border: 1px solid var(--border);
-  background: var(--card);
-  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-surface);
+  box-shadow: var(--shadow-xs);
 }
 
 .rek-dialog {
   border-radius: var(--radius-2xl);
-  border: 1px solid var(--border);
-  background: var(--popover);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-surface-strong);
   color: var(--popover-foreground);
-  box-shadow: var(--shadow-lg);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 12px 30px var(--glass-edge-shadow);
   max-height: min(90dvh, 720px);
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -822,7 +900,7 @@ iframe {
   justify-self: center;
   align-self: center;
   border: 1px solid var(--border);
-  border-radius: 0.75rem;
+  border-radius: var(--rek-radius-lg);
   background: var(--card);
   padding: 1.25rem;
   direction: rtl;
@@ -859,9 +937,8 @@ iframe {
   min-width: 0;
   max-width: 100%;
   overflow: visible;
-  border-bottom: 1px solid var(--border);
-  background: var(--card);
-  box-shadow: var(--shadow-xs);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 3px 12px var(--glass-edge-shadow);
 }
 
 .rek-sidebar {
@@ -870,10 +947,9 @@ iframe {
   overflow-x: clip;
   overflow-y: auto;
   overscroll-behavior: contain;
-  border-inline-start: 1px solid var(--sidebar-border);
-  background: var(--sidebar);
+  border-inline-start: 1px solid var(--glass-border);
   color: var(--sidebar-foreground);
-  box-shadow: var(--shadow-xs);
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 3px 12px var(--glass-edge-shadow);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -902,14 +978,14 @@ iframe {
 
 .rek-nav-item[data-active="true"],
 .rek-nav-item.is-active {
-  background: color-mix(in srgb, var(--primary) 14%, transparent);
+  background: color-mix(in srgb, var(--primary) 11%, var(--sidebar));
   color: var(--brand-hover);
   box-shadow: none;
 }
 
 .rek-nav-item[data-active="true"]:hover,
 .rek-nav-item.is-active:hover {
-  background: color-mix(in srgb, var(--primary) 18%, transparent);
+  background: color-mix(in srgb, var(--primary) 15%, var(--sidebar));
   color: var(--brand-hover);
 }
 
@@ -966,17 +1042,14 @@ iframe {
   0% {
     opacity: 0;
     transform: translateY(-18px) scale(0.92);
-    filter: blur(4px);
   }
   60% {
     opacity: 1;
     transform: translateY(2px) scale(1.02);
-    filter: blur(0);
   }
   100% {
     opacity: 1;
     transform: translateY(0) scale(1);
-    filter: blur(0);
   }
 }
 
@@ -1044,12 +1117,12 @@ iframe {
   width: min(92vw, 380px);
   overflow: hidden;
   border-radius: var(--radius-2xl);
-  border: 1px solid var(--border);
-  background: var(--card);
+  border: 1px solid var(--glass-border);
+  background: var(--glass-surface-strong);
   color: var(--card-foreground);
   padding: 0.95rem 1rem;
-  box-shadow: var(--shadow-md);
-  animation: rek-toast-in 0.48s cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow: inset 0 1px 0 var(--glass-highlight), 0 6px 18px var(--glass-edge-shadow);
+  animation: rek-toast-in 180ms ease-out both;
 }
 
 .rek-toast-glow {
@@ -1060,7 +1133,8 @@ iframe {
   width: 140px;
   border-radius: 999px;
   background: radial-gradient(circle, var(--shadow-brand), transparent 70%);
-  animation: rek-toast-glow 2.4s ease-in-out infinite;
+  opacity: 0.22;
+  animation: none;
 }
 
 .rek-toast-icon {
@@ -1338,7 +1412,7 @@ html:not(.dark) .hover\:bg-gray-100:hover {
 html:not(.dark) .text-slate-400,
 html:not(.dark) .text-gray-400,
 html:not(.dark) .text-zinc-400 {
-  color: color-mix(in srgb, var(--muted-foreground) 85%, transparent) !important;
+  color: var(--muted-foreground) !important;
 }
 
 html:not(.dark) .text-slate-500,
@@ -1424,7 +1498,8 @@ html:not(.dark) .border-zinc-200 {
   color: var(--warning) !important;
 }
 .bg-amber-500,
-.bg-yellow-500 {
+.bg-yellow-500,
+.bg-orange-500 {
   background-color: var(--warning) !important;
   color: var(--warning-foreground) !important;
 }
@@ -1442,9 +1517,11 @@ html:not(.dark) .border-zinc-200 {
   color: var(--destructive) !important;
 }
 .bg-rose-500,
-.bg-red-500 {
+.bg-red-500,
+.bg-rose-600,
+.bg-red-600 {
   background-color: var(--destructive) !important;
-  color: #ffffff !important;
+  color: var(--destructive-foreground) !important;
 }
 .border-red-200,
 .border-red-300,
@@ -1526,13 +1603,23 @@ html:not(.dark) .border-zinc-200 {
   border-color: var(--border) !important;
 }
 
+[data-slot="dialog-content"],
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-sub-content"],
+[role="dialog"],
+[role="alertdialog"] {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border-color: var(--border);
+}
+
 .dark [data-slot="dialog-content"],
 .dark [data-slot="dropdown-menu-content"],
 .dark [role="dialog"],
 .dark [role="alertdialog"] {
-  background-color: var(--popover);
+  background: var(--glass-surface-strong);
   color: var(--popover-foreground);
-  border-color: var(--border);
+  border-color: var(--glass-border);
   box-shadow: var(--shadow-lg);
 }
 
@@ -1543,9 +1630,9 @@ html:not(.dark) .border-zinc-200 {
 .dark input:not([type="checkbox"]):not([type="radio"]),
 .dark select,
 .dark textarea {
-  background-color: var(--card);
+  background: color-mix(in srgb, var(--glass-surface-strong) 92%, transparent);
   color: var(--foreground);
-  border-color: var(--border);
+  border-color: var(--glass-border);
 }
 
 .dark input::placeholder,
@@ -1563,6 +1650,7 @@ html:not(.dark) .border-zinc-200 {
 }
 
 /* ─── Sharp-corner design system ─── */
+/* Legacy sharp-corner override intentionally retired for the shared rounded system.
 .rounded-none,
 .rounded-sm,
 .rounded,
@@ -1576,16 +1664,15 @@ html:not(.dark) .border-zinc-200 {
 [class*="rounded-["] {
   border-radius: 0 !important;
 }
+*/
 
 /* ─── REK ERP Academy Learning Center hero ─── */
 .rek-academy-hero {
   --academy-ink: #070b14;
   --academy-panel: #0b1220;
-  --academy-brand: #ffae42;
-  background-color: #0b1220;
-  background-image:
-    radial-gradient(circle at 18% 20%, rgba(255, 174, 66, 0.14), transparent 34%),
-    linear-gradient(135deg, #070b14 0%, #0b1220 58%, #121827 100%);
+  --academy-brand: #e8e3ce;
+  background-color: #13204f;
+  background-image: none;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1594,6 +1681,7 @@ html:not(.dark) .border-zinc-200 {
 }
 
 .rek-academy-hero__bg {
+  display: none;
   position: absolute;
   inset: 0;
   pointer-events: none;
@@ -1614,8 +1702,7 @@ html:not(.dark) .border-zinc-200 {
 .rek-academy-hero__glow {
   position: absolute;
   border-radius: 0;
-  filter: blur(48px);
-  opacity: 0.55;
+  display: none;
   animation: rek-academy-glow-float 14s ease-in-out infinite;
 }
 
@@ -2085,6 +2172,277 @@ html:not(.dark) .border-zinc-200 {
   flex: 1;
   border-radius: 0.35rem;
   background: color-mix(in srgb, var(--primary) 24%, transparent);
+}
+
+/* RekApps sharp brand finish. These compatibility rules deliberately sit after
+   legacy utility output so every existing ERP screen receives the same flat
+   material without changing its component structure. */
+.rek-card,
+.rek-stat-card,
+.rek-grid-tile,
+.rek-table-shell,
+.rek-dialog,
+.rek-glass,
+.rek-glass-elevated,
+.rek-glass-control,
+.rek-surface,
+.rek-liquid-glass,
+.rek-toast {
+  background: var(--card) !important;
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+}
+
+.rek-header,
+.rek-sidebar {
+  background: var(--sidebar) !important;
+  border-color: var(--sidebar-border) !important;
+  color: var(--sidebar-foreground);
+  box-shadow: none !important;
+}
+
+.rek-header .text-foreground,
+.rek-sidebar .text-foreground,
+.rek-header .text-white,
+.rek-sidebar .text-white {
+  color: var(--sidebar-foreground) !important;
+}
+
+.rek-header .text-muted-foreground,
+.rek-sidebar .text-muted-foreground {
+  color: var(--sidebar-muted) !important;
+}
+
+.rek-header .bg-card,
+.rek-header .rek-glass-control,
+.rek-sidebar .rek-glass-control {
+  background: var(--card) !important;
+  color: var(--foreground) !important;
+}
+
+.rek-nav-item:hover,
+.rek-nav-item[data-active="true"],
+.rek-nav-item.is-active {
+  background: var(--sidebar-accent) !important;
+  color: var(--sidebar-foreground) !important;
+}
+
+.rek-sidebar .rek-nav-item {
+  color: var(--sidebar-foreground);
+}
+
+.rek-sidebar input:not([type="checkbox"]):not([type="radio"]) {
+  background: var(--sidebar-accent) !important;
+  border-color: var(--sidebar-border) !important;
+  color: var(--sidebar-foreground) !important;
+}
+
+.rek-sidebar input::placeholder { color: var(--sidebar-muted) !important; }
+
+.rek-sidebar .rek-navigation-user {
+  background: var(--sidebar-accent) !important;
+  border: 1px solid var(--sidebar-border);
+}
+
+.rek-sidebar .rek-navigation-user .text-foreground,
+.rek-sidebar .rek-navigation-user .text-muted-foreground {
+  color: var(--sidebar-foreground) !important;
+}
+
+.rek-sidebar .rek-navigation-user .rek-company-name {
+  color: var(--sidebar-muted) !important;
+}
+
+.rek-sidebar .rek-navigation-logout {
+  color: var(--sidebar-destructive) !important;
+}
+
+.rek-sidebar .rek-navigation-logout:hover {
+  background: color-mix(in srgb, var(--sidebar-destructive) 14%, transparent) !important;
+}
+
+.rek-sidebar .rek-navigation-toggle:hover {
+  background: var(--sidebar-accent) !important;
+  color: var(--sidebar-foreground) !important;
+}
+
+/* Side-menu motion is limited to inexpensive opacity and transform changes. */
+:root {
+  --rek-navigation-motion: 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  --rek-navigation-panel-motion: 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.rek-navigation-trigger,
+.rek-navigation-item,
+.rek-nav-item {
+  transition:
+    background-color var(--rek-navigation-motion),
+    border-color var(--rek-navigation-motion),
+    color var(--rek-navigation-motion),
+    transform var(--rek-navigation-motion);
+}
+
+.rek-navigation-trigger:active,
+.rek-navigation-item:active,
+.rek-nav-item:active { transform: scale(0.98); }
+
+.rek-navigation-width {
+  transition: width var(--rek-navigation-panel-motion);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rek-navigation-trigger,
+  .rek-navigation-item,
+  .rek-navigation-width { transition: none !important; }
+}
+
+.rek-btn,
+.rek-toast-progress,
+.rek-toast-error .rek-toast-progress,
+.rek-toast-progress-undo {
+  background: var(--primary) !important;
+  box-shadow: none !important;
+}
+
+.rek-btn-danger,
+.rek-toast-error .rek-toast-icon { background: var(--destructive) !important; }
+.rek-btn-secondary { background: var(--card) !important; box-shadow: none !important; }
+
+[class*="rounded-["]:not(.rounded-full),
+[class~="rounded"],
+[class~="rounded-sm"],
+[class~="rounded-md"],
+[class~="rounded-lg"],
+[class~="rounded-xl"],
+[class~="rounded-2xl"],
+[class~="rounded-3xl"],
+[class~="rounded-4xl"] { border-radius: 0 !important; }
+[class*="rounded-t"],
+[class*="rounded-b"],
+[class*="rounded-s"],
+[class*="rounded-e"],
+[class*="rounded-l"],
+[class*="rounded-r"] { border-radius: 0 !important; }
+
+[class*="shadow-"] { box-shadow: none !important; }
+[class*="bg-gradient"] {
+  background-color: var(--primary) !important;
+  background-image: none !important;
+  color: var(--primary-foreground) !important;
+}
+
+.bg-white,
+.bg-slate-50,
+.bg-slate-100,
+.bg-gray-50,
+.bg-gray-100 { background-color: var(--card) !important; }
+
+[class*="bg-white"],
+[class*="bg-card/"],
+[class*="bg-background/"] { background-color: var(--card) !important; }
+
+.text-slate-700,
+.text-slate-800,
+.text-slate-900,
+.text-gray-700,
+.text-gray-800,
+.text-gray-900 { color: var(--foreground) !important; }
+
+.border-slate-100,
+.border-slate-200,
+.border-slate-300,
+.border-gray-200,
+.border-gray-300 { border-color: var(--border) !important; }
+
+/* Readability guardrails for legacy utilities and portalled shared UI. */
+[class*="text-muted-foreground/"]:not([class*="placeholder:text-muted-foreground/"]) { color: var(--muted-foreground) !important; }
+[class*="border-border/"] { border-color: var(--border) !important; }
+[class*="bg-muted/"]:not([class*="hover:bg-muted/"]) { background-color: var(--muted) !important; }
+[class*="hover:bg-muted/"]:hover { background-color: var(--muted) !important; }
+[class*="bg-primary/"]:not([class*="hover:bg-primary/"]) { background-color: var(--accent) !important; }
+[class*="hover:bg-primary/"]:hover { background-color: var(--accent) !important; }
+
+[class*="text-[#FFAE42]"],
+[class*="text-[#E8942A]"] { color: var(--primary) !important; }
+
+[class*="bg-[#FFAE42]"],
+[class*="bg-[#E8942A]"] { background-color: var(--primary) !important; }
+
+.dark [class*="bg-[#FFAE42]"][class*="text-white"],
+.dark [class*="bg-[#E8942A]"][class*="text-white"] {
+  color: var(--primary-foreground) !important;
+}
+
+[class*="bg-destructive"][class*="text-white"] {
+  color: var(--destructive-foreground) !important;
+}
+
+:where(input:not([type="checkbox"]):not([type="radio"]):not([type="range"]), select, textarea) {
+  background-color: var(--card);
+  color: var(--foreground);
+  border-color: var(--input);
+}
+
+:where(input, select, textarea)::placeholder { color: var(--muted-foreground); opacity: 1; }
+
+:where(input, select, textarea):disabled {
+  background-color: var(--disabled);
+  color: var(--disabled-foreground);
+  border-color: var(--border);
+  opacity: 1 !important;
+}
+
+:where(input, select, textarea):-webkit-autofill,
+:where(input, select, textarea):-webkit-autofill:hover,
+:where(input, select, textarea):-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--foreground);
+  box-shadow: 0 0 0 1000px var(--card) inset !important;
+  caret-color: var(--foreground);
+}
+
+:where(button, [role="button"], a.rek-focusable, input, select, textarea, [role="checkbox"], [role="radio"], [role="switch"]):focus-visible {
+  outline: 2px solid var(--ring) !important;
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+
+button:disabled,
+[role="button"][aria-disabled="true"] { opacity: 0.7; }
+
+[data-slot="table-header"],
+thead { background-color: var(--muted) !important; }
+
+[data-slot="table-header"] th,
+thead th { color: var(--foreground) !important; }
+
+[data-slot="table-row"]:hover,
+tbody tr:hover { background-color: var(--surface-secondary) !important; }
+
+[data-slot="table-row"][data-state="selected"],
+tbody tr[data-state="selected"] { background-color: var(--accent) !important; }
+
+/* First-login transition: branded, short, and deliberately free of heavy effects. */
+.rek-onboarding-splash {
+  animation: rek-onboarding-background 180ms ease-out both;
+}
+
+.rek-onboarding-splash-content {
+  animation: rek-onboarding-logo 420ms cubic-bezier(0.2, 0.8, 0.2, 1) 120ms both;
+}
+
+@keyframes rek-onboarding-background {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes rek-onboarding-logo {
+  from { opacity: 0; transform: translateY(6px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rek-onboarding-splash,
+  .rek-onboarding-splash-content { animation-duration: 1ms; animation-delay: 0ms; }
 }
 
 @media print {

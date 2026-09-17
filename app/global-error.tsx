@@ -17,33 +17,33 @@ export default function GlobalError({
 
   return (
     <html lang="ckb" dir="rtl">
-      <body className="bg-white text-[#171412] antialiased">
+      <body className="bg-background text-foreground antialiased">
         <div
           role="alert"
           className="mx-auto flex min-h-dvh max-w-lg flex-col items-center justify-center px-4 text-center"
         >
-          <div className="mb-5 flex size-16 items-center justify-center rounded-3xl bg-[#FCECEC] text-[#B42318]">
+          <div className="mb-5 flex size-16 items-center justify-center rounded-3xl bg-destructive/10 text-destructive">
             <AlertTriangle size={28} aria-hidden />
           </div>
           <h1 className="text-2xl font-black">هەڵەی گشتی</h1>
-          <p className="mt-2 text-sm text-[#6B645C]">
+          <p className="mt-2 text-sm text-muted-foreground">
             ئەپەکە تووشی کێشەیەک بوو. تکایە پەڕەکە نوێ بکەرەوە.
           </p>
-          <p className="mt-3 font-mono text-[11px] text-[#6B645C]">
+          <p className="mt-3 font-mono text-[11px] text-muted-foreground">
             کۆدی بەدواداچوون: {error.digest || "CLIENT-GLOBAL"}
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <button
               type="button"
               onClick={reset}
-              className="inline-flex h-11 items-center gap-2 rounded-2xl bg-[#FFAE42] px-5 text-sm font-bold text-white"
+              className="inline-flex h-11 items-center gap-2 rounded-2xl bg-primary px-5 text-sm font-bold text-primary-foreground"
             >
               <RefreshCw size={16} aria-hidden />
               هەوڵی دووبارە
             </button>
             <Link
               href="/"
-              className="inline-flex h-11 items-center gap-2 rounded-2xl border border-[#E8E2DA] px-5 text-sm font-bold"
+              className="inline-flex h-11 items-center gap-2 rounded-2xl border border-border bg-card px-5 text-sm font-bold"
             >
               <Home size={16} aria-hidden />
               سەرەتا

@@ -937,7 +937,7 @@ export function CommandPaletteHost() {
     >
       <button
         type="button"
-        className="rek-cmd-backdrop absolute inset-0 bg-[var(--overlay)] backdrop-blur-[3px]"
+        className="rek-cmd-backdrop absolute inset-0 bg-[var(--overlay)]"
         aria-label="داخستن"
         onClick={close}
       />

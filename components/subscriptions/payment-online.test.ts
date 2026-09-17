@@ -28,3 +28,9 @@ test("desktop and mobile payment layout remains responsive", () => {
   assert.match(source, /md:grid-cols-3/);
   assert.match(source, /max-w-6xl/);
 });
+
+test("the page heading renders above the subscription banner", () => {
+  assert.match(source, /<header><h1 className="text-3xl font-black text-primary sm:text-4xl">\{pageTitle\}<\/h1><\/header>\s*<section/);
+  assert.doesNotMatch(source, /<section[^>]*>[\s\S]*?<h1[^>]*>\{pageTitle\}<\/h1>/);
+  assert.doesNotMatch(source, /REK ERP Subscription|ShieldCheck/);
+});

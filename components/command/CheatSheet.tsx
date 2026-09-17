@@ -201,7 +201,7 @@ export default function CheatSheetHost() {
     >
       <button
         type="button"
-        className="absolute inset-0 bg-[var(--overlay)] backdrop-blur-[2px]"
+        className="absolute inset-0 bg-[var(--overlay)]"
         aria-label={t("commandSheet.closeSheet")}
         onClick={() => setOpen(false)}
       />

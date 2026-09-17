@@ -7,7 +7,9 @@ export const BRAND = {
   productName: "REK ERP",
   taglineKu: "سیستەمی بەڕێوەبردنی کارگە",
   taglineEn: "Enterprise Resource Planning",
-  logo: "/logo.png",
+  logo: "/icons/rekapps-dark.png",
+  logoOnNavy: "/icons/rekapps-dark.png",
+  logoOnCream: "/icons/rekapps-light.png",
   colors: {
     primary: DS.color.primary,
     primaryHover: DS.color.primaryHover,

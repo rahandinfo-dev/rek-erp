@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { useT } from "@/components/i18n/LocaleProvider";
 import PasswordInput from "@/components/forms/PasswordInput";
+import { BRAND } from "@/lib/brand";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -73,13 +74,9 @@ export default function LoginForm() {
     <main
       dir="rtl"
       lang="ckb"
-      className="relative min-h-screen min-h-dvh max-w-full overflow-x-clip overflow-y-auto bg-[#FFF8EF]"
+      className="relative min-h-screen min-h-dvh max-w-full overflow-x-clip overflow-y-auto bg-background"
     >
-      <div className="absolute inset-0">
-        <div className="absolute -top-52 -left-52 h-[500px] w-[500px] rounded-full bg-[#FFAE42]/15 blur-[170px]" />
-
-        <div className="absolute -bottom-52 -right-52 h-[500px] w-[500px] rounded-full bg-[#FFF8EF]/40 blur-[170px]" />
-      </div>
+      <div className="absolute inset-0 bg-background" />
 
       <div className="relative z-10 flex min-h-screen min-h-dvh items-center justify-center p-4 sm:p-6 md:p-8">
         <div
@@ -105,11 +102,8 @@ export default function LoginForm() {
             flex-col
             justify-between
             p-16
-            text-white
-            bg-gradient-to-br
-            from-[#FFAE42]
-            via-[#E8942A]
-            to-[#FFAE42]
+            text-sidebar-foreground
+            bg-sidebar
             "
           >
             <div>
@@ -136,12 +130,12 @@ export default function LoginForm() {
                   </div>
 
                   <Image
-                    src="/logo.png"
+                    src={BRAND.logoOnNavy}
                     alt={t("auth.brandName")}
                     width={170}
                     height={170}
                     priority
-                    className="rounded-3xl object-contain bg-[#FFF8EF]/10 p-2"
+                    className="object-contain"
                   />
                 </div>
               </div>

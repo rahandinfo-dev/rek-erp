@@ -8,6 +8,7 @@ import { validatePassword } from "@/lib/validators/password";
 import { getPasswordStrength } from "@/lib/utils/passwordStrength";
 import PasswordInput from "@/components/forms/PasswordInput";
 import { useT } from "@/components/i18n/LocaleProvider";
+import { BRAND } from "@/lib/brand";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -93,13 +94,9 @@ export default function RegisterForm() {
     <main
       dir="rtl"
       lang="ckb"
-      className="relative min-h-screen min-h-dvh max-w-full overflow-x-clip overflow-y-auto bg-[#EEF2FF]"
+      className="relative min-h-screen min-h-dvh max-w-full overflow-x-clip overflow-y-auto bg-background"
     >
-      <div className="absolute inset-0">
-        <div className="absolute -top-60 -left-60 h-[650px] w-[650px] rounded-full bg-[#FFAE42]/15 blur-[170px]" />
-
-        <div className="absolute -bottom-60 -right-60 h-[650px] w-[650px] rounded-full bg-cyan-400/20 blur-[170px]" />
-      </div>
+      <div className="absolute inset-0 bg-background" />
 
       <div className="relative z-10 flex min-h-screen min-h-dvh items-center justify-center p-4 sm:p-6 md:p-8">
         <div
@@ -123,20 +120,19 @@ export default function RegisterForm() {
   flex-col
   justify-between
   p-16
-  bg-gradient-to-br
-  from-[#FFAE42] via-[#E8942A] to-[#FFAE42]
-  text-white
+  bg-sidebar
+  text-sidebar-foreground
   "
           >
             <div>
               <div className="flex items-center gap-5">
                 <Image
-                  src="/logo.png"
+                  src={BRAND.logoOnNavy}
                   alt={t("auth.brandName")}
                   width={180}
                   height={180}
                   priority
-                  className="rounded-xl object-contain bg-transparent"
+                  className="object-contain"
                 />
 
                 <div>

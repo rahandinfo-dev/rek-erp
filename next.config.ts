@@ -57,6 +57,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   compress: true,
+  ...(isProd ? {} : { allowedDevOrigins: ["*.trycloudflare.com"] }),
   images: {
     formats: ["image/avif", "image/webp"],
     localPatterns: [

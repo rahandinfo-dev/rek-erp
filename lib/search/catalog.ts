@@ -115,7 +115,7 @@ export const SEARCH_CATALOG: SearchCatalogItem[] = [
   },
   {
     id: "activity-timeline",
-    title: "تێمڵاینی چالاکی",
+    title: "مێژووی چالاکییەکان",
     subtitle: "مێژووی چالاکییەکانی سیستەم",
     href: "/dashboard/activity",
     type: "reports",

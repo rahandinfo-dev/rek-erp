@@ -67,10 +67,10 @@ export const REK_PROFILE = {
   contact: {
     title: "پەیوەندی و تۆڕە کۆمەڵایەتییەکان",
     description: "بۆ پەیوەندی، پشتیوانی یان زانیاریی زیاتر، یەکێک لە ڕێگاکانی خوارەوە هەڵبژێرە.",
-    phone: "07501173185",
+    phone: "07762916675",
     links: [
-      { kind: "whatsapp", label: "WhatsApp", handle: "@rahandjaff", description: "گفتوگۆی ڕاستەوخۆ لە WhatsApp", href: "https://wa.me/9647501173185" },
-      { kind: "telegram", label: "Telegram", handle: "@rahanddyy", description: "پڕۆفایلی Telegram", href: "https://t.me/rahanddyy" },
+      { kind: "whatsapp", label: "WhatsApp", handle: "07762916675", description: "گفتوگۆی ڕاستەوخۆ لە WhatsApp", href: "https://wa.me/9647762916675" },
+      { kind: "telegram", label: "Telegram", handle: "07762916675", description: "پەیوەندی لە Telegram", href: "tg://resolve?phone=9647762916675" },
       { kind: "facebook", label: "Facebook", handle: "Rahand Mohammed", description: "پەیجی Facebook", href: "https://www.facebook.com/rahanddyy" },
       { kind: "messenger", label: "Messenger", handle: "Rahand Mohammed", description: "نامە لە Messenger", href: "https://m.me/rahanddyy" },
       { kind: "instagram", label: "Instagram", handle: "Rahand Lau", description: "ئەکاونتی شەخسی خاوەنی پڕۆژەی سیستەمی ڕێک", href: "https://www.instagram.com/rahandmjaff" },

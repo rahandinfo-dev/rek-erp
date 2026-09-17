@@ -1,25 +1,25 @@
 "use client";
 
 import { memo, useMemo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { ChevronLeft, ChevronRight, LockKeyhole, LogOut, Search } from "lucide-react";
-import { BRAND } from "@/lib/brand";
+import { usePathname } from "next/navigation";
+import { LockKeyhole, Search } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
 import { filterSidebarGroups, isSidebarActive } from "@/lib/navigation/sidebar";
 import FavoritesSidebar from "@/components/favorites/FavoritesSidebar";
 import { UnsavedDotBadge } from "@/components/unsaved/HeaderSaveStatus";
-import { useSaveGuard } from "@/lib/unsaved/provider";
 import { useT } from "@/components/i18n/LocaleProvider";
 import { isSubscriptionProtectedHref } from "@/lib/subscriptions/paths";
+import {
+  NavigationBrand,
+  NavigationLogout,
+  NavigationToggle,
+  NavigationUserProfile,
+  type NavigationUser,
+} from "@/components/dashboard/NavigationPrimitives";
 
 type Props = {
-  user: {
-    fullName: string;
-    company: { name: string; logo: string | null };
-  };
+  user: NavigationUser;
   collapsed: boolean;
   onToggle: () => void;
   subscriptionActive: boolean;
@@ -27,8 +27,6 @@ type Props = {
 
 function DashboardRail({ user, collapsed, onToggle, subscriptionActive }: Props) {
   const pathname = usePathname();
-  const router = useRouter();
-  const saveGuard = useSaveGuard();
   const { t } = useT();
   const [navQuery, setNavQuery] = useState("");
 
@@ -37,73 +35,20 @@ function DashboardRail({ user, collapsed, onToggle, subscriptionActive }: Props)
     [navQuery, collapsed, t]
   );
 
-  function handleLogout() {
-    saveGuard.requestAction(async () => {
-      await fetch("/api/auth/logout", { method: "POST" });
-      router.push("/login");
-      router.refresh();
-    });
-  }
-
   return (
     <aside
+      dir="auto"
       aria-label={t("nav.sidebar")}
       className={cn(
-        "rek-sidebar hidden h-full shrink-0 flex-col transition-[width] duration-300 ease-out md:flex",
+        "rek-sidebar rek-navigation-width flex h-full shrink-0 flex-col",
         collapsed
           ? "w-[68px] lg:w-[72px]"
           : "w-[260px] lg:w-[300px] xl:w-[320px]"
       )}
     >
       <div className="flex items-center justify-between gap-2 border-b border-sidebar-border px-3 py-3.5">
-        <Link
-          href="/dashboard"
-          className="flex min-w-0 flex-1 items-center gap-2.5"
-          title={user.company.name}
-        >
-          <Image
-            src={user.company.logo || BRAND.logo}
-            alt={t("nav.sidebarLogo", { name: user.company.name })}
-            width={36}
-            height={36}
-            className="size-9 shrink-0 rounded-xl border border-border object-contain"
-            sizes="36px"
-            unoptimized={Boolean(user.company.logo)}
-            priority
-          />
-          {!collapsed && (
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-1.5">
-                <p
-                  dir="auto"
-                  title={user.company.name}
-                  className="rek-company-name truncate text-sm font-black text-foreground"
-                >
-                  {user.company.name}
-                </p>
-                <UnsavedDotBadge />
-              </div>
-              <p className="truncate text-[11px] text-muted-foreground">
-                {BRAND.productName}
-              </p>
-            </div>
-          )}
-        </Link>
-
-        <button
-          type="button"
-          onClick={onToggle}
-          className="shrink-0 rounded-xl p-2 text-muted-foreground transition hover:bg-sidebar-accent hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/35"
-          aria-label={
-            collapsed ? t("nav.expandSidebar") : t("nav.collapseSidebar")
-          }
-        >
-          {collapsed ? (
-            <ChevronLeft size={18} aria-hidden />
-          ) : (
-            <ChevronRight size={18} aria-hidden />
-          )}
-        </button>
+        <NavigationBrand user={user} collapsed={collapsed} trailing={<UnsavedDotBadge />} />
+        <NavigationToggle collapsed={collapsed} onToggle={onToggle} />
       </div>
 
       {!collapsed && (
@@ -184,42 +129,8 @@ function DashboardRail({ user, collapsed, onToggle, subscriptionActive }: Props)
       </nav>
 
       <div className="border-t border-sidebar-border p-2.5">
-        <div
-          className={cn(
-            "mb-2 flex items-center gap-2.5 rounded-2xl bg-muted/50 px-2.5 py-2",
-            collapsed && "justify-center px-0"
-          )}
-        >
-          <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-xs font-black text-primary">
-            {user.fullName.charAt(0)}
-          </div>
-          {!collapsed && (
-            <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-bold text-foreground">
-                {user.fullName}
-              </p>
-              <p
-                dir="auto"
-                title={user.company.name}
-                className="rek-company-name truncate text-[10px] text-muted-foreground"
-              >
-                {user.company.name}
-              </p>
-            </div>
-          )}
-        </div>
-
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
-          onClick={handleLogout}
-          aria-label={t("common.logout")}
-          className="h-9 w-full justify-center text-destructive hover:bg-destructive/8 hover:text-destructive"
-        >
-          <LogOut size={16} aria-hidden />
-          {!collapsed && <span>{t("common.logout")}</span>}
-        </Button>
+        <NavigationUserProfile user={user} collapsed={collapsed} className="mb-2" />
+        <NavigationLogout compact={collapsed} />
       </div>
     </aside>
   );

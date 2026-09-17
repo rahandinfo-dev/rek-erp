@@ -98,7 +98,7 @@ export default memo(function ProductQuickActions({
   return (
     <>
       <div className="rek-quick-actions pointer-events-none absolute inset-x-0 bottom-0 z-10 p-3 opacity-100 sm:opacity-0 sm:transition-all sm:duration-300 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100">
-        <div className="pointer-events-auto flex items-center justify-between gap-1 rounded-2xl border border-border/80 bg-card/95 p-1.5 shadow-[0_10px_28px_var(--shadow-brand)] backdrop-blur-md">
+        <div className="pointer-events-auto flex items-center justify-between gap-1 rounded-2xl border border-border bg-card p-1.5">
           {ACTION_DEFS.map((action, index) => {
             const Icon = action.icon;
             return (

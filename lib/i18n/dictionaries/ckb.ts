@@ -117,7 +117,7 @@ export const ckbMessages = {
     cost: "تێچوو",
   },
   nav: {
-    paymentOnline: "کڕینی سیستەمی ڕێک",
+    paymentOnline: "داواکردنی سیستەمی REK",
     aboutUs: "دەربارەی ئێمە",
     home: "سەرەکی",
     dashboard: "داشبۆرد",
@@ -635,7 +635,7 @@ export const ckbMessages = {
     sortOldest: "کۆنترین",
     sortProgress: "پێشکەوتن",
     sortModule: "مۆدیول",
-    loading: "بارکردنی ڕەشنووسەکان…",
+    loading: "باردکردنی پاشەکەوتەکان",
     empty: "هیچ ڕەشنووسێک نییە. دەستکاری فۆرمێک بکە — خۆکار دەردەکەون.",
     progress: "پێشکەوتن",
     created: "دروستکراو",
@@ -771,7 +771,7 @@ export const ckbMessages = {
     favorite: "دڵخواز",
   },
   activity: {
-    title: "تێمڵاینی چالاکی",
+    title: "مێژووی چالاکییەکان",
     subtitle: "بەکارهێنەر · کردار · مۆدیول · تۆمار · کات · ئامێر · دۆخ — مێژووی گەڕانپێکراو",
     autoRefresh: "نوێکردنەوەی خۆکار",
     export: "هەناردە",

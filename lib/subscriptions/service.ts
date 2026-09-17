@@ -2,7 +2,7 @@ import "server-only";
 
 import { createHmac, randomBytes } from "node:crypto";
 import { db } from "@/lib/prisma/db";
-import type { SubscriptionPlan } from "@/lib/prisma/client";
+import type { Prisma, SubscriptionPlan } from "@/lib/prisma/client";
 import { SUBSCRIPTION_PLAN_DURATIONS } from "@/lib/subscriptions/pricing";
 import {
   PROTECTED_SUBSCRIPTION_API_PREFIXES,
@@ -275,20 +275,22 @@ export async function deleteLicenseCodeSafely(id: string) {
   });
 }
 
-export async function extendCompanySubscription(input: { companyId: string; plan: SubscriptionPlan }) {
-  const now = new Date();
-  return db.$transaction(async (tx) => {
+export async function extendCompanySubscriptionInTransaction(tx: Prisma.TransactionClient, input: { companyId: string; plan: SubscriptionPlan; userId?: string | null; actionSource?: "CUSTOMER" | "ADMIN" | "SYSTEM"; reason?: string | null }) {
+    const now = new Date();
     const current = await tx.companySubscription.findUnique({ where: { companyId: input.companyId } });
-    if (current?.status === "ACTIVE" && current.expiresAt === null) return current;
+    if (current?.status === "ACTIVE" && current.expiresAt === null) throw new LicenseActivationError("ALREADY_LIFETIME");
     const anchor = current?.status === "ACTIVE" && current.expiresAt && current.expiresAt > now ? current.expiresAt : now;
     const subscription = await tx.companySubscription.upsert({
       where: { companyId: input.companyId },
       create: { companyId: input.companyId, plan: input.plan, status: "ACTIVE", activatedAt: now, expiresAt: planExpiry(input.plan, anchor) },
       update: { plan: input.plan, status: "ACTIVE", activatedAt: now, expiresAt: planExpiry(input.plan, anchor), cancelledAt: null, cancelledByUserId: null, cancelledFromPlan: null, cancelledFromStatus: null },
     });
-    await tx.subscriptionLifecycleEvent.create({ data: { companyId: input.companyId, type: current ? "RENEWED" : "ACTIVATED", previousPlan: current?.plan, previousStatus: current?.status, plan: input.plan, status: "ACTIVE", activatedAt: now, expiresAt: subscription.expiresAt } });
+    await tx.subscriptionLifecycleEvent.create({ data: { companyId: input.companyId, userId: input.userId || null, subscriptionId: subscription.id, type: current ? "RENEWED" : "ACTIVATED", actionSource: input.actionSource || "SYSTEM", previousPlan: current?.plan, previousStatus: current?.status, plan: input.plan, status: "ACTIVE", activatedAt: now, expiresAt: subscription.expiresAt, durationDays: SUBSCRIPTION_PLAN_DURATIONS[input.plan].totalDays, bonusDays: SUBSCRIPTION_PLAN_DURATIONS[input.plan].bonusDays, reason: input.reason || null } });
     return subscription;
-  });
+}
+
+export async function extendCompanySubscription(input: { companyId: string; plan: SubscriptionPlan }) {
+  return db.$transaction((tx) => extendCompanySubscriptionInTransaction(tx, input));
 }
 
 /** Customer cancellation immediately locks protected modules but never removes tenant data. */

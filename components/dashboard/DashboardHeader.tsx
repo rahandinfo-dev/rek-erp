@@ -104,10 +104,10 @@ function DashboardHeader({ user }: DashboardHeaderProps) {
               <Image
                 src={user.company.logo || BRAND.logo}
                 alt={t("nav.companyLogo", { name: user.company.name })}
-                width={36}
+                width={user.company.logo ? 36 : 112}
                 height={36}
-                className="size-9 shrink-0 rounded-xl border border-border object-contain"
-                sizes="36px"
+                className={user.company.logo ? "size-9 shrink-0 rounded-xl border border-border object-contain" : "h-9 w-20 shrink-0 object-contain sm:w-28"}
+                sizes={user.company.logo ? "36px" : "112px"}
                 unoptimized={Boolean(user.company.logo)}
               />
             )}

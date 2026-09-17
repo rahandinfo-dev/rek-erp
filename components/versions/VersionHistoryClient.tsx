@@ -337,7 +337,7 @@ export default function VersionHistoryClient() {
       <div className="rek-table-shell">
         <div className="rek-table-wrap max-h-[min(70vh,720px)]">
           <table className="w-full min-w-[720px] text-sm">
-            <thead className="sticky top-0 z-10 bg-muted/95 backdrop-blur-sm">
+            <thead className="sticky top-0 z-10 bg-muted">
               <tr className="text-right">
                 <th className="px-3 py-3 font-bold" scope="col">
                   <span className="sr-only">{t("versionsUi.select")}</span>

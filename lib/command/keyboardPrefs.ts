@@ -95,7 +95,8 @@ export function eventToChord(e: KeyboardEvent): string {
   if (e.ctrlKey || e.metaKey) parts.push("Ctrl");
   if (e.shiftKey) parts.push("Shift");
   if (e.altKey) parts.push("Alt");
-  let key = e.key;
+  const eventKey = typeof e.key === "string" ? e.key : "";
+  let key = eventKey;
   if (key === " ") key = "Space";
   if (key.length === 1) key = key.toUpperCase();
   if (key === "Escape") key = "Esc";
@@ -104,7 +105,7 @@ export function eventToChord(e: KeyboardEvent): string {
   if (key === "ArrowLeft") key = "Left";
   if (key === "ArrowRight") key = "Right";
   // Avoid duplicating modifiers as key
-  if (!["Control", "Shift", "Alt", "Meta"].includes(e.key)) {
+  if (key && !["Control", "Shift", "Alt", "Meta"].includes(eventKey)) {
     parts.push(key);
   }
   return parts.join("+");

@@ -15,7 +15,7 @@ export function CompactAlertDialogContent({
 }: Props) {
   return (
     <AlertDialog.Portal>
-      <AlertDialog.Overlay className="fixed inset-0 z-[100] bg-[var(--overlay)] backdrop-blur-[2px] animate-in fade-in duration-200" />
+      <AlertDialog.Overlay className="fixed inset-0 z-[100] bg-[var(--overlay)] animate-in fade-in duration-200" />
       <div className="rek-compact-alert-viewport">
         <AlertDialog.Content
           dir="rtl"

@@ -40,7 +40,7 @@ export default function BulkProgressDialog({
   return (
     <AlertDialog.Root open={open} onOpenChange={(v) => !v && done && onClose()}>
       <AlertDialog.Portal>
-        <AlertDialog.Overlay className="fixed inset-0 z-50 bg-[var(--overlay)] backdrop-blur-[2px]" />
+        <AlertDialog.Overlay className="fixed inset-0 z-50 bg-[var(--overlay)]" />
         <AlertDialog.Content className="rek-dialog fixed top-1/2 left-1/2 z-50 w-[95%] max-w-lg -translate-x-1/2 -translate-y-1/2 p-6">
           <AlertDialog.Title className="text-xl font-black">
             {done ? t("bulk.summary") : t("bulk.processing")}

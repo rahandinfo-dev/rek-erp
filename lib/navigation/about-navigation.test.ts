@@ -9,19 +9,19 @@ test("system purchase is translated and is immediately before dashboard in the h
   const paymentIndex = sidebar.indexOf('href: "/dashboard/payment-online"');
   const dashboardIndex = sidebar.indexOf('href: "/dashboard"');
   assert.ok(paymentIndex >= 0 && paymentIndex < dashboardIndex);
-  assert.match(read("lib/i18n/dictionaries/ckb.ts"), /paymentOnline:\s*["']کڕینی سیستەمی ڕێک["']/);
+  assert.match(read("lib/i18n/dictionaries/ckb.ts"), /paymentOnline:\s*["']داواکردنی سیستەمی REK["']/);
 });
 
 test("about navigation and page use the shared RTL design architecture", () => {
   assert.match(read("lib/navigation/sidebar.ts"), /href: "\/dashboard\/about"/);
-  assert.match(read("lib/navigation/app-grid.ts"), /href: "\/dashboard\/about"/);
+  assert.match(read("lib/navigation/registry.ts"), /href: "\/dashboard\/about"/);
   const page = read("app/dashboard/about/page.tsx");
   assert.match(page, /dir="rtl"/);
   assert.match(page, /PageHeader/);
   assert.match(read("lib/about/rek-profile.ts"), /contact:/);
 });
 
-test("payment page title uses the server-resolved navigation label", () => {
-  assert.match(read("app/dashboard/payment-online/page.tsx"), /pageTitle=\{tServer\.t\("nav\.paymentOnline"\)\}/);
+test("payment page title and navigation label use the approved purchase wording", () => {
+  assert.match(read("app/dashboard/payment-online/page.tsx"), /pageTitle="داواکردنی سیستەمی REK"/);
   assert.match(read("components/subscriptions/PaymentOnlineClient.tsx"), /\{pageTitle\}/);
 });

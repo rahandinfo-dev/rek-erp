@@ -25,6 +25,7 @@ import {
 type Props = {
   company: {
     name: string;
+    code?: string | null;
     email: string;
     phone: string | null;
     address: string | null;
@@ -46,6 +47,7 @@ type Props = {
 
 type SettingsDraft = {
   name: string;
+  code: string;
   email: string;
   phone: string;
   address: string;
@@ -67,6 +69,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
   const baseline = useMemo<SettingsDraft>(
     () => ({
       name: company.name,
+      code: company.code ?? "",
       email: company.email,
       phone: company.phone ?? "",
       address: company.address ?? "",
@@ -86,6 +89,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
   );
 
   const [name, setName] = useState(baseline.name);
+  const [code, setCode] = useState(baseline.code);
   const [email, setEmail] = useState(baseline.email);
   const [phone, setPhone] = useState(baseline.phone);
   const [address, setAddress] = useState(baseline.address);
@@ -109,6 +113,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
   const draftValue = useMemo<SettingsDraft>(
     () => ({
       name,
+      code,
       email,
       phone,
       address,
@@ -126,6 +131,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
     }),
     [
       name,
+      code,
       email,
       phone,
       address,
@@ -159,6 +165,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
 
   function applySettingsDraft(data: SettingsDraft) {
     setName(data.name);
+    setCode(data.code);
     setEmail(data.email);
     setPhone(data.phone);
     setAddress(data.address);
@@ -188,6 +195,7 @@ export default function CompanySettingsForm({ company, settings }: Props) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
+          code,
           email,
           phone,
           address,
@@ -263,6 +271,15 @@ export default function CompanySettingsForm({ company, settings }: Props) {
               onChange={(e) => setName(e.target.value)}
               className={inputClassName}
               required
+            />
+          </FormField>
+          <FormField label="کۆدی کۆمپانیا">
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.toUpperCase())}
+              className={inputClassName}
+              maxLength={12}
+              placeholder="REK"
             />
           </FormField>
           <FormField label="ئیمەیڵ">
